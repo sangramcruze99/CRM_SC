@@ -64,7 +64,14 @@ export default async function ContactsPage() {
           </h1>
           <p className="text-sm text-slate-400 mt-1">Manage leads, commercial stakeholders, and account relationships.</p>
         </div>
-        <div className="flex items-center space-x-2.5">
+        <div className="flex items-center space-x-2.5 flex-wrap gap-y-2">
+          <Link
+            href="/migration"
+            className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-all border border-white/[0.1] flex items-center space-x-1.5 cursor-pointer"
+          >
+            <Sparkles size={14} className="text-amber-400" />
+            <span>Migrate from Another CRM</span>
+          </Link>
           <Link
             href="/lead-prospector"
             className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 flex items-center space-x-1.5 active:scale-[0.98]"

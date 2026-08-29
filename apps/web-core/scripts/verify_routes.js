@@ -58,7 +58,16 @@ const routes = [
   '/platform/roles',
   '/platform/navigation',
   '/platform/ai',
-  '/platform/objects'
+  '/platform/objects',
+  '/voice',
+  '/inbox',
+  '/automations',
+  '/leaderboard',
+  '/portal',
+  '/banking',
+  '/forecast',
+  '/migration',
+  '/sim-gateway'
 ];
 
 async function checkRoute(route) {

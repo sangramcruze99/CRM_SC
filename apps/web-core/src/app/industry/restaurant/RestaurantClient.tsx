@@ -12,6 +12,7 @@ import {
   Flame,
   Check,
 } from 'lucide-react';
+import { KitchenDisplaySystem } from '@/components/industry/KitchenDisplaySystem';
 
 interface DiningTable {
   id: string;
@@ -324,6 +325,9 @@ export function RestaurantClient() {
           </div>
         </div>
       </div>
+
+      {/* Live Kitchen Display System & Table Split Calculator */}
+      <KitchenDisplaySystem />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
   Maximize2,
   FileSignature,
 } from 'lucide-react';
+import { MortgageAmortizationCalculator } from '@/components/industry/MortgageAmortizationCalculator';
 
 interface Property {
   id: string;
@@ -432,6 +433,8 @@ export function RealEstateClient() {
           </div>
         </div>
       )}
+      {/* Mortgage Amortization & MLS Calculator */}
+      <MortgageAmortizationCalculator />
     </div>
   );
 }

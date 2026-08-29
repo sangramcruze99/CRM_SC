@@ -12,6 +12,7 @@ import { RoleWorkspaceProvider } from "../components/platform/RoleWorkspaceConte
 import { AccessibilityProvider } from "../components/platform/AccessibilityContext";
 import { CreditMeteringProvider } from "../components/platform/CreditMeteringContext";
 import { CreditUsageDrawer } from "../components/billing/CreditUsageDrawer";
+import { GlowingOrbitalBackground } from "../components/platform/GlowingOrbitalBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -39,12 +40,11 @@ export default function RootLayout({
                   {/* Dynamic Niche-Adapted & Role-Filtered Dark Frosted Sidebar */}
                   <SidebarNav />
 
+                  {/* Glowing Cosmic Orbital Background with Up & Down Floating Light Waves */}
+                  <GlowingOrbitalBackground />
+
                   {/* Main Workspace Area with Ambient Warm Lighting & Dark Glass Backdrop */}
-                  <main className="flex-1 flex flex-col h-full overflow-hidden bg-transparent relative">
-                    {/* Ambient Warm Golden & Dark Indigo Glow Orbs */}
-                    <div className="absolute top-[-10%] right-[15%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
-                    <div className="absolute bottom-[-10%] left-[20%] w-[450px] h-[450px] bg-orange-600/10 rounded-full blur-3xl pointer-events-none -z-10" />
-                    <div className="absolute top-[40%] left-[50%] w-[400px] h-[400px] bg-indigo-600/5 rounded-full blur-3xl pointer-events-none -z-10" />
+                  <main className="flex-1 flex flex-col h-full overflow-hidden bg-transparent relative z-0">
 
                     {/* Floating Frosted Glass Topbar */}
                     <header className="h-16 border-b border-white/[0.08] flex items-center justify-between px-8 bg-slate-950/60 backdrop-blur-2xl z-10 shadow-[0_4px_24px_rgba(0,0,0,0.3)]">

@@ -13,6 +13,7 @@ import {
   Clock,
   Sparkles,
 } from 'lucide-react';
+import { DigitalRxPrescriptionMaker } from '@/components/industry/DigitalRxPrescriptionMaker';
 
 interface Patient {
   id: string;
@@ -400,6 +401,8 @@ export function HospitalClient() {
           </div>
         </div>
       )}
+      {/* Digital Prescription Maker & Drug Interaction Engine */}
+      <DigitalRxPrescriptionMaker />
     </div>
   );
 }

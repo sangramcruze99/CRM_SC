@@ -74,6 +74,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Helpdesk Support', href: '/tickets', iconName: 'Ticket' },
           { label: 'Employee Directory', href: '/directory', iconName: 'Contact' },
           { label: 'Document Vault', href: '/documents', iconName: 'Folder' },
+          { label: 'CRM Data Migration', href: '/migration', iconName: 'ArrowRightLeft', badge: 'Import' },
         ],
       },
       {
@@ -98,6 +99,14 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
       {
         sectionTitle: 'Platform & Operations',
         items: [
+          { label: 'AI Voice & Softphone', href: '/voice', iconName: 'Phone', badge: 'VoIP' },
+          { label: 'Cellular SIM Call & SMS Gateway', href: '/sim-gateway', iconName: 'Smartphone', badge: 'Dual-SIM' },
+          { label: 'Omnichannel Inbox', href: '/inbox', iconName: 'MessageSquare', badge: '6-in-1' },
+          { label: 'Automation Workflows', href: '/automations', iconName: 'Workflow', badge: 'Zapier' },
+          { label: 'Sales Leaderboard', href: '/leaderboard', iconName: 'Trophy', badge: 'Commissions' },
+          { label: 'Client Self-Service Portal', href: '/portal', iconName: 'Globe', badge: 'Extranet' },
+          { label: 'Bank Reconciliation & Forex', href: '/banking', iconName: 'Landmark', badge: 'Forex' },
+          { label: 'Boardroom Deck & Forecast', href: '/forecast', iconName: 'Presentation', badge: 'AI' },
           { label: 'SaaS Subscriptions', href: '/subscriptions', iconName: 'DollarSign' },
           { label: 'Commercial Quotes', href: '/quotes', iconName: 'FileBadge' },
           { label: 'Price Books', href: '/price-books', iconName: 'Layers' },

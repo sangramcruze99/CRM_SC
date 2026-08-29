@@ -12,6 +12,7 @@ import {
   CreditCard,
   Wallet,
 } from 'lucide-react';
+import { BarcodeLabelGenerator } from '@/components/industry/BarcodeLabelGenerator';
 
 interface CartItem {
   id: string;
@@ -309,6 +310,9 @@ export function RetailPosClient() {
           </div>
         </div>
       </div>
+
+      {/* Thermal Barcode Label & Price Tag Generator */}
+      <BarcodeLabelGenerator />
     </div>
   );
 }

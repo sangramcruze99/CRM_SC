@@ -1,9 +1,7 @@
-import { VisualWorkflowBuilder } from "../../components/automations/VisualWorkflowBuilder";
+import { AutomationsClient } from './AutomationsClient';
+
+export const dynamic = 'force-dynamic';
 
 export default function AutomationsPage() {
-  return (
-    <div className="h-[calc(100vh-4rem)] w-full">
-      <VisualWorkflowBuilder />
-    </div>
-  );
+  return <AutomationsClient />;
 }
