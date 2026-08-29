@@ -32,10 +32,15 @@ async function getCustomRecords(id: string) {
   }
 }
 
-export default async function CustomObjectDetailPage({ params }: { params: { id: string } }) {
+export default async function CustomObjectDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const p = await params;
   const [obj, records] = await Promise.all([
-    getCustomObject(params.id),
-    getCustomRecords(params.id)
+    getCustomObject(p.id),
+    getCustomRecords(p.id)
   ]);
 
   if (!obj) {

@@ -8,7 +8,6 @@ import { DynamicTable } from "@/components/low-code/DynamicTable";
 import { DynamicForm } from "@/components/low-code/DynamicForm";
 import { KanbanBuilder } from "@/components/low-code/KanbanBuilder";
 
-
 interface ObjectClientProps {
   customObject: SchemaDefinition;
   initialRecords: any[];
@@ -73,7 +72,7 @@ export function ObjectClient({ customObject, initialRecords }: ObjectClientProps
 
   if (isCreating || editingRecord) {
     return (
-      <div className="max-w-3xl mx-auto py-8">
+      <div className="max-w-3xl mx-auto py-8 text-white">
         <DynamicForm 
           schema={customObject} 
           initialData={editingRecord ? editingRecord.data : {}}
@@ -87,49 +86,47 @@ export function ObjectClient({ customObject, initialRecords }: ObjectClientProps
     );
   }
 
-  const hasSelectField = customObject.fields.some(f => f.fieldType === 'SELECT');
-
   return (
-    <div className="h-full flex flex-col bg-slate-50">
-      <div className="flex items-center justify-between p-6 bg-white border-b border-slate-200">
+    <div className="h-full flex flex-col max-w-7xl mx-auto text-white space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
         <div className="flex items-center gap-4">
-          <Link href="/platform/schema" className="p-2 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors">
+          <Link href="/platform/schema" className="p-2 hover:bg-white/[0.08] rounded-xl text-slate-400 hover:text-white transition-colors">
             <ArrowLeft size={16} />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
               {customObject.pluralName || customObject.name + 's'}
-              <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded border border-slate-200 text-slate-500 ml-2 font-normal">
+              <span className="font-mono text-xs bg-amber-500/15 border border-amber-500/30 text-amber-300 px-2 py-0.5 rounded-lg ml-2 font-semibold">
                 {customObject.apiName}
               </span>
             </h1>
-            <p className="text-sm text-slate-500 mt-1">{customObject.description}</p>
+            <p className="text-sm text-slate-400 mt-1">{customObject.description}</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex bg-slate-100 p-1 rounded-lg">
+        <div className="flex items-center gap-3">
+          <div className="flex bg-white/[0.06] p-1 rounded-xl border border-white/[0.08]">
             <button 
               onClick={() => setViewMode('table')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${viewMode === 'table' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'}`}
             >
               Table
             </button>
             <button 
               onClick={() => setViewMode('kanban')}
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${viewMode === 'kanban' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${viewMode === 'kanban' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'}`}
             >
               Kanban
             </button>
           </div>
-          <button onClick={() => setIsCreating(true)} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg flex items-center transition-colors shadow-sm">
-            <Plus className="w-4 h-4 mr-2" /> New {customObject.name}
+          <button onClick={() => setIsCreating(true)} className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-bold rounded-xl flex items-center transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer">
+            <Plus className="w-4 h-4 mr-1.5" /> New {customObject.name}
           </button>
         </div>
       </div>
 
       <div className="flex-1 overflow-hidden">
         {viewMode === 'table' ? (
-          <div className="h-full p-6 overflow-y-auto">
+          <div className="h-full p-6 overflow-y-auto bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
             <DynamicTable 
               schema={customObject} 
               data={records} 

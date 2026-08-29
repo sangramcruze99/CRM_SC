@@ -1,10 +1,18 @@
-import { SuperAdminClient } from "./SuperAdminClient";
+import { getTenantHeaders, safeFetch } from '@/lib/auth';
+import { SuperAdminClient } from './SuperAdminClient';
+
+export const dynamic = 'force-dynamic';
 
 export default async function SuperAdminPage() {
-  const res = await fetch('http://localhost:3021/tenants', { cache: 'no-store' });
-  const initialTenants = res.ok ? await res.json() : [];
-
-  return (
-    <SuperAdminClient initialTenants={initialTenants} />
+  const headers = await getTenantHeaders();
+  const tenants = await safeFetch(
+    'http://localhost:3021/tenants',
+    {
+      headers,
+      cache: 'no-store',
+    },
+    []
   );
+
+  return <SuperAdminClient initialTenants={tenants} />;
 }

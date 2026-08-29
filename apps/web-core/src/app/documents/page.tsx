@@ -1,35 +1,45 @@
-import { getTenantHeaders } from "../../lib/auth";
+import { getTenantHeaders, safeFetch } from "../../lib/auth";
 import { DocumentsClient } from "./DocumentsClient";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DocumentsPage({
-  searchParams
+  searchParams,
 }: {
-  searchParams: { folderId?: string }
+  searchParams: Promise<{ folderId?: string }>;
 }) {
-  const folderId = searchParams.folderId || 'root';
+  const sp = await searchParams;
+  const folderId = sp?.folderId || 'root';
+  const headers = await getTenantHeaders();
   
   // Fetch folders in the current directory
-  const foldersRes = await fetch(`http://localhost:3020/folders?parentId=${folderId}`, { cache: "no-store", headers: await getTenantHeaders() });
+  const initialFolders = await safeFetch(
+    `http://localhost:3020/folders?parentId=${folderId}`,
+    { cache: "no-store", headers },
+    []
+  );
   
   // Fetch documents in the current directory
-  const documentsRes = await fetch(`http://localhost:3020/documents?folderId=${folderId}`, { cache: "no-store", headers: await getTenantHeaders() });
+  const initialDocuments = await safeFetch(
+    `http://localhost:3020/documents?folderId=${folderId}`,
+    { cache: "no-store", headers },
+    []
+  );
   
   // Fetch current folder metadata (if not root) for breadcrumbs
   let currentFolder = null;
   if (folderId !== 'root') {
-    const currentFolderRes = await fetch(`http://localhost:3020/folders/${folderId}`, { cache: "no-store", headers: await getTenantHeaders() });
-    if (currentFolderRes.ok) {
-      currentFolder = await currentFolderRes.json();
-    }
+    currentFolder = await safeFetch(
+      `http://localhost:3020/folders/${folderId}`,
+      { cache: "no-store", headers },
+      null
+    );
   }
-
-  const initialFolders = foldersRes.ok ? await foldersRes.json() : [];
-  const initialDocuments = documentsRes.ok ? await documentsRes.json() : [];
 
   return (
     <DocumentsClient 
-      initialFolders={initialFolders} 
-      initialDocuments={initialDocuments} 
+      initialFolders={initialFolders}
+      initialDocuments={initialDocuments}
       currentFolder={currentFolder}
       currentFolderId={folderId}
     />

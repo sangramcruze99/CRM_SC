@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Key, Webhook, Plus, Trash2, Power, Code2, Copy, Check } from "lucide-react";
+import { Key, Webhook, Plus, Trash2, Power, Code2, Copy, Check, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialApiKeys: any[], initialWebhooks: any[] }) {
@@ -27,9 +27,8 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
     
     if (res.ok) {
       const newKey = await res.json();
-      setNewKeyRaw(newKey.key); // Show the raw key once
+      setNewKeyRaw(newKey.key);
       
-      // Update local state with masked key for the list
       const maskedKey = { ...newKey, key: newKey.key.substring(0, 12) + '... (Masked for security)' };
       setApiKeys([maskedKey, ...apiKeys]);
       router.refresh();
@@ -70,50 +69,49 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
   };
 
   return (
-    <div className="h-full flex flex-col bg-zinc-950">
-      
+    <div className="h-full flex flex-col space-y-6 max-w-7xl mx-auto text-white">
       {/* Tabs */}
-      <div className="flex border-b border-zinc-800 mb-6">
+      <div className="flex border-b border-white/[0.08]">
         <button
           onClick={() => setActiveTab('api')}
-          className={`px-4 py-3 text-sm font-medium border-b-2 flex items-center space-x-2 transition-colors ${activeTab === 'api' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-400 hover:text-zinc-300'}`}
+          className={`px-5 py-3 text-xs font-bold border-b-2 flex items-center space-x-2 transition-all cursor-pointer ${activeTab === 'api' ? 'border-amber-400 text-amber-400' : 'border-transparent text-slate-400 hover:text-white'}`}
         >
-          <Key size={16} />
-          <span>API Keys</span>
+          <Key size={14} />
+          <span>API Keys & Credentials</span>
         </button>
         <button
           onClick={() => setActiveTab('webhooks')}
-          className={`px-4 py-3 text-sm font-medium border-b-2 flex items-center space-x-2 transition-colors ${activeTab === 'webhooks' ? 'border-indigo-500 text-indigo-400' : 'border-transparent text-zinc-400 hover:text-zinc-300'}`}
+          className={`px-5 py-3 text-xs font-bold border-b-2 flex items-center space-x-2 transition-all cursor-pointer ${activeTab === 'webhooks' ? 'border-amber-400 text-amber-400' : 'border-transparent text-slate-400 hover:text-white'}`}
         >
-          <Webhook size={16} />
-          <span>Webhooks</span>
+          <Webhook size={14} />
+          <span>Webhooks & Subscriptions</span>
         </button>
       </div>
 
       {newKeyRaw && (
-        <div className="mb-6 p-4 bg-emerald-900/20 border border-emerald-500/30 rounded-lg">
+        <div className="p-4 bg-amber-500/15 border border-amber-500/40 rounded-2xl animate-in fade-in zoom-in-95 shadow-2xl backdrop-blur-xl">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-emerald-400 font-medium text-sm flex items-center space-x-2">
-                <CheckCircle2 size={16} /> <span>API Key Generated Successfully</span>
+              <h3 className="text-amber-300 font-bold text-xs flex items-center space-x-2">
+                <CheckCircle2 size={15} /> <span>API Key Generated Successfully</span>
               </h3>
-              <p className="text-zinc-400 text-xs mt-1">
-                Please copy this key and store it securely. You will not be able to see it again.
+              <p className="text-slate-300 text-xs mt-1 font-medium">
+                Please copy this key and store it securely. You will not be able to view it again.
               </p>
               <div className="mt-3 flex items-center space-x-3">
-                <code className="px-3 py-1.5 bg-zinc-900 rounded font-mono text-zinc-300 text-sm border border-zinc-800">
+                <code className="px-3 py-1.5 bg-white/[0.08] rounded-xl font-mono text-white text-xs border border-white/10 shadow-2xs font-semibold">
                   {newKeyRaw}
                 </code>
                 <button 
                   onClick={copyToClipboard}
-                  className="p-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded transition-colors flex items-center space-x-1 text-xs"
+                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl transition-all flex items-center space-x-1 text-xs font-bold shadow-md shadow-orange-500/20 cursor-pointer"
                 >
-                  {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                  {copied ? <Check size={13} /> : <Copy size={13} />}
+                  <span>{copied ? 'Copied' : 'Copy Key'}</span>
                 </button>
               </div>
             </div>
-            <button onClick={() => setNewKeyRaw(null)} className="text-zinc-500 hover:text-zinc-300">
+            <button onClick={() => setNewKeyRaw(null)} className="text-slate-400 hover:text-white cursor-pointer">
               <Trash2 size={16} />
             </button>
           </div>
@@ -123,46 +121,46 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
       {/* Tab Content */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === 'api' ? (
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-zinc-400">Manage API keys for server-to-server integrations.</p>
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <p className="text-xs text-slate-400 font-medium">Manage authorization keys for external REST API and webhook integrations.</p>
               <button 
                 onClick={handleGenerateKey}
-                className="flex items-center space-x-2 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md text-sm font-medium transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
               >
-                <Plus size={16} />
+                <Plus size={15} />
                 <span>Create Secret Key</span>
               </button>
             </div>
             
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg overflow-hidden">
+            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
               <table className="w-full text-left text-sm">
-                <thead className="bg-zinc-900/80 border-b border-zinc-800 text-zinc-400">
+                <thead className="bg-white/[0.02] border-b border-white/[0.08] text-slate-400 text-xs uppercase tracking-wider font-semibold">
                   <tr>
-                    <th className="px-6 py-3 font-medium">Name</th>
-                    <th className="px-6 py-3 font-medium">Secret Key</th>
-                    <th className="px-6 py-3 font-medium">Created</th>
-                    <th className="px-6 py-3 font-medium text-right">Actions</th>
+                    <th className="px-6 py-4 font-semibold">Key Identifier</th>
+                    <th className="px-6 py-4 font-semibold">Token Secret</th>
+                    <th className="px-6 py-4 font-semibold">Created Date</th>
+                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/50">
+                <tbody className="divide-y divide-white/[0.05]">
                   {apiKeys.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="px-6 py-8 text-center text-zinc-500">
+                      <td colSpan={4} className="px-6 py-8 text-center text-slate-500 text-xs font-medium">
                         No API keys generated yet.
                       </td>
                     </tr>
                   )}
                   {apiKeys.map(key => (
-                    <tr key={key.id} className="hover:bg-zinc-800/30 transition-colors">
-                      <td className="px-6 py-3 font-medium text-zinc-200 flex items-center space-x-2">
-                        <Key size={14} className="text-zinc-500" />
+                    <tr key={key.id} className="hover:bg-white/[0.04] transition-colors">
+                      <td className="px-6 py-4 font-bold text-white text-xs flex items-center space-x-2">
+                        <Key size={14} className="text-amber-400" />
                         <span>{key.name}</span>
                       </td>
-                      <td className="px-6 py-3 font-mono text-xs text-zinc-500">{key.key}</td>
-                      <td className="px-6 py-3 text-zinc-400">{new Date(key.createdAt).toLocaleDateString()}</td>
-                      <td className="px-6 py-3 text-right">
-                        <button className="p-1.5 text-rose-400 hover:bg-rose-500/10 rounded transition-colors" title="Revoke Key">
+                      <td className="px-6 py-4 font-mono text-xs text-slate-400 font-medium">{key.key}</td>
+                      <td className="px-6 py-4 text-slate-400 text-xs font-medium">{new Date(key.createdAt).toLocaleDateString()}</td>
+                      <td className="px-6 py-4 text-right">
+                        <button className="p-1.5 text-rose-400 hover:bg-rose-500/15 rounded-lg transition-colors cursor-pointer" title="Revoke Key">
                           <Trash2 size={14} />
                         </button>
                       </td>
@@ -173,73 +171,60 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
             </div>
           </div>
         ) : (
-          <div>
-             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-zinc-400">Register endpoints to receive real-time event payloads.</p>
+          <div className="space-y-4">
+             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <p className="text-xs text-slate-400 font-medium">Register webhook listeners to stream real-time workspace mutations.</p>
               <button 
                 onClick={handleRegisterWebhook}
-                className="flex items-center space-x-2 px-3 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white rounded-md text-sm font-medium transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
               >
-                <Plus size={16} />
+                <Plus size={15} />
                 <span>Add Endpoint</span>
               </button>
             </div>
             
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg overflow-hidden">
+            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
               <table className="w-full text-left text-sm">
-                <thead className="bg-zinc-900/80 border-b border-zinc-800 text-zinc-400">
+                <thead className="bg-white/[0.02] border-b border-white/[0.08] text-slate-400 text-xs uppercase tracking-wider font-semibold">
                   <tr>
-                    <th className="px-6 py-3 font-medium">URL</th>
-                    <th className="px-6 py-3 font-medium">Events</th>
-                    <th className="px-6 py-3 font-medium">Status</th>
-                    <th className="px-6 py-3 font-medium text-right">Actions</th>
+                    <th className="px-6 py-4 font-semibold">Endpoint URL</th>
+                    <th className="px-6 py-4 font-semibold">Subscribed Events</th>
+                    <th className="px-6 py-4 font-semibold">Status</th>
+                    <th className="px-6 py-4 font-semibold text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-800/50">
+                <tbody className="divide-y divide-white/[0.05]">
                   {webhooks.length === 0 && (
                     <tr>
-                      <td colSpan={4} className="px-6 py-8 text-center text-zinc-500">
-                        No webhooks registered.
+                      <td colSpan={4} className="px-6 py-8 text-center text-slate-500 text-xs font-medium">
+                        No webhook endpoints registered.
                       </td>
                     </tr>
                   )}
-                  {webhooks.map(webhook => (
-                    <tr key={webhook.id} className="hover:bg-zinc-800/30 transition-colors">
-                      <td className="px-6 py-3 font-medium text-indigo-400 flex items-center space-x-2">
-                        <Code2 size={14} className="text-zinc-500" />
-                        <span>{webhook.url}</span>
+                  {webhooks.map(wh => (
+                    <tr key={wh.id} className="hover:bg-white/[0.04] transition-colors">
+                      <td className="px-6 py-4 font-mono font-semibold text-white text-xs flex items-center space-x-2">
+                        <Webhook size={14} className="text-amber-400" />
+                        <span>{wh.url}</span>
                       </td>
-                      <td className="px-6 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          {webhook.events.map((e: string, i: number) => (
-                            <span key={i} className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-mono">
+                      <td className="px-6 py-4">
+                        <div className="flex gap-1 flex-wrap">
+                          {wh.events.map((e: string) => (
+                            <span key={e} className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.08] text-amber-300 border border-white/10">
                               {e}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td className="px-6 py-3">
-                        {webhook.isActive ? (
-                          <span className="inline-flex items-center space-x-1 text-emerald-400 text-xs font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            <span>Active</span>
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center space-x-1 text-zinc-500 text-xs font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
-                            <span>Disabled</span>
-                          </span>
-                        )}
+                      <td className="px-6 py-4">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                          {wh.status}
+                        </span>
                       </td>
-                      <td className="px-6 py-3 text-right">
-                        <div className="flex justify-end space-x-2">
-                          <button className={`p-1.5 rounded transition-colors ${webhook.isActive ? 'text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10' : 'text-emerald-400 hover:bg-emerald-500/10'}`} title="Toggle Status">
-                            <Power size={14} />
-                          </button>
-                          <button className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors" title="Delete">
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
+                      <td className="px-6 py-4 text-right">
+                        <button className="p-1.5 text-rose-400 hover:bg-rose-500/15 rounded-lg transition-colors cursor-pointer" title="Delete Webhook">
+                          <Trash2 size={14} />
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -251,8 +236,4 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
       </div>
     </div>
   );
-}
-
-function CheckCircle2({ size }: { size: number }) {
-  return <Check size={size} />;
 }

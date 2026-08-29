@@ -51,12 +51,12 @@ function SortableItem({ id, record, titleField }: { id: string, record: any, tit
       style={style}
       {...attributes}
       {...listeners}
-      className="bg-white p-3 rounded shadow-sm border border-slate-200 cursor-grab active:cursor-grabbing hover:border-indigo-300 hover:shadow transition-all"
+      className="bg-white/[0.04] p-3.5 rounded-2xl shadow-sm border border-white/[0.08] cursor-grab active:cursor-grabbing hover:border-amber-500/40 hover:shadow transition-all text-white"
     >
-      <div className="font-medium text-slate-800 text-sm">
+      <div className="font-bold text-white text-xs">
         {record.data[titleField] || `Record ${record.id.substring(0, 8)}`}
       </div>
-      <div className="text-xs text-slate-500 mt-2">
+      <div className="text-[10px] text-slate-400 mt-2 font-medium">
         {new Date(record.createdAt).toLocaleDateString()}
       </div>
     </div>
@@ -65,12 +65,12 @@ function SortableItem({ id, record, titleField }: { id: string, record: any, tit
 
 function Column({ id, title, records, titleField }: { id: string, title: string, records: any[], titleField: string }) {
   return (
-    <div className="flex flex-col bg-slate-100 rounded-lg w-72 flex-shrink-0 max-h-full">
-      <div className="p-3 border-b border-slate-200 bg-slate-50/80 rounded-t-lg flex items-center justify-between">
-        <h3 className="font-semibold text-slate-700">{title}</h3>
-        <span className="bg-slate-200 text-slate-600 text-xs px-2 py-0.5 rounded-full font-medium">{records.length}</span>
+    <div className="flex flex-col bg-white/[0.03] border border-white/[0.08] rounded-3xl w-72 flex-shrink-0 max-h-full">
+      <div className="p-3.5 border-b border-white/[0.08] bg-white/[0.02] rounded-t-3xl flex items-center justify-between">
+        <h3 className="font-bold text-xs uppercase tracking-wider text-slate-300">{title}</h3>
+        <span className="bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs px-2 py-0.5 rounded-full font-bold">{records.length}</span>
       </div>
-      <div className="p-3 flex-1 overflow-y-auto space-y-3 min-h-[150px]">
+      <div className="p-3.5 flex-1 overflow-y-auto space-y-3 min-h-[150px]">
         <SortableContext items={records.map(r => r.id)} strategy={verticalListSortingStrategy}>
           {records.map(record => (
             <SortableItem key={record.id} id={record.id} record={record} titleField={titleField} />
@@ -102,9 +102,9 @@ export function KanbanBuilder({ schema, records, onRecordUpdate }: KanbanBuilder
 
   if (selectFields.length === 0) {
     return (
-      <div className="p-8 text-center bg-white rounded-xl border border-slate-200 border-dashed">
-        <h3 className="text-lg font-medium text-slate-800 mb-2">Kanban Board Requires a Select Field</h3>
-        <p className="text-slate-500">To use the Kanban view, please add a "Select" field to your schema (e.g. Status, Stage) which will be used as the columns.</p>
+      <div className="p-8 text-center bg-white/[0.04] backdrop-blur-2xl rounded-3xl border border-white/[0.08] border-dashed text-white">
+        <h3 className="text-sm font-bold text-white mb-2">Kanban Board Requires a Select Field</h3>
+        <p className="text-xs text-slate-400">To use the Kanban view, please add a "Select" field to your schema (e.g. Status, Stage) which will be used as the columns.</p>
       </div>
     );
   }
@@ -128,10 +128,6 @@ export function KanbanBuilder({ schema, records, onRecordUpdate }: KanbanBuilder
   const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event;
     if (!over) return;
-    
-    // We only care about drag end for moving between columns, 
-    // but if we want live list reordering across columns we'd handle it here.
-    // Keeping it simple for now and doing everything on DragEnd.
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -143,9 +139,6 @@ export function KanbanBuilder({ schema, records, onRecordUpdate }: KanbanBuilder
     const activeId = active.id;
     const overId = over.id;
 
-    // Find the column the item was dropped in.
-    // over.id can be either a record ID (dropped on another card) or a column ID (dropped on an empty column space)
-    
     let overColumn = '';
     const overRecord = localRecords.find(r => r.id === overId);
     if (overRecord) {
@@ -177,17 +170,17 @@ export function KanbanBuilder({ schema, records, onRecordUpdate }: KanbanBuilder
   };
 
   return (
-    <div className="h-full flex flex-col bg-white">
-      <div className="p-4 border-b flex items-center justify-between bg-slate-50">
+    <div className="h-full flex flex-col bg-transparent text-white">
+      <div className="p-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
         <div className="flex items-center space-x-2">
-          <label className="text-sm font-medium text-slate-600">Group By:</label>
+          <label className="text-xs font-semibold text-slate-400">Group By:</label>
           <select 
             value={groupByField} 
             onChange={e => setGroupByField(e.target.value)}
-            className="text-sm border-slate-300 rounded focus:ring-indigo-500 focus:border-indigo-500"
+            className="text-xs bg-white/[0.05] border border-white/[0.1] rounded-xl text-white px-3 py-1.5 focus:outline-none"
           >
             {selectFields.map(f => (
-              <option key={f.apiName} value={f.apiName}>{f.name}</option>
+              <option key={f.apiName} value={f.apiName} className="bg-slate-900 text-white">{f.name}</option>
             ))}
           </select>
         </div>
@@ -217,8 +210,8 @@ export function KanbanBuilder({ schema, records, onRecordUpdate }: KanbanBuilder
 
           <DragOverlay>
             {activeId && activeRecord ? (
-              <div className="bg-white p-3 rounded shadow-xl border border-indigo-400 rotate-2 opacity-90 w-72">
-                <div className="font-medium text-slate-800 text-sm">
+              <div className="bg-slate-900/95 p-3.5 rounded-2xl shadow-xl border border-amber-400/50 rotate-2 opacity-90 w-72 text-white">
+                <div className="font-bold text-white text-xs">
                   {activeRecord.data[titleField] || `Record ${activeRecord.id.substring(0, 8)}`}
                 </div>
               </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { UploadCloud, CheckCircle, Loader2, FileText, X } from 'lucide-react';
+import { UploadCloud, CheckCircle, Loader2, FileText, X, Sparkles } from 'lucide-react';
 
 export default function SmartUploadPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -63,20 +63,23 @@ export default function SmartUploadPage() {
   };
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Smart Ingestion</h1>
-        <p className="text-zinc-400">Upload an invoice, receipt, or document. Our AI will automatically infer a database schema and extract the data.</p>
+    <div className="h-full flex flex-col space-y-6 max-w-6xl mx-auto text-white">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
+          <Sparkles className="text-amber-400" size={24} />
+          Smart Ingestion & Schema Synthesizer
+        </h1>
+        <p className="text-sm text-slate-400 mt-1">Upload an invoice, receipt, or agreement. Our AI will automatically infer a relational schema and extract the structured data.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
         {/* Upload Column */}
         <div className="space-y-6">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-xl">
-            <div className="p-4 border-b border-zinc-800 bg-zinc-950/50 flex justify-between items-center">
-              <h2 className="text-lg font-medium text-zinc-200">1. Upload Document</h2>
+          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+            <div className="p-4 border-b border-white/[0.08] bg-white/[0.02] flex justify-between items-center">
+              <h2 className="text-sm font-bold text-white">1. Upload Document Source</h2>
               {file && (
-                <button onClick={reset} className="text-zinc-500 hover:text-zinc-300">
+                <button onClick={reset} className="text-slate-400 hover:text-white cursor-pointer">
                   <X size={18} />
                 </button>
               )}
@@ -85,12 +88,14 @@ export default function SmartUploadPage() {
             <div className="p-6">
               {!file ? (
                 <div 
-                  className="border-2 border-dashed border-zinc-700 rounded-xl p-12 flex flex-col items-center justify-center text-center hover:border-indigo-500 hover:bg-indigo-500/5 transition-colors cursor-pointer"
+                  className="border-2 border-dashed border-white/20 rounded-2xl p-12 flex flex-col items-center justify-center text-center hover:border-amber-400/50 hover:bg-white/[0.02] transition-all cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <UploadCloud size={48} className="text-zinc-500 mb-4" />
-                  <p className="text-zinc-300 font-medium mb-1">Click to upload or drag and drop</p>
-                  <p className="text-zinc-500 text-sm">PNG, JPG, PDF up to 10MB</p>
+                  <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3 shadow-2xs">
+                    <UploadCloud size={28} />
+                  </div>
+                  <p className="text-white font-bold text-sm mb-1">Click to upload or drag & drop</p>
+                  <p className="text-slate-400 text-xs font-medium">PNG, JPG, PDF documents up to 10MB</p>
                   <input 
                     type="file" 
                     className="hidden" 
@@ -101,32 +106,32 @@ export default function SmartUploadPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex items-center space-x-4 p-4 bg-zinc-950 rounded-lg border border-zinc-800">
-                    <div className="w-12 h-12 bg-indigo-500/20 text-indigo-400 flex items-center justify-center rounded-lg">
-                      <FileText size={24} />
+                  <div className="flex items-center space-x-3 p-3.5 bg-white/[0.03] rounded-2xl border border-white/[0.08]">
+                    <div className="w-10 h-10 bg-amber-500/15 text-amber-400 flex items-center justify-center rounded-xl border border-amber-500/30">
+                      <FileText size={20} />
                     </div>
                     <div className="flex-1 overflow-hidden">
-                      <p className="text-zinc-200 font-medium truncate">{file.name}</p>
-                      <p className="text-zinc-500 text-sm">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p className="text-white font-bold text-xs truncate">{file.name}</p>
+                      <p className="text-slate-400 text-[11px]">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                     </div>
-                    <CheckCircle className="text-green-500" size={20} />
+                    <CheckCircle className="text-emerald-400" size={18} />
                   </div>
                   
                   {preview && file.type.startsWith('image/') && (
-                    <div className="relative h-64 rounded-lg overflow-hidden border border-zinc-800">
-                      <img src={preview} alt="Preview" className="absolute inset-0 w-full h-full object-contain bg-black/40" />
+                    <div className="relative h-60 rounded-2xl overflow-hidden border border-white/[0.08] bg-white/[0.02]">
+                      <img src={preview} alt="Preview" className="absolute inset-0 w-full h-full object-contain" />
                     </div>
                   )}
                   
                   <button 
                     onClick={handleProcess}
                     disabled={isProcessing}
-                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isProcessing ? (
                       <>
-                        <Loader2 className="animate-spin" size={18} />
-                        <span>Analyzing Document...</span>
+                        <Loader2 className="animate-spin" size={16} />
+                        <span>Analyzing Document with Neural Vision...</span>
                       </>
                     ) : (
                       <>
@@ -136,7 +141,7 @@ export default function SmartUploadPage() {
                   </button>
                   
                   {error && (
-                    <div className="p-3 bg-red-900/20 border border-red-900/50 text-red-400 text-sm rounded-lg">
+                    <div className="p-3.5 bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs rounded-xl font-medium">
                       {error}
                     </div>
                   )}
@@ -148,27 +153,27 @@ export default function SmartUploadPage() {
 
         {/* Results Column */}
         <div className="space-y-6">
-          <div className={`bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-xl transition-opacity duration-500 ${result ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-            <div className="p-4 border-b border-zinc-800 bg-zinc-950/50">
-              <h2 className="text-lg font-medium text-zinc-200">2. Review & Save</h2>
+          <div className={`bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] transition-opacity duration-300 ${result ? 'opacity-100' : 'opacity-40 pointer-events-none'}`}>
+            <div className="p-4 border-b border-white/[0.08] bg-white/[0.02]">
+              <h2 className="text-sm font-bold text-white">2. Review Inferred Schema & Data</h2>
             </div>
             
             {result ? (
               <div className="p-6 space-y-6">
                 <div>
-                  <h3 className="text-sm font-semibold text-indigo-400 mb-3 uppercase tracking-wider">Inferred Schema</h3>
-                  <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-4">
+                  <h3 className="text-xs font-bold text-amber-400 mb-3 uppercase tracking-wider">Inferred Custom Object Schema</h3>
+                  <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-zinc-300 font-medium">{result.schema?.name}</span>
-                      <span className="text-xs bg-zinc-800 text-zinc-400 px-2 py-1 rounded">API Name: {result.schema?.apiName}</span>
+                      <span className="text-white font-bold text-xs">{result.schema?.name}</span>
+                      <span className="text-[11px] bg-amber-500/15 border border-amber-500/30 font-mono text-amber-300 px-2 py-0.5 rounded-lg font-bold">API: {result.schema?.apiName}</span>
                     </div>
-                    <p className="text-sm text-zinc-500 mb-4">{result.schema?.description}</p>
+                    <p className="text-xs text-slate-400 mb-3">{result.schema?.description}</p>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       {result.schema?.fields?.map((field: any, idx: number) => (
-                        <div key={idx} className="flex items-center justify-between text-sm py-1 border-t border-zinc-800/50">
-                          <span className="text-zinc-400">{field.name}</span>
-                          <span className="text-xs font-mono text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded">{field.fieldType}</span>
+                        <div key={idx} className="flex items-center justify-between text-xs py-1 border-t border-white/[0.06] font-medium">
+                          <span className="text-slate-300">{field.name}</span>
+                          <span className="text-[10px] font-mono text-slate-400 bg-white/[0.06] border border-white/10 px-1.5 py-0.5 rounded">{field.fieldType}</span>
                         </div>
                       ))}
                     </div>
@@ -176,27 +181,27 @@ export default function SmartUploadPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-semibold text-green-400 mb-3 uppercase tracking-wider">Extracted Record Data</h3>
-                  <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-4 space-y-3">
+                  <h3 className="text-xs font-bold text-emerald-400 mb-3 uppercase tracking-wider">Extracted Entity Values</h3>
+                  <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4 space-y-2">
                     {Object.entries(result.data || {}).map(([key, value]) => (
-                      <div key={key} className="flex justify-between items-start border-b border-zinc-800/50 pb-2 last:border-0 last:pb-0">
-                        <span className="text-zinc-400 text-sm font-mono">{key}</span>
-                        <span className="text-zinc-200 text-sm text-right font-medium max-w-[60%]">{String(value)}</span>
+                      <div key={key} className="flex justify-between items-start border-b border-white/[0.06] pb-1.5 last:border-0 last:pb-0 text-xs">
+                        <span className="text-slate-400 font-mono font-medium">{key}</span>
+                        <span className="text-white text-right font-semibold max-w-[60%]">{String(value)}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <button className="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg font-medium transition-colors border border-zinc-700">
-                  Accept Schema & Save Record
+                <button className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 cursor-pointer">
+                  Accept Schema & Commit Entity
                 </button>
               </div>
             ) : (
               <div className="p-6 h-64 flex flex-col items-center justify-center text-center">
-                <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
-                  <CheckCircle size={24} className="text-zinc-600" />
+                <div className="w-12 h-12 bg-white/[0.06] rounded-2xl flex items-center justify-center mb-3">
+                  <CheckCircle size={22} className="text-slate-500" />
                 </div>
-                <p className="text-zinc-500">Awaiting document extraction...</p>
+                <p className="text-xs font-medium text-slate-500">Awaiting document extraction...</p>
               </div>
             )}
           </div>

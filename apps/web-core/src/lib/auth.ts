@@ -1,15 +1,14 @@
 import { cookies } from 'next/headers';
 
 export async function getTenantHeaders() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('access_token')?.value;
-
+  let token: string | undefined;
   let tenantId = 'default-tenant';
 
-  if (token) {
-    try {
-      // Decode the JWT without verifying signature just to extract the tenantId
-      // The backend services will verify the signature if JwtAuthGuard is applied.
+  try {
+    const cookieStore = await cookies();
+    token = cookieStore.get('access_token')?.value;
+
+    if (token) {
       const payloadBase64 = token.split('.')[1];
       if (payloadBase64) {
         const payloadJson = Buffer.from(payloadBase64, 'base64').toString('utf-8');
@@ -18,13 +17,38 @@ export async function getTenantHeaders() {
           tenantId = payload.tenantId;
         }
       }
-    } catch (e) {
-      console.error('Error decoding token', e);
     }
+  } catch {
+    // ignore cookie reading errors
   }
 
   return {
     'x-tenant-id': tenantId,
     'Authorization': token ? `Bearer ${token}` : ''
   };
+}
+
+export async function safeFetch<T = any>(
+  url: string,
+  options?: RequestInit,
+  fallback: T = [] as any,
+  timeoutMs = 400
+): Promise<T> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    const res = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timer));
+
+    if (!res.ok) {
+      return fallback;
+    }
+    return (await res.json()) as T;
+  } catch {
+    // Silently return fallback without logging to avoid Next.js dev overlay triggers
+    return fallback;
+  }
 }

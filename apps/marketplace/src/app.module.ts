@@ -1,7 +1,7 @@
-import { JwtModule } from '@nestjs/jwt';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from '@repo/auth';
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard } from '@repo/auth';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PluginsModule } from './plugins/plugins.module';
@@ -9,12 +9,17 @@ import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
-    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),PluginsModule, PrismaModule],
+    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
+    PluginsModule,
+    PrismaModule,
+  ],
   controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },AppService],
+    },
+    AppService,
+  ],
 })
 export class AppModule {}

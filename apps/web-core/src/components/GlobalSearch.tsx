@@ -1,21 +1,131 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, Briefcase, Users, Ticket, Contact, Folder, Loader2 } from "lucide-react";
+import {
+  Search,
+  Briefcase,
+  Users,
+  Ticket,
+  Contact,
+  Folder,
+  Loader2,
+  Sparkles,
+  Scan,
+  Database,
+  Receipt,
+  FileSignature,
+  DollarSign,
+  ArrowRight,
+  Terminal,
+  Zap,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useRoleWorkspace, WorkspaceRole } from "./platform/RoleWorkspaceContext";
+
+interface CommandItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  type: 'COMMAND' | 'PAGE' | 'RECORD';
+  url?: string;
+  action?: () => void;
+  icon: any;
+}
 
 export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const { setRole } = useRoleWorkspace();
+
+  const QUICK_COMMANDS: CommandItem[] = [
+    {
+      id: 'cmd-ocr',
+      title: 'Scan Invoice with Neural OCR',
+      subtitle: 'Upload or capture physical document & extract line items',
+      type: 'COMMAND',
+      url: '/ocr-invoice',
+      icon: Scan,
+    },
+    {
+      id: 'cmd-leads',
+      title: 'Open B2B Lead Prospector',
+      subtitle: 'Search & import Apollo/ZoomInfo leads to CRM',
+      type: 'COMMAND',
+      url: '/lead-prospector',
+      icon: Database,
+    },
+    {
+      id: 'cmd-sales-role',
+      title: 'Switch to Sales & Growth Workspace',
+      subtitle: 'Filter navigation for deals, contacts & outbound marketing',
+      type: 'COMMAND',
+      action: () => setRole('sales'),
+      icon: Briefcase,
+    },
+    {
+      id: 'cmd-finance-role',
+      title: 'Switch to Finance & Legal Operations',
+      subtitle: 'Filter navigation for Khata ledger, invoices & NDAs',
+      type: 'COMMAND',
+      action: () => setRole('finance'),
+      icon: Receipt,
+    },
+    {
+      id: 'cmd-admin-role',
+      title: 'Switch to Developer & Platform Admin',
+      subtitle: 'Filter navigation for schema builder, RBAC & API keys',
+      type: 'COMMAND',
+      action: () => setRole('admin'),
+      icon: Terminal,
+    },
+    {
+      id: 'cmd-all-role',
+      title: 'Switch to Enterprise All-in-One',
+      subtitle: 'Unrestricted view of all 67 platform features',
+      type: 'COMMAND',
+      action: () => setRole('all'),
+      icon: Sparkles,
+    },
+    {
+      id: 'page-dashboard',
+      title: 'Executive Revenue Dashboard',
+      subtitle: 'Dual-curve cash-flow charts and ARR metrics',
+      type: 'PAGE',
+      url: '/dashboard',
+      icon: DollarSign,
+    },
+    {
+      id: 'page-invoices',
+      title: 'Billing & Commercial Invoices',
+      subtitle: 'PDF invoice generator and payment statuses',
+      type: 'PAGE',
+      url: '/invoices',
+      icon: Receipt,
+    },
+    {
+      id: 'page-deals',
+      title: 'Deals Pipeline & Next Best Action',
+      subtitle: 'Kanban stages and predictive deal scoring',
+      type: 'PAGE',
+      url: '/deals',
+      icon: Briefcase,
+    },
+  ];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setIsOpen(true);
-        setTimeout(() => inputRef.current?.focus(), 100);
+        setIsOpen((prev) => {
+          const next = !prev;
+          if (next) setTimeout(() => inputRef.current?.focus(), 100);
+          return next;
+        });
       }
       if (e.key === "Escape") {
         setIsOpen(false);
@@ -25,40 +135,36 @@ export function GlobalSearch() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  useEffect(() => {
-    if (!query || query.length < 2) {
-      setResults([]);
-      return;
-    }
-    
-    const delayDebounceFn = setTimeout(async () => {
-      setIsLoading(true);
-      try {
-        const res = await fetch(`http://localhost:3019/search?q=${encodeURIComponent(query)}`, {
-          headers: { "x-tenant-id": "default-tenant" }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setResults(data);
+  // Filter commands and search items
+  const filteredCommands = query
+    ? QUICK_COMMANDS.filter(
+        (c) =>
+          c.title.toLowerCase().includes(query.toLowerCase()) ||
+          c.subtitle.toLowerCase().includes(query.toLowerCase())
+      )
+    : QUICK_COMMANDS;
+
+  const totalItems = filteredCommands.length + results.length;
+
+  const handleKeyDownNav = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % Math.max(1, totalItems));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev - 1 + totalItems) % Math.max(1, totalItems));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (selectedIndex < filteredCommands.length) {
+        const item = filteredCommands[selectedIndex];
+        if (item.action) {
+          item.action();
+          setIsOpen(false);
+        } else if (item.url) {
+          router.push(item.url);
+          setIsOpen(false);
         }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
       }
-    }, 300);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [query]);
-
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "CONTACT": return <Users size={16} className="text-indigo-400" />;
-      case "DEAL": return <Briefcase size={16} className="text-amber-400" />;
-      case "TICKET": return <Ticket size={16} className="text-rose-400" />;
-      case "EMPLOYEE": return <Contact size={16} className="text-emerald-400" />;
-      case "PROJECT": return <Folder size={16} className="text-blue-400" />;
-      default: return <Search size={16} className="text-zinc-400" />;
     }
   };
 
@@ -69,64 +175,99 @@ export function GlobalSearch() {
           setIsOpen(true);
           setTimeout(() => inputRef.current?.focus(), 100);
         }}
-        className="flex items-center space-x-2 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-md text-sm transition-colors"
+        className="flex items-center space-x-2.5 px-3.5 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-medium transition-all border border-white/[0.1] shadow-xs cursor-pointer"
       >
-        <Search size={14} />
-        <span>Search...</span>
-        <span className="text-xs bg-zinc-700 px-1.5 py-0.5 rounded text-zinc-400 ml-2">⌘K</span>
+        <Search size={14} className="text-slate-400" />
+        <span>Command Palette...</span>
+        <span className="text-[10px] font-mono font-bold bg-white/[0.08] text-amber-400 px-1.5 py-0.5 rounded-md border border-white/10 ml-2 shadow-2xs">⌘K</span>
       </button>
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 top-0 mt-10 w-96 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl z-50 flex flex-col overflow-hidden">
-            <div className="p-3 border-b border-zinc-800 flex items-center space-x-3">
-              <Search size={18} className="text-zinc-400" />
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 animate-in fade-in" onClick={() => setIsOpen(false)} />
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-xl bg-slate-950/95 backdrop-blur-2xl border border-white/[0.14] rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-white">
+            {/* Search Input Bar */}
+            <div className="p-4 border-b border-white/[0.08] flex items-center space-x-3 bg-white/[0.02]">
+              <Search size={18} className="text-amber-400" />
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search across all modules..."
-                className="flex-1 bg-transparent border-none text-zinc-100 placeholder-zinc-500 focus:outline-none text-sm"
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setSelectedIndex(0);
+                }}
+                onKeyDown={handleKeyDownNav}
+                placeholder="Type a command (e.g. 'scan', 'sales', 'deals', 'khata')..."
+                className="flex-1 bg-transparent border-none text-white placeholder-slate-500 focus:outline-none text-sm font-medium"
               />
-              {isLoading && <Loader2 size={16} className="text-indigo-500 animate-spin" />}
-            </div>
-            
-            <div className="max-h-96 overflow-y-auto">
-              {results.length > 0 ? (
-                <div className="p-2 space-y-1">
-                  {results.map(r => (
-                    <a key={`${r.type}-${r.id}`} href={r.url} className="flex flex-col p-2 hover:bg-zinc-800 rounded-md transition-colors group cursor-pointer">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-1.5 bg-zinc-950 rounded-md border border-zinc-800/50">
-                          {getIcon(r.type)}
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-zinc-200 group-hover:text-indigo-400">{r.title}</span>
-                          {r.subtitle && <span className="text-xs text-zinc-500">{r.subtitle}</span>}
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              ) : query.length >= 2 && !isLoading ? (
-                <div className="p-6 text-center text-sm text-zinc-500">
-                  No results found for "{query}"
-                </div>
-              ) : query.length < 2 ? (
-                <div className="p-6 text-center text-sm text-zinc-600">
-                  Type at least 2 characters to search
-                </div>
-              ) : null}
-            </div>
-            
-            <div className="p-2 border-t border-zinc-800 bg-zinc-950/50 flex justify-between items-center">
-              <span className="text-[10px] uppercase font-semibold text-zinc-600 tracking-wider flex items-center space-x-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                <span>Global Search Engine</span>
+              {isLoading && <Loader2 size={16} className="text-amber-400 animate-spin" />}
+              <span className="text-[10px] bg-white/[0.06] px-2 py-0.5 rounded-md text-slate-400 font-mono">
+                ↑↓ to navigate · ↵ select
               </span>
-              <span className="text-[10px] text-zinc-500">Press Esc to close</span>
+            </div>
+            
+            {/* Command & Quick Actions List */}
+            <div className="max-h-[380px] overflow-y-auto p-2 space-y-1">
+              <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-3 py-1">
+                Suggested Actions & Navigation
+              </div>
+
+              {filteredCommands.map((cmd, idx) => {
+                const Icon = cmd.icon;
+                const isSelected = selectedIndex === idx;
+
+                return (
+                  <div
+                    key={cmd.id}
+                    onClick={() => {
+                      if (cmd.action) {
+                        cmd.action();
+                        setIsOpen(false);
+                      } else if (cmd.url) {
+                        router.push(cmd.url);
+                        setIsOpen(false);
+                      }
+                    }}
+                    onMouseEnter={() => setSelectedIndex(idx)}
+                    className={`flex items-center justify-between p-2.5 rounded-2xl transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-transparent border border-amber-500/30 text-white'
+                        : 'hover:bg-white/[0.04] text-slate-300 border border-transparent'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`p-2 rounded-xl border ${
+                        isSelected ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-white/[0.04] border-white/[0.08] text-slate-400'
+                      }`}>
+                        <Icon size={16} />
+                      </div>
+                      <div>
+                        <span className={`text-xs font-bold block ${isSelected ? 'text-amber-300' : 'text-white'}`}>
+                          {cmd.title}
+                        </span>
+                        <span className="text-[11px] text-slate-400">{cmd.subtitle}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] uppercase font-mono font-bold px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
+                        {cmd.type}
+                      </span>
+                      <ArrowRight size={13} className={isSelected ? 'text-amber-400' : 'text-slate-600'} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            {/* Footer */}
+            <div className="p-3 border-t border-white/[0.08] bg-white/[0.02] flex justify-between items-center text-xs">
+              <span className="text-[11px] font-bold text-slate-400 tracking-wider flex items-center space-x-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block animate-pulse" />
+                <span>Command Engine Active</span>
+              </span>
+              <span className="text-[11px] text-slate-500 font-mono">ESC to dismiss</span>
             </div>
           </div>
         </>

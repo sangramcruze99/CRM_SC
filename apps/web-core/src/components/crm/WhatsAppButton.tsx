@@ -46,21 +46,21 @@ export function WhatsAppButton({ contactId, phone }: { contactId: string; phone?
     <button 
       onClick={handleSend}
       disabled={isSending}
-      className={`w-full py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center space-x-2 
-        ${status === 'success' ? 'bg-green-600 hover:bg-green-500 text-white' : 
-          status === 'error' ? 'bg-red-600 hover:bg-red-500 text-white' : 
-          'bg-indigo-600 hover:bg-indigo-500 text-white'}
+      className={`w-full py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-2 shadow-sm active:scale-[0.98] cursor-pointer
+        ${status === 'success' ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 
+          status === 'error' ? 'bg-rose-600 hover:bg-rose-500 text-white' : 
+          'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-emerald-500/20 border border-emerald-500/30'}
       `}
     >
       {isSending ? (
-        <Loader2 size={16} className="animate-spin" />
+        <Loader2 size={14} className="animate-spin" />
       ) : (
-        <MessageCircle size={16} />
+        <MessageCircle size={14} />
       )}
       <span>
-        {status === 'success' ? 'Message Sent!' : 
-         status === 'error' ? 'Error Sending' : 
-         isSending ? 'Sending...' : 'Auto-Follow Up (WhatsApp)'}
+        {status === 'success' ? 'Message Dispatched!' : 
+         status === 'error' ? 'Delivery Error' : 
+         isSending ? 'Transmitting via Twilio...' : 'Auto-Follow Up (WhatsApp)'}
       </span>
     </button>
   );

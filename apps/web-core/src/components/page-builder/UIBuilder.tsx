@@ -11,7 +11,7 @@ import {
 } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { LayoutGrid, BarChart2, Table, Layout, CreditCard, BoxSelect, Columns, Type, Hash, GripHorizontal } from 'lucide-react';
+import { LayoutGrid, BarChart2, Table, Columns, Type, Hash, GripHorizontal } from 'lucide-react';
 
 const availableWidgets = [
   { type: 'metric', name: 'Metric Card', icon: <Hash size={16} /> },
@@ -32,21 +32,21 @@ function SortableWidget({ id, widgetType }: { id: string, widgetType: string }) 
   const widget = availableWidgets.find(w => w.type === widgetType);
 
   return (
-    <div ref={setNodeRef} style={style} className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col h-48 group">
+    <div ref={setNodeRef} style={style} className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] overflow-hidden flex flex-col h-48 group text-white">
       <div 
-        className="h-8 bg-slate-50 border-b border-slate-100 flex items-center justify-between px-3 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
+        className="h-8 bg-white/[0.02] border-b border-white/[0.08] flex items-center justify-between px-3 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity"
         {...attributes} 
         {...listeners}
       >
         <GripHorizontal size={14} className="text-slate-400" />
-        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">{widget?.name}</span>
+        <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">{widget?.name}</span>
       </div>
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="text-center text-slate-400">
-          <div className="mx-auto w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-2">
+          <div className="mx-auto w-12 h-12 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-2xl flex items-center justify-center mb-2">
              {widget?.icon}
           </div>
-          <p className="text-sm font-medium">{widget?.name} Placeholder</p>
+          <p className="text-xs font-bold text-slate-300">{widget?.name} Component</p>
         </div>
       </div>
     </div>
@@ -79,52 +79,52 @@ export function UIBuilder() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-slate-100">
+    <div className="h-full flex flex-col max-w-7xl mx-auto text-white space-y-6">
       {/* Topbar */}
-      <div className="h-14 bg-white border-b border-slate-200 px-6 flex items-center justify-between shadow-sm z-10">
+      <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 px-6 flex items-center justify-between shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
         <div className="flex items-center gap-3">
-          <LayoutGrid size={20} className="text-indigo-600" />
+          <LayoutGrid size={20} className="text-amber-400" />
           <div>
-            <h1 className="font-semibold text-slate-900 leading-tight">Sales Dashboard</h1>
-            <p className="text-xs text-slate-500">Custom Page Layout</p>
+            <h1 className="font-bold text-white leading-tight">Sales Dashboard</h1>
+            <p className="text-xs text-slate-400">Custom Page Layout</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button className="px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded-md transition-colors">
+          <button className="px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] rounded-xl transition-colors cursor-pointer">
             Preview
           </button>
-          <button className="px-4 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 shadow-sm transition-colors">
+          <button className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-orange-500/25 transition-all cursor-pointer">
             Save Page
           </button>
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex gap-6 overflow-hidden">
         {/* Widget Toolbox */}
-        <div className="w-64 bg-white border-r border-slate-200 p-4 overflow-y-auto">
+        <div className="w-64 bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 overflow-y-auto shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Widget Library</h2>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {availableWidgets.map(widget => (
               <div 
                 key={widget.type}
-                className="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50/50 cursor-pointer transition-all group"
+                className="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-amber-500/40 hover:bg-white/[0.05] cursor-pointer transition-all group"
               >
-                <div className="text-slate-500 group-hover:text-indigo-600">
+                <div className="text-amber-400">
                   {widget.icon}
                 </div>
-                <span className="text-sm font-medium text-slate-700 group-hover:text-indigo-900">{widget.name}</span>
+                <span className="text-xs font-bold text-slate-200 group-hover:text-white">{widget.name}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Canvas Area */}
-        <div className="flex-1 p-8 overflow-y-auto">
+        <div className="flex-1 p-6 bg-white/[0.02] border border-white/[0.08] rounded-3xl overflow-y-auto">
           <div className="max-w-5xl mx-auto">
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <div className="grid grid-cols-3 gap-6">
                 <SortableContext items={layout.map(w => w.id)} strategy={rectSortingStrategy}>
-                  {layout.map((widget, idx) => (
+                  {layout.map((widget) => (
                     <div key={widget.id} className={widget.type === 'chart' || widget.type === 'table' ? 'col-span-3' : 'col-span-1'}>
                       <SortableWidget id={widget.id} widgetType={widget.type} />
                     </div>

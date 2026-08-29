@@ -11,9 +11,9 @@ export function CreateKnowledgeModal() {
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-sm font-medium text-white rounded-md transition-colors border border-zinc-700 flex items-center space-x-2"
+        className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-all border border-white/[0.1] shadow-xs flex items-center space-x-2 active:scale-[0.98] cursor-pointer"
       >
-        <FilePlus size={16} />
+        <FilePlus size={15} />
         <span>Add Document</span>
       </button>
     );
@@ -23,18 +23,18 @@ export function CreateKnowledgeModal() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-sm font-medium text-white rounded-md transition-colors border border-zinc-700 flex items-center space-x-2"
+        className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-all border border-white/[0.1] shadow-xs flex items-center space-x-2 active:scale-[0.98] cursor-pointer"
       >
-        <FilePlus size={16} />
+        <FilePlus size={15} />
         <span>Add Document</span>
       </button>
 
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Add Knowledge Base Document</h2>
-            <button onClick={() => setIsOpen(false)} className="text-zinc-400 hover:text-white transition-colors">
-              <X size={20} />
+      <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div className="bg-slate-950/95 border border-white/[0.12] rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-white">
+          <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+            <h2 className="text-base font-bold text-white">Add Knowledge Base Document</h2>
+            <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white transition-colors cursor-pointer">
+              <X size={18} />
             </button>
           </div>
           
@@ -46,24 +46,24 @@ export function CreateKnowledgeModal() {
             className="p-6 space-y-4"
           >
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-300">Document Title</label>
-              <input required name="title" type="text" className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="e.g. Q3 Sales Playbook" />
+              <label className="text-xs font-semibold text-slate-300">Document Title</label>
+              <input required name="title" type="text" className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:bg-white/[0.08] font-medium" placeholder="e.g. Q3 Sales Playbook" />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-300 flex justify-between">
+              <label className="text-xs font-semibold text-slate-300 flex justify-between">
                 <span>Content</span>
-                <span className="text-xs text-zinc-500">Raw text for vector embeddings</span>
+                <span className="text-[11px] text-slate-400">Raw text for vector embeddings</span>
               </label>
-              <textarea required name="content" rows={8} className="w-full bg-zinc-950 border border-zinc-800 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Paste document content here..."></textarea>
+              <textarea required name="content" rows={8} className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:bg-white/[0.08] font-sans" placeholder="Paste document content here..."></textarea>
             </div>
             
-            <div className="pt-4 flex justify-end space-x-3">
-              <button type="button" onClick={() => setIsOpen(false)} className="px-4 py-2 bg-transparent hover:bg-zinc-800 text-sm font-medium text-zinc-300 rounded-md transition-colors">
+            <div className="pt-4 flex justify-end space-x-3 border-t border-white/[0.08]">
+              <button type="button" onClick={() => setIsOpen(false)} className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 rounded-xl border border-white/[0.1] transition-colors cursor-pointer">
                 Cancel
               </button>
-              <button type="submit" className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-sm font-medium text-white rounded-md transition-colors shadow-sm">
-                Save and Embed
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 cursor-pointer">
+                Save & Embed
               </button>
             </div>
           </form>

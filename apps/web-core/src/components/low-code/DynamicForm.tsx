@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-
 import { SchemaDefinition, FieldDefinition } from './SchemaBuilder';
 
 interface DynamicFormProps {
@@ -83,7 +82,7 @@ export function DynamicForm({ schema, initialData, onSubmit, onCancel }: Dynamic
   const renderFieldInput = (field: FieldDefinition) => {
     const value = formData[field.apiName] || '';
     const hasError = !!errors[field.apiName];
-    const inputClass = `w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white ${hasError ? 'border-red-500' : ''}`;
+    const inputClass = `w-full px-3 py-2 border rounded-xl focus:outline-none focus:bg-white/[0.08] bg-white/[0.05] text-white text-xs ${hasError ? 'border-rose-500' : 'border-white/[0.1]'}`;
 
     switch (field.fieldType) {
       case 'TEXT':
@@ -119,7 +118,7 @@ export function DynamicForm({ schema, initialData, onSubmit, onCancel }: Dynamic
               type="checkbox"
               checked={!!value}
               onChange={(e) => handleChange(field.apiName, e.target.checked)}
-              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+              className="h-4 w-4 rounded border-white/20 bg-white/10 text-amber-500 focus:ring-amber-400 cursor-pointer"
             />
           </div>
         );
@@ -131,9 +130,9 @@ export function DynamicForm({ schema, initialData, onSubmit, onCancel }: Dynamic
             onChange={(e) => handleChange(field.apiName, e.target.value)}
             className={inputClass}
           >
-            <option value="" disabled>Select {field.name}</option>
+            <option value="" disabled className="bg-slate-900 text-white">Select {field.name}</option>
             {(field.options?.choices || []).map((choice: string) => (
-              <option key={choice} value={choice}>{choice}</option>
+              <option key={choice} value={choice} className="bg-slate-900 text-white">{choice}</option>
             ))}
           </select>
         );
@@ -146,9 +145,9 @@ export function DynamicForm({ schema, initialData, onSubmit, onCancel }: Dynamic
             onChange={(e) => handleChange(field.apiName, e.target.value)}
             className={inputClass}
           >
-            <option value="" disabled>Select {field.name}</option>
+            <option value="" disabled className="bg-slate-900 text-white">Select {field.name}</option>
             {records.map((rec) => (
-              <option key={rec.id} value={rec.id}>
+              <option key={rec.id} value={rec.id} className="bg-slate-900 text-white">
                 {rec.data?.name || rec.data?.title || rec.id}
               </option>
             ))}
@@ -166,33 +165,33 @@ export function DynamicForm({ schema, initialData, onSubmit, onCancel }: Dynamic
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-xl border shadow-sm">
+    <form onSubmit={handleSubmit} className="space-y-6 bg-white/[0.04] backdrop-blur-2xl p-6 rounded-3xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] text-white">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold">{initialData ? `Edit ${schema.name}` : `New ${schema.name}`}</h2>
-        {schema.description && <p className="text-sm text-gray-500 mt-1">{schema.description}</p>}
+        <h2 className="text-xl font-bold text-white">{initialData ? `Edit ${schema.name}` : `New ${schema.name}`}</h2>
+        {schema.description && <p className="text-xs text-slate-400 mt-1">{schema.description}</p>}
       </div>
 
       <div className="space-y-4">
         {schema.fields.map((field) => (
-          <div key={field.apiName} className="space-y-2">
-            <label htmlFor={field.apiName} className="text-sm font-medium text-slate-700 block">
-              {field.name} {field.isRequired && <span className="text-red-500">*</span>}
+          <div key={field.apiName} className="space-y-1.5">
+            <label htmlFor={field.apiName} className="text-xs font-semibold text-slate-300 block">
+              {field.name} {field.isRequired && <span className="text-rose-400">*</span>}
             </label>
             {renderFieldInput(field)}
             {errors[field.apiName] && (
-              <p className="text-sm text-red-500">{errors[field.apiName]}</p>
+              <p className="text-xs text-rose-400">{errors[field.apiName]}</p>
             )}
           </div>
         ))}
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t">
+      <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
         {onCancel && (
-          <button type="button" className="px-4 py-2 border border-slate-300 rounded-md text-slate-700 bg-white hover:bg-slate-50 transition-colors" onClick={onCancel} disabled={isSubmitting}>
+          <button type="button" className="px-4 py-2 border border-white/[0.1] rounded-xl text-slate-300 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold transition-colors cursor-pointer" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </button>
         )}
-        <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50" disabled={isSubmitting}>
+        <button type="submit" className="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 disabled:opacity-50 cursor-pointer" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : 'Save'}
         </button>
       </div>

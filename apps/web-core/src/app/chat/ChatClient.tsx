@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
-import { Send, Hash, User as UserIcon } from "lucide-react";
+import { Send, Hash, User as UserIcon, MessageSquare } from "lucide-react";
 
 export function ChatClient({ channels, initialMessages }: { channels: any[], initialMessages: any[] }) {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -11,11 +11,9 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
   const activeChannel = channels[0];
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Hardcode a mock user for the demo since auth context isn't fully wired to this component yet
   const currentUser = { id: "user-1", firstName: "Admin", lastName: "User" };
 
   useEffect(() => {
-    // Connect to the Chat Microservice (Port 3014)
     const newSocket = io("/api/chat");
     setSocket(newSocket);
 
@@ -44,7 +42,7 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
 
     socket.emit("sendMessage", {
       channelId: activeChannel.id,
-      userId: currentUser.id, // we would normally get this from session
+      userId: currentUser.id,
       content: input,
     });
 
@@ -52,22 +50,23 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
   };
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+    <div className="flex h-[calc(100vh-6rem)] bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] text-white">
       {/* Sidebar */}
-      <div className="w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col">
-        <div className="p-4 border-b border-zinc-800">
-          <h2 className="text-white font-semibold tracking-tight">Team Chat</h2>
+      <div className="w-64 bg-white/[0.02] border-r border-white/[0.08] flex flex-col">
+        <div className="p-4 border-b border-white/[0.08] flex items-center space-x-2">
+          <MessageSquare size={18} className="text-amber-400" />
+          <h2 className="text-white font-bold text-sm tracking-tight">Channels & Chat</h2>
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-1">
-          <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2 px-2">Channels</div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 px-2">Workspaces</div>
           {channels.map((ch) => (
             <button
               key={ch.id}
-              className={`w-full flex items-center space-x-2 px-2 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                activeChannel?.id === ch.id ? "bg-indigo-500/10 text-indigo-400" : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+              className={`w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                activeChannel?.id === ch.id ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-2xs font-bold" : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
               }`}
             >
-              <Hash size={16} className="opacity-70" />
+              <Hash size={14} className="opacity-70" />
               <span>{ch.name}</span>
             </button>
           ))}
@@ -75,37 +74,39 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-zinc-900">
+      <div className="flex-1 flex flex-col min-w-0 bg-transparent">
         {/* Chat Header */}
-        <div className="h-14 border-b border-zinc-800 flex items-center px-6">
-          <div className="flex items-center space-x-2 text-white font-medium">
-            <Hash size={18} className="text-zinc-500" />
-            <span>{activeChannel?.name || "Select a channel"}</span>
+        <div className="h-14 border-b border-white/[0.08] flex items-center px-6 bg-white/[0.02] backdrop-blur-md">
+          <div className="flex items-center space-x-2 text-white font-bold text-sm">
+            <Hash size={16} className="text-amber-400" />
+            <span>{activeChannel?.name || "General Team Sync"}</span>
           </div>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-5">
           {messages.length === 0 ? (
-            <div className="text-center text-zinc-500 py-10">No messages yet. Start the conversation!</div>
+            <div className="text-center text-slate-500 py-12 text-xs font-medium">No messages yet in this channel. Send the first ping!</div>
           ) : (
             messages.map((msg, i) => (
-              <div key={i} className="flex space-x-4">
+              <div key={i} className="flex space-x-3.5">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-400 border border-zinc-700">
-                    {msg.user?.firstName?.[0] || <UserIcon size={18} />}
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-xs shadow-2xs">
+                    {msg.user?.firstName?.[0] || <UserIcon size={16} />}
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-zinc-200">
-                      {msg.user?.firstName ? `${msg.user.firstName} ${msg.user.lastName}` : 'Anonymous'}
+                    <span className="text-xs font-bold text-white">
+                      {msg.user?.firstName ? `${msg.user.firstName} ${msg.user.lastName}` : 'System Copilot'}
                     </span>
-                    <span className="text-xs text-zinc-500">
+                    <span className="text-[10px] text-slate-500 font-medium">
                       {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
-                  <p className="text-sm text-zinc-300 mt-1">{msg.content}</p>
+                  <div className="text-xs text-slate-200 mt-1 bg-white/[0.05] border border-white/[0.08] rounded-2xl rounded-tl-xs px-3.5 py-2 inline-block font-medium">
+                    {msg.content}
+                  </div>
                 </div>
               </div>
             ))
@@ -114,21 +115,21 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
         </div>
 
         {/* Message Input */}
-        <div className="p-4 border-t border-zinc-800 bg-zinc-950/50">
+        <div className="p-4 border-t border-white/[0.08] bg-white/[0.02]">
           <form onSubmit={sendMessage} className="relative flex items-center">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder={`Message #${activeChannel?.name || "..."}`}
-              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg pl-4 pr-12 py-3 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-shadow"
+              placeholder={`Message #${activeChannel?.name || "general"}...`}
+              className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl pl-4 pr-12 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:bg-white/[0.08] transition-all font-medium"
             />
             <button
               type="submit"
               disabled={!input.trim()}
-              className="absolute right-2 p-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white rounded-md transition-colors"
+              className="absolute right-1.5 p-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 text-slate-950 rounded-lg transition-all shadow-md shadow-orange-500/20 cursor-pointer"
             >
-              <Send size={16} />
+              <Send size={14} />
             </button>
           </form>
         </div>

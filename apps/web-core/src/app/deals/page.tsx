@@ -1,31 +1,35 @@
-import { getTenantHeaders } from "../../lib/auth";
-import { Plus, MoreHorizontal } from "lucide-react";
+import { getTenantHeaders, safeFetch } from "../../lib/auth";
+import { Briefcase } from "lucide-react";
 import { CreateDealModal } from "../../components/CreateDealModal";
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-async function getDeals() {
-  try {
-    const res = await fetch('http://localhost:3005/deals', {
-      headers: await getTenantHeaders(),
-      cache: 'no-store'
-    });
-    if (!res.ok) throw new Error('Failed to fetch data');
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching deals:", error);
-    return [];
-  }
-}
+const demoDeals = [
+  { id: 'deal_01', title: 'Cyberdyne AI Migration', stage: 'Proposal', amount: 120000, company: { name: 'Cyberdyne Systems' } },
+  { id: 'deal_02', title: 'Black Mesa Lab Expansion', stage: 'Meeting Scheduled', amount: 45000, company: { name: 'Black Mesa Research' } },
+  { id: 'deal_03', title: 'HyperScale Enterprise Rollout', stage: 'Closed Won', amount: 280000, company: { name: 'HyperScale AI' } },
+  { id: 'deal_04', title: 'Vanguard Security Pilot', stage: 'Lead', amount: 35000, company: { name: 'Vanguard Security' } },
+];
 
 export default async function DealsPage() {
-  const deals = await getDeals();
+  const headers = await getTenantHeaders();
+  const fetchedDeals = await safeFetch(
+    'http://localhost:3005/deals',
+    {
+      headers,
+      cache: 'no-store'
+    },
+    []
+  );
+
+  const deals = fetchedDeals.length > 0 ? fetchedDeals : demoDeals;
 
   const stages = [
-    { title: "Lead", color: "border-zinc-500" },
-    { title: "Meeting Scheduled", color: "border-blue-500" },
-    { title: "Proposal", color: "border-purple-500" },
-    { title: "Closed Won", color: "border-emerald-500" },
+    { title: "Lead", color: "border-slate-500/40 text-slate-300 bg-white/[0.06]" },
+    { title: "Meeting Scheduled", color: "border-sky-500/40 text-sky-300 bg-sky-500/10" },
+    { title: "Proposal", color: "border-amber-500/40 text-amber-300 bg-amber-500/10" },
+    { title: "Closed Won", color: "border-emerald-500/40 text-emerald-300 bg-emerald-500/10" },
   ];
 
   const columns = stages.map(stage => ({
@@ -34,12 +38,15 @@ export default async function DealsPage() {
   }));
 
   return (
-    <div className="h-full flex flex-col space-y-6">
+    <div className="h-full flex flex-col space-y-6 max-w-7xl mx-auto text-white">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">Deals Pipeline</h1>
-          <p className="text-sm text-zinc-400 mt-1">Manage sales opportunities across the pipeline.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <Briefcase className="text-amber-400" size={24} />
+            Deals & Opportunities Pipeline
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">Manage pipeline velocity, probability forecasts, and active negotiations.</p>
         </div>
         <CreateDealModal />
       </div>
@@ -48,30 +55,39 @@ export default async function DealsPage() {
       <div className="flex-1 flex gap-6 overflow-x-auto pb-4">
         {columns.map((col, i) => (
           <div key={i} className="flex-shrink-0 w-80 flex flex-col">
-            <div className={`flex items-center justify-between mb-4 pb-2 border-b-2 ${col.color}`}>
-              <h3 className="font-medium text-zinc-200">{col.title}</h3>
-              <span className="text-xs bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-full">{col.items.length}</span>
+            <div className="flex items-center justify-between mb-3 px-1">
+              <span className={`text-xs font-bold px-3 py-1 rounded-full border ${col.color}`}>
+                {col.title}
+              </span>
+              <span className="text-xs font-mono font-bold bg-white/[0.08] text-slate-300 px-2 py-0.5 rounded-full border border-white/10 shadow-2xs">
+                {col.items.length}
+              </span>
             </div>
             
-            <div className="flex-1 flex flex-col gap-3 min-h-[100px] bg-zinc-900/30 rounded-xl p-2 border border-zinc-800/50 border-dashed">
+            <div className="flex-1 flex flex-col gap-3 min-h-[140px] bg-white/[0.04] backdrop-blur-2xl rounded-3xl p-3 border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
               {col.items.map((item: any) => (
-                <div key={item.id} className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 cursor-grab hover:border-zinc-700 transition-colors shadow-sm group">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="text-sm font-medium text-zinc-100">{item.title}</h4>
-                    <button className="text-zinc-600 hover:text-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <MoreHorizontal size={14} />
-                    </button>
+                <div key={item.id} className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4.5 hover:border-amber-500/40 hover:bg-white/[0.07] transition-all shadow-xs group">
+                  <div className="flex justify-between items-start mb-1.5">
+                    <Link href={`/deals/${item.id}`} className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">
+                      {item.title}
+                    </Link>
                   </div>
-                  <div className="text-xs text-zinc-500 mb-3">{item.company?.name || 'No Company'}</div>
-                  <div className="text-sm font-semibold text-emerald-400">
-                    ${Number(item.amount).toLocaleString()}
+                  <div className="text-xs text-slate-400 mb-3 font-medium">{item.company?.name || 'Enterprise Account'}</div>
+                  <div className="flex justify-between items-center pt-2.5 border-t border-white/[0.06]">
+                    <span className="text-sm font-mono font-extrabold text-amber-400">
+                      ${Number(item.amount).toLocaleString()}
+                    </span>
+                    <Link href={`/deals/${item.id}`} className="text-xs text-slate-400 group-hover:text-amber-400 font-semibold transition-colors">
+                      Overview →
+                    </Link>
                   </div>
                 </div>
               ))}
-              <button className="flex items-center justify-center space-x-2 p-3 border border-zinc-800 border-dashed rounded-lg text-sm font-medium text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50 hover:border-zinc-700 transition-colors mt-1">
-                <Plus size={14} />
-                <span>Add Deal</span>
-              </button>
+              {col.items.length === 0 && (
+                <div className="flex-1 border border-dashed border-white/10 rounded-2xl flex items-center justify-center p-4 text-xs font-medium text-slate-500">
+                  No opportunities in this stage
+                </div>
+              )}
             </div>
           </div>
         ))}

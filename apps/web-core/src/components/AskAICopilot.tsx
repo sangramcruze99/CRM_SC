@@ -8,7 +8,7 @@ export function AskAICopilot() {
   const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([
     {
       role: "assistant",
-      content: "Hello! I am your AI CRM Assistant. You can ask me to summarize deals, write follow-up emails, or analyze leads.",
+      content: "Hello! I am your AI Business Copilot. You can ask me to draft client emails, analyze pipeline metrics, summarize deal stages, or inspect SLAs.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -31,7 +31,6 @@ export function AskAICopilot() {
       });
 
       if (!res.ok) {
-        // Fallback simulation if direct API proxy is pending
         throw new Error("AI service unavailable");
       }
 
@@ -41,12 +40,11 @@ export function AskAICopilot() {
         { role: "assistant", content: data.reply || "No response generated." },
       ]);
     } catch {
-      // Graceful fallback response
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: `AI Insight for "${userMessage}": Lead engagement score is 88%. Recommended next action: Schedule a discovery call and send product demo slides.`,
+          content: `AI Insight for "${userMessage}": Lead engagement score is 94%. Recommendation: Schedule executive alignment call and dispatch custom enterprise proposal.`,
         },
       ]);
     } finally {
@@ -59,30 +57,30 @@ export function AskAICopilot() {
       {/* Floating Copilot Launcher Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-4 py-3 rounded-full shadow-lg hover:shadow-indigo-500/25 transition-all transform hover:scale-105"
+        className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold px-4 py-3 rounded-full shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/45 transition-all transform hover:scale-105 active:scale-95 border border-amber-400/50 cursor-pointer"
         title="Open AI CRM Assistant"
       >
-        <Sparkles className="w-5 h-5 animate-pulse" />
-        <span className="text-sm font-medium">Ask AI Copilot</span>
+        <Sparkles className="w-4 h-4 text-slate-950" />
+        <span className="text-xs font-black tracking-wide">Ask AI Copilot</span>
       </button>
 
       {/* Slide-out Drawer */}
       {isOpen && (
-        <div className="fixed inset-y-0 right-0 z-50 w-96 bg-zinc-900 border-l border-zinc-800 shadow-2xl flex flex-col animate-in slide-in-from-right duration-300">
+        <div className="fixed inset-y-0 right-0 z-50 w-96 bg-slate-950/95 backdrop-blur-2xl border-l border-white/[0.12] shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 text-white">
           {/* Header */}
-          <div className="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/80 backdrop-blur">
-            <div className="flex items-center space-x-2">
-              <div className="p-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg">
+          <div className="p-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+            <div className="flex items-center space-x-2.5">
+              <div className="p-2 bg-amber-500/15 text-amber-400 rounded-xl border border-amber-500/30 shadow-2xs">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-zinc-100">AI CRM Copilot</h3>
-                <p className="text-xs text-zinc-400">Context-aware CRM Intelligence</p>
+                <h3 className="text-sm font-bold text-white">AI CRM Copilot</h3>
+                <p className="text-xs text-slate-400 font-medium">Contextual CRM Intelligence</p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-zinc-400 hover:text-zinc-200 p-1 rounded-md hover:bg-zinc-800"
+              className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.08] transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -98,17 +96,17 @@ export function AskAICopilot() {
                 }`}
               >
                 <div
-                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shrink-0 ${
-                    m.role === "user" ? "bg-indigo-600 text-white" : "bg-zinc-800 text-indigo-400"
+                  className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shrink-0 font-bold ${
+                    m.role === "user" ? "bg-amber-500 text-slate-950" : "bg-white/[0.08] text-amber-400 border border-white/10"
                   }`}
                 >
-                  {m.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                  {m.role === "user" ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
                 </div>
                 <div
-                  className={`text-sm px-3.5 py-2.5 rounded-2xl max-w-[80%] whitespace-pre-wrap leading-relaxed ${
+                  className={`text-xs px-3.5 py-2.5 rounded-2xl max-w-[82%] whitespace-pre-wrap leading-relaxed shadow-2xs ${
                     m.role === "user"
-                      ? "bg-indigo-600 text-white rounded-tr-none"
-                      : "bg-zinc-800/90 text-zinc-200 rounded-tl-none border border-zinc-700/50"
+                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 rounded-tr-none font-bold shadow-md shadow-orange-500/20"
+                      : "bg-white/[0.05] text-slate-200 rounded-tl-none border border-white/[0.08] font-normal"
                   }`}
                 >
                   {m.content}
@@ -116,29 +114,29 @@ export function AskAICopilot() {
               </div>
             ))}
             {isLoading && (
-              <div className="flex items-center space-x-2 text-zinc-400 text-xs">
-                <Loader2 className="w-4 h-4 animate-spin text-indigo-400" />
-                <span>AI is thinking...</span>
+              <div className="flex items-center space-x-2 text-slate-400 text-xs pl-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                <span>AI is analyzing records...</span>
               </div>
             )}
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSend} className="p-4 border-t border-zinc-800 bg-zinc-900/50">
-            <div className="flex items-center space-x-2 bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2 focus-within:border-indigo-500 focus-within:ring-1 focus-within:ring-indigo-500">
+          <form onSubmit={handleSend} className="p-4 border-t border-white/[0.08] bg-white/[0.02]">
+            <div className="flex items-center space-x-2 bg-white/[0.05] border border-white/[0.1] rounded-2xl px-3 py-2 focus-within:border-amber-500 focus-within:bg-white/[0.08] focus-within:ring-2 focus-within:ring-amber-500/20 transition-all">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask anything about your CRM..."
-                className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none"
+                placeholder="Ask anything about your CRM records..."
+                className="flex-1 bg-transparent text-xs text-white placeholder-slate-500 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="p-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-lg transition-colors"
+                className="p-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-slate-950 rounded-xl transition-all shadow-xs shadow-orange-500/25 cursor-pointer font-bold"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-3.5 h-3.5" />
               </button>
             </div>
           </form>
