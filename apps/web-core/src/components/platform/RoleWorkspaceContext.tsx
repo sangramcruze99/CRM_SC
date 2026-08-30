@@ -20,9 +20,9 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     title: 'Enterprise All-in-One',
     badge: 'Master',
     icon: '🌐',
-    description: 'Unrestricted access to all 67 platform features across 12 functional pillars.',
-    allowedCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/invoices', '/quotes', '/subscriptions', '/tickets', '/social', '/email-marketing', '/lead-prospector', '/ocr-invoice', '/chat', '/documents', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/developer', '/super-admin', '/customization', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/onboarding', '/smart-upload', '/industry'],
+    description: 'Unrestricted access to all 72 platform features across 13 functional pillars.',
+    allowedCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/invoices', '/quotes', '/subscriptions', '/tickets', '/social', '/email-marketing', '/lead-prospector', '/ocr-invoice', '/chat', '/documents', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/developer', '/super-admin', '/customization', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/onboarding', '/smart-upload', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations'],
   },
   sales: {
     id: 'sales',
@@ -30,8 +30,8 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     badge: 'Sales View',
     icon: '💼',
     description: 'Focuses on pipeline velocity, AI prospecting, social amplification, and contact relationships.',
-    allowedCategories: [1, 5, 6, 8],
-    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/tickets', '/social', '/email-marketing', '/lead-prospector', '/chat', '/chat-widgets', '/contacts', '/onboarding'],
+    allowedCategories: [1, 5, 6, 8, 13],
+    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/tickets', '/social', '/email-marketing', '/lead-prospector', '/chat', '/chat-widgets', '/contacts', '/onboarding', '/lead-qualification', '/content-repurpose', '/ai-support', '/automations'],
   },
   finance: {
     id: 'finance',
@@ -39,8 +39,8 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     badge: 'Finance View',
     icon: '⚖️',
     description: 'Focused on Dual Khata ledger reconciliations, OCR billing extraction, subscriptions, NDAs, and CPQ.',
-    allowedCategories: [3, 7, 9],
-    visiblePaths: ['/dashboard', '/invoices', '/quotes', '/subscriptions', '/price-books', '/payment-links', '/taxes', '/ocr-invoice', '/smart-upload', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/documents', '/s3-uploads'],
+    allowedCategories: [3, 7, 9, 13],
+    visiblePaths: ['/dashboard', '/invoices', '/quotes', '/subscriptions', '/price-books', '/payment-links', '/taxes', '/ocr-invoice', '/smart-upload', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/documents', '/s3-uploads', '/idp', '/data-sync', '/automations'],
   },
   admin: {
     id: 'admin',
@@ -48,8 +48,8 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     badge: 'Admin View',
     icon: '🛠️',
     description: 'Focused on low-code schema modeling, custom entities, RBAC permissions, vector AI prompt templates, and API keys.',
-    allowedCategories: [2, 4, 10, 11],
-    visiblePaths: ['/dashboard', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/developer', '/super-admin', '/customization', '/audit-logs', '/search-index', '/localization', '/marketplace', '/industry'],
+    allowedCategories: [2, 4, 10, 11, 13],
+    visiblePaths: ['/dashboard', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/developer', '/super-admin', '/customization', '/audit-logs', '/search-index', '/localization', '/marketplace', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations'],
   },
 };
 

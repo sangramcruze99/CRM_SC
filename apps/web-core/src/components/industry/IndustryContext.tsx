@@ -115,7 +115,12 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
       {
         sectionTitle: 'Automation & Enterprise',
         items: [
-          { label: 'Automations', href: '/automations', iconName: 'Workflow', badge: 'Zapier' },
+          { label: 'Lead Qualification', href: '/lead-qualification', iconName: 'Zap', badge: 'Hot' },
+          { label: 'Intelligent Doc (IDP)', href: '/idp', iconName: 'Scan', badge: 'IDP' },
+          { label: 'AI Support Sentinel', href: '/ai-support', iconName: 'Bot', badge: 'Auto' },
+          { label: 'Content Repurpose', href: '/content-repurpose', iconName: 'Share2', badge: '5-in-1' },
+          { label: 'Data Sync & Stacks', href: '/data-sync', iconName: 'ArrowRightLeft', badge: 'Mesh' },
+          { label: 'Automations Engine', href: '/automations', iconName: 'Workflow', badge: 'Zapier' },
           { label: 'Leaderboards', href: '/leaderboard', iconName: 'Trophy', badge: 'Reps' },
           { label: 'Client Portal', href: '/portal', iconName: 'Globe', badge: 'Extranet' },
           { label: 'White-Label CNAME', href: '/branding', iconName: 'Palette', badge: 'Brand' },

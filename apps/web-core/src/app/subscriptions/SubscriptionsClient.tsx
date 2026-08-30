@@ -81,8 +81,10 @@ const initialDemoSubscriptions: Subscription[] = [
   },
 ];
 
-export function SubscriptionsClient() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>(initialDemoSubscriptions);
+export function SubscriptionsClient({ initialSubscriptions }: { initialSubscriptions?: Subscription[] } = {}) {
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(
+    initialSubscriptions && initialSubscriptions.length > 0 ? initialSubscriptions : initialDemoSubscriptions
+  );
   const [search, setSearch] = useState('');
   const [selectedPlan, setSelectedPlan] = useState<string>('ALL');
   const [isModalOpen, setIsModalOpen] = useState(false);

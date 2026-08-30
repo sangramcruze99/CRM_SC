@@ -5,10 +5,10 @@ import { useAccessibility } from './AccessibilityContext';
 import { useTheme } from './ThemeContext';
 
 export function GlowingOrbitalBackground() {
-  const { performanceMode } = useAccessibility();
+  const { isPerformanceMode } = useAccessibility();
   const { theme } = useTheme();
 
-  if (performanceMode) {
+  if (isPerformanceMode) {
     return (
       <div className={`fixed inset-0 pointer-events-none -z-10 ${theme === 'dark' ? 'bg-[#07090e]' : 'bg-[#f1f5f9]'}`} />
     );
