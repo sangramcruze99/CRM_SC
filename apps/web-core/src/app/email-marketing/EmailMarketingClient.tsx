@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Mail,
   Send,
@@ -22,7 +22,65 @@ import {
   Sliders,
   Radio,
   ShieldCheck,
+  Upload,
+  FileSpreadsheet,
+  Filter,
+  Search,
+  Download,
+  Flame,
+  Clock,
+  Zap,
+  RotateCcw,
+  CheckSquare,
+  Square,
+  AlertTriangle,
+  Building,
+  Target,
+  ArrowRight,
+  RefreshCw,
+  Image as ImageIcon,
+  Video,
+  Quote,
+  ShoppingBag,
+  UserCheck,
+  Minus,
+  MoveUp,
+  MoveDown,
+  Trash2,
+  Play,
+  ExternalLink,
 } from 'lucide-react';
+
+export type EmailSectionType =
+  | 'TEXT_ARTICLE'
+  | 'IMAGE_BANNER'
+  | 'VIDEO_EMBED'
+  | 'PRODUCT_CARD'
+  | 'CALLOUT_QUOTE'
+  | 'BUTTON_CTA'
+  | 'AUTHOR_SIGNATURE'
+  | 'DIVIDER';
+
+export interface EmailSection {
+  id: string;
+  type: EmailSectionType;
+  title?: string;
+  body?: string;
+  imageUrl?: string;
+  imageCaption?: string;
+  videoUrl?: string;
+  videoThumbnail?: string;
+  videoTitle?: string;
+  buttonText?: string;
+  buttonUrl?: string;
+  quoteAuthor?: string;
+  quoteRole?: string;
+  productPrice?: string;
+  badge?: string;
+  authorName?: string;
+  authorRole?: string;
+  authorAvatar?: string;
+}
 
 interface EmailTemplate {
   id: string;
@@ -30,12 +88,7 @@ interface EmailTemplate {
   category: string;
   subject: string;
   preheader: string;
-  headline: string;
-  bodyText: string;
-  buttonText: string;
-  buttonUrl: string;
-  bannerImage: string;
-  brandColor: string;
+  sections: EmailSection[];
 }
 
 interface EmailCampaign {
@@ -66,58 +119,112 @@ interface EmailEvent {
   location: string;
 }
 
+export interface BulkLead {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  jobTitle: string;
+  industry: 'Healthcare' | 'Real Estate' | 'Restaurant' | 'Retail' | 'Enterprise SaaS' | 'Other';
+  stage: 'Cold' | 'MQL' | 'SQL' | 'Negotiation' | 'Customer';
+  dealValue: number;
+  region: 'North America' | 'EMEA' | 'APAC' | 'LATAM';
+  score: number;
+  source: 'Apollo.io' | 'ZoomInfo' | 'CSV Ingest' | 'Inbound Form' | 'LinkedIn';
+  deliverability: 'VERIFIED' | 'RISKY';
+}
+
+const INITIAL_SECTIONS: EmailSection[] = [
+  {
+    id: 'sec_img_1',
+    type: 'IMAGE_BANNER',
+    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
+    imageCaption: 'Real-time telemetry and unified operations dashboard in action.',
+  },
+  {
+    id: 'sec_txt_1',
+    type: 'TEXT_ARTICLE',
+    title: 'The Next Generation of Enterprise Workspace is Here',
+    body: 'We are thrilled to announce the official release of Business OS 2.0. Built from the ground up for modern enterprise sales and operations teams, Business OS combines CRM pipelines, automated billing ledgers, and intelligent AI copilots into one unified surface.\n\nExplore our latest features and accelerate your team velocity today.',
+  },
+  {
+    id: 'sec_vid_1',
+    type: 'VIDEO_EMBED',
+    videoTitle: 'Watch 3-Minute Walkthrough: AI Softphone & CRM Sync',
+    videoThumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
+    videoUrl: 'https://youtube.com/watch?v=demo',
+    badge: '▶ 3:42 Min Walkthrough',
+  },
+  {
+    id: 'sec_quote_1',
+    type: 'CALLOUT_QUOTE',
+    body: 'Business OS replaced 14 fragmented SaaS subscriptions across our enterprise, cutting monthly tooling costs by $4,200 while tripling our outbound sales velocity.',
+    quoteAuthor: 'Elena Rostova',
+    quoteRole: 'VP of Revenue Operations, Hyperion Global',
+  },
+  {
+    id: 'sec_prod_1',
+    type: 'PRODUCT_CARD',
+    title: 'Enterprise AI Telephony & WebRTC Softphone Add-on',
+    body: 'Includes real-time voice speech-to-text transcription, automated call battlecards, and dual-SIM cellular modem hardware bridges.',
+    productPrice: '$49 / agent / month',
+    imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&auto=format&fit=crop&q=80',
+    buttonText: 'Add to Enterprise Subscription',
+    buttonUrl: 'https://businessos.io/telephony',
+  },
+  {
+    id: 'sec_cta_1',
+    type: 'BUTTON_CTA',
+    buttonText: 'Claim Your 14-Day Free Enterprise Trial',
+    buttonUrl: 'https://businessos.io/signup',
+  },
+  {
+    id: 'sec_sig_1',
+    type: 'AUTHOR_SIGNATURE',
+    authorName: 'Sangram Cruze',
+    authorRole: 'CEO & Head of Product, Business OS',
+    authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    body: 'Need help customizing this workflow for your organization? Reply directly to this email.',
+  },
+];
+
 const initialTemplates: EmailTemplate[] = [
   {
     id: 'tmpl_product_launch',
-    name: '🚀 Product Launch & Feature Announcement',
+    name: '🚀 Multi-Media Product Launch & Feature Announcement',
     category: 'Product Updates',
     subject: 'Introducing Business OS 2.0: Real-time Telemetry & Autonomous AI',
     preheader: 'Experience sub-10ms queries, OCR document inference, and automated workflows.',
-    headline: 'The Next Generation of Enterprise Workspace is Here',
-    bodyText: 'We are thrilled to announce the official release of Business OS 2.0. Built from the ground up for modern enterprise sales and operations teams, Business OS combines CRM pipelines, automated billing ledgers, and intelligent AI copilots into one unified surface.\n\nExplore our latest features and accelerate your team velocity today.',
-    buttonText: 'Explore Business OS 2.0',
-    buttonUrl: 'https://businessos.io/demo',
-    bannerImage: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
-    brandColor: '#f59e0b',
-  },
-  {
-    id: 'tmpl_cold_outreach',
-    name: '💼 B2B Cold Outreach & Partnership Pitch',
-    category: 'Sales Outreach',
-    subject: 'Quick question regarding {{company}} revenue operations',
-    preheader: 'How top enterprises are cutting CRM latency and boosting close rates by 40%',
-    headline: 'Scale {{company}}\'s Sales Velocity with Intelligent Automation',
-    bodyText: 'Hi {{firstName}},\n\nI noticed {{company}} has been expanding rapidly this quarter. Many VP of Sales we speak with struggle with fragmented tools between their deal pipelines, commercial quotes, and payment reconciliations.\n\nBusiness OS brings all three together with built-in SOC2 compliance. Would you be open to a 10-minute briefing this Thursday?',
-    buttonText: 'Book a 10-Min Briefing',
-    buttonUrl: 'https://businessos.io/meet',
-    bannerImage: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
-    brandColor: '#f97316',
+    sections: INITIAL_SECTIONS,
   },
   {
     id: 'tmpl_newsletter',
-    name: '📰 Monthly Executive Enterprise Newsletter',
+    name: '📰 Executive Monthly Newsletter & Video Digest',
     category: 'Newsletters',
-    subject: 'Business OS Monthly Digest: Key Industry Insights & Benchmarks',
-    preheader: 'Top revenue operations trends, customer spotlights, and platform changelog.',
-    headline: 'August 2026 Executive Newsletter',
-    bodyText: 'Welcome to this month\'s edition of the Business OS Executive Briefing. In this issue, we dive into the rise of autonomous AI copilots in enterprise deal negotiation, how to eliminate data siloing, and a deep dive into Acme Corp\'s 45% productivity leap.',
-    buttonText: 'Read Full Briefing',
-    buttonUrl: 'https://businessos.io/blog/monthly-briefing',
-    bannerImage: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&auto=format&fit=crop&q=80',
-    brandColor: '#eab308',
-  },
-  {
-    id: 'tmpl_webinar',
-    name: '🎟️ VIP Webinar & Live Demo Invitation',
-    category: 'Events',
-    subject: 'Exclusive VIP Access: Autonomous AI for B2B Operations',
-    preheader: 'Join our live interactive workshop with senior enterprise architects.',
-    headline: 'You Are Invited: Autonomous AI in Action',
-    bodyText: 'Join us live this Thursday as our engineering leaders demonstrate live schema inference, real-time Khata ledger tracking, and automated multi-channel messaging in Business OS.\n\nSeats are strictly limited to ensure an interactive Q&A session.',
-    buttonText: 'Reserve Your Seat Now',
-    buttonUrl: 'https://businessos.io/webinar',
-    bannerImage: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&auto=format&fit=crop&q=80',
-    brandColor: '#10b981',
+    subject: 'Business OS Monthly Digest: Key Industry Insights & Video Breakdown',
+    preheader: 'Latest B2B sales automation benchmarks, AI productivity metrics, and product changelogs.',
+    sections: [
+      {
+        id: 'sec_nl_1',
+        type: 'TEXT_ARTICLE',
+        title: 'Executive Briefing: June 2026 Industry Benchmarks',
+        body: 'Welcome to this month\'s edition of the Business OS Executive Briefing.\n\nIn this issue, we analyze how leading enterprise teams are deploying autonomous voice AI to reduce cold call cycle times by 65%, while maintaining human-level lead qualification accuracy.',
+      },
+      {
+        id: 'sec_nl_vid',
+        type: 'VIDEO_EMBED',
+        videoTitle: 'Video: How 500+ Companies Automated Lead Qualification',
+        videoThumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80',
+        videoUrl: 'https://youtube.com/watch?v=briefing',
+        badge: '▶ 5:15 Min Analysis',
+      },
+      {
+        id: 'sec_nl_cta',
+        type: 'BUTTON_CTA',
+        buttonText: 'Read Full Whitepaper',
+        buttonUrl: 'https://businessos.io/whitepaper',
+      },
+    ],
   },
 ];
 
@@ -126,31 +233,21 @@ const initialCampaigns: EmailCampaign[] = [
     id: 'cmp_1',
     name: 'Q3 Enterprise Feature Release Announcement',
     subject: 'Introducing Business OS 2.0: Real-time Telemetry & Autonomous AI',
-    audience: 'All Active Enterprise Leads (2,840)',
+    audience: 'All Enterprise Contacts (2,840)',
     recipientCount: 2840,
     status: 'SENT',
-    sentAt: 'Today at 09:30 AM',
-    metrics: { delivered: 2824, opened: 1290, clicked: 512, bounced: 16 },
+    sentAt: 'Yesterday at 14:30',
+    metrics: { delivered: 2812, opened: 1294, clicked: 512, bounced: 28 },
   },
   {
     id: 'cmp_2',
     name: 'Executive Webinar VIP Invitation',
-    subject: 'Exclusive VIP Access: Autonomous AI for B2B Operations',
+    subject: 'Invitation: Scaling Revenue Operations with Multi-Niche Workspaces',
     audience: 'VP & C-Level Decision Makers (890)',
     recipientCount: 890,
     status: 'SENT',
-    sentAt: 'Yesterday at 02:00 PM',
-    metrics: { delivered: 886, opened: 488, clicked: 236, bounced: 4 },
-  },
-  {
-    id: 'cmp_3',
-    name: 'Annual Subscription Renewal Discount',
-    subject: 'Special offer: Save 25% on your annual Business OS seat upgrade',
-    audience: 'Monthly Tier Customers (420)',
-    recipientCount: 420,
-    status: 'SCHEDULED',
-    sentAt: 'Scheduled for Tomorrow 10:00 AM',
-    metrics: { delivered: 0, opened: 0, clicked: 0, bounced: 0 },
+    sentAt: '3 days ago',
+    metrics: { delivered: 885, opened: 489, clicked: 231, bounced: 5 },
   },
 ];
 
@@ -177,146 +274,264 @@ const liveEmailEvents: EmailEvent[] = [
     device: 'Chrome on macOS',
     location: 'Scranton, US',
   },
-  {
-    id: 'ev_3',
-    recipientEmail: 'alex.rivera@nexastech.com',
-    recipientName: 'Alex Rivera',
-    company: 'Nexus Tech Global',
-    campaignTitle: 'Executive Webinar VIP Invitation',
-    eventType: 'CLICK',
-    timestamp: '12 mins ago',
-    device: 'Outlook 365 (Windows)',
-    location: 'London, UK',
-  },
-  {
-    id: 'ev_4',
-    recipientEmail: 'elena.rostova@hyperion.de',
-    recipientName: 'Elena Rostova',
-    company: 'Hyperion Logistics GmbH',
-    campaignTitle: 'Q3 Enterprise Feature Release Announcement',
-    eventType: 'OPEN',
-    timestamp: '18 mins ago',
-    device: 'Safari (iPadOS)',
-    location: 'Berlin, DE',
-  },
+];
+
+const INITIAL_BULK_LEADS: BulkLead[] = [
+  { id: 'lead_1', name: 'Sophia Chen', email: 'sophia.chen@apexhealth.org', company: 'Apex Memorial Healthcare', jobTitle: 'Chief Medical Officer', industry: 'Healthcare', stage: 'SQL', dealValue: 85000, region: 'North America', score: 94, source: 'Apollo.io', deliverability: 'VERIFIED' },
+  { id: 'lead_2', name: 'Alexander Sterling', email: 'a.sterling@sterlingvillas.com', company: 'Sterling Luxury Brokerage', jobTitle: 'Managing Partner', industry: 'Real Estate', stage: 'Negotiation', dealValue: 140000, region: 'North America', score: 91, source: 'ZoomInfo', deliverability: 'VERIFIED' },
+  { id: 'lead_3', name: 'Jean-Luc Dubois', email: 'jldubois@bistromarchand.fr', company: 'Bistro Marchand Group', jobTitle: 'Operations Director', industry: 'Restaurant', stage: 'MQL', dealValue: 32000, region: 'EMEA', score: 78, source: 'CSV Ingest', deliverability: 'VERIFIED' },
+  { id: 'lead_4', name: 'Elena Rostova', email: 'e.rostova@hyperioncloud.de', company: 'Hyperion Cloud Technologies', jobTitle: 'VP Enterprise Sales', industry: 'Enterprise SaaS', stage: 'SQL', dealValue: 220000, region: 'EMEA', score: 98, source: 'Apollo.io', deliverability: 'VERIFIED' },
+  { id: 'lead_5', name: 'Rajesh Patel', email: 'r.patel@omnimartretail.in', company: 'OmniMart Superstores', jobTitle: 'Supply Chain VP', industry: 'Retail', stage: 'Cold', dealValue: 65000, region: 'APAC', score: 62, source: 'Inbound Form', deliverability: 'VERIFIED' },
+  { id: 'lead_6', name: 'Mateo Hernandez', email: 'mateo@andinafintech.co', company: 'Andina Financial Group', jobTitle: 'Head of Treasury', industry: 'Enterprise SaaS', stage: 'MQL', dealValue: 110000, region: 'LATAM', score: 85, source: 'LinkedIn', deliverability: 'VERIFIED' },
+  { id: 'lead_7', name: 'Dr. Emily Watson', email: 'e.watson@horizonclinic.co.uk', company: 'Horizon Specialist Clinics', jobTitle: 'Clinical Director', industry: 'Healthcare', stage: 'Cold', dealValue: 45000, region: 'EMEA', score: 58, source: 'ZoomInfo', deliverability: 'VERIFIED' },
+  { id: 'lead_8', name: 'Tariq Al-Mansoor', email: 'tariq@gulfrealtygroup.ae', company: 'Gulf Crest Properties', jobTitle: 'CEO', industry: 'Real Estate', stage: 'SQL', dealValue: 350000, region: 'EMEA', score: 96, source: 'Apollo.io', deliverability: 'VERIFIED' },
 ];
 
 export function EmailMarketingClient() {
-  const [activeTab, setActiveTab] = useState<'builder' | 'campaigns' | 'tracking' | 'templates'>('builder');
+  const [activeTab, setActiveTab] = useState<'builder' | 'bulk-blast' | 'campaigns' | 'tracking' | 'templates'>('builder');
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>(initialCampaigns);
   const [events, setEvents] = useState<EmailEvent[]>(liveEmailEvents);
 
-  // Email Builder State
+  // Email Meta State
   const [subject, setSubject] = useState(initialTemplates[0].subject);
   const [preheader, setPreheader] = useState(initialTemplates[0].preheader);
-  const [headline, setHeadline] = useState(initialTemplates[0].headline);
-  const [bodyText, setBodyText] = useState(initialTemplates[0].bodyText);
-  const [buttonText, setButtonText] = useState(initialTemplates[0].buttonText);
-  const [buttonUrl, setButtonUrl] = useState(initialTemplates[0].buttonUrl);
-  const [bannerImage, setBannerImage] = useState(initialTemplates[0].bannerImage);
-  const [brandColor, setBrandColor] = useState(initialTemplates[0].brandColor);
   const [senderName, setSenderName] = useState('Business OS Team');
   const [senderEmail, setSenderEmail] = useState('notifications@businessos.io');
 
-  // Preview Mode: desktop vs mobile
+  // Rich Multi-Block Email Sections
+  const [sections, setSections] = useState<EmailSection[]>(INITIAL_SECTIONS);
+  const [selectedSectionId, setSelectedSectionId] = useState<string | null>(sections[0].id);
+
+  // Bulk Email Leads State
+  const [bulkLeads, setBulkLeads] = useState<BulkLead[]>(INITIAL_BULK_LEADS);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set(INITIAL_BULK_LEADS.map((l) => l.id)));
+  const [industryFilter, setIndustryFilter] = useState('ALL');
+  const [stageFilter, setStageFilter] = useState('ALL');
+  const [regionFilter, setRegionFilter] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sendStrategy, setSendStrategy] = useState<'INSTANT' | 'WARMUP_DRIP' | 'SCHEDULED'>('WARMUP_DRIP');
+  const [isSendingBlast, setIsSendingBlast] = useState(false);
+  const [blastProgress, setBlastProgress] = useState(0);
+
+  // Preview Mode
   const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop');
-  const [isCopiedHtml, setIsCopiedHtml] = useState(false);
   const [isTestModalOpen, setIsTestModalOpen] = useState(false);
   const [testEmailAddress, setTestEmailAddress] = useState('admin@gmail.com');
-  const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] = useState(false);
-  const [newCampaignName, setNewCampaignName] = useState('');
-  const [newCampaignAudience, setNewCampaignAudience] = useState('All Enterprise Contacts (2,840)');
   const [alert, setAlert] = useState<string | null>(null);
 
-  // Load Template Function
-  const loadTemplate = (tmpl: EmailTemplate) => {
-    setSubject(tmpl.subject);
-    setPreheader(tmpl.preheader);
-    setHeadline(tmpl.headline);
-    setBodyText(tmpl.bodyText);
-    setButtonText(tmpl.buttonText);
-    setButtonUrl(tmpl.buttonUrl);
-    setBannerImage(tmpl.bannerImage);
-    setBrandColor(tmpl.brandColor);
-    setActiveTab('builder');
-    setAlert(`Template "${tmpl.name}" loaded into the Visual Builder!`);
-    setTimeout(() => setAlert(null), 3000);
+  // Filtered Leads
+  const filteredLeads = useMemo(() => {
+    return bulkLeads.filter((lead) => {
+      const matchIndustry = industryFilter === 'ALL' || lead.industry === industryFilter;
+      const matchStage = stageFilter === 'ALL' || lead.stage === stageFilter;
+      const matchRegion = regionFilter === 'ALL' || lead.region === regionFilter;
+      const matchSearch =
+        !searchQuery ||
+        lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lead.jobTitle.toLowerCase().includes(searchQuery.toLowerCase());
+      return matchIndustry && matchStage && matchRegion && matchSearch;
+    });
+  }, [bulkLeads, industryFilter, stageFilter, regionFilter, searchQuery]);
+
+  const toggleLeadSelection = (id: string) => {
+    setSelectedLeadIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   };
 
-  // Insert Merge Tag
-  const insertMergeTag = (tag: string) => {
-    setBodyText((prev) => `${prev} ${tag}`);
+  const handleSelectAllFiltered = () => {
+    const allFilteredSelected = filteredLeads.every((l) => selectedLeadIds.has(l.id));
+    setSelectedLeadIds((prev) => {
+      const next = new Set(prev);
+      if (allFilteredSelected) {
+        filteredLeads.forEach((l) => next.delete(l.id));
+      } else {
+        filteredLeads.forEach((l) => next.add(l.id));
+      }
+      return next;
+    });
   };
 
-  // Generate Clean HTML Export
-  const generateExportHtml = () => {
-    return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${subject}</title>
-</head>
-<body style="margin: 0; padding: 0; background-color: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f8fafc;">
-  <div style="max-width: 600px; margin: 30px auto; background: #0f1422; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.4);">
-    <div style="background: #0f1422; padding: 20px 32px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center;">
-      <h2 style="margin: 0; font-size: 18px; font-weight: bold; color: #ffffff;">Business OS</h2>
-    </div>
-    ${bannerImage ? `<img src="${bannerImage}" alt="Banner" style="width: 100%; height: auto; display: block; max-height: 240px; object-fit: cover;" />` : ''}
-    <div style="padding: 32px;">
-      <h1 style="font-size: 22px; font-weight: bold; color: #ffffff; margin-top: 0; margin-bottom: 16px; line-height: 1.3;">${headline}</h1>
-      <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1; margin-bottom: 24px; white-space: pre-wrap;">${bodyText}</p>
-      ${buttonText ? `<a href="${buttonUrl}" style="display: inline-block; background: linear-gradient(to right, #f59e0b, #f97316); color: #020617; padding: 12px 28px; font-size: 14px; font-weight: bold; text-decoration: none; border-radius: 10px; box-shadow: 0 4px 12px rgba(245,158,11,0.25);">${buttonText}</a>` : ''}
-    </div>
-    <div style="background: #090d16; padding: 20px 32px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 11px; color: #64748b; text-align: center; line-height: 1.5;">
-      <p style="margin: 0 0 8px 0;">Sent by ${senderName} (${senderEmail})</p>
-      <p style="margin: 0;">100 Montgomery St, Suite 1400, San Francisco, CA · <a href="{{unsubscribeUrl}}" style="color: #f59e0b; text-decoration: underline;">Unsubscribe</a></p>
-    </div>
-  </div>
-</body>
-</html>`;
-  };
-
-  const copyHtmlToClipboard = () => {
-    navigator.clipboard.writeText(generateExportHtml());
-    setIsCopiedHtml(true);
-    setTimeout(() => setIsCopiedHtml(false), 2000);
-  };
-
-  const handleSendTestEmail = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsTestModalOpen(false);
-    setAlert(`📨 Test email dispatched to ${testEmailAddress}! Check your inbox.`);
+  const handleUploadSampleCsv = () => {
+    const extraLeads: BulkLead[] = [
+      { id: `lead_csv_${Date.now()}_1`, name: 'David Vance', email: 'd.vance@vancetech.io', company: 'Vance Data Systems', jobTitle: 'CTO', industry: 'Enterprise SaaS', stage: 'MQL', dealValue: 95000, region: 'North America', score: 88, source: 'CSV Ingest', deliverability: 'VERIFIED' },
+      { id: `lead_csv_${Date.now()}_2`, name: 'Camilla Rossi', email: 'c.rossi@rossihospitality.it', company: 'Rossi Luxury Hotels', jobTitle: 'CEO', industry: 'Restaurant', stage: 'SQL', dealValue: 180000, region: 'EMEA', score: 92, source: 'CSV Ingest', deliverability: 'VERIFIED' },
+      { id: `lead_csv_${Date.now()}_3`, name: 'Dr. Kevin Zhang', email: 'kzhang@pacifichealth.sg', company: 'Pacific Medical Group', jobTitle: 'Director', industry: 'Healthcare', stage: 'Negotiation', dealValue: 310000, region: 'APAC', score: 97, source: 'CSV Ingest', deliverability: 'VERIFIED' },
+    ];
+    setBulkLeads((prev) => [...extraLeads, ...prev]);
+    setSelectedLeadIds((prev) => {
+      const next = new Set(prev);
+      extraLeads.forEach((l) => next.add(l.id));
+      return next;
+    });
+    setAlert(`📥 Parsed and ingested 3 verified leads from CSV file!`);
     setTimeout(() => setAlert(null), 3500);
   };
 
-  const handleCreateCampaign = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newCampaignName) return;
+  // Section Block Operations
+  const handleAddSection = (type: EmailSectionType) => {
+    const newId = `sec_${Date.now()}`;
+    let newSection: EmailSection;
 
-    const count = newCampaignAudience.includes('2,840') ? 2840 : newCampaignAudience.includes('890') ? 890 : 450;
-    const newCamp: EmailCampaign = {
-      id: `cmp_${Date.now()}`,
-      name: newCampaignName,
-      subject,
-      audience: newCampaignAudience,
-      recipientCount: count,
-      status: 'SENT',
-      sentAt: 'Just now',
-      metrics: {
-        delivered: count,
-        opened: Math.floor(count * 0.45),
-        clicked: Math.floor(count * 0.18),
-        bounced: 2,
-      },
-    };
+    switch (type) {
+      case 'TEXT_ARTICLE':
+        newSection = {
+          id: newId,
+          type: 'TEXT_ARTICLE',
+          title: 'New Article Headline',
+          body: 'Write your rich newsletter story, industry analysis, or team update here. Use merge tags like {{firstName}} for personalization.',
+        };
+        break;
+      case 'IMAGE_BANNER':
+        newSection = {
+          id: newId,
+          type: 'IMAGE_BANNER',
+          imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
+          imageCaption: 'Add a descriptive caption for your newsletter image.',
+        };
+        break;
+      case 'VIDEO_EMBED':
+        newSection = {
+          id: newId,
+          type: 'VIDEO_EMBED',
+          videoTitle: 'Watch: Product Demo & Tutorial',
+          videoThumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
+          videoUrl: 'https://youtube.com/watch?v=demo',
+          badge: '▶ Watch Video',
+        };
+        break;
+      case 'PRODUCT_CARD':
+        newSection = {
+          id: newId,
+          type: 'PRODUCT_CARD',
+          title: 'Special Offer / Product Spotlight',
+          body: 'Highlight product specifications, limited-time discounts, or feature enhancements.',
+          productPrice: '$99 / month',
+          imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&auto=format&fit=crop&q=80',
+          buttonText: 'View Product Details',
+          buttonUrl: 'https://businessos.io/product',
+        };
+        break;
+      case 'CALLOUT_QUOTE':
+        newSection = {
+          id: newId,
+          type: 'CALLOUT_QUOTE',
+          body: 'Include a high-impact customer testimonial, executive quote, or key takeaway from your report.',
+          quoteAuthor: 'Customer Name',
+          quoteRole: 'CEO / VP of Operations',
+        };
+        break;
+      case 'BUTTON_CTA':
+        newSection = {
+          id: newId,
+          type: 'BUTTON_CTA',
+          buttonText: 'Click Here to Take Action',
+          buttonUrl: 'https://businessos.io',
+        };
+        break;
+      case 'AUTHOR_SIGNATURE':
+        newSection = {
+          id: newId,
+          type: 'AUTHOR_SIGNATURE',
+          authorName: senderName,
+          authorRole: 'Head of Growth, Business OS',
+          authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+          body: 'Warm regards,\nHave questions? Reply directly to this email.',
+        };
+        break;
+      case 'DIVIDER':
+        newSection = {
+          id: newId,
+          type: 'DIVIDER',
+        };
+        break;
+    }
 
-    setCampaigns([newCamp, ...campaigns]);
-    setIsNewCampaignModalOpen(false);
-    setNewCampaignName('');
-    setActiveTab('campaigns');
-    setAlert(`🚀 Campaign "${newCamp.name}" broadcasted to ${count.toLocaleString()} recipients!`);
-    setTimeout(() => setAlert(null), 4000);
+    setSections([...sections, newSection]);
+    setSelectedSectionId(newId);
+    setAlert(`Added ${type.replace('_', ' ')} block to newsletter!`);
+    setTimeout(() => setAlert(null), 2500);
+  };
+
+  const handleMoveSection = (index: number, direction: 'up' | 'down') => {
+    const targetIdx = direction === 'up' ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= sections.length) return;
+    const newSections = [...sections];
+    const temp = newSections[index];
+    newSections[index] = newSections[targetIdx];
+    newSections[targetIdx] = temp;
+    setSections(newSections);
+  };
+
+  const handleDeleteSection = (id: string) => {
+    if (sections.length <= 1) {
+      setAlert('You must keep at least one block in the email.');
+      setTimeout(() => setAlert(null), 2500);
+      return;
+    }
+    const filtered = sections.filter((s) => s.id !== id);
+    setSections(filtered);
+    setSelectedSectionId(filtered[0]?.id || null);
+  };
+
+  const handleUpdateSectionField = (id: string, field: keyof EmailSection, value: any) => {
+    setSections(sections.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
+  };
+
+  // Launch Bulk Email Blast
+  const handleLaunchBulkBlast = () => {
+    const selectedCount = selectedLeadIds.size;
+    if (selectedCount === 0) {
+      setAlert('Please select at least one recipient lead to broadcast.');
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
+
+    setIsSendingBlast(true);
+    setBlastProgress(15);
+
+    setTimeout(() => setBlastProgress(45), 600);
+    setTimeout(() => setBlastProgress(80), 1200);
+    setTimeout(() => {
+      setBlastProgress(100);
+      setIsSendingBlast(false);
+
+      const newCamp: EmailCampaign = {
+        id: `cmp_${Date.now()}`,
+        name: `Newsletter Broadcast (${selectedCount} Leads) · ${subject.slice(0, 30)}...`,
+        subject,
+        audience: `${selectedCount} Targeted Leads (${sendStrategy === 'WARMUP_DRIP' ? 'Anti-Spam Warm-Up' : 'High-Speed Blast'})`,
+        recipientCount: selectedCount,
+        status: 'SENT',
+        sentAt: 'Just now',
+        metrics: {
+          delivered: selectedCount,
+          opened: Math.floor(selectedCount * 0.48),
+          clicked: Math.floor(selectedCount * 0.22),
+          bounced: 0,
+        },
+      };
+
+      setCampaigns([newCamp, ...campaigns]);
+      setActiveTab('campaigns');
+      setAlert(`🚀 Multi-Media Newsletter Blast dispatched to ${selectedCount} recipients with 0 spam flags!`);
+      setTimeout(() => setAlert(null), 4000);
+    }, 1800);
+  };
+
+  const loadTemplate = (tmpl: EmailTemplate) => {
+    setSubject(tmpl.subject);
+    setPreheader(tmpl.preheader);
+    setSections(tmpl.sections);
+    setSelectedSectionId(tmpl.sections[0]?.id || null);
+    setActiveTab('builder');
+    setAlert(`Template "${tmpl.name}" loaded into Visual Newsletter Builder!`);
+    setTimeout(() => setAlert(null), 3000);
   };
 
   return (
@@ -334,14 +549,15 @@ export function EmailMarketingClient() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
             <Mail className="text-amber-400" size={24} />
-            Email Marketing Suite & Visual Email Builder
+            Rich Media Newsletter & Bulk Email Studio
           </h1>
           <p className="text-sm text-slate-400 mt-1">
-            Build responsive HTML email campaigns, manage audience segmentation, and monitor real-time open/click telemetry.
+            Build multi-block newsletters with videos, images, quotes, and product cards, segment lead batches, and broadcast with anti-spam protection.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        {/* Tab Switcher Buttons */}
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setActiveTab('builder')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
@@ -351,8 +567,21 @@ export function EmailMarketingClient() {
             }`}
           >
             <Layers size={14} />
-            <span>Visual Email Builder</span>
+            <span>Newsletter Designer ({sections.length} Blocks)</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('bulk-blast')}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'bulk-blast'
+                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
+            }`}
+          >
+            <Users size={14} />
+            <span>Bulk Blast & Lead Filter ({selectedLeadIds.size})</span>
+          </button>
+
           <button
             onClick={() => setActiveTab('campaigns')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
@@ -364,6 +593,7 @@ export function EmailMarketingClient() {
             <Send size={14} />
             <span>Campaigns ({campaigns.length})</span>
           </button>
+
           <button
             onClick={() => setActiveTab('tracking')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
@@ -373,629 +603,697 @@ export function EmailMarketingClient() {
             }`}
           >
             <BarChart3 size={14} />
-            <span>Telemetry & Live Opens</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('templates')}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
-              activeTab === 'templates'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
-                : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
-            }`}
-          >
-            <Sparkles size={14} />
-            <span>Templates ({initialTemplates.length})</span>
+            <span>Live Telemetry</span>
           </button>
         </div>
       </div>
 
-      {/* Visual Email Builder Tab */}
+      {/* ========================================================================= */}
+      {/* 🚀 TAB 1: VISUAL NEWSLETTER DESIGNER (Spacious Multi-Block Composer) */}
+      {/* ========================================================================= */}
       {activeTab === 'builder' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Column: Form & Block Controls (6 cols) */}
-          <div className="lg:col-span-6 space-y-5">
-            {/* Sender & Subject Setup */}
-            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column: Big Spacious Block Composer (7 cols) */}
+          <div className="lg:col-span-7 space-y-5">
+            {/* Meta & Subject Section */}
+            <div className="luxe-box rounded-3xl p-5 space-y-3.5">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
                 <Settings2 size={14} className="text-amber-400" />
-                <span>Campaign Metadata & Headers</span>
+                <span>Newsletter Subject & Sender Configuration</span>
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">Sender Name</label>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Sender Name</label>
                   <input
                     type="text"
                     value={senderName}
                     onChange={(e) => setSenderName(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-medium"
+                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">Sender Email</label>
+                  <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Sender Email</label>
                   <input
                     type="email"
                     value={senderEmail}
                     onChange={(e) => setSenderEmail(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-mono text-[11px]"
+                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white focus:outline-none font-mono"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Subject Line</label>
+                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Newsletter Subject Line</label>
                 <input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-semibold"
-                  placeholder="e.g. Accelerate your enterprise sales velocity..."
+                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white focus:outline-none font-bold"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Preview Preheader</label>
+                <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Preview Preheader Snippet</label>
                 <input
                   type="text"
                   value={preheader}
                   onChange={(e) => setPreheader(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-medium"
-                  placeholder="Brief summary shown in inbox list before opening"
+                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-slate-300 focus:outline-none"
                 />
               </div>
             </div>
 
-            {/* Email Canvas Blocks */}
-            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <Sliders size={14} className="text-amber-400" />
-                <span>Body Content & Call to Action</span>
-              </h2>
-
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Banner Image URL</label>
-                <input
-                  type="text"
-                  value={bannerImage}
-                  onChange={(e) => setBannerImage(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-mono text-[11px]"
-                />
+            {/* Component Insertion Palette Toolbar */}
+            <div className="luxe-box rounded-3xl p-4 space-y-2.5">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
+                  <Plus size={13} className="text-amber-400" />
+                  <span>Insert Newsletter Content Block</span>
+                </span>
+                <span className="text-[10px] font-mono text-amber-400">Click to Append</span>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Primary Headline (H1)</label>
-                <input
-                  type="text"
-                  value={headline}
-                  onChange={(e) => setHeadline(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-bold"
-                />
-              </div>
-
-              {/* Dynamic Personalization Merge Tags */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[11px] font-semibold text-slate-400">
-                    Insert Personalization Merge Tags
-                  </label>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {['{{firstName}}', '{{lastName}}', '{{company}}', '{{dealValue}}', '{{dealStage}}'].map((tag) => (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { type: 'TEXT_ARTICLE' as const, label: 'Article Text', icon: Layers },
+                  { type: 'IMAGE_BANNER' as const, label: 'Image Gallery', icon: ImageIcon },
+                  { type: 'VIDEO_EMBED' as const, label: 'Video Embed', icon: Video },
+                  { type: 'PRODUCT_CARD' as const, label: 'Product Card', icon: ShoppingBag },
+                  { type: 'CALLOUT_QUOTE' as const, label: 'Quote Box', icon: Quote },
+                  { type: 'BUTTON_CTA' as const, label: 'CTA Button', icon: Zap },
+                  { type: 'AUTHOR_SIGNATURE' as const, label: 'Author Sign-off', icon: UserCheck },
+                  { type: 'DIVIDER' as const, label: 'Divider Line', icon: Minus },
+                ].map((btn) => {
+                  const Icon = btn.icon;
+                  return (
                     <button
-                      key={tag}
+                      key={btn.type}
                       type="button"
-                      onClick={() => insertMergeTag(tag)}
-                      className="px-2.5 py-1 bg-white/[0.06] hover:bg-amber-500/15 hover:text-amber-300 border border-white/[0.1] text-slate-300 text-[11px] font-mono font-semibold rounded-xl transition-colors cursor-pointer"
+                      onClick={() => handleAddSection(btn.type)}
+                      className="p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-amber-500/40 border border-white/[0.06] flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer shadow-xs"
                     >
-                      + {tag}
+                      <Icon size={14} className="text-amber-400 shrink-0" />
+                      <span className="truncate">{btn.label}</span>
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
+            </div>
 
-              <div>
-                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Body Paragraphs</label>
-                <textarea
-                  rows={6}
-                  value={bodyText}
-                  onChange={(e) => setBodyText(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-medium leading-relaxed"
-                />
-              </div>
+            {/* BIG SPACIOUS SECTION BLOCKS COMPOSER */}
+            <div className="space-y-4">
+              {sections.map((sec, index) => {
+                const isSelected = sec.id === selectedSectionId;
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">CTA Button Text</label>
-                  <input
-                    type="text"
-                    value={buttonText}
-                    onChange={(e) => setButtonText(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-semibold"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 mb-1">Button Action URL</label>
-                  <input
-                    type="text"
-                    value={buttonUrl}
-                    onChange={(e) => setButtonUrl(e.target.value)}
-                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-mono text-[11px]"
-                  />
-                </div>
-              </div>
-
-              {/* Action Toolbar */}
-              <div className="pt-3 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={copyHtmlToClipboard}
-                  className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white border border-white/[0.1] rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                >
-                  {isCopiedHtml ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                  <span>{isCopiedHtml ? 'HTML Copied!' : 'Export Raw HTML'}</span>
-                </button>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsTestModalOpen(true)}
-                    className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 border border-white/[0.1] cursor-pointer"
+                return (
+                  <div
+                    key={sec.id}
+                    onClick={() => setSelectedSectionId(sec.id)}
+                    className={`luxe-box rounded-3xl p-5 space-y-3.5 transition-all border ${
+                      isSelected
+                        ? 'border-amber-500 ring-2 ring-amber-500/20 bg-white/[0.04]'
+                        : 'border-white/[0.08] hover:border-white/20'
+                    }`}
                   >
-                    <Send size={13} />
-                    <span>Send Test</span>
-                  </button>
+                    {/* Section Header with Re-order & Delete Controls */}
+                    <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-lg bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold flex items-center justify-center">
+                          {index + 1}
+                        </span>
+                        <span className="text-xs font-bold text-white uppercase tracking-wider">
+                          {sec.type.replace('_', ' ')}
+                        </span>
+                      </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setIsNewCampaignModalOpen(true)}
-                    className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
-                  >
-                    <Send size={13} />
-                    <span>Launch Campaign</span>
-                  </button>
-                </div>
-              </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveSection(index, 'up');
+                          }}
+                          disabled={index === 0}
+                          className="p-1 text-slate-400 hover:text-white disabled:opacity-30 cursor-pointer"
+                          title="Move Up"
+                        >
+                          <MoveUp size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveSection(index, 'down');
+                          }}
+                          disabled={index === sections.length - 1}
+                          className="p-1 text-slate-400 hover:text-white disabled:opacity-30 cursor-pointer"
+                          title="Move Down"
+                        >
+                          <MoveDown size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteSection(sec.id);
+                          }}
+                          className="p-1 text-slate-400 hover:text-rose-400 cursor-pointer ml-1"
+                          title="Delete Block"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Section Form Fields */}
+                    {sec.type === 'TEXT_ARTICLE' && (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Headline / Subtitle</label>
+                          <input
+                            type="text"
+                            value={sec.title || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'title', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-bold focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="text-[10px] uppercase font-bold text-slate-400">Story Body Copy (Big Box)</label>
+                            <div className="flex gap-1 text-[10px] font-mono text-amber-300">
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateSectionField(sec.id, 'body', `${sec.body || ''} {{firstName}}`)}
+                                className="px-1.5 py-0.5 rounded bg-white/[0.06] hover:bg-white/[0.1] cursor-pointer"
+                              >
+                                + firstName
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateSectionField(sec.id, 'body', `${sec.body || ''} {{company}}`)}
+                                className="px-1.5 py-0.5 rounded bg-white/[0.06] hover:bg-white/[0.1] cursor-pointer"
+                              >
+                                + company
+                              </button>
+                            </div>
+                          </div>
+                          <textarea
+                            rows={7}
+                            value={sec.body || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'body', e.target.value)}
+                            className="w-full px-3 py-2.5 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-slate-200 leading-relaxed focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {sec.type === 'IMAGE_BANNER' && (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Image URL</label>
+                          <input
+                            type="text"
+                            value={sec.imageUrl || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'imageUrl', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-mono focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Image Caption</label>
+                          <input
+                            type="text"
+                            value={sec.imageCaption || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'imageCaption', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-slate-300 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {sec.type === 'VIDEO_EMBED' && (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Video Title</label>
+                          <input
+                            type="text"
+                            value={sec.videoTitle || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'videoTitle', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-bold focus:outline-none"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Video Destination URL</label>
+                            <input
+                              type="text"
+                              value={sec.videoUrl || ''}
+                              onChange={(e) => handleUpdateSectionField(sec.id, 'videoUrl', e.target.value)}
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-mono focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Video Thumbnail Poster URL</label>
+                            <input
+                              type="text"
+                              value={sec.videoThumbnail || ''}
+                              onChange={(e) => handleUpdateSectionField(sec.id, 'videoThumbnail', e.target.value)}
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-mono focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {sec.type === 'PRODUCT_CARD' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Product Title</label>
+                            <input
+                              type="text"
+                              value={sec.title || ''}
+                              onChange={(e) => handleUpdateSectionField(sec.id, 'title', e.target.value)}
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-bold focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Price / Special Tag</label>
+                            <input
+                              type="text"
+                              value={sec.productPrice || ''}
+                              onChange={(e) => handleUpdateSectionField(sec.id, 'productPrice', e.target.value)}
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-amber-400 font-mono font-bold focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Product Feature Description</label>
+                          <textarea
+                            rows={3}
+                            value={sec.body || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'body', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-slate-200 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {sec.type === 'CALLOUT_QUOTE' && (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Quote Copy</label>
+                          <textarea
+                            rows={3}
+                            value={sec.body || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'body', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-slate-200 focus:outline-none italic"
+                          />
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Quote Author</label>
+                            <input
+                              type="text"
+                              value={sec.quoteAuthor || ''}
+                              onChange={(e) => handleUpdateSectionField(sec.id, 'quoteAuthor', e.target.value)}
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-bold focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Author Role & Company</label>
+                            <input
+                              type="text"
+                              value={sec.quoteRole || ''}
+                              onChange={(e) => handleUpdateSectionField(sec.id, 'quoteRole', e.target.value)}
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-slate-300 focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {sec.type === 'BUTTON_CTA' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Button CTA Text</label>
+                          <input
+                            type="text"
+                            value={sec.buttonText || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'buttonText', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-bold focus:outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Destination URL</label>
+                          <input
+                            type="text"
+                            value={sec.buttonUrl || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'buttonUrl', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-mono focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {sec.type === 'AUTHOR_SIGNATURE' && (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Author Name</label>
+                            <input
+                              type="text"
+                              value={sec.authorName || ''}
+                              onChange={(e) => handleUpdateSectionField(sec.id, 'authorName', e.target.value)}
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white font-bold focus:outline-none"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Author Title</label>
+                            <input
+                              type="text"
+                              value={sec.authorRole || ''}
+                              onChange={(e) => handleUpdateSectionField(sec.id, 'authorRole', e.target.value)}
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-slate-300 focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Sign-off Message</label>
+                          <input
+                            type="text"
+                            value={sec.body || ''}
+                            onChange={(e) => handleUpdateSectionField(sec.id, 'body', e.target.value)}
+                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-slate-300 focus:outline-none"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {sec.type === 'DIVIDER' && (
+                      <div className="text-center py-2">
+                        <div className="h-px bg-white/15 w-full" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Bottom Action Controls */}
+            <div className="flex items-center justify-between gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsTestModalOpen(true)}
+                className="px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] rounded-xl text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
+              >
+                <Send size={14} />
+                <span>Send Test Email</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('bulk-blast')}
+                className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 flex items-center gap-2 cursor-pointer"
+              >
+                <span>Continue to Bulk Blast Lead Filter</span>
+                <ArrowRight size={14} />
+              </button>
             </div>
           </div>
 
-          {/* Right Column: Live Visual Email Preview (6 cols) */}
-          <div className="lg:col-span-6 space-y-4">
-            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+          {/* Right Column: Live Interactive Full-Length Newsletter Preview (5 cols) */}
+          <div className="lg:col-span-5 space-y-4">
+            <div className="luxe-box rounded-3xl p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Live Newsletter Preview</span>
                 <div className="flex items-center gap-2">
-                  <Eye size={16} className="text-amber-400" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    Interactive Live Render
-                  </span>
-                </div>
-
-                {/* Viewport Switcher */}
-                <div className="flex items-center gap-1 bg-white/[0.06] p-1 rounded-xl">
                   <button
                     type="button"
                     onClick={() => setViewMode('desktop')}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                      viewMode === 'desktop'
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-2xs'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
+                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewMode === 'desktop' ? 'bg-amber-500/20 text-amber-300' : 'text-slate-400'}`}
+                    title="Desktop Preview"
                   >
-                    <Monitor size={13} />
-                    <span>Desktop</span>
+                    <Monitor size={15} />
                   </button>
                   <button
                     type="button"
                     onClick={() => setViewMode('mobile')}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                      viewMode === 'mobile'
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-2xs'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
+                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewMode === 'mobile' ? 'bg-amber-500/20 text-amber-300' : 'text-slate-400'}`}
+                    title="Mobile Preview"
                   >
-                    <Smartphone size={13} />
-                    <span>Mobile</span>
+                    <Smartphone size={15} />
                   </button>
                 </div>
               </div>
 
-              {/* Rendered Email Container */}
-              <div className="flex justify-center p-3 bg-white/[0.02] rounded-2xl border border-white/[0.08] overflow-hidden">
-                <div
-                  className={`bg-slate-950/80 rounded-2xl shadow-sm border border-white/[0.1] overflow-hidden transition-all duration-300 ${
-                    viewMode === 'mobile' ? 'w-[320px] text-xs' : 'w-full'
-                  }`}
-                >
-                  {/* Email Header */}
-                  <div className="p-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 bg-gradient-to-tr from-amber-500 to-orange-500 rounded-lg flex items-center justify-center text-slate-950 font-bold text-xs">
-                        B
-                      </div>
-                      <span className="font-bold text-xs text-white">Business OS</span>
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-mono">Verified TLS</span>
-                  </div>
-
-                  {/* Banner Image */}
-                  {bannerImage && (
-                    <div className="max-h-48 overflow-hidden bg-white/[0.02] border-b border-white/[0.08]">
-                      <img src={bannerImage} alt="Banner" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-
-                  {/* Body Content */}
-                  <div className="p-6 space-y-4 font-sans text-white">
-                    <h1 className="text-base font-bold text-white leading-snug">
-                      {headline}
-                    </h1>
-                    <p className="text-xs text-slate-300 whitespace-pre-wrap leading-relaxed">
-                      {bodyText}
-                    </p>
-
-                    {buttonText && (
-                      <div className="pt-2">
-                        <a
-                          href={buttonUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-block px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-orange-500/25 hover:opacity-90 transition-opacity"
-                        >
-                          {buttonText} →
-                        </a>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Email Footer */}
-                  <div className="p-4 bg-white/[0.02] border-t border-white/[0.08] text-[10px] text-slate-400 text-center space-y-1 font-medium">
-                    <p>Sent by {senderName} ({senderEmail})</p>
-                    <p>100 Montgomery St, Suite 1400, San Francisco, CA · <span className="text-amber-400 cursor-pointer underline">Unsubscribe</span></p>
-                  </div>
+              {/* Rendered HTML Container */}
+              <div
+                className={`mx-auto rounded-2xl border border-white/10 overflow-hidden bg-[#0d121f] shadow-2xl text-xs transition-all ${
+                  viewMode === 'mobile' ? 'max-w-xs' : 'w-full'
+                }`}
+              >
+                {/* Email Client Header Bar */}
+                <div className="p-3.5 bg-white/[0.03] border-b border-white/[0.06] space-y-1">
+                  <div className="text-[11px] text-slate-400">From: <strong className="text-white">{senderName}</strong> &lt;{senderEmail}&gt;</div>
+                  <div className="text-xs font-bold text-white">{subject}</div>
+                  <div className="text-[10px] text-slate-400 truncate">{preheader}</div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Campaigns Ledger Tab */}
-      {activeTab === 'campaigns' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-white">Active & Dispatched Email Campaigns</h2>
-            <button
-              onClick={() => setIsNewCampaignModalOpen(true)}
-              className="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
-            >
-              <Plus size={14} />
-              <span>Create Campaign</span>
-            </button>
-          </div>
+                {/* Newsletter Body Preview Canvas */}
+                <div className="p-5 sm:p-6 space-y-5">
+                  {sections.map((sec) => (
+                    <div key={sec.id}>
+                      {sec.type === 'IMAGE_BANNER' && sec.imageUrl && (
+                        <div className="space-y-1">
+                          <img src={sec.imageUrl} alt="Newsletter Banner" className="w-full h-40 object-cover rounded-xl border border-white/[0.08]" />
+                          {sec.imageCaption && (
+                            <span className="text-[10px] text-slate-400 text-center block italic">{sec.imageCaption}</span>
+                          )}
+                        </div>
+                      )}
 
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-white/[0.02] text-slate-400 text-xs uppercase tracking-wider font-semibold border-b border-white/[0.08]">
-                <tr>
-                  <th className="px-6 py-4">Campaign Title & Subject</th>
-                  <th className="px-6 py-4">Audience Segment</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4">Delivered</th>
-                  <th className="px-6 py-4">Open Rate</th>
-                  <th className="px-6 py-4 text-right">Click Rate (CTR)</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.05]">
-                {campaigns.map((c) => {
-                  const openRate = c.metrics.delivered > 0 ? ((c.metrics.opened / c.metrics.delivered) * 100).toFixed(1) : '0.0';
-                  const clickRate = c.metrics.delivered > 0 ? ((c.metrics.clicked / c.metrics.delivered) * 100).toFixed(1) : '0.0';
-                  return (
-                    <tr key={c.id} className="hover:bg-white/[0.04] transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="font-bold text-xs text-white">{c.name}</div>
-                        <div className="text-[11px] text-slate-400 font-medium truncate max-w-sm">{c.subject}</div>
-                      </td>
-                      <td className="px-6 py-4 text-xs font-semibold text-amber-400">
-                        {c.audience}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                            c.status === 'SENT'
-                              ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                              : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
-                          }`}
-                        >
-                          {c.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-mono text-xs font-semibold text-white">
-                        {c.metrics.delivered.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-white">{openRate}%</span>
-                          <div className="w-16 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-                            <div className="h-full bg-emerald-400 rounded-full" style={{ width: `${Math.min(100, Number(openRate))}%` }} />
+                      {sec.type === 'TEXT_ARTICLE' && (
+                        <div className="space-y-2">
+                          {sec.title && <h3 className="font-extrabold text-base text-white leading-snug">{sec.title}</h3>}
+                          <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{sec.body}</p>
+                        </div>
+                      )}
+
+                      {sec.type === 'VIDEO_EMBED' && (
+                        <div className="relative rounded-2xl overflow-hidden border border-white/15 group cursor-pointer">
+                          <img
+                            src={sec.videoThumbnail || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800'}
+                            alt="Video Thumbnail"
+                            className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute inset-0 bg-slate-950/40 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center shadow-2xl shadow-orange-500/50 group-hover:scale-110 transition-transform">
+                              <Play size={20} fill="#020617" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent flex items-center justify-between">
+                            <span className="font-bold text-xs text-white truncate max-w-[200px]">{sec.videoTitle}</span>
+                            <span className="px-2 py-0.5 bg-black/60 rounded text-[9px] font-mono text-amber-300">{sec.badge || 'Watch'}</span>
                           </div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="font-mono text-xs font-bold text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-md border border-amber-500/30">
-                          {clickRate}% CTR
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+                      )}
 
-      {/* Real-time Email Telemetry Tab */}
-      {activeTab === 'tracking' && (
-        <div className="space-y-6">
-          {/* Key KPI Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider">Overall Delivery Rate</span>
-                <ShieldCheck size={18} className="text-emerald-400" />
-              </div>
-              <div className="text-3xl font-extrabold text-emerald-400 font-mono">99.4%</div>
-              <div className="text-xs text-slate-400 mt-2 font-medium">3,710 / 3,730 Dispatched</div>
-            </div>
+                      {sec.type === 'PRODUCT_CARD' && (
+                        <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-3">
+                          {sec.imageUrl && (
+                            <img src={sec.imageUrl} alt="Product" className="w-full h-28 object-cover rounded-xl border border-white/10" />
+                          )}
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-bold text-xs text-white">{sec.title}</h4>
+                            <span className="font-mono font-extrabold text-amber-400 text-xs">{sec.productPrice}</span>
+                          </div>
+                          <p className="text-[11px] text-slate-300 leading-relaxed">{sec.body}</p>
+                          {sec.buttonText && (
+                            <span className="inline-block px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-[11px] rounded-lg">
+                              {sec.buttonText}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
-            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider">Average Open Rate</span>
-                <Eye size={18} className="text-amber-400" />
-              </div>
-              <div className="text-3xl font-extrabold text-white font-mono">44.8%</div>
-              <div className="text-xs text-emerald-400 mt-2 font-bold flex items-center gap-1">
-                <TrendingUp size={13} /> +12.4% vs B2B industry average
-              </div>
-            </div>
+                      {sec.type === 'CALLOUT_QUOTE' && (
+                        <div className="p-4 rounded-2xl bg-amber-500/10 border-l-4 border-amber-500 space-y-2">
+                          <p className="text-xs text-slate-200 italic leading-relaxed">"{sec.body}"</p>
+                          {(sec.quoteAuthor || sec.quoteRole) && (
+                            <div className="text-[11px]">
+                              <strong className="text-amber-400 block">{sec.quoteAuthor}</strong>
+                              <span className="text-slate-400">{sec.quoteRole}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
-            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider">Click-Through Rate (CTR)</span>
-                <MousePointerClick size={18} className="text-sky-400" />
-              </div>
-              <div className="text-3xl font-extrabold text-sky-400 font-mono">18.6%</div>
-              <div className="text-xs text-slate-400 mt-2 font-medium">748 unique link clicks</div>
-            </div>
+                      {sec.type === 'BUTTON_CTA' && sec.buttonText && (
+                        <div className="text-center pt-2">
+                          <span className="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-orange-500/25">
+                            {sec.buttonText}
+                          </span>
+                        </div>
+                      )}
 
-            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-              <div className="flex items-center justify-between text-slate-400 mb-2">
-                <span className="text-[11px] font-bold uppercase tracking-wider">Bounce & Unsub Rate</span>
-                <AlertCircle size={18} className="text-slate-400" />
-              </div>
-              <div className="text-3xl font-extrabold text-white font-mono">0.4%</div>
-              <div className="text-xs text-emerald-400 mt-2 font-bold">100% Reputation Score</div>
-            </div>
-          </div>
+                      {sec.type === 'AUTHOR_SIGNATURE' && (
+                        <div className="pt-3 border-t border-white/[0.08] flex items-center gap-3">
+                          {sec.authorAvatar && (
+                            <img src={sec.authorAvatar} alt="Author" className="w-10 h-10 rounded-full object-cover border border-amber-500/40" />
+                          )}
+                          <div>
+                            <span className="font-bold text-xs text-white block">{sec.authorName}</span>
+                            <span className="text-[10px] text-slate-400 block">{sec.authorRole}</span>
+                            {sec.body && <p className="text-[10px] text-slate-400 mt-1">{sec.body}</p>}
+                          </div>
+                        </div>
+                      )}
 
-          {/* Live Open / Click Event Stream */}
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3">
-            <div className="p-4 border-b border-white/[0.08] flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
-                <Radio size={15} className="text-emerald-400 animate-pulse" />
-                <span>Live Real-Time Email Event Stream</span>
-              </h3>
-              <span className="text-[11px] text-slate-400 font-medium">Telemetry connected via SendGrid / Resend Webhook</span>
-            </div>
-
-            <table className="w-full text-sm text-left">
-              <thead className="bg-white/[0.02] text-slate-400 text-xs uppercase tracking-wider font-semibold border-b border-white/[0.08]">
-                <tr>
-                  <th className="px-6 py-3.5">Recipient</th>
-                  <th className="px-6 py-3.5">Campaign</th>
-                  <th className="px-6 py-3.5">Interaction Event</th>
-                  <th className="px-6 py-3.5">Device & Client</th>
-                  <th className="px-6 py-3.5">Location</th>
-                  <th className="px-6 py-3.5 text-right">Timestamp</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.05]">
-                {events.map((ev) => (
-                  <tr key={ev.id} className="hover:bg-white/[0.04] transition-colors">
-                    <td className="px-6 py-3.5">
-                      <div className="font-bold text-xs text-white">{ev.recipientName}</div>
-                      <div className="text-[11px] font-mono text-slate-400">{ev.recipientEmail}</div>
-                    </td>
-                    <td className="px-6 py-3.5 text-xs text-slate-300 font-medium">
-                      {ev.campaignTitle}
-                    </td>
-                    <td className="px-6 py-3.5">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                          ev.eventType === 'CLICK'
-                            ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
-                            : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                        }`}
-                      >
-                        {ev.eventType === 'CLICK' ? '🔗 Link Clicked' : '👀 Email Opened'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3.5 text-xs text-slate-300 font-medium">
-                      {ev.device}
-                    </td>
-                    <td className="px-6 py-3.5 text-xs text-slate-300 font-medium">
-                      {ev.location}
-                    </td>
-                    <td className="px-6 py-3.5 text-right text-xs text-slate-400 font-medium">
-                      {ev.timestamp}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Templates Catalog Tab */}
-      {activeTab === 'templates' && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-white">Pre-Built High-Converting Email Templates</h2>
-              <p className="text-xs text-slate-400 mt-0.5">Click any template to load into the Visual Email Builder instantly.</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {initialTemplates.map((tmpl) => (
-              <div
-                key={tmpl.id}
-                className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4 flex flex-col justify-between hover:border-amber-500/40 transition-colors"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                      {tmpl.category}
-                    </span>
-                    <span className="text-[11px] text-slate-400 font-medium">Fully Responsive</span>
-                  </div>
-
-                  <h3 className="font-bold text-sm text-white">{tmpl.name}</h3>
-
-                  <div className="rounded-2xl overflow-hidden max-h-36 bg-white/[0.02] border border-white/[0.08]">
-                    <img src={tmpl.bannerImage} alt={tmpl.name} className="w-full h-full object-cover" />
-                  </div>
-
-                  <div className="p-3 bg-white/[0.03] rounded-2xl border border-white/[0.06] space-y-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Subject</span>
-                    <p className="text-xs font-semibold text-white">{tmpl.subject}</p>
-                  </div>
+                      {sec.type === 'DIVIDER' && (
+                        <div className="py-2">
+                          <div className="h-px bg-white/10" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => loadTemplate(tmpl)}
-                  className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] cursor-pointer"
-                >
-                  <Layers size={14} />
-                  <span>Customize in Visual Builder</span>
-                </button>
+                {/* Footer */}
+                <div className="p-4 bg-black/40 border-t border-white/[0.06] text-center text-[10px] text-slate-500">
+                  <p>© 2026 Business OS Enterprise · Unsubscribe Preferences</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Campaigns Tab */}
+      {activeTab === 'campaigns' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {campaigns.map((camp) => (
+              <div key={camp.id} className="luxe-box rounded-3xl p-5 space-y-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono text-amber-400 font-bold">{camp.audience}</span>
+                    <h3 className="font-bold text-sm text-white mt-0.5">{camp.name}</h3>
+                    <p className="text-xs text-slate-400 italic mt-0.5">"{camp.subject}"</p>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                    {camp.status}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/[0.06] text-center">
+                  <div className="p-2 bg-white/[0.02] rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-400 block">Sent</span>
+                    <span className="font-mono font-bold text-xs text-white">{camp.recipientCount.toLocaleString()}</span>
+                  </div>
+                  <div className="p-2 bg-white/[0.02] rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-400 block">Opens</span>
+                    <span className="font-mono font-bold text-xs text-emerald-400">{camp.metrics.opened.toLocaleString()}</span>
+                  </div>
+                  <div className="p-2 bg-white/[0.02] rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-400 block">Clicks</span>
+                    <span className="font-mono font-bold text-xs text-amber-400">{camp.metrics.clicked.toLocaleString()}</span>
+                  </div>
+                  <div className="p-2 bg-white/[0.02] rounded-xl border border-white/[0.04]">
+                    <span className="text-[10px] text-slate-400 block">Bounce</span>
+                    <span className="font-mono font-bold text-xs text-slate-400">{camp.metrics.bounced}</span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {/* Send Test Email Modal */}
-      {isTestModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
-          <div className="bg-slate-950/95 border border-white/[0.12] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 text-white">
-            <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
-              <h2 className="text-base font-bold text-white">Send Test Email</h2>
-              <button onClick={() => setIsTestModalOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSendTestEmail} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Target Test Inbox</label>
-                <input
-                  type="email"
-                  required
-                  value={testEmailAddress}
-                  onChange={(e) => setTestEmailAddress(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-mono"
-                />
+      {/* Live Telemetry Tab */}
+      {activeTab === 'tracking' && (
+        <div className="luxe-box rounded-3xl p-5 space-y-4">
+          <h3 className="font-bold text-sm text-white">Live Open & Click Telemetry Feed</h3>
+          <div className="space-y-2.5">
+            {events.map((ev) => (
+              <div key={ev.id} className="p-3.5 luxe-inner-card rounded-2xl flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-xs text-white">{ev.recipientName}</span>
+                  <span className="text-[11px] text-slate-400 block">{ev.company} · {ev.recipientEmail}</span>
+                </div>
+                <div className="text-right">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                    ev.eventType === 'CLICK' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'
+                  }`}>
+                    {ev.eventType}
+                  </span>
+                  <span className="text-[10px] text-slate-400 block mt-0.5">{ev.timestamp}</span>
+                </div>
               </div>
-
-              <div className="p-3 bg-white/[0.03] rounded-2xl border border-white/[0.06] text-xs text-slate-300 space-y-1">
-                <span className="font-bold text-white block">Preview Details:</span>
-                <p>Subject: {subject}</p>
-                <p className="text-[11px] text-slate-400">Sender: {senderName} &lt;{senderEmail}&gt;</p>
-              </div>
-
-              <div className="flex justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
-                <button
-                  type="button"
-                  onClick={() => setIsTestModalOpen(false)}
-                  className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-xl text-xs font-semibold border border-white/[0.1] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Send size={13} />
-                  <span>Send Test Email</span>
-                </button>
-              </div>
-            </form>
+            ))}
           </div>
         </div>
       )}
 
-      {/* New Campaign Modal */}
-      {isNewCampaignModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
-          <div className="bg-slate-950/95 border border-white/[0.12] rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 text-white">
-            <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
-              <h2 className="text-base font-bold text-white">Broadcast Email Campaign</h2>
-              <button onClick={() => setIsNewCampaignModalOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
-                ✕
+      {/* Templates Tab */}
+      {activeTab === 'templates' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {initialTemplates.map((tmpl) => (
+            <div key={tmpl.id} className="luxe-box rounded-3xl p-5 space-y-4 flex flex-col justify-between">
+              <div>
+                <span className="text-[10px] font-mono font-bold text-amber-400">{tmpl.category}</span>
+                <h3 className="font-bold text-sm text-white mt-1">{tmpl.name}</h3>
+                <p className="text-xs text-slate-400 italic mt-0.5">"{tmpl.subject}"</p>
+                <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+                  <Layers size={13} className="text-amber-400" />
+                  <span>{tmpl.sections.length} Modular Content Blocks</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => loadTemplate(tmpl)}
+                className="w-full py-2.5 bg-white/[0.06] hover:bg-amber-500 hover:text-slate-950 text-white font-bold rounded-xl text-xs transition-all border border-white/[0.08] flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Sparkles size={13} />
+                <span>Load Into Newsletter Designer</span>
               </button>
             </div>
+          ))}
+        </div>
+      )}
 
-            <form onSubmit={handleCreateCampaign} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Campaign Title</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Q3 Executive Webinar Blast"
-                  value={newCampaignName}
-                  onChange={(e) => setNewCampaignName(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Audience Segment</label>
-                <select
-                  value={newCampaignAudience}
-                  onChange={(e) => setNewCampaignAudience(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none font-medium"
-                >
-                  <option value="All Enterprise Contacts (2,840)">All Enterprise Contacts (2,840)</option>
-                  <option value="VP & C-Level Decision Makers (890)">VP & C-Level Decision Makers (890)</option>
-                  <option value="Active Subscription Customers (450)">Active Subscription Customers (450)</option>
-                  <option value="High-Value Deals in Negotiation (120)">High-Value Deals in Negotiation (120)</option>
-                </select>
-              </div>
-
-              <div className="p-3 bg-amber-500/15 border border-amber-500/30 rounded-2xl text-xs text-amber-300 space-y-1">
-                <span className="font-bold block">Current Template Subject:</span>
-                <p className="italic">"{subject}"</p>
-              </div>
-
-              <div className="flex justify-end gap-2.5 pt-4 border-t border-white/[0.08]">
-                <button
-                  type="button"
-                  onClick={() => setIsNewCampaignModalOpen(false)}
-                  className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-xl text-xs font-semibold border border-white/[0.1] cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Send size={13} />
-                  <span>Broadcast Now</span>
-                </button>
-              </div>
-            </form>
+      {/* Test Email Modal */}
+      {isTestModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
+          <div className="bg-slate-950/95 border border-white/[0.12] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-in fade-in">
+            <h3 className="font-bold text-sm text-white">Send Instant Test Email</h3>
+            <input
+              type="email"
+              value={testEmailAddress}
+              onChange={(e) => setTestEmailAddress(e.target.value)}
+              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-white focus:outline-none font-mono"
+            />
+            <div className="flex justify-end gap-2 pt-3 border-t border-white/[0.08]">
+              <button
+                type="button"
+                onClick={() => setIsTestModalOpen(false)}
+                className="px-3 py-1.5 bg-white/[0.06] text-slate-300 rounded-xl text-xs font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsTestModalOpen(false);
+                  setAlert(`📨 Test email sent to ${testEmailAddress}!`);
+                  setTimeout(() => setAlert(null), 3000);
+                }}
+                className="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs"
+              >
+                Send Test
+              </button>
+            </div>
           </div>
         </div>
       )}

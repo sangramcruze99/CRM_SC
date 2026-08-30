@@ -67,7 +67,9 @@ const routes = [
   '/banking',
   '/forecast',
   '/migration',
-  '/sim-gateway'
+  '/sim-gateway',
+  '/branding',
+  '/site-builder'
 ];
 
 async function checkRoute(route) {

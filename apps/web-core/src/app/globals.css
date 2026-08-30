@@ -28,6 +28,126 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   min-height: 100vh;
   margin: 0;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ========================================================================= */
+/* ☀️ LIGHT MODE (Porcelain & Alabaster Theme) Master Overrides */
+/* ========================================================================= */
+html.light body {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light h5,
+html.light h6 {
+  color: #0f172a !important;
+}
+
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100,
+html.light .text-slate-200,
+html.light .text-slate-300 {
+  color: #334155 !important;
+}
+
+html.light .text-slate-400 {
+  color: #64748b !important;
+}
+
+html.light .text-slate-500 {
+  color: #64748b !important;
+}
+
+/* Light Mode Cards & Beveled Luxe Boxes with Crisp Defined Borders */
+html.light .luxe-box {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-top-color: #e2e8f0 !important;
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.07), 0 1px 3px -1px rgba(15, 23, 42, 0.04) !important;
+}
+
+html.light .luxe-box-hover:hover {
+  background: #ffffff !important;
+  border-color: rgba(245, 158, 11, 0.6) !important;
+  box-shadow: 0 12px 28px -4px rgba(245, 158, 11, 0.16), 0 4px 10px -2px rgba(15, 23, 42, 0.06) !important;
+}
+
+html.light .luxe-inner-card {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+html.light .bg-white\/\[0\.04\],
+html.light .bg-white\/\[0\.03\],
+html.light .bg-white\/\[0\.02\],
+html.light .bg-white\/\[0\.05\],
+html.light .bg-white\/\[0\.06\],
+html.light .bg-white\/\[0\.08\] {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Light Mode Sidebar Navigation */
+html.light nav {
+  background: #ffffff !important;
+  border-right-color: #cbd5e1 !important;
+  box-shadow: 4px 0 20px rgba(15, 23, 42, 0.04) !important;
+}
+
+html.light nav .text-white {
+  color: #0f172a !important;
+}
+
+html.light nav a {
+  color: #475569 !important;
+}
+
+html.light nav a:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+html.light nav a.bg-amber-500\/15 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #b45309 !important;
+}
+
+/* Light Mode Header Topbar */
+html.light header {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-bottom-color: #cbd5e1 !important;
+  box-shadow: 0 1px 4px 0 rgba(15, 23, 42, 0.05) !important;
+}
+
+html.light header .text-white {
+  color: #0f172a !important;
+}
+
+html.light header .text-slate-400 {
+  color: #64748b !important;
+}
+
+/* Light Mode Inputs, Selects & Textareas */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
 }
 
 /* Custom modern scrollbars */
@@ -46,15 +166,24 @@ body {
   background: rgba(245, 158, 11, 0.4);
 }
 
-/* Elevated Luxury Beveled Glass Box Tokens */
+html.light ::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+}
+html.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.7);
+}
+
+/* ========================================================================= */
+/* 🌙 DARK MODE (Elevated Luxury Beveled Glass Box Tokens) */
+/* ========================================================================= */
 .luxe-box {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, rgba(255, 255, 255, 0.02) 100%);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top-color: rgba(255, 255, 255, 0.16);
-  border-bottom-color: rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 12px 32px -4px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top-color: rgba(255, 255, 255, 0.22);
+  border-bottom-color: rgba(0, 0, 0, 0.5);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.14), 0 14px 34px -4px rgba(0, 0, 0, 0.5);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -62,18 +191,18 @@ body {
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .luxe-box-hover:hover {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0.03) 100%);
-  border-color: rgba(245, 158, 11, 0.35);
-  border-top-color: rgba(245, 158, 11, 0.55);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2), 0 16px 40px -8px rgba(245, 158, 11, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.035) 100%);
+  border-color: rgba(245, 158, 11, 0.45);
+  border-top-color: rgba(245, 158, 11, 0.65);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25), 0 18px 44px -8px rgba(245, 158, 11, 0.18);
   transform: translateY(-2px);
 }
 
 .luxe-inner-card {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-top-color: rgba(255, 255, 255, 0.12);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-top-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
 }
 
 /* Atmospheric Glassmorphism Tokens */
@@ -81,7 +210,7 @@ body {
   background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
@@ -89,7 +218,7 @@ body {
   background: rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 .glass-card-hover {
@@ -97,7 +226,7 @@ body {
 }
 .glass-card-hover:hover {
   background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(245, 158, 11, 0.3);
+  border-color: rgba(245, 158, 11, 0.35);
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
   transform: translateY(-1px);
 }
@@ -106,7 +235,7 @@ body {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Subtle, Soft Ambient Breathing Keyframes */
@@ -127,4 +256,23 @@ body {
 
 .animate-ambient-glow {
   animation: ambientGlow 14s ease-in-out infinite;
+}
+
+/* Universal High-Fidelity PDF & Print Export Rules */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  aside, header, nav, .no-print, [role="dialog"] > div:first-child {
+    display: none !important;
+  }
+  .printable-document {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }

@@ -57,11 +57,11 @@ export function DashboardClient() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-white">
+    <div className="space-y-6 max-w-7xl mx-auto">
       {/* Quick Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-700 dark:text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-amber-500 dark:text-amber-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -74,15 +74,15 @@ export function DashboardClient() {
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-sm font-bold text-white tracking-tight">
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                 {nicheConfig.name}
               </h2>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" />
                 {activeFeatureIds.length} / 67 Features Active
               </span>
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Your homepage automatically synchronizes with the features selected in your niche profile.
             </p>
           </div>
@@ -92,7 +92,7 @@ export function DashboardClient() {
           <button
             type="button"
             onClick={() => setIsFeaturePickerOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+            className="px-4 py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 border border-amber-500/40 text-amber-700 dark:text-amber-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
           >
             <Sliders size={13} />
             <span>Customize Features ({activeFeatureIds.length})</span>
@@ -100,7 +100,7 @@ export function DashboardClient() {
 
           <Link
             href="/industry"
-            className="px-3.5 py-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all hover:scale-[1.02]"
+            className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl text-xs font-semibold transition-all hover:scale-[1.02]"
           >
             Switch Niche
           </Link>
@@ -116,25 +116,25 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-rose-500/20 to-rose-500/5 text-rose-400 border border-rose-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-rose-500/20 to-rose-500/5 text-rose-600 dark:text-rose-400 border border-rose-500/30 shadow-xs flex items-center justify-center">
                   <Stethoscope size={16} />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Clinical Hub</span>
-                  <h4 className="text-xs font-bold text-white">Bed Occupancy</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Bed Occupancy</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30 font-mono flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-600 dark:text-rose-300 border border-rose-500/30 font-mono flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 dark:bg-rose-400" />
                 78% Cap
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-2xl font-mono font-extrabold text-white tracking-tight">142</span>
-                <span className="text-xs text-slate-400"> / 180 Beds</span>
+                <span className="text-2xl font-mono font-extrabold text-slate-900 dark:text-white tracking-tight">142</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400"> / 180 Beds</span>
               </div>
-              <Link href="/industry/hospital" className="text-xs text-rose-400 hover:text-rose-300 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/industry/hospital" className="text-xs text-rose-600 dark:text-rose-400 hover:text-rose-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>EHR Triage</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -146,25 +146,25 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 text-emerald-400 border border-emerald-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-emerald-500/20 to-emerald-500/5 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-xs flex items-center justify-center">
                   <Home size={16} />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Real Estate MLS</span>
-                  <h4 className="text-xs font-bold text-white">Escrow Pipeline</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Escrow Pipeline</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 font-mono flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                 18 Active
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-2xl font-mono font-extrabold text-emerald-400 tracking-tight">$24.8M</span>
-                <span className="text-xs text-slate-400"> Volume</span>
+                <span className="text-2xl font-mono font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight">$24.8M</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400"> Volume</span>
               </div>
-              <Link href="/industry/realestate" className="text-xs text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/industry/realestate" className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Showings</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -176,25 +176,25 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-amber-400 border border-amber-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs flex items-center justify-center">
                   <UtensilsCrossed size={16} />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">F&B Floor Plan</span>
-                  <h4 className="text-xs font-bold text-white">Seated Tables</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Seated Tables</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-mono flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400" />
                 14 / 20 Tables
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-2xl font-mono font-extrabold text-amber-400 tracking-tight">6 KOT</span>
-                <span className="text-xs text-slate-400"> in Kitchen</span>
+                <span className="text-2xl font-mono font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">6 KOT</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400"> in Kitchen</span>
               </div>
-              <Link href="/industry/restaurant" className="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/industry/restaurant" className="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Floor Map</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -206,25 +206,25 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-teal-500/20 to-teal-500/5 text-teal-400 border border-teal-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-teal-500/20 to-teal-500/5 text-teal-600 dark:text-teal-400 border border-teal-500/30 shadow-xs flex items-center justify-center">
                   <ShoppingBag size={16} />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Retail Register</span>
-                  <h4 className="text-xs font-bold text-white">POS Cashier</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">POS Cashier</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30 font-mono flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-500/15 text-teal-600 dark:text-teal-300 border border-teal-500/30 font-mono flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-500 dark:bg-teal-400" />
                 142 Orders
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-2xl font-mono font-extrabold text-teal-400 tracking-tight">$14,280</span>
-                <span className="text-xs text-slate-400"> Today</span>
+                <span className="text-2xl font-mono font-extrabold text-teal-600 dark:text-teal-400 tracking-tight">$14,280</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400"> Today</span>
               </div>
-              <Link href="/industry/retail" className="text-xs text-teal-400 hover:text-teal-300 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/industry/retail" className="text-xs text-teal-600 dark:text-teal-400 hover:text-teal-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Barcode POS</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -236,25 +236,25 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-amber-400 border border-amber-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs flex items-center justify-center">
                   <Database size={16} />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Dual Khata Ledger</span>
-                  <h4 className="text-xs font-bold text-white">Credit Balance</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Credit Balance</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-mono flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30 font-mono flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                 Balanced
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-2xl font-mono font-extrabold text-white tracking-tight">$48,290.00</span>
-                <span className="text-xs text-slate-400"> Receivables</span>
+                <span className="text-2xl font-mono font-extrabold text-slate-900 dark:text-white tracking-tight">$48,290.00</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400"> Receivables</span>
               </div>
-              <Link href="/banking" className="text-xs text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/banking" className="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Reconcile</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -266,24 +266,24 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-sky-500/20 to-sky-500/5 text-sky-400 border border-sky-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-sky-500/20 to-sky-500/5 text-sky-600 dark:text-sky-400 border border-sky-500/30 shadow-xs flex items-center justify-center">
                   <Scan size={16} />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Neural OCR Scanner</span>
-                  <h4 className="text-xs font-bold text-white">Document Vision</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Document Vision</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-300 border border-sky-500/30 font-mono flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-600 dark:text-sky-300 border border-sky-500/30 font-mono flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-sky-500 dark:bg-sky-400" />
                 98.4% Acc
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-xs text-slate-300 font-medium">Drop receipt or invoice</span>
+                <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">Drop receipt or invoice</span>
               </div>
-              <Link href="/ocr-invoice" className="text-xs text-sky-400 hover:text-sky-300 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/ocr-invoice" className="text-xs text-sky-600 dark:text-sky-400 hover:text-sky-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Scan Now</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -295,23 +295,23 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-indigo-500/20 to-indigo-500/5 text-indigo-400 border border-indigo-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-indigo-500/20 to-indigo-500/5 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 shadow-xs flex items-center justify-center">
                   <Database size={16} />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">B2B Lead Prospector</span>
-                  <h4 className="text-xs font-bold text-white">275M+ Contacts</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">275M+ Contacts</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-mono">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 border border-indigo-500/30 font-mono">
                 Apollo/Zoom
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-xs text-slate-300 font-medium">Bulk import verified leads</span>
+                <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">Bulk import verified leads</span>
               </div>
-              <Link href="/lead-prospector" className="text-xs text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/lead-prospector" className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Find Leads</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -323,23 +323,23 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-purple-500/20 to-purple-500/5 text-purple-400 border border-purple-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-purple-500/20 to-purple-500/5 text-purple-600 dark:text-purple-400 border border-purple-500/30 shadow-xs flex items-center justify-center">
                   <Share2 size={16} />
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Social Media Studio</span>
-                  <h4 className="text-xs font-bold text-white">4-Network Sync</h4>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">4-Network Sync</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/15 text-purple-300 border border-purple-500/30 font-mono">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/15 text-purple-600 dark:text-purple-300 border border-purple-500/30 font-mono">
                 𝕏 · FB · IG · LI
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-xs text-slate-300 font-medium">Generate viral social posts</span>
+                <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">Generate viral social posts</span>
               </div>
-              <Link href="/social" className="text-xs text-purple-400 hover:text-purple-300 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/social" className="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Compose</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -355,15 +355,15 @@ export function DashboardClient() {
         <div className="lg:col-span-8 space-y-6">
           {/* Top Header & 3-Pill Balance Glass Card */}
           <div className="luxe-box rounded-3xl p-6 sm:p-7 space-y-5">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-white/[0.06] pb-4">
               <div>
-                <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Executive Operations Hub</span>
                 </h1>
-                <p className="text-xs text-slate-400 mt-0.5">Real-time consolidated treasury, gross earnings & statutory burn</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Real-time consolidated treasury, gross earnings & statutory burn</p>
               </div>
-              <span className="text-xs text-amber-400/90 font-mono font-medium flex items-center gap-1.5 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-                <Sparkles size={13} className="text-amber-400 animate-pulse" />
+              <span className="text-xs text-amber-700 dark:text-amber-400/90 font-mono font-medium flex items-center gap-1.5 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+                <Sparkles size={13} className="text-amber-500 dark:text-amber-400 animate-pulse" />
                 <span>Live Sync Active</span>
               </span>
             </div>
@@ -371,56 +371,56 @@ export function DashboardClient() {
             {/* 3 Metrics Pills in Beveled Glass */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* Total Balance Card */}
-              <div className="luxe-inner-card rounded-2xl p-4.5 space-y-3 relative overflow-hidden group hover:border-white/20 transition-all">
+              <div className="luxe-inner-card rounded-2xl p-4.5 space-y-3 relative overflow-hidden group hover:border-slate-300 dark:hover:border-white/20 transition-all">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-slate-300 shadow-xs">
-                    <Wallet size={18} className="text-slate-300" />
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center text-slate-700 dark:text-slate-300 shadow-xs">
+                    <Wallet size={18} />
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/25 flex items-center gap-0.5">
+                  <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/25 flex items-center gap-0.5">
                     <ArrowUpRight size={10} /> +8.4%
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
                     Total Balance
                   </span>
-                  <span className="font-mono font-extrabold text-xl text-white tracking-tight">$789,999.56</span>
+                  <span className="font-mono font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">$789,999.56</span>
                 </div>
               </div>
 
               {/* Earnings Card */}
               <div className="luxe-inner-card rounded-2xl p-4.5 space-y-3 relative overflow-hidden group hover:border-amber-500/40 transition-all">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs">
                     <DollarSign size={18} />
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/25 flex items-center gap-0.5">
+                  <span className="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/25 flex items-center gap-0.5">
                     <ArrowUpRight size={10} /> +14.2%
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
                     Gross Earnings
                   </span>
-                  <span className="font-mono font-extrabold text-xl text-amber-400 tracking-tight">$968,999.56</span>
+                  <span className="font-mono font-extrabold text-xl text-amber-600 dark:text-amber-400 tracking-tight">$968,999.56</span>
                 </div>
               </div>
 
               {/* Expenses Card */}
               <div className="luxe-inner-card rounded-2xl p-4.5 space-y-3 relative overflow-hidden group hover:border-orange-500/40 transition-all">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-600 dark:text-orange-400 shadow-xs">
                     <Receipt size={18} />
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-slate-400 bg-white/[0.05] px-2 py-0.5 rounded-full border border-white/[0.08]">
+                  <span className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.05] px-2 py-0.5 rounded-full border border-slate-200 dark:border-white/[0.08]">
                     Burn 4.1%
                   </span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
                     Monthly Expenses
                   </span>
-                  <span className="font-mono font-extrabold text-xl text-slate-200 tracking-tight">$39,999.67</span>
+                  <span className="font-mono font-extrabold text-xl text-slate-900 dark:text-slate-200 tracking-tight">$39,999.67</span>
                 </div>
               </div>
             </div>
@@ -428,25 +428,25 @@ export function DashboardClient() {
 
           {/* Glowing Dual-Curve Statistics Chart (Elevated Luxe Box) */}
           <div className="luxe-box rounded-3xl p-6 sm:p-7 space-y-5">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/[0.06] pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <BarChart3 size={18} className="text-amber-400" />
-                  <h3 className="text-base font-bold text-white tracking-tight">Performance Statistics</h3>
+                  <BarChart3 size={18} className="text-amber-500 dark:text-amber-400" />
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Performance Statistics</h3>
                 </div>
-                <span className="text-[11px] text-slate-400 font-medium">
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                   Top half-year revenue trajectories & operations variance
                 </span>
               </div>
 
               <div className="flex items-center gap-2.5 flex-wrap">
-                <div className="flex items-center gap-1.5 p-1 bg-white/[0.04] border border-white/[0.08] rounded-xl text-[11px] font-semibold">
+                <div className="flex items-center gap-1.5 p-1 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/[0.08] rounded-xl text-[11px] font-semibold">
                   <button
                     onClick={() => setActiveChartTab('earning')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                       activeChartTab === 'earning'
-                        ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 shadow-xs'
-                        : 'text-slate-400 hover:text-slate-200'
+                        ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/30 shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
                     Earning
@@ -455,17 +455,17 @@ export function DashboardClient() {
                     onClick={() => setActiveChartTab('expenses')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                       activeChartTab === 'expenses'
-                        ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30 shadow-xs'
-                        : 'text-slate-400 hover:text-slate-200'
+                        ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/30 shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
                     Expenses
                   </button>
                 </div>
 
-                <div className="px-3 py-1.5 bg-white/[0.05] border border-white/[0.08] rounded-xl text-xs font-semibold text-slate-300 flex items-center gap-1.5 cursor-pointer hover:bg-white/[0.08] transition-colors">
+                <div className="px-3 py-1.5 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.08] transition-colors">
                   <span>{selectedRange}</span>
-                  <ChevronDown size={12} className="text-slate-400" />
+                  <ChevronDown size={12} className="text-slate-500 dark:text-slate-400" />
                 </div>
               </div>
             </div>
@@ -473,7 +473,7 @@ export function DashboardClient() {
             {/* Glowing Bezier Curve SVG Simulation */}
             <div className="relative pt-6 pb-2">
               <div className="absolute top-1 left-[38%] -translate-x-1/2 z-10">
-                <div className="px-3 py-1 bg-slate-950/95 border border-amber-400/80 rounded-xl text-[10px] font-mono font-extrabold text-amber-300 shadow-xl shadow-amber-500/30 flex items-center gap-1.5">
+                <div className="px-3 py-1 bg-slate-900 text-amber-300 dark:bg-slate-950/95 border border-amber-400/80 rounded-xl text-[10px] font-mono font-extrabold shadow-xl shadow-amber-500/30 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                   <span>Peak: 10,256,198</span>
                 </div>
@@ -488,9 +488,9 @@ export function DashboardClient() {
                   </linearGradient>
                 </defs>
 
-                <line x1="0" y1="40" x2="600" y2="40" stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" />
-                <line x1="0" y1="90" x2="600" y2="90" stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" />
-                <line x1="0" y1="140" x2="600" y2="140" stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" />
+                <line x1="0" y1="40" x2="600" y2="40" stroke="rgba(148,163,184,0.15)" strokeDasharray="3 3" />
+                <line x1="0" y1="90" x2="600" y2="90" stroke="rgba(148,163,184,0.15)" strokeDasharray="3 3" />
+                <line x1="0" y1="140" x2="600" y2="140" stroke="rgba(148,163,184,0.15)" strokeDasharray="3 3" />
 
                 <path
                   d="M 0 120 Q 120 130 220 50 T 400 110 T 600 70 L 600 160 L 0 160 Z"
@@ -508,7 +508,7 @@ export function DashboardClient() {
                 <path
                   d="M 0 90 Q 140 30 250 110 T 450 60 T 600 95"
                   fill="none"
-                  stroke="rgba(255,255,255,0.3)"
+                  stroke="#94a3b8"
                   strokeWidth="2"
                   strokeDasharray="4 4"
                 />
@@ -516,7 +516,7 @@ export function DashboardClient() {
                 <circle cx="220" cy="50" r="5.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="2.5" className="shadow-lg shadow-amber-500/50" />
               </svg>
 
-              <div className="flex justify-between text-xs font-semibold text-slate-400 pt-3.5 border-t border-white/[0.06]">
+              <div className="flex justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 pt-3.5 border-t border-slate-200 dark:border-white/[0.06]">
                 <span>Jan</span>
                 <span>Feb</span>
                 <span>Mar</span>
@@ -531,34 +531,34 @@ export function DashboardClient() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* My Goals Card */}
             <div className="luxe-box rounded-3xl p-5 sm:p-6 space-y-4">
-              <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                  <Target size={14} className="text-amber-400" />
+              <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.06] pb-2.5">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                  <Target size={14} className="text-amber-500 dark:text-amber-400" />
                   <span>Strategic Goals</span>
                 </h3>
-                <span className="text-[10px] font-mono text-emerald-400 font-bold">2/2 On Track</span>
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">2/2 On Track</span>
               </div>
 
               <div className="grid grid-cols-2 gap-3.5">
                 <div className="luxe-inner-card rounded-2xl p-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xl font-extrabold text-amber-400 font-mono tracking-tight">60%</span>
-                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    <span className="text-xl font-extrabold text-amber-600 dark:text-amber-400 font-mono tracking-tight">60%</span>
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
                   </div>
-                  <span className="text-[11px] text-slate-300 font-bold block">Enterprise SaaS</span>
-                  <div className="w-full h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full w-[60%]" />
+                  <span className="text-[11px] text-slate-800 dark:text-slate-300 font-bold block">Enterprise SaaS</span>
+                  <div className="w-full h-1.5 bg-slate-200 dark:bg-white/[0.08] rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-500 rounded-full w-[60%]" />
                   </div>
                 </div>
 
                 <div className="luxe-inner-card rounded-2xl p-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xl font-extrabold text-emerald-400 font-mono tracking-tight">89%</span>
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    <span className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">89%</span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   </div>
-                  <span className="text-[11px] text-slate-300 font-bold block">Real Estate Asset</span>
-                  <div className="w-full h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-400 rounded-full w-[89%]" />
+                  <span className="text-[11px] text-slate-800 dark:text-slate-300 font-bold block">Real Estate Asset</span>
+                  <div className="w-full h-1.5 bg-slate-200 dark:bg-white/[0.08] rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full w-[89%]" />
                   </div>
                 </div>
               </div>
@@ -567,12 +567,12 @@ export function DashboardClient() {
             {/* Business Target Savings Card with Circular Dial */}
             <div className="luxe-box rounded-3xl p-5 sm:p-6 flex items-center justify-between">
               <div className="space-y-2">
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Annual Target</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block">Annual Target</span>
                 <div className="space-y-0.5">
-                  <div className="text-xs text-slate-400">Target: <span className="font-mono font-bold text-amber-400">$1,000,000.00</span></div>
-                  <div className="text-xs text-slate-400">Accumulated: <span className="font-mono font-bold text-white">$300,345.96</span></div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">Target: <span className="font-mono font-bold text-amber-600 dark:text-amber-400">$1,000,000.00</span></div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">Accumulated: <span className="font-mono font-bold text-slate-900 dark:text-white">$300,345.96</span></div>
                 </div>
-                <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/25">
+                <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
                   Phase 3 Completed
                 </span>
               </div>
@@ -580,7 +580,7 @@ export function DashboardClient() {
               {/* Circular Gauge 95% */}
               <div className="relative w-18 h-18 flex items-center justify-center">
                 <svg className="w-18 h-18 transform -rotate-90">
-                  <circle cx="36" cy="36" r="30" stroke="rgba(255,255,255,0.06)" strokeWidth="6" fill="transparent" />
+                  <circle cx="36" cy="36" r="30" stroke="rgba(148,163,184,0.2)" strokeWidth="6" fill="transparent" />
                   <circle
                     cx="36"
                     cy="36"
@@ -594,7 +594,7 @@ export function DashboardClient() {
                     className="drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"
                   />
                 </svg>
-                <span className="absolute font-mono font-extrabold text-sm text-white">95%</span>
+                <span className="absolute font-mono font-extrabold text-sm text-slate-900 dark:text-white">95%</span>
               </div>
             </div>
           </div>
@@ -608,7 +608,7 @@ export function DashboardClient() {
           <div className="luxe-box rounded-3xl p-6 sm:p-7 space-y-5">
             {/* Profile Header */}
             <div className="flex items-center justify-between">
-              <div className="w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-slate-300 cursor-pointer hover:bg-white/[0.1] transition-colors shadow-xs">
+              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-colors shadow-xs">
                 <Bell size={14} />
               </div>
 
@@ -620,19 +620,19 @@ export function DashboardClient() {
                     className="w-full h-full object-cover rounded-full"
                   />
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 uppercase tracking-widest">
+                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 uppercase tracking-widest">
                   VIP Executive
                 </span>
-                <h3 className="font-bold text-sm text-white mt-1">Emmanuella Takureea</h3>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white mt-1">Emmanuella Takureea</h3>
               </div>
 
-              <div className="w-8 h-8 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-slate-300 cursor-pointer hover:bg-white/[0.1] transition-colors shadow-xs">
+              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-colors shadow-xs">
                 <MoreVertical size={14} />
               </div>
             </div>
 
             {/* Quick Beveled Action Tiles */}
-            <div className="grid grid-cols-4 gap-2.5 pt-3 border-t border-white/[0.06]">
+            <div className="grid grid-cols-4 gap-2.5 pt-3 border-t border-slate-200 dark:border-white/[0.06]">
               {[
                 { label: 'Transfer', icon: Send },
                 { label: 'Receive', icon: Download },
@@ -645,10 +645,10 @@ export function DashboardClient() {
                     key={idx}
                     type="button"
                     onClick={() => handleActionClick(btn.label)}
-                    className="luxe-inner-card flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-white/[0.08] hover:border-amber-500/40 transition-all group cursor-pointer"
+                    className="luxe-inner-card flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-slate-200/50 dark:hover:bg-white/[0.08] hover:border-amber-500/40 transition-all group cursor-pointer"
                   >
-                    <Icon size={16} className="text-slate-300 group-hover:text-amber-400 transition-colors mb-1.5" />
-                    <span className="text-[10px] font-semibold text-slate-400 group-hover:text-white transition-colors">
+                    <Icon size={16} className="text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors mb-1.5" />
+                    <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                       {btn.label}
                     </span>
                   </button>
@@ -704,9 +704,9 @@ export function DashboardClient() {
 
           {/* Month Transactions Feed */}
           <div className="luxe-box rounded-3xl p-6 space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-              <h3 className="text-sm font-bold text-white tracking-tight">Recent Transactions</h3>
-              <span className="text-[10px] text-amber-400 font-mono font-bold uppercase bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.06] pb-3">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Recent Transactions</h3>
+              <span className="text-[10px] text-amber-700 dark:text-amber-400 font-mono font-bold uppercase bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
                 Live Feed
               </span>
             </div>
@@ -740,28 +740,28 @@ export function DashboardClient() {
               ].map((tx, idx) => (
                 <div
                   key={idx}
-                  className="p-3.5 luxe-inner-card hover:border-white/20 rounded-2xl flex items-center justify-between transition-all"
+                  className="p-3.5 luxe-inner-card hover:border-slate-300 dark:hover:border-white/20 rounded-2xl flex items-center justify-between transition-all"
                 >
                   <div className="flex items-center gap-3">
-                    <img src={tx.img} alt={tx.name} className="w-9 h-9 rounded-xl object-cover border border-white/10" />
+                    <img src={tx.img} alt={tx.name} className="w-9 h-9 rounded-xl object-cover border border-slate-200 dark:border-white/10" />
                     <div>
-                      <h4 className="font-bold text-xs text-white">{tx.name}</h4>
-                      <span className="text-[10px] text-slate-400 block">{tx.date}</span>
+                      <h4 className="font-bold text-xs text-slate-900 dark:text-white">{tx.name}</h4>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block">{tx.date}</span>
                     </div>
                   </div>
 
-                  <span className="px-2.5 py-1 rounded-xl font-mono font-extrabold text-xs bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                  <span className="px-2.5 py-1 rounded-xl font-mono font-extrabold text-xs bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
                     {tx.amount}
                   </span>
                 </div>
               ))}
             </div>
 
-            <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between">
-              <span className="text-xs text-slate-400 font-medium">See all transactions</span>
+            <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between">
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">See all transactions</span>
               <button
                 onClick={() => handleActionClick('Transactions Ledger')}
-                className="w-7 h-7 rounded-full bg-white/[0.06] hover:bg-amber-500 hover:text-slate-950 text-white flex items-center justify-center transition-all cursor-pointer shadow-xs"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:bg-white/[0.06] dark:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs"
               >
                 <ArrowRight size={13} />
               </button>
