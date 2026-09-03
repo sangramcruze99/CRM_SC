@@ -65,7 +65,7 @@ export function OrgHierarchyTree({
   const getLevelBadgeColor = (level: number) => {
     switch (level) {
       case 0:
-        return 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
       case 1:
         return 'bg-sky-500/20 text-sky-300 border-sky-500/40';
       case 2:
@@ -88,7 +88,7 @@ export function OrgHierarchyTree({
         <div
           className={`p-4 rounded-3xl border transition-all shadow-xl backdrop-blur-2xl relative w-72 sm:w-80 group ${
             emp.level === 0
-              ? 'bg-gradient-to-tr from-amber-500/20 via-white/[0.04] to-orange-500/15 border-amber-500/60 ring-2 ring-amber-500/20 shadow-orange-500/15'
+              ? 'bg-gradient-to-tr from-amber-500/20 via-white/[0.04] to-orange-500/15 border-amber-500/60 ring-2 ring-emerald-500/20 shadow-orange-500/15'
               : emp.level === 1
               ? 'bg-white/[0.04] border-sky-500/40 hover:border-sky-400/60'
               : emp.level === 2
@@ -106,7 +106,7 @@ export function OrgHierarchyTree({
               {getLevelLabel(emp.level).split(':')[0]}
             </span>
 
-            <span className="text-[11px] font-mono font-bold text-amber-400">
+            <span className="text-[11px] font-mono font-bold text-emerald-400">
               ${emp.salary.netMonthly.toLocaleString()}/mo
             </span>
           </div>
@@ -119,10 +119,10 @@ export function OrgHierarchyTree({
               className="w-12 h-12 rounded-2xl object-cover border border-white/10 shadow-md"
             />
             <div className="flex-1 min-w-0">
-              <h4 className="font-bold text-sm text-white truncate group-hover:text-amber-300 transition-colors">
+              <h4 className="font-bold text-sm text-white truncate group-hover:text-emerald-300 transition-colors">
                 {emp.firstName} {emp.lastName}
               </h4>
-              <p className="text-[11px] text-amber-400/90 font-medium truncate">{emp.jobTitle}</p>
+              <p className="text-[11px] text-emerald-400/90 font-medium truncate">{emp.jobTitle}</p>
               <span className="text-[10px] text-slate-400 block truncate">{emp.department}</span>
             </div>
           </div>
@@ -132,7 +132,7 @@ export function OrgHierarchyTree({
             <button
               type="button"
               onClick={() => onSelectEmployee(emp)}
-              className="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 cursor-pointer"
+              className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer"
             >
               <span>View Payslip</span>
               <ArrowRight size={11} />
@@ -179,7 +179,7 @@ export function OrgHierarchyTree({
             <button
               type="button"
               onClick={() => toggleCollapse(emp.id)}
-              className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-slate-950 border border-amber-500/40 text-amber-400 flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer z-10"
+              className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-slate-950 border border-emerald-500/40 text-emerald-400 flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer z-10"
               title={isCollapsed ? 'Expand Direct Reports' : 'Collapse Direct Reports'}
             >
               {isCollapsed ? <ChevronDown size={13} /> : <ChevronRight size={13} className="rotate-90" />}
@@ -222,7 +222,7 @@ export function OrgHierarchyTree({
             <h3 className="text-base font-bold text-white">
               {nicheConfig.name} — Organizational Pipeline Tree
             </h3>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
               {employees.length} Members
             </span>
           </div>
@@ -234,7 +234,7 @@ export function OrgHierarchyTree({
         <button
           type="button"
           onClick={onOpenAddModal}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
         >
           <UserPlus size={14} />
           <span>Add Employee Node</span>
@@ -242,10 +242,28 @@ export function OrgHierarchyTree({
       </div>
 
       {/* Hierarchy Tree Canvas */}
-      <div className="bg-white/[0.02] border border-white/[0.08] rounded-3xl p-8 overflow-x-auto min-h-[500px] flex justify-center items-start shadow-inner">
-        <div className="flex flex-col items-center space-y-8 min-w-max">
-          {rootEmployees.map((root) => renderNode(root))}
-        </div>
+      <div className="bg-white/[0.02] border border-white/[0.08] rounded-3xl p-8 overflow-x-auto min-h-[500px] flex justify-center items-center shadow-inner">
+        {rootEmployees.length > 0 ? (
+          <div className="flex flex-col items-center space-y-8 min-w-max">
+            {rootEmployees.map((root) => renderNode(root))}
+          </div>
+        ) : (
+          <div className="text-center py-16 px-4">
+            <Users className="mx-auto text-slate-600 mb-3" size={44} />
+            <h4 className="text-base font-bold text-white mb-1">No Team Members in Hierarchy</h4>
+            <p className="text-xs text-slate-400 mb-5 max-w-sm mx-auto">
+              Start building your organization by adding an Executive Leader (CEO / Level 0) or team member.
+            </p>
+            <button
+              type="button"
+              onClick={onOpenAddModal}
+              className="px-4 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <UserPlus size={14} />
+              <span>Add First Employee</span>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

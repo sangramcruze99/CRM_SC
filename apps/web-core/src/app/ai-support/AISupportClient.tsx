@@ -131,10 +131,10 @@ const PRESET_CONVERSATIONS = {
 
 export function AISupportClient() {
   const [activeScenario, setActiveScenario] = useState<'billing_dispute' | 'api_rate_limit'>('billing_dispute');
-  const [messages, setMessages] = useState<ChatMessage[]>(PRESET_CONVERSATIONS.billing_dispute.messages);
-  const [ticketDraft, setTicketDraft] = useState<SupportTicketDraft>(PRESET_CONVERSATIONS.billing_dispute.ticket);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [ticketDraft, setTicketDraft] = useState<SupportTicketDraft | null>(null);
   const [inputMessage, setInputMessage] = useState('');
-  const [isEscalated, setIsEscalated] = useState(true);
+  const [isEscalated, setIsEscalated] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
 
   const handleSelectScenario = (key: 'billing_dispute' | 'api_rate_limit') => {
@@ -197,8 +197,8 @@ export function AISupportClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
           <span>{alert}</span>
         </div>
       )}
@@ -207,7 +207,7 @@ export function AISupportClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
               Autonomous Support Sentinel
             </span>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
@@ -215,7 +215,7 @@ export function AISupportClient() {
             </span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5 mt-1">
-            <Bot className="text-amber-400" size={24} />
+            <Bot className="text-emerald-400" size={24} />
             AI Customer Support & Autonomous Ticket Escalation Hub
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -230,7 +230,7 @@ export function AISupportClient() {
             onClick={() => handleSelectScenario('billing_dispute')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeScenario === 'billing_dispute'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white'
             }`}
           >
@@ -241,7 +241,7 @@ export function AISupportClient() {
             onClick={() => handleSelectScenario('api_rate_limit')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
               activeScenario === 'api_rate_limit'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white'
             }`}
           >
@@ -258,7 +258,7 @@ export function AISupportClient() {
             {/* Conversation Header with Sentiment Sentinel */}
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center font-bold text-xs">
                   <Bot size={18} />
                 </div>
                 <div>
@@ -289,7 +289,7 @@ export function AISupportClient() {
             </div>
 
             {/* Chat Messages Body */}
-            <div className="flex-1 overflow-y-auto space-y-3.5 pr-2">
+            <div className="flex-1 overflow-y-auto space-y-3.5 pr-2 min-h-[260px]">
               {messages.map((msg) => {
                 const isUser = msg.sender === 'USER';
                 return (
@@ -306,7 +306,7 @@ export function AISupportClient() {
                     <div
                       className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
                         isUser
-                          ? 'bg-amber-500/20 border border-amber-500/40 text-amber-100 rounded-tr-none'
+                          ? 'bg-emerald-500/20 border border-emerald-500/40 text-amber-100 rounded-tr-none'
                           : 'bg-white/[0.05] border border-white/[0.08] text-slate-200 rounded-tl-none space-y-2'
                       }`}
                     >
@@ -314,7 +314,7 @@ export function AISupportClient() {
 
                       {msg.citationDoc && (
                         <div className="pt-2 border-t border-white/[0.08] flex items-center justify-between text-[10px] text-slate-400 font-mono">
-                          <span className="flex items-center gap-1 text-amber-300">
+                          <span className="flex items-center gap-1 text-emerald-300">
                             <FileText size={11} />
                             <span className="truncate max-w-[220px]">{msg.citationDoc}</span>
                           </span>
@@ -325,6 +325,12 @@ export function AISupportClient() {
                   </div>
                 );
               })}
+              {messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full py-16 text-center text-slate-500 text-xs font-medium space-y-2">
+                  <Bot size={28} className="text-emerald-400/80" />
+                  <p>Support channel ready. Type a customer query below or select a scenario to test live sentiment analysis & autonomous ticket drafting.</p>
+                </div>
+              )}
             </div>
 
             {/* Message Input Box */}
@@ -340,7 +346,7 @@ export function AISupportClient() {
               <button
                 type="button"
                 onClick={handleSendMessage}
-                className="p-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 rounded-xl hover:from-amber-400 hover:to-orange-400 cursor-pointer transition-transform active:scale-95"
+                className="p-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 rounded-xl hover:from-amber-400 hover:to-orange-400 cursor-pointer transition-transform active:scale-95"
               >
                 <Send size={15} />
               </button>
@@ -350,95 +356,103 @@ export function AISupportClient() {
 
         {/* Right Column: Autonomous Ticket Drafting & Specialist Routing Cockpit */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-5">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-              <div className="flex items-center gap-2">
-                <Ticket size={16} className="text-amber-400" />
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                  Autonomous Escalated Ticket
-                </h3>
-              </div>
-              <span
-                className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold ${
-                  ticketDraft.status === 'RESOLVED'
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                }`}
-              >
-                {ticketDraft.status}
-              </span>
-            </div>
-
-            {/* Ticket Details */}
-            <div className="space-y-3 text-xs">
-              <div>
-                <span className="text-[10px] uppercase font-bold text-slate-500 block">Ticket ID & Title</span>
-                <h4 className="font-bold text-sm text-white mt-0.5">{ticketDraft.title}</h4>
+          {ticketDraft ? (
+            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-5">
+              <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                <div className="flex items-center gap-2">
+                  <Ticket size={16} className="text-emerald-400" />
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                    Autonomous Escalated Ticket
+                  </h3>
+                </div>
+                <span
+                  className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold ${
+                    ticketDraft.status === 'RESOLVED'
+                      ? 'bg-emerald-500/20 text-emerald-300'
+                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                  }`}
+                >
+                  {ticketDraft.status}
+                </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] text-slate-500 block font-semibold">Priority SLA Tier</span>
-                  <span
-                    className={`font-bold font-mono ${
-                      ticketDraft.priority === 'P1_CRITICAL' ? 'text-rose-400' : 'text-emerald-300'
-                    }`}
-                  >
-                    {ticketDraft.priority} (&lt; 15 min response)
+              {/* Ticket Details */}
+              <div className="space-y-3 text-xs">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-slate-500 block">Ticket ID & Title</span>
+                  <h4 className="font-bold text-sm text-white mt-0.5">{ticketDraft.title}</h4>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                    <span className="text-[10px] text-slate-500 block font-semibold">Priority SLA Tier</span>
+                    <span
+                      className={`font-bold font-mono ${
+                        ticketDraft.priority === 'P1_CRITICAL' ? 'text-rose-400' : 'text-emerald-300'
+                      }`}
+                    >
+                      {ticketDraft.priority} (&lt; 15 min response)
+                    </span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                    <span className="text-[10px] text-slate-500 block font-semibold">Assigned Specialist</span>
+                    <span className="font-bold text-emerald-300">{ticketDraft.assignedSpecialist}</span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                    Autonomous AI Root Cause Analysis
                   </span>
+                  <p className="text-slate-300 text-[11px] leading-relaxed font-mono">
+                    {ticketDraft.rootCauseSummary}
+                  </p>
                 </div>
-                <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] text-slate-500 block font-semibold">Assigned Specialist</span>
-                  <span className="font-bold text-amber-300">{ticketDraft.assignedSpecialist}</span>
+
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-emerald-400 block">
+                    Recommended Specialist Resolution
+                  </span>
+                  <p className="text-amber-200/90 text-[11px] leading-relaxed">
+                    {ticketDraft.recommendedAction}
+                  </p>
                 </div>
-              </div>
 
-              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">
-                  Autonomous AI Root Cause Analysis
-                </span>
-                <p className="text-slate-300 text-[11px] leading-relaxed font-mono">
-                  {ticketDraft.rootCauseSummary}
-                </p>
-              </div>
+                {/* Action Buttons for Human Support Lead */}
+                <div className="pt-2 border-t border-white/[0.06] space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAlert(`✅ Approved 1-Click Resolution for ${ticketDraft.id}! Refund credited on Stripe & confirmation SMS sent.`);
+                      setTimeout(() => setAlert(null), 4000);
+                    }}
+                    className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <CheckCircle2 size={14} />
+                    <span>Approve 1-Click Recommended Action</span>
+                  </button>
 
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-1">
-                <span className="text-[10px] uppercase font-bold text-amber-400 block">
-                  Recommended Specialist Resolution
-                </span>
-                <p className="text-amber-200/90 text-[11px] leading-relaxed">
-                  {ticketDraft.recommendedAction}
-                </p>
-              </div>
-
-              {/* Action Buttons for Human Support Lead */}
-              <div className="pt-2 border-t border-white/[0.06] space-y-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAlert(`✅ Approved 1-Click Resolution for ${ticketDraft.id}! Refund credited on Stripe & confirmation SMS sent.`);
-                    setTimeout(() => setAlert(null), 4000);
-                  }}
-                  className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <CheckCircle2 size={14} />
-                  <span>Approve 1-Click Recommended Action</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setAlert(`👤 Live Human Agent joined conversation session for ${ticketDraft.customerName}!`);
-                    setTimeout(() => setAlert(null), 3000);
-                  }}
-                  className="w-full py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 font-bold rounded-xl text-xs border border-white/[0.1] transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <UserCheck size={14} />
-                  <span>Take Over Live Chat as Specialist</span>
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAlert(`👤 Live Human Agent joined conversation session for ${ticketDraft.customerName}!`);
+                      setTimeout(() => setAlert(null), 3000);
+                    }}
+                    className="w-full py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 font-bold rounded-xl text-xs border border-white/[0.1] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <UserCheck size={14} />
+                    <span>Take Over Live Chat as Specialist</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-16 text-center space-y-2">
+              <Ticket size={32} className="text-emerald-400 mx-auto" />
+              <h4 className="text-sm font-bold text-white">No Escalated Ticket</h4>
+              <p className="text-xs text-slate-400">When customer frustration exceeds thresholds or refunds/contracts are requested, autonomous ticket summaries appear here with 1-click resolution actions.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

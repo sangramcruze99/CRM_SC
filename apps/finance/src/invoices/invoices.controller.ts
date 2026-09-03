@@ -8,19 +8,8 @@ export class InvoicesController {
 
   @Get()
   async getInvoices(@Headers('x-tenant-id') tenantId: string) {
-    if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
-    
-    const invoices = await this.invoicesService.findAll(tenantId);
-    
-    // Seed some initial data if empty for demo purposes
-    if (invoices.length === 0) {
-      await this.invoicesService.create(tenantId, { amount: 1250.00, status: 'PAID' });
-      await this.invoicesService.create(tenantId, { amount: 450.00, status: 'SENT' });
-      await this.invoicesService.create(tenantId, { amount: 8900.00, status: 'DRAFT' });
-      return this.invoicesService.findAll(tenantId);
-    }
-    
-    return invoices;
+    const effectiveTenantId = tenantId || 'default-tenant';
+    return this.invoicesService.findAll(effectiveTenantId);
   }
 
   @Post()

@@ -54,7 +54,7 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
       {/* Sidebar */}
       <div className="w-64 bg-white/[0.02] border-r border-white/[0.08] flex flex-col">
         <div className="p-4 border-b border-white/[0.08] flex items-center space-x-2">
-          <MessageSquare size={18} className="text-amber-400" />
+          <MessageSquare size={18} className="text-emerald-400" />
           <h2 className="text-white font-bold text-sm tracking-tight">Channels & Chat</h2>
         </div>
         <div className="flex-1 overflow-y-auto p-3 space-y-1">
@@ -63,7 +63,7 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
             <button
               key={ch.id}
               className={`w-full flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                activeChannel?.id === ch.id ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-2xs font-bold" : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
+                activeChannel?.id === ch.id ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-2xs font-bold" : "text-slate-400 hover:bg-white/[0.06] hover:text-white"
               }`}
             >
               <Hash size={14} className="opacity-70" />
@@ -78,7 +78,7 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
         {/* Chat Header */}
         <div className="h-14 border-b border-white/[0.08] flex items-center px-6 bg-white/[0.02] backdrop-blur-md">
           <div className="flex items-center space-x-2 text-white font-bold text-sm">
-            <Hash size={16} className="text-amber-400" />
+            <Hash size={16} className="text-emerald-400" />
             <span>{activeChannel?.name || "General Team Sync"}</span>
           </div>
         </div>
@@ -91,7 +91,7 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
             messages.map((msg, i) => (
               <div key={i} className="flex space-x-3.5">
                 <div className="flex-shrink-0">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold text-xs shadow-2xs">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-xs shadow-2xs">
                     {msg.user?.firstName?.[0] || <UserIcon size={16} />}
                   </div>
                 </div>
@@ -127,7 +127,7 @@ export function ChatClient({ channels, initialMessages }: { channels: any[], ini
             <button
               type="submit"
               disabled={!input.trim()}
-              className="absolute right-1.5 p-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 text-slate-950 rounded-lg transition-all shadow-md shadow-orange-500/20 cursor-pointer"
+              className="absolute right-1.5 p-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 text-slate-950 rounded-lg transition-all shadow-md shadow-emerald-500/20 cursor-pointer"
             >
               <Send size={14} />
             </button>

@@ -84,9 +84,17 @@ export function MortgageAmortizationCalculator() {
               <input
                 type="number"
                 step="0.1"
-                value={interestRate}
-                onChange={(e) => setInterestRate(Number(e.target.value))}
-                className="w-full px-3 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-white"
+                placeholder="6.5"
+                value={interestRate === 0 ? '' : interestRate}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => {
+                  let raw = e.target.value;
+                  if (raw.length > 1 && raw.startsWith('0') && !raw.startsWith('0.')) {
+                    raw = raw.replace(/^0+/, '');
+                  }
+                  setInterestRate(raw === '' ? 0 : parseFloat(raw) || 0);
+                }}
+                className="w-full px-3 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-white focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>

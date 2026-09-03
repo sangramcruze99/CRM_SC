@@ -28,58 +28,7 @@ interface Subscription {
   renewalDate: string;
 }
 
-const initialDemoSubscriptions: Subscription[] = [
-  {
-    id: 'sub_109283',
-    customer: 'Acme Corporation',
-    email: 'billing@acme.corp',
-    plan: 'Enterprise',
-    amount: 1200,
-    interval: 'monthly',
-    status: 'active',
-    renewalDate: '2026-09-15',
-  },
-  {
-    id: 'sub_109284',
-    customer: 'Starlight Media LLC',
-    email: 'finance@starlight.io',
-    plan: 'Pro',
-    amount: 450,
-    interval: 'monthly',
-    status: 'active',
-    renewalDate: '2026-09-22',
-  },
-  {
-    id: 'sub_109285',
-    customer: 'HyperScale AI',
-    email: 'ops@hyperscale.ai',
-    plan: 'Enterprise',
-    amount: 14400,
-    interval: 'yearly',
-    status: 'active',
-    renewalDate: '2027-02-01',
-  },
-  {
-    id: 'sub_109286',
-    customer: 'Nexora Dynamics',
-    email: 'accounts@nexora.co',
-    plan: 'Starter',
-    amount: 99,
-    interval: 'monthly',
-    status: 'trialing',
-    renewalDate: '2026-09-05',
-  },
-  {
-    id: 'sub_109287',
-    customer: 'Vanguard Systems',
-    email: 'contact@vanguard.tech',
-    plan: 'Pro',
-    amount: 450,
-    interval: 'monthly',
-    status: 'past_due',
-    renewalDate: '2026-08-28',
-  },
-];
+const initialDemoSubscriptions: Subscription[] = [];
 
 export function SubscriptionsClient({ initialSubscriptions }: { initialSubscriptions?: Subscription[] } = {}) {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(
@@ -146,7 +95,7 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <DollarSign className="text-amber-400" size={24} />
+            <DollarSign className="text-emerald-400" size={24} />
             SaaS Subscriptions & Product Editions
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -160,22 +109,22 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
             onClick={() => setIsPackagingModalOpen(true)}
             className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Sparkles size={14} className="text-amber-400" />
+            <Sparkles size={14} className="text-emerald-400" />
             <span>Compare Product Suites</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsTopUpModalOpen(true)}
-            className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
           >
-            <Zap size={14} className="text-amber-400" />
+            <Zap size={14} className="text-emerald-400" />
             <span>Usage Metering</span>
           </button>
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
           >
             <Plus size={16} />
             <span>New Subscription</span>
@@ -188,9 +137,9 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Monthly Recurring (MRR)</span>
-            <DollarSign size={18} className="text-amber-400" />
+            <DollarSign size={18} className="text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-amber-400 font-mono">${mrr.toLocaleString()}</div>
+          <div className="text-3xl font-extrabold text-emerald-400 font-mono">${mrr.toLocaleString()}</div>
           <div className="flex items-center gap-1 text-xs text-emerald-400 mt-2 font-bold">
             <TrendingUp size={14} /> +14.2% vs last month
           </div>
@@ -210,7 +159,7 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Trial Conversion</span>
-            <Zap size={18} className="text-amber-400" />
+            <Zap size={18} className="text-emerald-400" />
           </div>
           <div className="text-3xl font-extrabold text-white font-mono">68.4%</div>
           <div className="text-xs text-emerald-400 mt-2 font-bold">+4.1% efficiency</div>
@@ -247,7 +196,7 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
               onClick={() => setSelectedPlan(plan)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 selectedPlan === plan
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold shadow-md shadow-orange-500/20'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20'
                   : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1]'
               }`}
             >
@@ -281,7 +230,7 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
                   <span
                     className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                       sub.plan === 'Enterprise'
-                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                         : sub.plan === 'Pro'
                         ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
                         : 'bg-white/[0.08] text-slate-300 border border-white/10'
@@ -300,7 +249,7 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
                       sub.status === 'active'
                         ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                         : sub.status === 'trialing'
-                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                         : 'bg-rose-500/15 text-rose-300 border border-rose-500/30'
                     }`}
                   >
@@ -323,6 +272,13 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
                 </td>
               </tr>
             ))}
+            {filteredSubs.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                  No active subscriptions found. Click <span className="text-emerald-400 font-bold">"New Subscription"</span> above to provision a client plan.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -405,7 +361,7 @@ export function SubscriptionsClient({ initialSubscriptions }: { initialSubscript
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 cursor-pointer"
                 >
                   Activate Subscription
                 </button>

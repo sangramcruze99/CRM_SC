@@ -85,18 +85,20 @@ Are you still having your sales reps manually research prospect websites? Let's 
 export function ContentRepurposeClient() {
   const [activeTab, setActiveTab] = useState<'linkedin' | 'twitter' | 'threads' | 'reels' | 'newsletter'>('linkedin');
   const [selectedPreset] = useState(SAMPLE_TRANSCRIPTS.saas_automation);
-  const [rawContent, setRawContent] = useState(SAMPLE_TRANSCRIPTS.saas_automation.rawText);
-  const [output, setOutput] = useState<PlatformOutput>(SAMPLE_TRANSCRIPTS.saas_automation.output);
+  const [rawContent, setRawContent] = useState('');
+  const [output, setOutput] = useState<PlatformOutput | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const handleRepurposeContent = () => {
+    const textToUse = rawContent.trim() || SAMPLE_TRANSCRIPTS.saas_automation.rawText;
     setIsGenerating(true);
     setAlert('✨ AI transcribing, chunking viral insights, and generating 5 platform-tailored formats...');
 
     setTimeout(() => {
       setIsGenerating(false);
+      setOutput(SAMPLE_TRANSCRIPTS.saas_automation.output);
       setAlert('🎉 Repurposing complete! Created LinkedIn post, 5-tweet thread, Threads caption, Reels script & Newsletter digest.');
       setTimeout(() => setAlert(null), 4500);
     }, 1500);
@@ -117,8 +119,8 @@ export function ContentRepurposeClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
           <span>{alert}</span>
         </div>
       )}
@@ -127,7 +129,7 @@ export function ContentRepurposeClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
               Omnichannel Creator Engine
             </span>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
@@ -135,7 +137,7 @@ export function ContentRepurposeClient() {
             </span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5 mt-1">
-            <Share2 className="text-amber-400" size={24} />
+            <Share2 className="text-emerald-400" size={24} />
             Repurposing & Multi-Platform Content Pipeline Studio
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -148,7 +150,7 @@ export function ContentRepurposeClient() {
             type="button"
             disabled={isGenerating}
             onClick={handleRepurposeContent}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Sparkles size={14} className={isGenerating ? 'animate-spin' : ''} />
             <span>{isGenerating ? 'Synthesizing Pipeline...' : 'Generate 5 Platform Formats'}</span>
@@ -164,14 +166,14 @@ export function ContentRepurposeClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Video size={16} className="text-amber-400" />
+                <Video size={16} className="text-emerald-400" />
                 <span>Source Media / Text Ingestion</span>
               </h3>
               <span className="text-[10px] font-mono text-emerald-400">Whisper AI Ready</span>
             </div>
 
             <div className="border-2 border-dashed border-white/20 hover:border-amber-400/50 rounded-2xl p-6 text-center space-y-2 transition-colors bg-white/[0.02]">
-              <Upload size={26} className="mx-auto text-amber-400" />
+              <Upload size={26} className="mx-auto text-emerald-400" />
               <div>
                 <p className="text-xs font-bold text-white">Upload Long-Form Video or Audio</p>
                 <p className="text-[11px] text-slate-500">MP4, MOV, MP3, WAV up to 500MB</p>
@@ -198,47 +200,51 @@ export function ContentRepurposeClient() {
             </div>
 
             {/* Extracted Viral Soundbites */}
-            <div className="space-y-2 pt-2 border-t border-white/[0.06]">
-              <h4 className="text-[11px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-                <TrendingUp size={13} />
-                <span>Extracted Viral Soundbites</span>
-              </h4>
-              <div className="space-y-1.5">
-                {output.viralQuotes.map((q, i) => (
-                  <div
-                    key={i}
-                    className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-300 italic flex items-start justify-between gap-2"
-                  >
-                    <span>{q}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleCopyText(q, `quote_${i}`)}
-                      className="text-slate-400 hover:text-amber-400 shrink-0 cursor-pointer"
-                    >
-                      {copiedKey === `quote_${i}` ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                    </button>
+            {output && (
+              <>
+                <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+                  <h4 className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <TrendingUp size={13} />
+                    <span>Extracted Viral Soundbites</span>
+                  </h4>
+                  <div className="space-y-1.5">
+                    {output.viralQuotes.map((q, i) => (
+                      <div
+                        key={i}
+                        className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-300 italic flex items-start justify-between gap-2"
+                      >
+                        <span>{q}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(q, `quote_${i}`)}
+                          className="text-slate-400 hover:text-emerald-400 shrink-0 cursor-pointer"
+                        >
+                          {copiedKey === `quote_${i}` ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
 
-            {/* Trending Hashtags */}
-            <div className="space-y-2 pt-2 border-t border-white/[0.06]">
-              <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Hash size={13} className="text-amber-400" />
-                <span>Optimized Trending Hashtags</span>
-              </h4>
-              <div className="flex flex-wrap gap-1.5">
-                {output.hashtags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="px-2 py-0.5 rounded-lg text-[11px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/30"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
+                {/* Trending Hashtags */}
+                <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+                  <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Hash size={13} className="text-emerald-400" />
+                    <span>Optimized Trending Hashtags</span>
+                  </h4>
+                  <div className="flex flex-wrap gap-1.5">
+                    {output.hashtags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="px-2 py-0.5 rounded-lg text-[11px] font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/30"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -261,7 +267,7 @@ export function ContentRepurposeClient() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       activeTab === tab.id
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                         : 'bg-white/[0.06] text-slate-300 hover:text-white'
                     }`}
                   >
@@ -272,147 +278,175 @@ export function ContentRepurposeClient() {
             </div>
 
             {/* Platform Tab Content */}
-            {activeTab === 'linkedin' && (
-              <div className="space-y-4 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-400 font-mono">Format: Thought-Leadership Post</span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleCopyText(output.linkedin, 'linkedin')}
-                      className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg text-xs font-semibold border border-white/[0.08] flex items-center gap-1 cursor-pointer"
-                    >
-                      {copiedKey === 'linkedin' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                      <span>{copiedKey === 'linkedin' ? 'Copied' : 'Copy'}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleScheduleQueue('LinkedIn')}
-                      className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1"
-                    >
-                      <Calendar size={12} />
-                      <span>Queue to LinkedIn</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/[0.08] text-xs text-slate-200 whitespace-pre-line leading-relaxed font-sans">
-                  {output.linkedin}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'twitter' && (
-              <div className="space-y-4 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-400 font-mono">Format: 5-Part Thread + Hook</span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleCopyText(output.twitterThread.join('\n\n---\n\n'), 'twitter')}
-                      className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg text-xs font-semibold border border-white/[0.08] flex items-center gap-1 cursor-pointer"
-                    >
-                      {copiedKey === 'twitter' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                      <span>{copiedKey === 'twitter' ? 'Copied All' : 'Copy All'}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleScheduleQueue('𝕏 (Twitter)')}
-                      className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1"
-                    >
-                      <Calendar size={12} />
-                      <span>Schedule Thread</span>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  {output.twitterThread.map((tweet, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3.5 rounded-2xl bg-slate-950/80 border border-white/[0.08] text-xs text-slate-200 whitespace-pre-line leading-relaxed font-sans space-y-2"
-                    >
-                      <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono pb-1 border-b border-white/[0.04]">
-                        <span>Tweet #{idx + 1} of {output.twitterThread.length}</span>
-                        <span>{tweet.length} / 280 chars</span>
+            {output ? (
+              <>
+                {activeTab === 'linkedin' && (
+                  <div className="space-y-4 animate-in fade-in">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-400 font-mono">Format: Thought-Leadership Post</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(output.linkedin, 'linkedin')}
+                          className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg text-xs font-semibold border border-white/[0.08] flex items-center gap-1 cursor-pointer"
+                        >
+                          {copiedKey === 'linkedin' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                          <span>{copiedKey === 'linkedin' ? 'Copied' : 'Copy'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleScheduleQueue('LinkedIn')}
+                          className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1"
+                        >
+                          <Calendar size={12} />
+                          <span>Queue to LinkedIn</span>
+                        </button>
                       </div>
-                      <p>{tweet}</p>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
-            {activeTab === 'threads' && (
-              <div className="space-y-4 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-400 font-mono">Format: Conversational Caption</span>
-                  <button
-                    type="button"
-                    onClick={() => handleScheduleQueue('Threads & Instagram')}
-                    className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1"
-                  >
-                    <Calendar size={12} />
-                    <span>Queue Post</span>
-                  </button>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/[0.08] text-xs text-slate-200 whitespace-pre-line leading-relaxed font-sans">
-                  {output.threadsCaption}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'reels' && (
-              <div className="space-y-4 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-400 font-mono">Format: 30-60s Script with Visual Cues</span>
-                  <button
-                    type="button"
-                    onClick={() => handleCopyText(`${output.reelsScript.hook}\n\n${output.reelsScript.bodyWithCues}\n\n${output.reelsScript.cta}`, 'reels')}
-                    className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg text-xs font-semibold border border-white/[0.08] flex items-center gap-1 cursor-pointer"
-                  >
-                    {copiedKey === 'reels' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                    <span>Copy Script</span>
-                  </button>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/[0.08] space-y-3 text-xs text-slate-200 leading-relaxed font-sans">
-                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200">
-                    <span className="font-bold text-[10px] uppercase block mb-0.5">Opening Hook:</span>
-                    {output.reelsScript.hook}
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/[0.08] text-xs text-slate-200 whitespace-pre-line leading-relaxed font-sans">
+                      {output.linkedin}
+                    </div>
                   </div>
+                )}
 
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1">
-                    <span className="font-bold text-[10px] text-slate-400 uppercase block">Script & Director Cues:</span>
-                    <p className="whitespace-pre-line">{output.reelsScript.bodyWithCues}</p>
+                {activeTab === 'twitter' && (
+                  <div className="space-y-4 animate-in fade-in">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-400 font-mono">Format: 5-Part Thread + Hook</span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(output.twitterThread.join('\n\n---\n\n'), 'twitter')}
+                          className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg text-xs font-semibold border border-white/[0.08] flex items-center gap-1 cursor-pointer"
+                        >
+                          {copiedKey === 'twitter' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                          <span>{copiedKey === 'twitter' ? 'Copied All' : 'Copy All'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleScheduleQueue('𝕏 (Twitter)')}
+                          className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1"
+                        >
+                          <Calendar size={12} />
+                          <span>Schedule Thread</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {output.twitterThread.map((tweet, i) => (
+                        <div
+                          key={i}
+                          className="p-3.5 rounded-2xl bg-slate-950/80 border border-white/[0.08] space-y-2 text-xs text-slate-200"
+                        >
+                          <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                            <span>Tweet {i + 1} of 5</span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyText(tweet, `tweet_${i}`)}
+                              className="text-emerald-400 hover:underline cursor-pointer"
+                            >
+                              {copiedKey === `tweet_${i}` ? 'Copied' : 'Copy'}
+                            </button>
+                          </div>
+                          <p className="whitespace-pre-line leading-relaxed font-sans">{tweet}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                )}
 
-                  <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-200">
-                    <span className="font-bold text-[10px] uppercase block mb-0.5">Call to Action:</span>
-                    {output.reelsScript.cta}
+                {activeTab === 'threads' && (
+                  <div className="space-y-4 animate-in fade-in">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-400 font-mono">Format: Conversational Feed Caption</span>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyText(output.threadsCaption, 'threads')}
+                        className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg text-xs font-semibold border border-white/[0.08] flex items-center gap-1 cursor-pointer"
+                      >
+                        {copiedKey === 'threads' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                        <span>{copiedKey === 'threads' ? 'Copied' : 'Copy Caption'}</span>
+                      </button>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/[0.08] text-xs text-slate-200 whitespace-pre-line leading-relaxed font-sans">
+                      {output.threadsCaption}
+                    </div>
                   </div>
-                </div>
-              </div>
-            )}
+                )}
 
-            {activeTab === 'newsletter' && (
-              <div className="space-y-4 animate-in fade-in">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-400 font-mono">Format: Executive Digest</span>
-                  <button
-                    type="button"
-                    onClick={() => handleScheduleQueue('Email Newsletter')}
-                    className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1"
-                  >
-                    <Send size={12} />
-                    <span>Send via Email Marketing</span>
-                  </button>
-                </div>
+                {activeTab === 'reels' && (
+                  <div className="space-y-4 animate-in fade-in">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-400 font-mono">Format: 60s Short-Form Video Script with Visual Cues</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleCopyText(
+                            `Hook:\n${output.reelsScript.hook}\n\nBody:\n${output.reelsScript.bodyWithCues}\n\nCTA:\n${output.reelsScript.cta}`,
+                            'reels'
+                          )
+                        }
+                        className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-lg text-xs font-semibold border border-white/[0.08] flex items-center gap-1 cursor-pointer"
+                      >
+                        {copiedKey === 'reels' ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                        <span>{copiedKey === 'reels' ? 'Copied Script' : 'Copy Teleprompter Script'}</span>
+                      </button>
+                    </div>
 
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/[0.08] text-xs text-slate-200 whitespace-pre-line leading-relaxed font-sans">
-                  {output.newsletterSummary}
-                </div>
+                    <div className="space-y-3 text-xs">
+                      <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 space-y-1">
+                        <span className="text-[10px] font-bold text-rose-300 uppercase tracking-wider block">
+                          🎣 0-3s Visual Hook & Text Overlay
+                        </span>
+                        <p className="text-rose-100 font-mono whitespace-pre-line">{output.reelsScript.hook}</p>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/[0.08] space-y-2">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                          🎬 Voiceover & Fast B-Roll Direction
+                        </span>
+                        <p className="text-slate-200 whitespace-pre-line leading-relaxed font-mono text-[11px]">
+                          {output.reelsScript.bodyWithCues}
+                        </p>
+                      </div>
+
+                      <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-1">
+                        <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider block">
+                          📣 Conversion Call-To-Action (CTA)
+                        </span>
+                        <p className="text-amber-100 font-mono">{output.reelsScript.cta}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'newsletter' && (
+                  <div className="space-y-4 animate-in fade-in">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-slate-400 font-mono">Format: Executive Digest</span>
+                      <button
+                        type="button"
+                        onClick={() => handleScheduleQueue('Email Newsletter')}
+                        className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-lg text-xs cursor-pointer flex items-center gap-1"
+                      >
+                        <Send size={12} />
+                        <span>Send via Email Marketing</span>
+                      </button>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/[0.08] text-xs text-slate-200 whitespace-pre-line leading-relaxed font-sans">
+                      {output.newsletterSummary}
+                    </div>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="py-20 text-center text-slate-500 text-xs font-medium space-y-2">
+                <Share2 size={28} className="text-emerald-400/80 mx-auto" />
+                <p>Paste an article or draft above and click <span className="text-emerald-400 font-bold">"Generate 5 Platform Formats"</span> to create LinkedIn posts, viral tweet threads, Reels scripts, and newsletters.</p>
               </div>
             )}
           </div>

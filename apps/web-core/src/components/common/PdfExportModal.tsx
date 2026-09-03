@@ -63,7 +63,7 @@ export function PdfExportModal({ isOpen, onClose, data }: PdfExportModalProps) {
         {/* Modal Top Control Bar */}
         <div className="p-4 px-6 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center gap-2">
-            <FileText size={18} className="text-amber-400" />
+            <FileText size={18} className="text-emerald-400" />
             <h3 className="font-bold text-sm text-white">
               High-Fidelity PDF Preview & Vector Print Exporter
             </h3>
@@ -73,7 +73,7 @@ export function PdfExportModal({ isOpen, onClose, data }: PdfExportModalProps) {
             <button
               type="button"
               onClick={handleTriggerPrint}
-              className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-orange-500/25 cursor-pointer"
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/25 cursor-pointer"
             >
               <Printer size={14} />
               <span>Print / Download PDF</span>
@@ -219,7 +219,7 @@ export function PdfExportModal({ isOpen, onClose, data }: PdfExportModalProps) {
                 </div>
                 <div className="flex justify-between text-base font-extrabold text-slate-900 pt-2 border-t-2 border-slate-900">
                   <span>Total Due:</span>
-                  <span className="font-mono text-amber-600">{data.totalAmount}</span>
+                  <span className="font-mono text-emerald-600">{data.totalAmount}</span>
                 </div>
               </div>
             </div>

@@ -27,7 +27,7 @@ export default async function PlatformObjectsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Database className="text-amber-400" size={24} />
+            <Database className="text-emerald-400" size={24} />
             Schema Builder & Dynamic Entities
           </h1>
           <p className="text-sm text-slate-400 mt-1">Design relational database models, custom fields, and automated audit rules.</p>
@@ -52,12 +52,12 @@ export default async function PlatformObjectsPage() {
               {objects.map((obj: any) => (
                 <tr key={obj.id} className="hover:bg-white/[0.04] transition-colors group">
                   <td className="px-6 py-4">
-                    <Link href={`/platform/objects/${obj.id}`} className="font-bold text-white group-hover:text-amber-400 transition-colors text-sm">
+                    <Link href={`/platform/objects/${obj.id}`} className="font-bold text-white group-hover:text-emerald-400 transition-colors text-sm">
                       {obj.name}
                     </Link>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-mono text-xs bg-amber-500/15 px-2.5 py-1 rounded-xl border border-amber-500/30 text-amber-300 font-bold">
+                    <span className="font-mono text-xs bg-emerald-500/15 px-2.5 py-1 rounded-xl border border-emerald-500/30 text-emerald-300 font-bold">
                       {obj.apiName}
                     </span>
                   </td>

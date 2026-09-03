@@ -28,63 +28,9 @@ interface Patient {
   insuranceStatus: 'VERIFIED' | 'SELF_PAY' | 'PENDING';
 }
 
-const initialPatients: Patient[] = [
-  {
-    id: 'PT-8942',
-    name: 'Eleanor Vance',
-    age: 64,
-    gender: 'Female',
-    department: 'Cardiology',
-    attendingPhysician: 'Dr. Marcus Webb (Chief of Card)',
-    triageLevel: 'URGENT',
-    roomNumber: 'Ward 4B - Bed 12',
-    admitDate: '2026-08-28',
-    insuranceStatus: 'VERIFIED',
-  },
-  {
-    id: 'PT-8943',
-    name: 'Carlos Mendoza',
-    age: 38,
-    gender: 'Male',
-    department: 'Orthopedics',
-    attendingPhysician: 'Dr. Sarah Jenkins',
-    triageLevel: 'STABLE',
-    roomNumber: 'Ward 2A - Bed 04',
-    admitDate: '2026-08-29',
-    insuranceStatus: 'VERIFIED',
-  },
-  {
-    id: 'PT-8944',
-    name: 'Amina Al-Mansoor',
-    age: 29,
-    gender: 'Female',
-    department: 'Neurology',
-    attendingPhysician: 'Dr. David Cho',
-    triageLevel: 'CRITICAL',
-    roomNumber: 'ICU Suite 02',
-    admitDate: '2026-08-29',
-    insuranceStatus: 'VERIFIED',
-  },
-  {
-    id: 'PT-8945',
-    name: 'Robert Sterling',
-    age: 52,
-    gender: 'Male',
-    department: 'Emergency Care',
-    attendingPhysician: 'Dr. Rachel Green',
-    triageLevel: 'STABLE',
-    roomNumber: 'Observation B-08',
-    admitDate: '2026-08-29',
-    insuranceStatus: 'PENDING',
-  },
-];
+const initialPatients: Patient[] = [];
 
-const initialAppointments = [
-  { id: 'APT-101', patient: 'Arthur Pendelton', time: '10:30 AM', doctor: 'Dr. Marcus Webb', type: 'Post-Op Echo Followup', status: 'CONFIRMED' },
-  { id: 'APT-102', patient: 'Maya Lin', time: '11:15 AM', doctor: 'Dr. Sarah Jenkins', type: 'MRI Knee Assessment', status: 'IN_ROOM' },
-  { id: 'APT-103', patient: 'Daniel Kim', time: '01:45 PM', doctor: 'Dr. David Cho', type: 'EEG Neuro-Scan Review', status: 'SCHEDULED' },
-  { id: 'APT-104', patient: 'Fatima Zahra', time: '02:30 PM', doctor: 'Dr. Elena Rostova', type: 'Pediatric Vaccine & Check', status: 'SCHEDULED' },
-];
+const initialAppointments: Array<{ id: string; patient: string; time: string; doctor: string; type: string; status: string }> = [];
 
 export function HospitalClient() {
   const [patients, setPatients] = useState<Patient[]>(initialPatients);
@@ -135,8 +81,8 @@ export function HospitalClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -181,9 +127,9 @@ export function HospitalClient() {
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Active ER Triage Queue</span>
-            <HeartPulse size={18} className="text-amber-400" />
+            <HeartPulse size={18} className="text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-amber-400 font-mono">{patients.length} Active</div>
+          <div className="text-3xl font-extrabold text-emerald-400 font-mono">{patients.length} Active</div>
           <div className="text-xs text-slate-400 mt-2 font-medium">Avg wait time: 14 mins</div>
         </div>
 
@@ -249,7 +195,7 @@ export function HospitalClient() {
                           p.triageLevel === 'CRITICAL'
                             ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
                             : p.triageLevel === 'URGENT'
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                             : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                         }`}
                       >
@@ -266,6 +212,13 @@ export function HospitalClient() {
                     </td>
                   </tr>
                 ))}
+                {filteredPatients.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                      No inpatients admitted in hospital directory. Click <span className="text-rose-400 font-bold">"+ Admit New Inpatient"</span> to admit a patient.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -301,6 +254,11 @@ export function HospitalClient() {
                   </div>
                 </div>
               ))}
+              {appointments.length === 0 && (
+                <div className="py-8 text-center text-slate-500 text-xs font-medium">
+                  No medical consultations scheduled for today.
+                </div>
+              )}
             </div>
           </div>
         </div>

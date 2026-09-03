@@ -13,44 +13,7 @@ interface Candidate {
   stage: 'OFFER_ACCEPTED' | 'BACKGROUND_CHECK' | 'IT_PROVISIONING' | 'ORIENTATION' | 'COMPLETED';
 }
 
-const initialDemoCandidates: Candidate[] = [
-  {
-    id: 'onb_101',
-    name: 'Alexander Wright',
-    role: 'Senior Backend Engineer',
-    department: 'Engineering',
-    email: 'a.wright@businessos.io',
-    startDate: '2026-09-01',
-    stage: 'IT_PROVISIONING',
-  },
-  {
-    id: 'onb_102',
-    name: 'Sophia Martinez',
-    role: 'Enterprise Account Executive',
-    department: 'Sales',
-    email: 's.martinez@businessos.io',
-    startDate: '2026-09-08',
-    stage: 'BACKGROUND_CHECK',
-  },
-  {
-    id: 'onb_103',
-    name: 'Liam Zhang',
-    role: 'Lead UI/UX Product Designer',
-    department: 'Product',
-    email: 'l.zhang@businessos.io',
-    startDate: '2026-09-15',
-    stage: 'OFFER_ACCEPTED',
-  },
-  {
-    id: 'onb_104',
-    name: 'Emily Davis',
-    role: 'Customer Success Specialist',
-    department: 'Support',
-    email: 'e.davis@businessos.io',
-    startDate: '2026-08-25',
-    stage: 'ORIENTATION',
-  },
-];
+const initialDemoCandidates: Candidate[] = [];
 
 const STAGE_ORDER: Candidate['stage'][] = [
   'OFFER_ACCEPTED',
@@ -117,7 +80,7 @@ export function OnboardingClient({ initialCandidates = [] }: { initialCandidates
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <UserCheck className="text-amber-400" size={24} />
+            <UserCheck className="text-emerald-400" size={24} />
             Employee Onboarding Pipeline
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -126,7 +89,7 @@ export function OnboardingClient({ initialCandidates = [] }: { initialCandidates
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <Plus size={16} />
           <span>Add New Hire</span>
@@ -143,7 +106,7 @@ export function OnboardingClient({ initialCandidates = [] }: { initialCandidates
                 <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
                   {STAGE_LABELS[stage]}
                 </h3>
-                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-2xs">
+                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-2xs">
                   {inStage.length}
                 </span>
               </div>
@@ -155,11 +118,11 @@ export function OnboardingClient({ initialCandidates = [] }: { initialCandidates
                   inStage.map((c) => (
                     <div
                       key={c.id}
-                      className="p-4 bg-white/[0.03] border border-white/[0.08] rounded-2xl space-y-3 hover:border-amber-500/40 transition-all shadow-xs"
+                      className="p-4 bg-white/[0.03] border border-white/[0.08] rounded-2xl space-y-3 hover:border-emerald-500/40 transition-all shadow-xs"
                     >
                       <div>
                         <h4 className="font-bold text-white text-sm">{c.name}</h4>
-                        <p className="text-xs text-amber-400 font-semibold mt-0.5">{c.role}</p>
+                        <p className="text-xs text-emerald-400 font-semibold mt-0.5">{c.role}</p>
                         <p className="text-[11px] text-slate-400 font-medium">{c.department}</p>
                       </div>
 
@@ -269,7 +232,7 @@ export function OnboardingClient({ initialCandidates = [] }: { initialCandidates
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 cursor-pointer"
                 >
                   Start Onboarding
                 </button>

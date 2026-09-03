@@ -38,18 +38,69 @@ import {
   Wifi,
   Target,
   BarChart3,
+  Sparkle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useIndustry } from '@/components/industry/IndustryContext';
 import { NicheFeaturePickerModal } from '@/components/industry/NicheFeaturePickerModal';
+import { BotanicalGlassCockpit } from '@/components/dashboard/BotanicalGlassCockpit';
 
-export function DashboardClient() {
+interface DashboardClientProps {
+  initialData?: {
+    contacts?: any[];
+    deals?: any[];
+    invoices?: any[];
+    projects?: any[];
+    tickets?: any[];
+    metrics?: {
+      totalBalance?: number;
+      grossEarnings?: number;
+      monthlyExpenses?: number;
+      totalDealsValue?: number;
+      closedWonValue?: number;
+      totalInvoicedValue?: number;
+      contactsCount?: number;
+      dealsCount?: number;
+      invoicesCount?: number;
+      projectsCount?: number;
+      ticketsCount?: number;
+    };
+    recentActivities?: Array<{
+      id: string;
+      title: string;
+      type: string;
+      stage: string;
+      amount: number;
+      date: string;
+      href: string;
+    }>;
+  };
+}
+
+export function DashboardClient({ initialData }: DashboardClientProps) {
+  const [dashboardLayout, setDashboardLayout] = useState<'glass_cockpit' | 'classic_grid'>('glass_cockpit');
   const [selectedRange, setSelectedRange] = useState('All Transaction');
   const [activeChartTab, setActiveChartTab] = useState<'earning' | 'expenses' | 'profit'>('earning');
   const [alert, setAlert] = useState<string | null>(null);
   const [isFeaturePickerOpen, setIsFeaturePickerOpen] = useState(false);
 
   const { nicheConfig, activeFeatureIds, isFeatureEnabled } = useIndustry();
+
+  const metrics = {
+    totalBalance: initialData?.metrics?.totalBalance ?? 0,
+    grossEarnings: initialData?.metrics?.grossEarnings ?? 0,
+    monthlyExpenses: initialData?.metrics?.monthlyExpenses ?? 0,
+    totalDealsValue: initialData?.metrics?.totalDealsValue ?? 0,
+    closedWonValue: initialData?.metrics?.closedWonValue ?? 0,
+    totalInvoicedValue: initialData?.metrics?.totalInvoicedValue ?? 0,
+    contactsCount: initialData?.metrics?.contactsCount ?? 0,
+    dealsCount: initialData?.metrics?.dealsCount ?? 0,
+    invoicesCount: initialData?.metrics?.invoicesCount ?? 0,
+    projectsCount: initialData?.metrics?.projectsCount ?? 0,
+    ticketsCount: initialData?.metrics?.ticketsCount ?? 0,
+  };
+
+  const recentActivities = initialData?.recentActivities || [];
 
   const handleActionClick = (actionName: string) => {
     setAlert(`⚡ Triggered ${actionName} workflow!`);
@@ -60,16 +111,54 @@ export function DashboardClient() {
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Quick Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-700 dark:text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-500 dark:text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
 
-      {/* Dynamic Niche Ribbon Banner (Elevated Luxe Box) */}
-      <div className="luxe-box rounded-3xl p-4 sm:p-5 px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* Top Layout Switcher Pill */}
+      <div className="flex items-center justify-between gap-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 p-2 px-4 rounded-2xl">
+        <div className="flex items-center gap-2">
+          <Sparkles size={16} className="text-emerald-400" />
+          <span className="text-xs font-bold text-white">Theme Presentation</span>
+        </div>
+        <div className="flex items-center gap-1.5 bg-black/40 p-1 rounded-xl border border-white/10">
+          <button
+            type="button"
+            onClick={() => setDashboardLayout('glass_cockpit')}
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              dashboardLayout === 'glass_cockpit'
+                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/25'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            🌿 Botanical Glass Cockpit
+          </button>
+          <button
+            type="button"
+            onClick={() => setDashboardLayout('classic_grid')}
+            className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              dashboardLayout === 'classic_grid'
+                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/25'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            🏢 Modular CRM Grid
+          </button>
+        </div>
+      </div>
+
+      {/* Render Botanical Glass Cockpit View */}
+      {dashboardLayout === 'glass_cockpit' && <BotanicalGlassCockpit metrics={metrics} />}
+
+      {/* Render Classic Modular CRM Grid View */}
+      {dashboardLayout === 'classic_grid' && (
+        <div className="space-y-6">
+          {/* Dynamic Niche Ribbon Banner (Elevated Luxe Box) */}
+          <div className="luxe-box rounded-3xl p-4 sm:p-5 px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-amber-600 text-slate-950 flex items-center justify-center text-xl font-bold shadow-lg shadow-orange-500/20 border border-amber-300/30">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center text-xl font-bold shadow-lg shadow-emerald-500/20 border border-emerald-300/30">
             {nicheConfig.icon}
           </div>
           <div>
@@ -77,8 +166,8 @@ export function DashboardClient() {
               <h2 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                 {nicheConfig.name}
               </h2>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse" />
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 {activeFeatureIds.length} / 67 Features Active
               </span>
             </div>
@@ -92,7 +181,7 @@ export function DashboardClient() {
           <button
             type="button"
             onClick={() => setIsFeaturePickerOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:from-amber-500/30 hover:to-orange-500/30 border border-amber-500/40 text-amber-700 dark:text-amber-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98]"
           >
             <Sliders size={13} />
             <span>Customize Features ({activeFeatureIds.length})</span>
@@ -100,7 +189,7 @@ export function DashboardClient() {
 
           <Link
             href="/industry"
-            className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/[0.08] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl text-xs font-semibold transition-all hover:scale-[1.02]"
+            className="px-3.5 py-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all hover:scale-[1.02]"
           >
             Switch Niche
           </Link>
@@ -176,7 +265,7 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-xs flex items-center justify-center">
                   <UtensilsCrossed size={16} />
                 </div>
                 <div>
@@ -184,17 +273,17 @@ export function DashboardClient() {
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white">Seated Tables</h4>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-mono flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-amber-700 dark:text-emerald-300 border border-emerald-500/30 font-mono flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400" />
                 14 / 20 Tables
               </span>
             </div>
             <div className="flex justify-between items-end pt-1">
               <div>
-                <span className="text-2xl font-mono font-extrabold text-amber-600 dark:text-amber-400 tracking-tight">6 KOT</span>
+                <span className="text-2xl font-mono font-extrabold text-emerald-600 dark:text-emerald-400 tracking-tight">6 KOT</span>
                 <span className="text-xs text-slate-500 dark:text-slate-400"> in Kitchen</span>
               </div>
-              <Link href="/industry/restaurant" className="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/industry/restaurant" className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Floor Map</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -236,7 +325,7 @@ export function DashboardClient() {
           <div className="luxe-box luxe-box-hover rounded-3xl p-5 space-y-3.5 relative overflow-hidden group">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-amber-500/20 to-amber-500/5 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-xs flex items-center justify-center">
                   <Database size={16} />
                 </div>
                 <div>
@@ -254,7 +343,7 @@ export function DashboardClient() {
                 <span className="text-2xl font-mono font-extrabold text-slate-900 dark:text-white tracking-tight">$48,290.00</span>
                 <span className="text-xs text-slate-500 dark:text-slate-400"> Receivables</span>
               </div>
-              <Link href="/banking" className="text-xs text-amber-600 dark:text-amber-400 hover:text-amber-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
+              <Link href="/banking" className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-bold flex items-center gap-1 transition-transform group-hover:translate-x-0.5">
                 <span>Reconcile</span> <ArrowRight size={12} />
               </Link>
             </div>
@@ -362,8 +451,8 @@ export function DashboardClient() {
                 </h1>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Real-time consolidated treasury, gross earnings & statutory burn</p>
               </div>
-              <span className="text-xs text-amber-700 dark:text-amber-400/90 font-mono font-medium flex items-center gap-1.5 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-                <Sparkles size={13} className="text-amber-500 dark:text-amber-400 animate-pulse" />
+              <span className="text-xs text-amber-700 dark:text-emerald-400/90 font-mono font-medium flex items-center gap-1.5 bg-emerald-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+                <Sparkles size={13} className="text-emerald-500 dark:text-emerald-400 animate-pulse" />
                 <span>Live Sync Active</span>
               </span>
             </div>
@@ -384,17 +473,19 @@ export function DashboardClient() {
                   <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
                     Total Balance
                   </span>
-                  <span className="font-mono font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">$789,999.56</span>
+                  <span className="font-mono font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
+                    ${metrics.totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
               </div>
 
               {/* Earnings Card */}
-              <div className="luxe-inner-card rounded-2xl p-4.5 space-y-3 relative overflow-hidden group hover:border-amber-500/40 transition-all">
+              <div className="luxe-inner-card rounded-2xl p-4.5 space-y-3 relative overflow-hidden group hover:border-emerald-500/40 transition-all">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-600 dark:text-amber-400 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-xs">
                     <DollarSign size={18} />
                   </div>
-                  <span className="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/25 flex items-center gap-0.5">
+                  <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/25 flex items-center gap-0.5">
                     <ArrowUpRight size={10} /> +14.2%
                   </span>
                 </div>
@@ -402,14 +493,16 @@ export function DashboardClient() {
                   <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
                     Gross Earnings
                   </span>
-                  <span className="font-mono font-extrabold text-xl text-amber-600 dark:text-amber-400 tracking-tight">$968,999.56</span>
+                  <span className="font-mono font-extrabold text-xl text-emerald-600 dark:text-emerald-400 tracking-tight">
+                    ${metrics.grossEarnings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
               </div>
 
               {/* Expenses Card */}
-              <div className="luxe-inner-card rounded-2xl p-4.5 space-y-3 relative overflow-hidden group hover:border-orange-500/40 transition-all">
+              <div className="luxe-inner-card rounded-2xl p-4.5 space-y-3 relative overflow-hidden group hover:border-teal-500/40 transition-all">
                 <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-600 dark:text-orange-400 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-600 dark:text-teal-400 shadow-xs">
                     <Receipt size={18} />
                   </div>
                   <span className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-white/[0.05] px-2 py-0.5 rounded-full border border-slate-200 dark:border-white/[0.08]">
@@ -420,7 +513,9 @@ export function DashboardClient() {
                   <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block mb-0.5">
                     Monthly Expenses
                   </span>
-                  <span className="font-mono font-extrabold text-xl text-slate-900 dark:text-slate-200 tracking-tight">$39,999.67</span>
+                  <span className="font-mono font-extrabold text-xl text-slate-900 dark:text-slate-200 tracking-tight">
+                    ${metrics.monthlyExpenses.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
               </div>
             </div>
@@ -431,7 +526,7 @@ export function DashboardClient() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/[0.06] pb-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <BarChart3 size={18} className="text-amber-500 dark:text-amber-400" />
+                  <BarChart3 size={18} className="text-emerald-500 dark:text-emerald-400" />
                   <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Performance Statistics</h3>
                 </div>
                 <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
@@ -445,7 +540,7 @@ export function DashboardClient() {
                     onClick={() => setActiveChartTab('earning')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                       activeChartTab === 'earning'
-                        ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/30 shadow-xs'
+                        ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-500/30 shadow-xs'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
@@ -455,7 +550,7 @@ export function DashboardClient() {
                     onClick={() => setActiveChartTab('expenses')}
                     className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
                       activeChartTab === 'expenses'
-                        ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/30 shadow-xs'
+                        ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-500/30 shadow-xs'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                     }`}
                   >
@@ -473,18 +568,18 @@ export function DashboardClient() {
             {/* Glowing Bezier Curve SVG Simulation */}
             <div className="relative pt-6 pb-2">
               <div className="absolute top-1 left-[38%] -translate-x-1/2 z-10">
-                <div className="px-3 py-1 bg-slate-900 text-amber-300 dark:bg-slate-950/95 border border-amber-400/80 rounded-xl text-[10px] font-mono font-extrabold shadow-xl shadow-amber-500/30 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                  <span>Peak: 10,256,198</span>
+                <div className="px-3 py-1 bg-slate-900 text-emerald-300 dark:bg-slate-950/95 border border-emerald-400/80 rounded-xl text-[10px] font-mono font-extrabold shadow-xl shadow-emerald-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                  <span>Gross: ${(metrics.grossEarnings || 0).toLocaleString()}</span>
                 </div>
               </div>
 
               <svg className="w-full h-48 overflow-visible" viewBox="0 0 600 160" preserveAspectRatio="none">
                 <defs>
-                  <linearGradient id="amberChartGlow" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.28" />
-                    <stop offset="60%" stopColor="#f59e0b" stopOpacity="0.08" />
-                    <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.0" />
+                  <linearGradient id="emeraldChartGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity="0.28" />
+                    <stop offset="60%" stopColor="#10b981" stopOpacity="0.08" />
+                    <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
 
@@ -494,15 +589,15 @@ export function DashboardClient() {
 
                 <path
                   d="M 0 120 Q 120 130 220 50 T 400 110 T 600 70 L 600 160 L 0 160 Z"
-                  fill="url(#amberChartGlow)"
+                  fill="url(#emeraldChartGlow)"
                 />
 
                 <path
                   d="M 0 120 Q 120 130 220 50 T 400 110 T 600 70"
                   fill="none"
-                  stroke="#f59e0b"
+                  stroke="#10b981"
                   strokeWidth="3.5"
-                  className="drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]"
+                  className="drop-shadow-[0_0_10px_rgba(16,185,129,0.6)]"
                 />
 
                 <path
@@ -513,7 +608,7 @@ export function DashboardClient() {
                   strokeDasharray="4 4"
                 />
 
-                <circle cx="220" cy="50" r="5.5" fill="#f59e0b" stroke="#ffffff" strokeWidth="2.5" className="shadow-lg shadow-amber-500/50" />
+                <circle cx="220" cy="50" r="5.5" fill="#10b981" stroke="#ffffff" strokeWidth="2.5" className="shadow-lg shadow-emerald-500/50" />
               </svg>
 
               <div className="flex justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 pt-3.5 border-t border-slate-200 dark:border-white/[0.06]">
@@ -533,32 +628,36 @@ export function DashboardClient() {
             <div className="luxe-box rounded-3xl p-5 sm:p-6 space-y-4">
               <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.06] pb-2.5">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                  <Target size={14} className="text-amber-500 dark:text-amber-400" />
-                  <span>Strategic Goals</span>
+                  <Target size={14} className="text-emerald-500 dark:text-emerald-400" />
+                  <span>Pipeline & Billing Goals</span>
                 </h3>
-                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">2/2 On Track</span>
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">Live Status</span>
               </div>
 
               <div className="grid grid-cols-2 gap-3.5">
                 <div className="luxe-inner-card rounded-2xl p-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xl font-extrabold text-amber-600 dark:text-amber-400 font-mono tracking-tight">60%</span>
-                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    <span className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">
+                      {metrics.dealsCount}
+                    </span>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   </div>
-                  <span className="text-[11px] text-slate-800 dark:text-slate-300 font-bold block">Enterprise SaaS</span>
+                  <span className="text-[11px] text-slate-800 dark:text-slate-300 font-bold block">Deals in Pipeline</span>
                   <div className="w-full h-1.5 bg-slate-200 dark:bg-white/[0.08] rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-500 rounded-full w-[60%]" />
+                    <div className="h-full bg-emerald-500 rounded-full w-[70%]" />
                   </div>
                 </div>
 
                 <div className="luxe-inner-card rounded-2xl p-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono tracking-tight">89%</span>
-                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="text-xl font-extrabold text-teal-600 dark:text-teal-400 font-mono tracking-tight">
+                      {metrics.invoicesCount}
+                    </span>
+                    <span className="w-2 h-2 rounded-full bg-teal-500" />
                   </div>
-                  <span className="text-[11px] text-slate-800 dark:text-slate-300 font-bold block">Real Estate Asset</span>
+                  <span className="text-[11px] text-slate-800 dark:text-slate-300 font-bold block">Invoices Raised</span>
                   <div className="w-full h-1.5 bg-slate-200 dark:bg-white/[0.08] rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full w-[89%]" />
+                    <div className="h-full bg-teal-500 rounded-full w-[85%]" />
                   </div>
                 </div>
               </div>
@@ -567,17 +666,17 @@ export function DashboardClient() {
             {/* Business Target Savings Card with Circular Dial */}
             <div className="luxe-box rounded-3xl p-5 sm:p-6 flex items-center justify-between">
               <div className="space-y-2">
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block">Annual Target</span>
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block">Target Goal</span>
                 <div className="space-y-0.5">
-                  <div className="text-xs text-slate-600 dark:text-slate-400">Target: <span className="font-mono font-bold text-amber-600 dark:text-amber-400">$1,000,000.00</span></div>
-                  <div className="text-xs text-slate-600 dark:text-slate-400">Accumulated: <span className="font-mono font-bold text-slate-900 dark:text-white">$300,345.96</span></div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">Target: <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">$1,000,000.00</span></div>
+                  <div className="text-xs text-slate-600 dark:text-slate-400">Balance: <span className="font-mono font-bold text-slate-900 dark:text-white">${metrics.totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span></div>
                 </div>
-                <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/25">
-                  Phase 3 Completed
+                <span className="inline-block px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25">
+                  Live Operations
                 </span>
               </div>
 
-              {/* Circular Gauge 95% */}
+              {/* Circular Gauge */}
               <div className="relative w-18 h-18 flex items-center justify-center">
                 <svg className="w-18 h-18 transform -rotate-90">
                   <circle cx="36" cy="36" r="30" stroke="rgba(148,163,184,0.2)" strokeWidth="6" fill="transparent" />
@@ -585,16 +684,18 @@ export function DashboardClient() {
                     cx="36"
                     cy="36"
                     r="30"
-                    stroke="#f59e0b"
+                    stroke="#10b981"
                     strokeWidth="6"
                     fill="transparent"
                     strokeDasharray="188"
-                    strokeDashoffset="18"
+                    strokeDashoffset="28"
                     strokeLinecap="round"
-                    className="drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+                    className="drop-shadow-[0_0_8px_rgba(16,185,129,0.6)]"
                   />
                 </svg>
-                <span className="absolute font-mono font-extrabold text-sm text-slate-900 dark:text-white">95%</span>
+                <span className="absolute font-mono font-extrabold text-sm text-slate-900 dark:text-white">
+                  {metrics.grossEarnings > 0 ? `${Math.min(100, Math.round((metrics.totalBalance / 1000000) * 100))}%` : '0%'}
+                </span>
               </div>
             </div>
           </div>
@@ -613,162 +714,178 @@ export function DashboardClient() {
               </div>
 
               <div className="flex flex-col items-center">
-                <div className="w-15 h-15 rounded-full p-0.5 bg-gradient-to-tr from-amber-400 to-orange-500 shadow-xl shadow-orange-500/25 mb-1.5">
-                  <img
-                    src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-                    alt="Profile"
-                    className="w-full h-full object-cover rounded-full"
-                  />
+                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-lg shadow-xl shadow-emerald-500/25 mb-1.5 ring-2 ring-emerald-400/40">
+                  SC
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 uppercase tracking-widest">
-                  VIP Executive
+                <span className="px-2.5 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 uppercase tracking-widest">
+                  VIP Superadmin
                 </span>
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white mt-1">Emmanuella Takureea</h3>
+                <h3 className="font-extrabold text-sm text-slate-900 dark:text-white mt-1">Sangram Cruze</h3>
+                <span className="text-[11px] text-slate-500 font-medium">admin@gmail.com</span>
               </div>
 
-              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-colors shadow-xs">
+              <Link
+                href="/developer"
+                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] flex items-center justify-center text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.1] transition-colors shadow-xs"
+                title="Account Settings & API"
+              >
                 <MoreVertical size={14} />
-              </div>
+              </Link>
             </div>
 
             {/* Quick Beveled Action Tiles */}
             <div className="grid grid-cols-4 gap-2.5 pt-3 border-t border-slate-200 dark:border-white/[0.06]">
               {[
-                { label: 'Transfer', icon: Send },
-                { label: 'Receive', icon: Download },
-                { label: 'Bill', icon: Receipt },
-                { label: 'Top up', icon: Plus },
+                { label: 'Transfer', icon: Send, href: '/banking' },
+                { label: 'Receive', icon: Download, href: '/deals' },
+                { label: 'Bill', icon: Receipt, href: '/invoices' },
+                { label: 'Top up', icon: Plus, href: '/super-admin' },
               ].map((btn, idx) => {
                 const Icon = btn.icon;
                 return (
-                  <button
+                  <Link
                     key={idx}
-                    type="button"
-                    onClick={() => handleActionClick(btn.label)}
-                    className="luxe-inner-card flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-slate-200/50 dark:hover:bg-white/[0.08] hover:border-amber-500/40 transition-all group cursor-pointer"
+                    href={btn.href}
+                    className="luxe-inner-card flex flex-col items-center justify-center p-3 rounded-2xl hover:bg-slate-200/50 dark:hover:bg-white/[0.08] hover:border-emerald-500/40 transition-all group cursor-pointer"
                   >
-                    <Icon size={16} className="text-slate-700 dark:text-slate-300 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors mb-1.5" />
+                    <Icon size={16} className="text-slate-700 dark:text-slate-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors mb-1.5" />
                     <span className="text-[10px] font-semibold text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
                       {btn.label}
                     </span>
-                  </button>
+                  </Link>
                 );
               })}
             </div>
 
-            {/* Signature Luxury Gold-Amber Titanium Visa Card */}
-            <div className="relative rounded-2xl overflow-hidden p-5 bg-gradient-to-br from-[#d97706] via-[#ea580c] to-[#b45309] text-slate-950 shadow-2xl shadow-orange-500/25 space-y-5 border border-amber-200/40">
+            {/* Signature Luxury Emerald-Teal Titanium Visa Card */}
+            <div className="relative rounded-2xl overflow-hidden p-5 bg-gradient-to-br from-[#065f46] via-[#047857] to-[#0f766e] text-white shadow-2xl shadow-emerald-500/25 space-y-5 border border-emerald-400/30">
               {/* Metallic Card Sheen & Hologram Highlight */}
               <div className="absolute top-0 right-0 w-44 h-44 bg-white/20 rounded-full blur-2xl pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-yellow-300/20 rounded-full blur-xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-teal-300/20 rounded-full blur-xl pointer-events-none" />
 
               <div className="flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-2">
                   {/* EMV Micro Chip */}
-                  <div className="w-8 h-6 rounded-md bg-gradient-to-br from-amber-200 to-amber-400 border border-amber-500/40 shadow-xs flex items-center justify-center">
-                    <div className="w-4 h-3 border-y border-amber-700/40" />
+                  <div className="w-8 h-6 rounded-md bg-gradient-to-br from-emerald-200 to-emerald-400 border border-emerald-500/40 shadow-xs flex items-center justify-center">
+                    <div className="w-4 h-3 border-y border-emerald-700/40" />
                   </div>
-                  <Wifi size={14} className="text-slate-950/70 rotate-90" />
+                  <Wifi size={14} className="text-white/80 rotate-90" />
                 </div>
-                <span className="font-serif italic font-black text-2xl tracking-tighter text-slate-950">
+                <span className="font-serif italic font-black text-2xl tracking-tighter text-white">
                   VISA
                 </span>
               </div>
 
               {/* Card Number */}
-              <div className="font-mono font-bold tracking-widest text-xs text-slate-950/90 relative z-10 pt-1">
+              <div className="font-mono font-bold tracking-widest text-xs text-emerald-100 relative z-10 pt-1">
                 •••• •••• •••• 7433
               </div>
 
               <div className="flex items-end justify-between pt-1 relative z-10">
                 <div>
-                  <span className="text-[8px] font-extrabold uppercase tracking-widest text-slate-950/70 block">
+                  <span className="text-[8px] font-extrabold uppercase tracking-widest text-emerald-200/80 block">
                     Cardholder
                   </span>
-                  <span className="font-bold text-xs text-slate-950 uppercase tracking-tight">
-                    OLUWAKEMI
+                  <span className="font-bold text-xs text-white uppercase tracking-tight">
+                    SANGRAM CRUZE
                   </span>
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[8px] font-extrabold uppercase tracking-widest text-slate-950/70 block">
+                  <span className="text-[8px] font-extrabold uppercase tracking-widest text-emerald-200/80 block">
                     Available Balance
                   </span>
-                  <span className="font-mono font-black text-base text-slate-950">
-                    $74,330.00
+                  <span className="font-mono font-black text-base text-white">
+                    ${metrics.totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Month Transactions Feed */}
+          {/* Real Backend Live Activity / Transactions Feed */}
           <div className="luxe-box rounded-3xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.06] pb-3">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Recent Transactions</h3>
-              <span className="text-[10px] text-amber-700 dark:text-amber-400 font-mono font-bold uppercase bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Live Activity & Transactions</h3>
+              <span className="text-[10px] text-emerald-800 dark:text-emerald-300 font-mono font-bold uppercase bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
                 Live Feed
               </span>
             </div>
 
-            <div className="space-y-3">
-              {[
-                {
-                  name: 'Akeem Jamiu',
-                  desc: 'January Salary & Retainer',
-                  date: '15.01.2026 13:30PM',
-                  amount: '$2,000.99',
-                  type: 'PAYROLL',
-                  img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-                },
-                {
-                  name: 'Cyberdyne Systems',
-                  desc: 'Enterprise License Wire',
-                  date: '14.01.2026 09:15AM',
-                  amount: '$14,500.00',
-                  type: 'WIRE',
-                  img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-                },
-                {
-                  name: 'Apex Cloud Hosting',
-                  desc: 'Dedicated Edge CDN',
-                  date: '12.01.2026 18:45PM',
-                  amount: '$450.00',
-                  type: 'INVOICE',
-                  img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-                },
-              ].map((tx, idx) => (
-                <div
-                  key={idx}
-                  className="p-3.5 luxe-inner-card hover:border-slate-300 dark:hover:border-white/20 rounded-2xl flex items-center justify-between transition-all"
+            <div className="space-y-2.5">
+              {recentActivities.map((act, idx) => (
+                <Link
+                  key={act.id || idx}
+                  href={act.href || '/dashboard'}
+                  className="p-3.5 luxe-inner-card hover:border-emerald-500/40 rounded-2xl flex items-center justify-between transition-all group"
                 >
-                  <div className="flex items-center gap-3">
-                    <img src={tx.img} alt={tx.name} className="w-9 h-9 rounded-xl object-cover border border-slate-200 dark:border-white/10" />
-                    <div>
-                      <h4 className="font-bold text-xs text-slate-900 dark:text-white">{tx.name}</h4>
-                      <span className="text-[10px] text-slate-500 dark:text-slate-400 block">{tx.date}</span>
+                  <div className="flex items-center gap-3 min-w-0 pr-2">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                      {act.type === 'DEAL' ? <Briefcase size={15} /> : <Receipt size={15} />}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                        {act.title}
+                      </h4>
+                      <div className="flex items-center gap-1.5 text-[10px] text-slate-500 dark:text-slate-400">
+                        <span className="px-1.5 py-0.2 rounded bg-slate-200 dark:bg-white/[0.06] font-mono font-semibold">{act.stage}</span>
+                        <span>•</span>
+                        <span>{act.date}</span>
+                      </div>
                     </div>
                   </div>
 
-                  <span className="px-2.5 py-1 rounded-xl font-mono font-extrabold text-xs bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
-                    {tx.amount}
+                  <span className="px-2.5 py-1 rounded-xl font-mono font-extrabold text-xs bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 shrink-0">
+                    ${act.amount.toLocaleString()}
                   </span>
-                </div>
+                </Link>
               ))}
+
+              {recentActivities.length === 0 && (
+                <div className="p-6 text-center space-y-3 rounded-2xl bg-white/[0.02] border border-dashed border-slate-200 dark:border-white/10">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-500 mx-auto flex items-center justify-center">
+                    <Sparkles size={18} />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white">No live transactions yet</p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      Create your first deal or commercial invoice to see real-time activity here.
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 pt-1">
+                    <Link
+                      href="/deals"
+                      className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs shadow-md shadow-emerald-500/20 hover:scale-105 transition-all"
+                    >
+                      + New Deal
+                    </Link>
+                    <Link
+                      href="/invoices"
+                      className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 border border-white/10 rounded-xl text-xs font-semibold"
+                    >
+                      + New Invoice
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between">
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">See all transactions</span>
-              <button
-                onClick={() => handleActionClick('Transactions Ledger')}
-                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-amber-500 hover:text-slate-950 text-slate-700 dark:bg-white/[0.06] dark:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs"
+              <Link href="/banking" className="text-xs text-slate-500 dark:text-slate-400 hover:text-emerald-500 font-medium transition-colors">
+                View Dual Khata Ledger →
+              </Link>
+              <Link
+                href="/banking"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-emerald-500 hover:text-slate-950 text-slate-700 dark:bg-white/[0.06] dark:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs"
               >
                 <ArrowRight size={13} />
-              </button>
+              </Link>
             </div>
           </div>
         </div>
       </div>
+      </div>
+      )}
 
       {/* 67-Feature Picker Modal */}
       <NicheFeaturePickerModal

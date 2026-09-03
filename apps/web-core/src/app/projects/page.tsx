@@ -1,20 +1,16 @@
 import { getTenantHeaders, safeFetch } from "../../lib/auth";
 import { Plus, Clock, ClipboardList } from "lucide-react";
 import { revalidatePath } from "next/cache";
+import { DeleteActionButton } from "../../components/DeleteActionButton";
+import { deleteTask } from "../actions";
 
 export const dynamic = 'force-dynamic';
 
 const demoProjects = [
   {
     id: 'proj_01',
-    name: 'Enterprise Business OS Core Platform',
-    tasks: [
-      { id: 'tsk_1', title: 'Implement RBAC multi-tenant policy engine', status: 'IN_PROGRESS', priority: 'HIGH', createdAt: new Date().toISOString() },
-      { id: 'tsk_2', title: 'Configure AWS S3 pre-signed upload proxy', status: 'DONE', priority: 'MEDIUM', createdAt: new Date().toISOString() },
-      { id: 'tsk_3', title: 'Integrate Stripe Connect instant payment links', status: 'DONE', priority: 'HIGH', createdAt: new Date().toISOString() },
-      { id: 'tsk_4', title: 'Add real-time WebRTC chat presence indicators', status: 'TODO', priority: 'LOW', createdAt: new Date().toISOString() },
-      { id: 'tsk_5', title: 'Run SOC2 automated compliance vulnerability audit', status: 'REVIEW', priority: 'URGENT', createdAt: new Date().toISOString() },
-    ]
+    name: 'Main Workspace Sprint',
+    tasks: []
   }
 ];
 
@@ -35,11 +31,12 @@ export default async function ProjectsPage() {
     const projectId = formData.get("projectId") as string;
     if (!title || !projectId) return;
 
+    const tenantHeaders = await getTenantHeaders();
     await safeFetch(`http://localhost:3017/projects/${projectId}/tasks`, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
-        "x-tenant-id": "default-tenant" 
+        ...tenantHeaders
       },
       body: JSON.stringify({ title, status: "TODO" })
     });
@@ -49,11 +46,12 @@ export default async function ProjectsPage() {
 
   async function updateTaskStatus(id: string, status: string) {
     "use server";
+    const tenantHeaders = await getTenantHeaders();
     await safeFetch(`http://localhost:3017/projects/tasks/${id}/status`, {
       method: "PATCH",
       headers: { 
         "Content-Type": "application/json",
-        "x-tenant-id": "default-tenant" 
+        ...tenantHeaders
       },
       body: JSON.stringify({ status })
     });
@@ -63,7 +61,7 @@ export default async function ProjectsPage() {
   const columns = [
     { id: "TODO", title: "To Do", bg: "bg-white/[0.06] text-slate-300 border-white/10" },
     { id: "IN_PROGRESS", title: "In Progress", bg: "bg-sky-500/15 text-sky-300 border-sky-500/30" },
-    { id: "REVIEW", title: "Review", bg: "bg-amber-500/15 text-amber-300 border-amber-500/30" },
+    { id: "REVIEW", title: "Review", bg: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" },
     { id: "DONE", title: "Done", bg: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30" }
   ];
 
@@ -73,7 +71,7 @@ export default async function ProjectsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2.5">
-            <ClipboardList size={24} className="text-amber-400" />
+            <ClipboardList size={24} className="text-emerald-400" />
             <h1 className="text-2xl font-bold tracking-tight text-white">{currentProject.name}</h1>
           </div>
           <p className="text-sm text-slate-400 mt-1">Manage project tasks, sprint cycles, and delivery milestones.</p>
@@ -88,7 +86,7 @@ export default async function ProjectsPage() {
               required
               className="w-52 bg-transparent text-xs text-white focus:outline-none placeholder-slate-500 font-medium"
             />
-            <button type="submit" className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-md shadow-orange-500/25 flex items-center cursor-pointer">
+            <button type="submit" className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-md shadow-emerald-500/25 flex items-center cursor-pointer">
               <Plus size={14} className="mr-1" /> Add Task
             </button>
           </form>
@@ -113,14 +111,22 @@ export default async function ProjectsPage() {
               
               <div className="flex-1 flex flex-col space-y-3 overflow-y-auto">
                 {tasks.map((task: any) => (
-                  <div key={task.id} className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 hover:border-amber-500/40 hover:bg-white/[0.07] transition-all shadow-xs group">
+                  <div key={task.id} className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4 hover:border-emerald-500/40 hover:bg-white/[0.07] transition-all shadow-xs group">
                     <div className="flex justify-between items-start mb-2">
                       <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                         task.priority === 'HIGH' || task.priority === 'URGENT' ? 'bg-rose-500/15 text-rose-300 border border-rose-500/30' :
-                        task.priority === 'MEDIUM' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' : 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
+                        task.priority === 'MEDIUM' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 'bg-sky-500/15 text-sky-300 border border-sky-500/30'
                       }`}>
-                        {task.priority}
+                        {task.priority || 'NORMAL'}
                       </span>
+                      <DeleteActionButton
+                        onDeleteAction={async () => {
+                          'use server';
+                          await deleteTask(task.id);
+                        }}
+                        size={12}
+                        confirmTitle={`Delete sprint task "${task.title}"?`}
+                      />
                     </div>
                     
                     <h4 className="text-xs font-bold text-white mb-3 leading-relaxed">{task.title}</h4>

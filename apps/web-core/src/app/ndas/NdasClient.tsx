@@ -12,32 +12,7 @@ interface NDA {
   effectiveDate: string;
 }
 
-const initialDemoNDAs: NDA[] = [
-  {
-    id: 'nda_501',
-    counterparty: 'HyperScale AI Partners Ltd',
-    signeeEmail: 'legal@hyperscale.ai',
-    type: 'Mutual',
-    status: 'EXECUTED',
-    effectiveDate: '2026-08-14',
-  },
-  {
-    id: 'nda_502',
-    counterparty: 'Apex Cloud Systems Inc',
-    signeeEmail: 'counsel@apexcloud.io',
-    type: 'Mutual',
-    status: 'OUT_FOR_SIGNATURE',
-    effectiveDate: '2026-08-25',
-  },
-  {
-    id: 'nda_503',
-    counterparty: 'Vanguard Security Labs',
-    signeeEmail: 'security@vanguard.tech',
-    type: 'Vendor',
-    status: 'EXECUTED',
-    effectiveDate: '2026-07-28',
-  },
-];
+const initialDemoNDAs: NDA[] = [];
 
 export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
   const [ndas, setNdas] = useState<NDA[]>(
@@ -73,8 +48,8 @@ export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
-          <CheckCircle size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
+          <CheckCircle size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -83,7 +58,7 @@ export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Lock className="text-amber-400" size={24} />
+            <Lock className="text-emerald-400" size={24} />
             Non-Disclosure Agreements (NDAs)
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -92,7 +67,7 @@ export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <Plus size={16} />
           <span>New NDA Agreement</span>
@@ -116,7 +91,7 @@ export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
             {ndas.map((n) => (
               <tr key={n.id} className="hover:bg-white/[0.04] transition-colors">
                 <td className="px-6 py-4 font-bold text-white flex items-center gap-2 text-sm">
-                  <FileText size={16} className="text-amber-400" />
+                  <FileText size={16} className="text-emerald-400" />
                   <span>{n.counterparty}</span>
                 </td>
                 <td className="px-6 py-4 text-slate-300 text-xs font-medium">{n.signeeEmail}</td>
@@ -131,7 +106,7 @@ export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
                     className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${
                       n.status === 'EXECUTED'
                         ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                        : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                     }`}
                   >
                     {n.status === 'EXECUTED' ? <CheckCircle size={12} /> : <Clock size={12} />}
@@ -152,6 +127,13 @@ export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
                 </td>
               </tr>
             ))}
+            {ndas.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                  No agreements drafted yet. Click <span className="text-emerald-400 font-bold">"Draft New NDA"</span> above to prepare your first confidentiality contract.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -215,7 +197,7 @@ export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Send size={14} />
                   <span>Send for Signature</span>

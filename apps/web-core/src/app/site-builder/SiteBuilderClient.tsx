@@ -100,7 +100,7 @@ const TEMPLATE_PRESETS: Record<string, { name: string; icon: any; blocks: SiteBl
         title: 'Request an Executive VIP Demo',
         subtitle: 'Our enterprise specialists will build a custom workflow model for your company.',
         buttonText: 'Book VIP Walkthrough',
-        style: { bgColor: 'bg-amber-500/10', textColor: 'text-white', align: 'center' },
+        style: { bgColor: 'bg-emerald-500/10', textColor: 'text-white', align: 'center' },
       },
       {
         id: 'testimonials-1',
@@ -255,7 +255,7 @@ export function SiteBuilderClient() {
           title: 'Get in Touch with Our Team',
           subtitle: 'Fill out this brief form and we will reach out within 15 minutes.',
           buttonText: 'Submit Inquiry',
-          style: { bgColor: 'bg-amber-500/10', textColor: 'text-white', align: 'center' },
+          style: { bgColor: 'bg-emerald-500/10', textColor: 'text-white', align: 'center' },
         };
         break;
       case 'PRICING':
@@ -362,8 +362,8 @@ export function SiteBuilderClient() {
     <div className="space-y-4 max-w-7xl mx-auto text-white">
       {/* Alert Notification */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -371,13 +371,13 @@ export function SiteBuilderClient() {
       {/* Top Header & Viewport Switcher Toolbar */}
       <div className="luxe-box rounded-3xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-orange-500/25">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/25">
             <Layout size={20} />
           </div>
           <div>
             <h1 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
               <span>Visual Drag-and-Drop Website & Funnel Studio</span>
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                 No-Code Builder
               </span>
             </h1>
@@ -392,7 +392,7 @@ export function SiteBuilderClient() {
             <button
               type="button"
               onClick={() => setViewport('desktop')}
-              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewport === 'desktop' ? 'bg-amber-500/20 text-amber-300' : 'hover:text-white'}`}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewport === 'desktop' ? 'bg-emerald-500/20 text-emerald-300' : 'hover:text-white'}`}
               title="Desktop View (100%)"
             >
               <Monitor size={15} />
@@ -400,7 +400,7 @@ export function SiteBuilderClient() {
             <button
               type="button"
               onClick={() => setViewport('tablet')}
-              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewport === 'tablet' ? 'bg-amber-500/20 text-amber-300' : 'hover:text-white'}`}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewport === 'tablet' ? 'bg-emerald-500/20 text-emerald-300' : 'hover:text-white'}`}
               title="Tablet View (768px)"
             >
               <Tablet size={15} />
@@ -408,7 +408,7 @@ export function SiteBuilderClient() {
             <button
               type="button"
               onClick={() => setViewport('mobile')}
-              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewport === 'mobile' ? 'bg-amber-500/20 text-amber-300' : 'hover:text-white'}`}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewport === 'mobile' ? 'bg-emerald-500/20 text-emerald-300' : 'hover:text-white'}`}
               title="Mobile View (375px)"
             >
               <Smartphone size={15} />
@@ -421,7 +421,7 @@ export function SiteBuilderClient() {
               type="button"
               className="px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.09] border border-white/[0.08] text-slate-300 hover:text-white font-semibold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer"
             >
-              <Sparkles size={13} className="text-amber-400" />
+              <Sparkles size={13} className="text-emerald-400" />
               <span>Niche Templates</span>
               <ChevronDown size={12} />
             </button>
@@ -434,9 +434,9 @@ export function SiteBuilderClient() {
                     key={key}
                     type="button"
                     onClick={() => handleLoadTemplate(key)}
-                    className="w-full px-3 py-2 text-left text-xs font-semibold text-slate-300 hover:bg-amber-500/20 hover:text-amber-300 rounded-xl transition-colors flex items-center gap-2 cursor-pointer"
+                    className="w-full px-3 py-2 text-left text-xs font-semibold text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-300 rounded-xl transition-colors flex items-center gap-2 cursor-pointer"
                   >
-                    <Icon size={14} className="text-amber-400" />
+                    <Icon size={14} className="text-emerald-400" />
                     <span>{tpl.name}</span>
                   </button>
                 );
@@ -460,7 +460,7 @@ export function SiteBuilderClient() {
               setAlert('🚀 Website published live to edge CDN (https://crm.acmeglobal.io)!');
               setTimeout(() => setAlert(null), 3500);
             }}
-            className="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-orange-500/25 cursor-pointer active:scale-95"
+            className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/25 cursor-pointer active:scale-95"
           >
             <Globe size={13} />
             <span>Publish Live</span>
@@ -475,10 +475,10 @@ export function SiteBuilderClient() {
           <div className="luxe-box rounded-3xl p-4 space-y-3">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
-                <Layers size={13} className="text-amber-400" />
+                <Layers size={13} className="text-emerald-400" />
                 <span>Component Blocks</span>
               </span>
-              <span className="text-[10px] font-mono text-amber-400">Click to Add</span>
+              <span className="text-[10px] font-mono text-emerald-400">Click to Add</span>
             </div>
 
             <div className="space-y-2">
@@ -495,10 +495,10 @@ export function SiteBuilderClient() {
                   key={item.type}
                   type="button"
                   onClick={() => handleAddBlock(item.type)}
-                  className="w-full p-2.5 rounded-2xl luxe-inner-card hover:border-amber-500/40 hover:bg-white/[0.08] text-left transition-all group cursor-pointer flex items-center justify-between"
+                  className="w-full p-2.5 rounded-2xl luxe-inner-card hover:border-emerald-500/40 hover:bg-white/[0.08] text-left transition-all group cursor-pointer flex items-center justify-between"
                 >
                   <div>
-                    <span className="text-xs font-bold text-white group-hover:text-amber-400 transition-colors block">
+                    <span className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors block">
                       {item.label}
                     </span>
                     <span className="text-[10px] text-slate-400 block">{item.desc}</span>
@@ -529,7 +529,7 @@ export function SiteBuilderClient() {
                     onClick={() => setSelectedBlockId(block.id)}
                     className={`relative rounded-2xl p-5 sm:p-6 transition-all border cursor-pointer ${
                       isSelected
-                        ? 'border-amber-500 ring-2 ring-amber-500/20 bg-white/[0.03]'
+                        ? 'border-amber-500 ring-2 ring-emerald-500/20 bg-white/[0.03]'
                         : 'border-white/[0.06] hover:border-white/20 bg-white/[0.015]'
                     } ${block.style.bgColor}`}
                   >
@@ -567,7 +567,7 @@ export function SiteBuilderClient() {
                           e.stopPropagation();
                           handleDuplicateBlock(block);
                         }}
-                        className="p-1 text-slate-400 hover:text-amber-400 cursor-pointer"
+                        className="p-1 text-slate-400 hover:text-emerald-400 cursor-pointer"
                         title="Duplicate"
                       >
                         <Copy size={12} />
@@ -590,7 +590,7 @@ export function SiteBuilderClient() {
                     {block.type === 'HERO' && (
                       <div className={`space-y-3 ${block.style.align === 'center' ? 'text-center' : 'text-left'}`}>
                         {block.badge && (
-                          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                          <span className="inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                             {block.badge}
                           </span>
                         )}
@@ -602,7 +602,7 @@ export function SiteBuilderClient() {
                         </p>
                         {block.buttonText && (
                           <div className="pt-2">
-                            <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-orange-500/20">
+                            <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20">
                               <span>{block.buttonText}</span>
                               <ArrowRight size={13} />
                             </span>
@@ -621,7 +621,7 @@ export function SiteBuilderClient() {
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                           {block.items?.map((feat, idx) => (
                             <div key={idx} className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-xl space-y-1.5">
-                              <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">
+                              <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
                                 {idx + 1}
                               </div>
                               <h4 className="font-bold text-xs text-white">{feat.title}</h4>
@@ -659,7 +659,7 @@ export function SiteBuilderClient() {
                           />
                           <button
                             type="button"
-                            className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-orange-500/20"
+                            className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20"
                           >
                             {block.buttonText || 'Submit'}
                           </button>
@@ -677,7 +677,7 @@ export function SiteBuilderClient() {
                           {block.items?.map((p, idx) => (
                             <div key={idx} className="p-4 bg-white/[0.03] border border-white/[0.08] rounded-2xl space-y-2 text-center">
                               <h4 className="font-bold text-xs text-white">{p.title}</h4>
-                              <div className="font-mono font-extrabold text-lg text-amber-400">{p.price}</div>
+                              <div className="font-mono font-extrabold text-lg text-emerald-400">{p.price}</div>
                               <p className="text-[10px] text-slate-400">{p.desc}</p>
                             </div>
                           ))}
@@ -694,7 +694,7 @@ export function SiteBuilderClient() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                           {block.items?.map((t, idx) => (
                             <div key={idx} className="p-3.5 bg-white/[0.02] border border-white/[0.06] rounded-xl space-y-1.5">
-                              <div className="flex text-amber-400 gap-0.5">
+                              <div className="flex text-emerald-400 gap-0.5">
                                 {[...Array(5)].map((_, i) => (
                                   <Star key={i} size={11} fill="#f59e0b" />
                                 ))}
@@ -714,7 +714,7 @@ export function SiteBuilderClient() {
                       <div className="text-center space-y-2.5 py-3">
                         <h3 className="text-base font-extrabold text-white">{block.title}</h3>
                         <p className="text-xs text-slate-400 max-w-sm mx-auto">{block.subtitle}</p>
-                        <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg">
+                        <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg">
                           <span>{block.buttonText}</span>
                         </span>
                       </div>
@@ -738,11 +738,11 @@ export function SiteBuilderClient() {
           <div className="luxe-box rounded-3xl p-4 space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
               <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
-                <Sliders size={13} className="text-amber-400" />
+                <Sliders size={13} className="text-emerald-400" />
                 <span>Block Properties</span>
               </span>
               {selectedBlock && (
-                <span className="text-[10px] font-mono font-bold text-amber-400 uppercase">
+                <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">
                   {selectedBlock.type}
                 </span>
               )}
@@ -821,7 +821,7 @@ export function SiteBuilderClient() {
                         }
                         className={`py-1.5 rounded-xl border text-[11px] font-semibold uppercase cursor-pointer ${
                           selectedBlock.style.align === align
-                            ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                             : 'bg-white/[0.03] text-slate-400 border-white/[0.06]'
                         }`}
                       >

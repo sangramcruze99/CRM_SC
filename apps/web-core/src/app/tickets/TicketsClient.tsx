@@ -38,97 +38,7 @@ interface SupportTicket {
   }[];
 }
 
-const initialTickets: SupportTicket[] = [
-  {
-    id: 'tkt_101',
-    ticketNumber: 'HD-2026-881',
-    title: 'SSO SAML 2.0 Identity Provider Handshake Error',
-    customerName: 'Sarah Connor',
-    customerEmail: 'sarah.connor@cyberdyne.io',
-    company: 'Cyberdyne Systems Corp',
-    channel: 'EMAIL',
-    priority: 'URGENT',
-    status: 'OPEN',
-    assignedAgent: 'David Ross (Senior Support Engineer)',
-    firstResponseSlaMinutes: 14,
-    sentiment: 'FRUSTRATED',
-    mrr: 12000,
-    khataBalance: 0,
-    messages: [
-      {
-        id: 'm1',
-        sender: 'customer',
-        senderName: 'Sarah Connor',
-        text: 'Our engineering team is getting a 403 Invalid SAML Assertion during Google Workspace SSO login. Please advise ASAP as 40 users are blocked.',
-        timestamp: '15 mins ago',
-      },
-    ],
-  },
-  {
-    id: 'tkt_102',
-    ticketNumber: 'HD-2026-882',
-    title: 'Custom Webhook Retry Logic Failing on High-Volume Bursts',
-    customerName: 'Michael Scott',
-    customerEmail: 'michael.scott@dunder.com',
-    company: 'Dunder Mifflin Paper & Logistics',
-    channel: 'LIVE_CHAT',
-    priority: 'HIGH',
-    status: 'IN_PROGRESS',
-    assignedAgent: 'Elena Rostova (DevOps Specialist)',
-    firstResponseSlaMinutes: 45,
-    sentiment: 'NEUTRAL',
-    mrr: 4800,
-    khataBalance: 185.20,
-    messages: [
-      {
-        id: 'm1',
-        sender: 'customer',
-        senderName: 'Michael Scott',
-        text: 'Hey team, our inventory batch sync dropped 3 webhooks during the 2:00 PM warehouse surge. Could we get the signature verification logs?',
-        timestamp: '1 hour ago',
-      },
-      {
-        id: 'm2',
-        sender: 'agent',
-        senderName: 'Elena Rostova',
-        text: 'Hi Michael! Inspecting your tenant webhook listener logs now. We will re-dispatch the failed payloads with exponential backoff.',
-        timestamp: '42 mins ago',
-      },
-    ],
-  },
-  {
-    id: 'tkt_103',
-    ticketNumber: 'HD-2026-883',
-    title: 'Inquiry regarding automated WhatsApp Khata payment reminders',
-    customerName: 'Elena Vance',
-    customerEmail: 'elena.vance@blackmesa.org',
-    company: 'Black Mesa Research',
-    channel: 'WHATSAPP',
-    priority: 'MEDIUM',
-    status: 'RESOLVED',
-    assignedAgent: 'Support AI Copilot',
-    firstResponseSlaMinutes: 0,
-    sentiment: 'POSITIVE',
-    mrr: 9500,
-    khataBalance: 0,
-    messages: [
-      {
-        id: 'm1',
-        sender: 'customer',
-        senderName: 'Elena Vance',
-        text: 'How do we enable automated WhatsApp payment links for our retail POS ledger?',
-        timestamp: 'Yesterday',
-      },
-      {
-        id: 'm2',
-        sender: 'agent',
-        senderName: 'Support AI Copilot',
-        text: 'Hello Elena! You can toggle WhatsApp automated links under "Operations & Revenue > Instant Payment Links" or via your Retail POS Console.',
-        timestamp: 'Yesterday',
-      },
-    ],
-  },
-];
+const initialTickets: SupportTicket[] = [];
 
 const knowledgeBaseArticles = [
   { id: 'kb_1', title: 'Configuring Enterprise Google / Okta SAML 2.0 SSO', category: 'Authentication & Security' },
@@ -138,7 +48,7 @@ const knowledgeBaseArticles = [
 
 export function TicketsClient() {
   const [tickets, setTickets] = useState<SupportTicket[]>(initialTickets);
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket>(initialTickets[0]);
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(initialTickets[0] || null);
   const [replyText, setReplyText] = useState('');
   const [search, setSearch] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
@@ -176,9 +86,11 @@ export function TicketsClient() {
       timestamp: 'Just now',
     };
 
-    const updated = {
+    if (!selectedTicket) return;
+
+    const updated: SupportTicket = {
       ...selectedTicket,
-      status: 'IN_PROGRESS' as const,
+      status: 'IN_PROGRESS',
       messages: [...selectedTicket.messages, newMsg],
     };
 
@@ -190,6 +102,7 @@ export function TicketsClient() {
   };
 
   const handleAutoSuggestReply = () => {
+    if (!selectedTicket) return;
     if (selectedTicket.id === 'tkt_101') {
       setReplyText(
         'Hello Sarah,\n\nWe have verified your SAML Entity ID configuration. The 403 error is caused by a missing ACS URL endpoint certificate in your Google Admin Console. Please navigate to "Security > SAML SSO > Endpoint URL" and update the certificate fingerprint. We are standing by to verify once updated!'
@@ -206,7 +119,8 @@ export function TicketsClient() {
   };
 
   const handleUpdateStatus = (status: SupportTicket['status']) => {
-    const updated = { ...selectedTicket, status };
+    if (!selectedTicket) return;
+    const updated: SupportTicket = { ...selectedTicket, status };
     setSelectedTicket(updated);
     setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
     setAlert(`Ticket ${selectedTicket.ticketNumber} marked as ${status}!`);
@@ -257,8 +171,8 @@ export function TicketsClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -267,7 +181,7 @@ export function TicketsClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Ticket className="text-amber-400" size={24} />
+            <Ticket className="text-emerald-400" size={24} />
             Customer Support & Service Command Center
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -277,7 +191,7 @@ export function TicketsClient() {
 
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 flex items-center gap-1.5 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 flex items-center gap-1.5 cursor-pointer"
         >
           <Plus size={14} />
           <span>New Incident Ticket</span>
@@ -300,9 +214,9 @@ export function TicketsClient() {
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Avg First Response SLA</span>
-            <Clock size={18} className="text-amber-400" />
+            <Clock size={18} className="text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-amber-400 font-mono">4.2 min</div>
+          <div className="text-3xl font-extrabold text-emerald-400 font-mono">4.2 min</div>
           <div className="text-xs text-emerald-400 mt-2 font-bold">99.2% SLA adherence rate</div>
         </div>
 
@@ -318,7 +232,7 @@ export function TicketsClient() {
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">AI Copilot Deflection</span>
-            <Sparkles size={18} className="text-amber-400" />
+            <Sparkles size={18} className="text-emerald-400" />
           </div>
           <div className="text-3xl font-extrabold text-white font-mono">42.8%</div>
           <div className="text-xs text-slate-400 mt-2 font-medium">Self-resolved via KB & Chatbot</div>
@@ -369,19 +283,19 @@ export function TicketsClient() {
           {/* Ticket Cards List */}
           <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
             {filteredTickets.map((t) => {
-              const isSelected = selectedTicket.id === t.id;
+              const isSelected = selectedTicket?.id === t.id;
               return (
                 <div
                   key={t.id}
                   onClick={() => setSelectedTicket(t)}
                   className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                     isSelected
-                      ? 'border-amber-500/80 bg-amber-500/10 ring-2 ring-amber-500/20 shadow-lg'
+                      ? 'border-amber-500/80 bg-emerald-500/10 ring-2 ring-emerald-500/20 shadow-lg'
                       : 'border-white/[0.06] bg-white/[0.03] hover:bg-white/[0.06] hover:border-white/[0.15]'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-mono font-bold text-xs text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded border border-amber-500/30">
+                    <span className="font-mono font-bold text-xs text-emerald-300 bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30">
                       {t.ticketNumber}
                     </span>
                     <span
@@ -389,7 +303,7 @@ export function TicketsClient() {
                         t.priority === 'URGENT'
                           ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
                           : t.priority === 'HIGH'
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                           : 'bg-white/[0.08] text-slate-300 border border-white/10'
                       }`}
                     >
@@ -405,100 +319,117 @@ export function TicketsClient() {
                 </div>
               );
             })}
+            {filteredTickets.length === 0 && (
+              <div className="p-8 text-center text-xs font-medium text-slate-500 border-2 border-dashed border-white/[0.08] rounded-2xl">
+                No tickets found. Click <span className="text-emerald-400 font-bold">"New Incident Ticket"</span> to log an issue.
+              </div>
+            )}
           </div>
         </div>
 
         {/* Center Column: Interactive Ticket Thread & AI Response Copilot (5 cols) */}
         <div className="lg:col-span-5 space-y-4">
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4 flex flex-col h-[660px]">
-            {/* Ticket Thread Header */}
-            <div className="flex items-start justify-between border-b border-white/[0.06] pb-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-xs text-amber-400">{selectedTicket.ticketNumber}</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/[0.08] text-slate-300">
-                    {selectedTicket.status}
-                  </span>
-                </div>
-                <h3 className="font-bold text-xs text-white mt-1">{selectedTicket.title}</h3>
-              </div>
-
-              <div className="flex items-center gap-1">
-                {selectedTicket.status !== 'RESOLVED' ? (
-                  <button
-                    onClick={() => handleUpdateStatus('RESOLVED')}
-                    className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 rounded-xl text-[11px] font-bold border border-emerald-500/30 transition-colors cursor-pointer"
-                  >
-                    ✓ Resolve
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleUpdateStatus('IN_PROGRESS')}
-                    className="px-2.5 py-1 bg-white/[0.08] hover:bg-white/[0.12] text-slate-300 rounded-xl text-[11px] font-bold border border-white/10 transition-colors cursor-pointer"
-                  >
-                    Reopen
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Conversation Messages */}
-            <div className="flex-1 overflow-y-auto space-y-3.5 pr-1">
-              {selectedTicket.messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed space-y-1 ${
-                      msg.sender === 'agent'
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 rounded-tr-xs shadow-lg shadow-orange-500/20 font-medium'
-                        : 'bg-white/[0.05] border border-white/[0.08] text-slate-200 rounded-tl-xs'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-[10px] opacity-80 border-b border-black/10 pb-1 mb-1">
-                      <span className="font-bold">{msg.senderName}</span>
-                      <span>{msg.timestamp}</span>
+            {selectedTicket ? (
+              <>
+                {/* Ticket Thread Header */}
+                <div className="flex items-start justify-between border-b border-white/[0.06] pb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-xs text-emerald-400">{selectedTicket.ticketNumber}</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/[0.08] text-slate-300">
+                        {selectedTicket.status}
+                      </span>
                     </div>
-                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                    <h3 className="font-bold text-xs text-white mt-1">{selectedTicket.title}</h3>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    {selectedTicket.status !== 'RESOLVED' ? (
+                      <button
+                        onClick={() => handleUpdateStatus('RESOLVED')}
+                        className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 rounded-xl text-[11px] font-bold border border-emerald-500/30 transition-colors cursor-pointer"
+                      >
+                        ✓ Resolve
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleUpdateStatus('IN_PROGRESS')}
+                        className="px-2.5 py-1 bg-white/[0.08] hover:bg-white/[0.12] text-slate-300 rounded-xl text-[11px] font-bold border border-white/10 transition-colors cursor-pointer"
+                      >
+                        Reopen
+                      </button>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
 
-            {/* AI Auto-Suggest Button Bar */}
-            <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs">
-              <button
-                type="button"
-                onClick={handleAutoSuggestReply}
-                className="px-3 py-1.5 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/35 rounded-xl text-[11px] font-bold flex items-center gap-1.5 cursor-pointer"
-              >
-                <Sparkles size={13} className="text-amber-400" />
-                <span>AI Auto-Draft Solution</span>
-              </button>
+                {/* Conversation Messages */}
+                <div className="flex-1 overflow-y-auto space-y-3.5 pr-1">
+                  {selectedTicket.messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`flex ${msg.sender === 'agent' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed space-y-1 ${
+                          msg.sender === 'agent'
+                            ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 rounded-tr-xs shadow-lg shadow-emerald-500/20 font-medium'
+                            : 'bg-white/[0.05] border border-white/[0.08] text-slate-200 rounded-tl-xs'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between text-[10px] opacity-80 border-b border-black/10 pb-1 mb-1">
+                          <span className="font-bold">{msg.senderName}</span>
+                          <span>{msg.timestamp}</span>
+                        </div>
+                        <p className="whitespace-pre-wrap">{msg.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-              <span className="text-[10px] text-slate-500 font-mono">Channel: {selectedTicket.channel}</span>
-            </div>
+                {/* AI Auto-Suggest Button Bar */}
+                <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    onClick={handleAutoSuggestReply}
+                    className="px-3 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-amber-500/35 rounded-xl text-[11px] font-bold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Sparkles size={13} className="text-emerald-400" />
+                    <span>AI Auto-Draft Solution</span>
+                  </button>
 
-            {/* Reply Composer */}
-            <form onSubmit={handleSendReply} className="space-y-2">
-              <textarea
-                rows={3}
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder="Type response to customer or insert knowledge base solution..."
-                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:bg-white/[0.08] focus:border-amber-500 font-medium"
-              />
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold shadow-lg shadow-orange-500/25 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <Send size={13} />
-                  <span>Send Response</span>
-                </button>
+                  <span className="text-[10px] text-slate-500 font-mono">Channel: {selectedTicket.channel}</span>
+                </div>
+
+                {/* Reply Composer */}
+                <form onSubmit={handleSendReply} className="space-y-2">
+                  <textarea
+                    rows={3}
+                    value={replyText}
+                    onChange={(e) => setReplyText(e.target.value)}
+                    placeholder="Type response to customer or insert knowledge base solution..."
+                    className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:bg-white/[0.08] focus:border-emerald-500 font-medium"
+                  />
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Send size={13} />
+                      <span>Send Response</span>
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-500">
+                <Ticket size={40} className="text-slate-600 mb-2" />
+                <p className="text-xs font-bold text-slate-300">No Active Ticket Selected</p>
+                <p className="text-[11px] text-slate-500 mt-1 max-w-xs">
+                  Create a new ticket or select an existing incident from the queue to start conversation triage.
+                </p>
               </div>
-            </form>
+            )}
           </div>
         </div>
 
@@ -510,47 +441,53 @@ export function TicketsClient() {
               Customer 360° Profile
             </h3>
 
-            <div className="space-y-2 text-xs">
-              <div>
-                <span className="text-[10px] text-slate-500 font-semibold block uppercase">Account</span>
-                <span className="font-bold text-white">{selectedTicket.customerName}</span>
-                <span className="text-[11px] text-slate-400 block">{selectedTicket.company}</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/[0.06]">
+            {selectedTicket ? (
+              <div className="space-y-2 text-xs">
                 <div>
-                  <span className="text-[10px] text-slate-500 font-semibold block uppercase">MRR Value</span>
-                  <span className="font-mono font-extrabold text-amber-400">${selectedTicket.mrr}/mo</span>
+                  <span className="text-[10px] text-slate-500 font-semibold block uppercase">Account</span>
+                  <span className="font-bold text-white">{selectedTicket.customerName}</span>
+                  <span className="text-[11px] text-slate-400 block">{selectedTicket.company}</span>
                 </div>
-                <div>
-                  <span className="text-[10px] text-slate-500 font-semibold block uppercase">Khata Balance</span>
-                  <span className="font-mono font-extrabold text-emerald-400">${selectedTicket.khataBalance}</span>
-                </div>
-              </div>
 
-              <div className="pt-2 border-t border-white/[0.06]">
-                <span className="text-[10px] text-slate-500 font-semibold block uppercase mb-1">
-                  NLP Sentiment Radar
-                </span>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    selectedTicket.sentiment === 'POSITIVE'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : selectedTicket.sentiment === 'NEUTRAL'
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                      : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                  }`}
-                >
-                  ● {selectedTicket.sentiment}
-                </span>
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/[0.06]">
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-semibold block uppercase">MRR Value</span>
+                    <span className="font-mono font-extrabold text-emerald-400">${selectedTicket.mrr}/mo</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-semibold block uppercase">Khata Balance</span>
+                    <span className="font-mono font-extrabold text-emerald-400">${selectedTicket.khataBalance}</span>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-white/[0.06]">
+                  <span className="text-[10px] text-slate-500 font-semibold block uppercase mb-1">
+                    NLP Sentiment Radar
+                  </span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      selectedTicket.sentiment === 'POSITIVE'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        : selectedTicket.sentiment === 'NEUTRAL'
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                    }`}
+                  >
+                    ● {selectedTicket.sentiment}
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="py-6 text-center text-xs text-slate-500">
+                Select a ticket to inspect customer account details & sentiment telemetry.
+              </div>
+            )}
           </div>
 
           {/* Quick Knowledge Base Articles */}
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-4 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-white/[0.06] pb-2">
-              <BookOpen size={14} className="text-amber-400" />
+              <BookOpen size={14} className="text-emerald-400" />
               <span>Knowledge Base Solutions</span>
             </h3>
 
@@ -559,14 +496,14 @@ export function TicketsClient() {
                 <div
                   key={kb.id}
                   onClick={() => handleInsertKB(kb.title)}
-                  className="p-2.5 bg-white/[0.03] hover:bg-amber-500/10 border border-white/[0.06] hover:border-amber-500/40 rounded-2xl transition-all cursor-pointer space-y-1 group"
+                  className="p-2.5 bg-white/[0.03] hover:bg-emerald-500/10 border border-white/[0.06] hover:border-emerald-500/40 rounded-2xl transition-all cursor-pointer space-y-1 group"
                 >
-                  <p className="text-xs font-bold text-slate-200 group-hover:text-amber-300 transition-colors line-clamp-2">
+                  <p className="text-xs font-bold text-slate-200 group-hover:text-emerald-300 transition-colors line-clamp-2">
                     {kb.title}
                   </p>
                   <div className="flex justify-between items-center text-[10px] text-slate-500">
                     <span>{kb.category}</span>
-                    <span className="text-amber-400 font-bold">+ Insert</span>
+                    <span className="text-emerald-400 font-bold">+ Insert</span>
                   </div>
                 </div>
               ))}
@@ -650,7 +587,7 @@ export function TicketsClient() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 cursor-pointer"
                 >
                   Create Ticket
                 </button>

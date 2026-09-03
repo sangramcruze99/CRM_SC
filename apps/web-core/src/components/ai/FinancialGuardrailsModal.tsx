@@ -35,7 +35,7 @@ export function FinancialGuardrailsModal({
         {/* Header */}
         <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
           <div className="flex items-center gap-2">
-            <ShieldCheck size={20} className="text-amber-400" />
+            <ShieldCheck size={20} className="text-emerald-400" />
             <h2 className="text-base font-bold text-white">
               Financial AI Guardrails Verification
             </h2>
@@ -46,12 +46,12 @@ export function FinancialGuardrailsModal({
         </div>
 
         {/* Confidence & Risk Level Banner */}
-        <div className="flex items-center justify-between p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-2xl">
+        <div className="flex items-center justify-between p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
               Neural Confidence Score
             </span>
-            <div className="text-xl font-mono font-extrabold text-amber-400">
+            <div className="text-xl font-mono font-extrabold text-emerald-400">
               {actionDetails.confidenceScore}% Validated
             </div>
           </div>
@@ -75,7 +75,7 @@ export function FinancialGuardrailsModal({
 
           <div className="flex justify-between items-start text-xs border-b border-white/[0.06] pb-2">
             <span className="text-slate-400">Proposed Amount:</span>
-            <span className="font-mono font-bold text-amber-400 text-sm">
+            <span className="font-mono font-bold text-emerald-400 text-sm">
               ${actionDetails.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
           </div>
@@ -104,7 +104,7 @@ export function FinancialGuardrailsModal({
             id="complianceCheck"
             checked={complianceConfirmed}
             onChange={(e) => setComplianceConfirmed(e.target.checked)}
-            className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/10 text-amber-500 focus:ring-amber-400 cursor-pointer"
+            className="mt-0.5 w-4 h-4 rounded border-white/20 bg-white/10 text-emerald-500 focus:ring-emerald-400 cursor-pointer"
           />
           <label htmlFor="complianceCheck" className="text-xs text-slate-300 cursor-pointer">
             I confirm that I have reviewed the itemized calculation and approve committing this transaction to the immutable SOC2 audit ledger.
@@ -127,7 +127,7 @@ export function FinancialGuardrailsModal({
               onApprove();
               onClose();
             }}
-            className="px-5 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="px-5 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
             <CheckCircle2 size={14} />
             <span>Approve & Commit Transaction</span>

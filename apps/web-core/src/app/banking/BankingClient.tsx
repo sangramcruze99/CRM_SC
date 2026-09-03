@@ -30,48 +30,7 @@ interface BankTransaction {
   matchedRecord?: string;
 }
 
-const INITIAL_BANK_FEED: BankTransaction[] = [
-  {
-    id: 'tx_bank_01',
-    date: 'Aug 30, 2026',
-    description: 'Stripe Payout - Cyberdyne Systems Wire',
-    account: 'JPMorgan Chase (Operating *8821)',
-    amount: 14500.0,
-    type: 'CREDIT',
-    status: 'UNMATCHED',
-    matchedRecord: 'Commercial Invoice #INV-2026-8891',
-  },
-  {
-    id: 'tx_bank_02',
-    date: 'Aug 29, 2026',
-    description: 'Direct Deposit - Employee Monthly Payroll Run',
-    account: 'Silicon Valley Bank (Treasury *4409)',
-    amount: 72400.0,
-    type: 'DEBIT',
-    status: 'RECONCILED',
-    matchedRecord: 'August 2026 Payroll Run (/directory)',
-  },
-  {
-    id: 'tx_bank_03',
-    date: 'Aug 28, 2026',
-    description: 'Inbound Wire - Black Mesa Labs Enterprise SaaS',
-    account: 'JPMorgan Chase (Operating *8821)',
-    amount: 28000.0,
-    type: 'CREDIT',
-    status: 'RECONCILED',
-    matchedRecord: 'SaaS License Subscription #SUB-9021',
-  },
-  {
-    id: 'tx_bank_04',
-    date: 'Aug 27, 2026',
-    description: 'AWS Dedicated Cloud Infrastructure Hosting',
-    account: 'Silicon Valley Bank (Treasury *4409)',
-    amount: 3200.0,
-    type: 'DEBIT',
-    status: 'UNMATCHED',
-    matchedRecord: 'Vendor Invoice #AWS-883921',
-  },
-];
+const INITIAL_BANK_FEED: BankTransaction[] = [];
 
 const FX_RATES: Record<string, { symbol: string; rateToUSD: number; name: string }> = {
   USD: { symbol: '$', rateToUSD: 1.0, name: 'United States Dollar' },
@@ -109,8 +68,8 @@ export function BankingClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -119,7 +78,7 @@ export function BankingClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Landmark className="text-amber-400" size={24} />
+            <Landmark className="text-emerald-400" size={24} />
             Multi-Currency Forex & Bank Reconciliation Hub
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -131,7 +90,7 @@ export function BankingClient() {
           <button
             type="button"
             onClick={handleReconcileAll}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Zap size={14} />
             <span>1-Click Auto-Reconcile ({unmatchedCount} Unmatched)</span>
@@ -144,9 +103,9 @@ export function BankingClient() {
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[10px] font-bold uppercase tracking-wider">Total Reconciled Bank Balance</span>
-            <DollarSign size={16} className="text-amber-400" />
+            <DollarSign size={16} className="text-emerald-400" />
           </div>
-          <div className="text-2xl font-mono font-extrabold text-amber-400">$789,999.56</div>
+          <div className="text-2xl font-mono font-extrabold text-emerald-400">$789,999.56</div>
           <div className="text-[11px] text-slate-400 mt-1 font-medium">JPMorgan & SVB Linked Accounts</div>
         </div>
 
@@ -175,10 +134,10 @@ export function BankingClient() {
       <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
         <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
           <div className="flex items-center gap-2">
-            <Globe2 size={18} className="text-amber-400" />
+            <Globe2 size={18} className="text-emerald-400" />
             <h3 className="text-sm font-bold text-white">Multi-Currency Real-Time Forex Calculator</h3>
           </div>
-          <span className="text-xs font-mono text-amber-400">ECB / Federal Reserve Live Stream</span>
+          <span className="text-xs font-mono text-emerald-400">ECB / Federal Reserve Live Stream</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
@@ -241,8 +200,8 @@ export function BankingClient() {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-amber-300 font-semibold flex items-center gap-1.5">
-                      <Receipt size={13} className="text-amber-400 flex-shrink-0" />
+                    <span className="text-emerald-300 font-semibold flex items-center gap-1.5">
+                      <Receipt size={13} className="text-emerald-400 flex-shrink-0" />
                       <span>{tx.matchedRecord}</span>
                     </span>
                   </td>
@@ -251,7 +210,7 @@ export function BankingClient() {
                       className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono ${
                         tx.status === 'RECONCILED'
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                       }`}
                     >
                       {tx.status}
@@ -262,7 +221,7 @@ export function BankingClient() {
                       <button
                         type="button"
                         onClick={() => handleReconcileSingle(tx.id)}
-                        className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 font-bold rounded-xl text-xs border border-amber-500/40 transition-all cursor-pointer"
+                        className="px-3 py-1.5 bg-emerald-500/20 hover:bg-amber-500 text-emerald-300 hover:text-slate-950 font-bold rounded-xl text-xs border border-emerald-500/40 transition-all cursor-pointer"
                       >
                         Match & Reconcile
                       </button>
@@ -274,6 +233,13 @@ export function BankingClient() {
                   </td>
                 </tr>
               ))}
+              {bankFeed.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                    No open bank transactions detected. Connect your Open Banking / Plaid feed to ingest and auto-reconcile transactions against customer ledgers.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

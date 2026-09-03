@@ -123,7 +123,7 @@ export function SchemaBuilder({ initialSchema, availableObjects = [], onSave }: 
       {/* Object Definition Card */}
       <div className="bg-white/[0.04] backdrop-blur-2xl p-6 rounded-3xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-2.5 bg-amber-500/15 text-amber-400 border border-amber-500/30 rounded-2xl">
+          <div className="p-2.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-2xl">
             <Database className="w-5 h-5" />
           </div>
           <div>
@@ -262,11 +262,11 @@ export function SchemaBuilder({ initialSchema, availableObjects = [], onSave }: 
 
                     <div className="flex items-center gap-6 mt-3">
                       <div className="flex items-center space-x-2">
-                        <input type="checkbox" id={`required-${index}`} checked={field.isRequired} onChange={(e) => updateField(index, { isRequired: e.target.checked })} className="w-4 h-4 text-amber-500 focus:ring-amber-400 border-white/20 bg-white/10 rounded cursor-pointer" />
+                        <input type="checkbox" id={`required-${index}`} checked={field.isRequired} onChange={(e) => updateField(index, { isRequired: e.target.checked })} className="w-4 h-4 text-emerald-500 focus:ring-emerald-400 border-white/20 bg-white/10 rounded cursor-pointer" />
                         <label htmlFor={`required-${index}`} className="text-xs font-medium text-slate-300 cursor-pointer">Required</label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <input type="checkbox" id={`unique-${index}`} checked={field.isUnique} onChange={(e) => updateField(index, { isUnique: e.target.checked })} className="w-4 h-4 text-amber-500 focus:ring-amber-400 border-white/20 bg-white/10 rounded cursor-pointer" />
+                        <input type="checkbox" id={`unique-${index}`} checked={field.isUnique} onChange={(e) => updateField(index, { isUnique: e.target.checked })} className="w-4 h-4 text-emerald-500 focus:ring-emerald-400 border-white/20 bg-white/10 rounded cursor-pointer" />
                         <label htmlFor={`unique-${index}`} className="text-xs font-medium text-slate-300 cursor-pointer">Unique</label>
                       </div>
                     </div>
@@ -284,7 +284,7 @@ export function SchemaBuilder({ initialSchema, availableObjects = [], onSave }: 
       </div>
 
       <div className="flex justify-end">
-        <button onClick={handleSave} disabled={isSaving} className="px-6 py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-orange-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer">
+        <button onClick={handleSave} disabled={isSaving} className="px-6 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer">
           <Save className="w-4 h-4 mr-1.5" /> 
           {isSaving ? 'Saving...' : 'Save Schema'}
         </button>

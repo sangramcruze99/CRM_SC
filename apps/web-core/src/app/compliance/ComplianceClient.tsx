@@ -53,7 +53,7 @@ export function ComplianceClient({ initialAudits = [] }: { initialAudits?: any[]
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <ShieldCheck className="text-amber-400" size={24} />
+            <ShieldCheck className="text-emerald-400" size={24} />
             Security & Governance Compliance
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -64,7 +64,7 @@ export function ComplianceClient({ initialAudits = [] }: { initialAudits?: any[]
           <button
             onClick={handleScan}
             disabled={isScanning}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
           >
             <Play size={15} />
             <span>{isScanning ? 'Running Security Audit...' : 'Run Live Security Scan'}</span>
@@ -75,12 +75,12 @@ export function ComplianceClient({ initialAudits = [] }: { initialAudits?: any[]
       {/* Framework Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         {frameworks.map((fw) => (
-          <div key={fw.code} className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] hover:border-amber-500/40 rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3 transition-all">
+          <div key={fw.code} className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] hover:border-emerald-500/40 rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3 transition-all">
             <div className="flex justify-between items-start">
               <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
                 <CheckCircle size={12} /> {fw.status}
               </span>
-              <span className="font-mono text-xs text-amber-400 font-bold">{fw.code}</span>
+              <span className="font-mono text-xs text-emerald-400 font-bold">{fw.code}</span>
             </div>
             <h3 className="font-bold text-white text-sm h-10 leading-snug">{fw.name}</h3>
 
@@ -111,7 +111,7 @@ export function ComplianceClient({ initialAudits = [] }: { initialAudits?: any[]
           ].map((c) => (
             <div key={c.title} className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/[0.06] rounded-2xl hover:bg-white/[0.06] transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
                   <c.icon size={16} />
                 </div>
                 <span className="text-xs font-bold text-white">{c.title}</span>

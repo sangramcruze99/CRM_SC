@@ -16,6 +16,13 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Business OS — Enterprise Workspace & CRM",
   description: "Unified Enterprise CRM & Business Operating System with Luxury Glassmorphism UI",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Business OS",
+  },
+  themeColor: "#07090e",
 };
 
 export default function RootLayout({
@@ -26,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${inter.className} bg-[#07090e] text-slate-100 flex h-screen overflow-hidden antialiased selection:bg-amber-500 selection:text-slate-950`}
+        className={`${inter.className} bg-[#07090e] text-slate-100 flex h-screen overflow-hidden antialiased selection:bg-emerald-500 selection:text-slate-950`}
         suppressHydrationWarning
       >
         <ThemeProvider>

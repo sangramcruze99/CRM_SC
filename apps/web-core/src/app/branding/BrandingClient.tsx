@@ -28,7 +28,7 @@ interface ColorTheme {
 }
 
 const COLOR_THEMES: ColorTheme[] = [
-  { id: 'amber', name: 'Executive Amber & Gold (Default)', primaryHex: '#f59e0b', accentHex: '#ea580c', badgeBg: 'bg-amber-500/20 text-amber-300' },
+  { id: 'amber', name: 'Executive Amber & Gold (Default)', primaryHex: '#f59e0b', accentHex: '#ea580c', badgeBg: 'bg-emerald-500/20 text-emerald-300' },
   { id: 'emerald', name: 'Emerald Jade & Forest', primaryHex: '#10b981', accentHex: '#059669', badgeBg: 'bg-emerald-500/20 text-emerald-300' },
   { id: 'sapphire', name: 'Sapphire Cobalt & Cyan', primaryHex: '#3b82f6', accentHex: '#06b6d4', badgeBg: 'bg-blue-500/20 text-blue-300' },
   { id: 'amethyst', name: 'Amethyst Violet & Rose', primaryHex: '#8b5cf6', accentHex: '#ec4899', badgeBg: 'bg-purple-500/20 text-purple-300' },
@@ -54,8 +54,8 @@ export function BrandingClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -64,7 +64,7 @@ export function BrandingClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Palette className="text-amber-400" size={24} />
+            <Palette className="text-emerald-400" size={24} />
             Enterprise White-Label & Custom Domain Studio
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -87,7 +87,7 @@ export function BrandingClient() {
           <form onSubmit={handleSaveBranding} className="luxe-box rounded-3xl p-6 space-y-5">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                <Building size={16} className="text-amber-400" />
+                <Building size={16} className="text-emerald-400" />
                 <span>Brand Identity & Organization Name</span>
               </h3>
               <span className="text-[10px] font-mono text-slate-400">Step 1 of 3</span>
@@ -134,7 +134,7 @@ export function BrandingClient() {
                   type="text"
                   value={customDomain}
                   onChange={(e) => setCustomDomain(e.target.value)}
-                  className="flex-1 px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-amber-400 focus:outline-none focus:bg-white/[0.08]"
+                  className="flex-1 px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-emerald-400 focus:outline-none focus:bg-white/[0.08]"
                 />
                 <button
                   type="button"
@@ -148,7 +148,7 @@ export function BrandingClient() {
                 </button>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Add a DNS <strong>CNAME</strong> record pointing <code className="text-amber-300 font-mono">{customDomain}</code> to <code className="text-slate-300 font-mono">cname.business-os.cloud</code>.
+                Add a DNS <strong>CNAME</strong> record pointing <code className="text-emerald-300 font-mono">{customDomain}</code> to <code className="text-slate-300 font-mono">cname.business-os.cloud</code>.
               </p>
             </div>
 
@@ -177,7 +177,7 @@ export function BrandingClient() {
                         />
                         <span className="text-xs font-semibold text-white">{theme.name.split('(')[0]}</span>
                       </div>
-                      {isSelected && <CheckCircle2 size={15} className="text-amber-400" />}
+                      {isSelected && <CheckCircle2 size={15} className="text-emerald-400" />}
                     </div>
                   );
                 })}
@@ -199,7 +199,7 @@ export function BrandingClient() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
             >
               <Zap size={15} />
               <span>Save & Publish White-Label Workspace</span>
@@ -212,7 +212,7 @@ export function BrandingClient() {
           <div className="luxe-box rounded-3xl p-6 space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <div className="flex items-center gap-2">
-                <Eye size={16} className="text-amber-400" />
+                <Eye size={16} className="text-emerald-400" />
                 <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">
                   Live Client Portal Preview
                 </h3>

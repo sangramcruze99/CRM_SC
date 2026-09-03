@@ -39,11 +39,11 @@ function SortableWidget({ id, widgetType }: { id: string, widgetType: string }) 
         {...listeners}
       >
         <GripHorizontal size={14} className="text-slate-400" />
-        <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400">{widget?.name}</span>
+        <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400">{widget?.name}</span>
       </div>
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="text-center text-slate-400">
-          <div className="mx-auto w-12 h-12 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-2xl flex items-center justify-center mb-2">
+          <div className="mx-auto w-12 h-12 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-2xl flex items-center justify-center mb-2">
              {widget?.icon}
           </div>
           <p className="text-xs font-bold text-slate-300">{widget?.name} Component</p>
@@ -83,7 +83,7 @@ export function UIBuilder() {
       {/* Topbar */}
       <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 px-6 flex items-center justify-between shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
         <div className="flex items-center gap-3">
-          <LayoutGrid size={20} className="text-amber-400" />
+          <LayoutGrid size={20} className="text-emerald-400" />
           <div>
             <h1 className="font-bold text-white leading-tight">Sales Dashboard</h1>
             <p className="text-xs text-slate-400">Custom Page Layout</p>
@@ -93,7 +93,7 @@ export function UIBuilder() {
           <button className="px-3.5 py-1.5 text-xs font-bold text-slate-300 hover:text-white bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] rounded-xl transition-colors cursor-pointer">
             Preview
           </button>
-          <button className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-orange-500/25 transition-all cursor-pointer">
+          <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/25 transition-all cursor-pointer">
             Save Page
           </button>
         </div>
@@ -107,9 +107,9 @@ export function UIBuilder() {
             {availableWidgets.map(widget => (
               <div 
                 key={widget.type}
-                className="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-amber-500/40 hover:bg-white/[0.05] cursor-pointer transition-all group"
+                className="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-emerald-500/40 hover:bg-white/[0.05] cursor-pointer transition-all group"
               >
-                <div className="text-amber-400">
+                <div className="text-emerald-400">
                   {widget.icon}
                 </div>
                 <span className="text-xs font-bold text-slate-200 group-hover:text-white">{widget.name}</span>

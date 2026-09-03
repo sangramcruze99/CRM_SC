@@ -34,8 +34,8 @@ export function IndustryHubClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -44,7 +44,7 @@ export function IndustryHubClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Sparkles className="text-amber-400" size={24} />
+            <Sparkles className="text-emerald-400" size={24} />
             Multi-Purpose Industry & Niche Workspace Adapter
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -56,13 +56,13 @@ export function IndustryHubClient() {
           <button
             type="button"
             onClick={() => setIsFeaturePickerOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-[0.98]"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-[0.98]"
           >
             <Sliders size={15} />
             <span>Customize 67 Features ({activeFeatureIds.length} Active)</span>
           </button>
 
-          <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-1.5 shadow-2xs">
+          <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             <span>Active: {nicheConfig.shortName}</span>
           </span>
@@ -81,7 +81,7 @@ export function IndustryHubClient() {
               onClick={() => setSelectedPreview(niche.id)}
               className={`bg-white/[0.04] backdrop-blur-2xl border rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4 flex flex-col justify-between cursor-pointer transition-all ${
                 isActive
-                  ? 'border-amber-500/80 ring-2 ring-amber-500/20 bg-amber-500/10'
+                  ? 'border-amber-500/80 ring-2 ring-emerald-500/20 bg-emerald-500/10'
                   : isSelected
                   ? 'border-amber-400/50 bg-white/[0.06]'
                   : 'border-white/[0.08] hover:border-white/[0.15] hover:bg-white/[0.06]'
@@ -143,7 +143,7 @@ export function IndustryHubClient() {
                       e.stopPropagation();
                       setIsFeaturePickerOpen(true);
                     }}
-                    className="px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                    className="px-3.5 py-1.5 bg-emerald-500/20 hover:bg-amber-500/30 border border-emerald-500/40 text-emerald-300 rounded-xl text-xs font-bold transition-all cursor-pointer"
                   >
                     Configure Features
                   </button>
@@ -154,7 +154,7 @@ export function IndustryHubClient() {
                       e.stopPropagation();
                       handleActivateNiche(niche.id);
                     }}
-                    className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-500/20 active:scale-[0.98] cursor-pointer"
+                    className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 active:scale-[0.98] cursor-pointer"
                   >
                     Activate Niche
                   </button>
@@ -188,14 +188,14 @@ export function IndustryHubClient() {
               onClick={() => setIsFeaturePickerOpen(true)}
               className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
             >
-              <Sliders size={14} className="text-amber-400" />
+              <Sliders size={14} className="text-emerald-400" />
               <span>Cherry-Pick Features</span>
             </button>
 
             {currentNiche !== previewConfig.id && (
               <button
                 onClick={() => handleActivateNiche(previewConfig.id)}
-                className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 cursor-pointer"
+                className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 cursor-pointer"
               >
                 Switch Workspace to {previewConfig.shortName}
               </button>
@@ -221,7 +221,7 @@ export function IndustryHubClient() {
                     className="p-2 bg-white/[0.04] border border-white/[0.06] rounded-xl flex items-center justify-between text-xs font-medium text-slate-200"
                   >
                     <span>{item.label}</span>
-                    <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
                       {item.href}
                     </span>
                   </div>
@@ -239,7 +239,7 @@ export function IndustryHubClient() {
             </span>
             <Link
               href={`/industry/${previewConfig.id}`}
-              className="text-xs font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1.5"
+              className="text-xs font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5"
             >
               <span>Open {previewConfig.shortName} Specialized View</span>
               <ArrowRight size={14} />

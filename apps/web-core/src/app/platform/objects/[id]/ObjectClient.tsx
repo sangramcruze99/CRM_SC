@@ -96,7 +96,7 @@ export function ObjectClient({ customObject, initialRecords }: ObjectClientProps
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
               {customObject.pluralName || customObject.name + 's'}
-              <span className="font-mono text-xs bg-amber-500/15 border border-amber-500/30 text-amber-300 px-2 py-0.5 rounded-lg ml-2 font-semibold">
+              <span className="font-mono text-xs bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 px-2 py-0.5 rounded-lg ml-2 font-semibold">
                 {customObject.apiName}
               </span>
             </h1>
@@ -107,18 +107,18 @@ export function ObjectClient({ customObject, initialRecords }: ObjectClientProps
           <div className="flex bg-white/[0.06] p-1 rounded-xl border border-white/[0.08]">
             <button 
               onClick={() => setViewMode('table')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${viewMode === 'table' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'}`}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${viewMode === 'table' ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'}`}
             >
               Table
             </button>
             <button 
               onClick={() => setViewMode('kanban')}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${viewMode === 'kanban' ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'}`}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer ${viewMode === 'kanban' ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'}`}
             >
               Kanban
             </button>
           </div>
-          <button onClick={() => setIsCreating(true)} className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-bold rounded-xl flex items-center transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer">
+          <button onClick={() => setIsCreating(true)} className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-xl flex items-center transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer">
             <Plus className="w-4 h-4 mr-1.5" /> New {customObject.name}
           </button>
         </div>

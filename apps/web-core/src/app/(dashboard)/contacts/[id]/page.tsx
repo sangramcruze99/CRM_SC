@@ -45,7 +45,7 @@ export default async function ContactDetailPage({
     <div className="h-full flex flex-col space-y-6 max-w-7xl mx-auto text-white">
       {/* Back link */}
       <div>
-        <Link href="/" className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center space-x-1 transition-colors">
+        <Link href="/" className="text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center space-x-1 transition-colors">
           <ArrowLeft size={14} />
           <span>Back to Contacts</span>
         </Link>
@@ -56,14 +56,14 @@ export default async function ContactDetailPage({
         <div className="xl:col-span-1 space-y-6">
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 text-slate-950 flex items-center justify-center text-2xl font-bold shadow-lg shadow-orange-500/25">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center text-2xl font-bold shadow-lg shadow-emerald-500/25">
                 {contact.firstName?.[0] || 'C'}
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white tracking-tight">
                   {contact.firstName} {contact.lastName}
                 </h1>
-                <p className="text-amber-400 text-xs font-semibold mt-0.5">Primary Enterprise Lead</p>
+                <p className="text-emerald-400 text-xs font-semibold mt-0.5">Primary Enterprise Lead</p>
               </div>
             </div>
 
@@ -89,7 +89,7 @@ export default async function ContactDetailPage({
 
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-bold text-white flex items-center"><Wallet size={16} className="text-amber-400 mr-2" /> Ledger Balance (Khata)</h2>
+              <h2 className="text-sm font-bold text-white flex items-center"><Wallet size={16} className="text-emerald-400 mr-2" /> Ledger Balance (Khata)</h2>
             </div>
             <div className="p-4 bg-white/[0.03] border border-white/[0.06] rounded-2xl">
               <div className="text-xs text-slate-400 font-medium mb-1">Current Ledger Outstanding</div>

@@ -57,7 +57,7 @@ export function AskAICopilot() {
       {/* Floating Copilot Launcher Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold px-4 py-3 rounded-full shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/45 transition-all transform hover:scale-105 active:scale-95 border border-amber-400/50 cursor-pointer"
+        className="fixed bottom-6 right-6 z-50 flex items-center space-x-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold px-4 py-3 rounded-full shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/45 transition-all transform hover:scale-105 active:scale-95 border border-emerald-400/50 cursor-pointer"
         title="Open AI CRM Assistant"
       >
         <Sparkles className="w-4 h-4 text-slate-950" />
@@ -70,7 +70,7 @@ export function AskAICopilot() {
           {/* Header */}
           <div className="p-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
             <div className="flex items-center space-x-2.5">
-              <div className="p-2 bg-amber-500/15 text-amber-400 rounded-xl border border-amber-500/30 shadow-2xs">
+              <div className="p-2 bg-emerald-500/15 text-emerald-400 rounded-xl border border-emerald-500/30 shadow-2xs">
                 <Bot className="w-5 h-5" />
               </div>
               <div>
@@ -97,7 +97,7 @@ export function AskAICopilot() {
               >
                 <div
                   className={`w-7 h-7 rounded-full flex items-center justify-center text-xs shrink-0 font-bold ${
-                    m.role === "user" ? "bg-amber-500 text-slate-950" : "bg-white/[0.08] text-amber-400 border border-white/10"
+                    m.role === "user" ? "bg-emerald-500 text-slate-950" : "bg-white/[0.08] text-emerald-400 border border-white/10"
                   }`}
                 >
                   {m.role === "user" ? <User className="w-3.5 h-3.5" /> : <Bot className="w-3.5 h-3.5" />}
@@ -105,7 +105,7 @@ export function AskAICopilot() {
                 <div
                   className={`text-xs px-3.5 py-2.5 rounded-2xl max-w-[82%] whitespace-pre-wrap leading-relaxed shadow-2xs ${
                     m.role === "user"
-                      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 rounded-tr-none font-bold shadow-md shadow-orange-500/20"
+                      ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 rounded-tr-none font-bold shadow-md shadow-emerald-500/20"
                       : "bg-white/[0.05] text-slate-200 rounded-tl-none border border-white/[0.08] font-normal"
                   }`}
                 >
@@ -115,7 +115,7 @@ export function AskAICopilot() {
             ))}
             {isLoading && (
               <div className="flex items-center space-x-2 text-slate-400 text-xs pl-2">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-400" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
                 <span>AI is analyzing records...</span>
               </div>
             )}
@@ -123,7 +123,7 @@ export function AskAICopilot() {
 
           {/* Input Form */}
           <form onSubmit={handleSend} className="p-4 border-t border-white/[0.08] bg-white/[0.02]">
-            <div className="flex items-center space-x-2 bg-white/[0.05] border border-white/[0.1] rounded-2xl px-3 py-2 focus-within:border-amber-500 focus-within:bg-white/[0.08] focus-within:ring-2 focus-within:ring-amber-500/20 transition-all">
+            <div className="flex items-center space-x-2 bg-white/[0.05] border border-white/[0.1] rounded-2xl px-3 py-2 focus-within:border-emerald-500 focus-within:bg-white/[0.08] focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
               <input
                 type="text"
                 value={input}
@@ -134,7 +134,7 @@ export function AskAICopilot() {
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="p-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-slate-950 rounded-xl transition-all shadow-xs shadow-orange-500/25 cursor-pointer font-bold"
+                className="p-2 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 rounded-xl transition-all shadow-xs shadow-emerald-500/25 cursor-pointer font-bold"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>

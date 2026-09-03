@@ -13,35 +13,7 @@ interface S3File {
   url: string;
 }
 
-const initialDemoFiles: S3File[] = [
-  {
-    id: 's3_001',
-    filename: 'Quarterly_Financial_Statements_Q2_2026.pdf',
-    fileSize: '4.2 MB',
-    mimeType: 'application/pdf',
-    bucket: 'businessos-enterprise-vault',
-    uploadedDate: '2026-08-22',
-    url: 'https://s3.us-east-2.amazonaws.com/businessos-vault/financials-q2.pdf',
-  },
-  {
-    id: 's3_002',
-    filename: 'Customer_Success_Kickoff_Deck_2026.pptx',
-    fileSize: '18.6 MB',
-    mimeType: 'application/vnd.ms-powerpoint',
-    bucket: 'businessos-enterprise-vault',
-    uploadedDate: '2026-08-25',
-    url: 'https://s3.us-east-2.amazonaws.com/businessos-vault/kickoff-deck.pptx',
-  },
-  {
-    id: 's3_003',
-    filename: 'Executive_Team_Headshots_Archive.zip',
-    fileSize: '45.1 MB',
-    mimeType: 'application/zip',
-    bucket: 'businessos-enterprise-vault',
-    uploadedDate: '2026-08-28',
-    url: 'https://s3.us-east-2.amazonaws.com/businessos-vault/headshots.zip',
-  },
-];
+const initialDemoFiles: S3File[] = [];
 
 export function S3UploadsClient({ initialFiles = [] }: { initialFiles?: any[] }) {
   const [files, setFiles] = useState<S3File[]>(
@@ -78,8 +50,8 @@ export function S3UploadsClient({ initialFiles = [] }: { initialFiles?: any[] })
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
-          <CheckCircle size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
+          <CheckCircle size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -88,7 +60,7 @@ export function S3UploadsClient({ initialFiles = [] }: { initialFiles?: any[] })
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Cloud className="text-amber-400" size={24} />
+            <Cloud className="text-emerald-400" size={24} />
             AWS S3 Direct Storage Vault
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -98,7 +70,7 @@ export function S3UploadsClient({ initialFiles = [] }: { initialFiles?: any[] })
         <button
           onClick={handleSimulateUpload}
           disabled={isUploading}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <UploadCloud size={16} />
           <span>{isUploading ? 'Uploading to S3...' : 'Upload File to S3'}</span>
@@ -109,7 +81,7 @@ export function S3UploadsClient({ initialFiles = [] }: { initialFiles?: any[] })
       <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shadow-2xs">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-2xs">
               <HardDrive size={20} />
             </div>
             <div>
@@ -142,7 +114,7 @@ export function S3UploadsClient({ initialFiles = [] }: { initialFiles?: any[] })
               <tr key={file.id} className="hover:bg-white/[0.04] transition-colors">
                 <td className="px-6 py-4">
                   <div className="font-bold text-white flex items-center gap-2 text-sm">
-                    <File size={16} className="text-amber-400 flex-shrink-0" />
+                    <File size={16} className="text-emerald-400 flex-shrink-0" />
                     <span className="truncate max-w-sm">{file.filename}</span>
                   </div>
                   <div className="text-[11px] font-mono text-slate-500 font-semibold">{file.id}</div>
@@ -173,6 +145,13 @@ export function S3UploadsClient({ initialFiles = [] }: { initialFiles?: any[] })
                 </td>
               </tr>
             ))}
+            {files.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                  No files uploaded to S3 vault yet. Upload an asset or document above to generate secure presigned S3 URLs.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

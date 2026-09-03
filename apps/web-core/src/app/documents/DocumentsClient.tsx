@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 function getFileIcon(mimeType: string) {
   if (mimeType.startsWith('image/')) return <FileImage className="text-blue-400" size={24} />;
   if (mimeType.startsWith('video/')) return <FileVideo className="text-purple-400" size={24} />;
-  if (mimeType.startsWith('audio/')) return <FileAudio className="text-amber-400" size={24} />;
+  if (mimeType.startsWith('audio/')) return <FileAudio className="text-emerald-400" size={24} />;
   if (mimeType === 'application/pdf') return <FileText className="text-rose-400" size={24} />;
   if (mimeType === 'application/zip') return <Archive className="text-emerald-400" size={24} />;
-  if (mimeType.includes('json') || mimeType.includes('javascript') || mimeType.includes('text/html')) return <FileCode2 className="text-amber-400" size={24} />;
+  if (mimeType.includes('json') || mimeType.includes('javascript') || mimeType.includes('text/html')) return <FileCode2 className="text-emerald-400" size={24} />;
   return <FileIcon className="text-slate-400" size={24} />;
 }
 
@@ -89,7 +89,7 @@ export function DocumentsClient({
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-2 text-xs font-semibold text-slate-400">
-          <Link href="/documents" className="hover:text-amber-400 transition-colors">Files & Assets</Link>
+          <Link href="/documents" className="hover:text-emerald-400 transition-colors">Files & Assets</Link>
           {currentFolder && (
             <>
               <ChevronRight size={14} className="text-slate-500" />
@@ -111,12 +111,12 @@ export function DocumentsClient({
             onClick={handleCreateFolder}
             className="flex items-center space-x-1.5 px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all border border-white/[0.1] shadow-xs cursor-pointer"
           >
-            <FolderIcon size={14} className="text-amber-400" />
+            <FolderIcon size={14} className="text-emerald-400" />
             <span>New Folder</span>
           </button>
           <button 
             onClick={handleUploadFile}
-            className="flex items-center space-x-1.5 px-3.5 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
           >
             <Upload size={14} />
             <span>Upload File</span>
@@ -139,9 +139,9 @@ export function DocumentsClient({
               <Link 
                 href={`/documents?folderId=${folder.id}`} 
                 key={folder.id}
-                className="group p-5 bg-white/[0.04] backdrop-blur-2xl hover:bg-white/[0.08] border border-white/[0.08] hover:border-amber-500/40 rounded-3xl flex flex-col items-center justify-center transition-all cursor-pointer relative shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
+                className="group p-5 bg-white/[0.04] backdrop-blur-2xl hover:bg-white/[0.08] border border-white/[0.08] hover:border-emerald-500/40 rounded-3xl flex flex-col items-center justify-center transition-all cursor-pointer relative shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
               >
-                <FolderIcon size={44} className="text-amber-400/90 group-hover:text-amber-400 mb-2.5 transition-colors" />
+                <FolderIcon size={44} className="text-emerald-400/90 group-hover:text-emerald-400 mb-2.5 transition-colors" />
                 <span className="text-xs font-bold text-white text-center w-full truncate px-1">{folder.name}</span>
                 <button className="absolute top-2.5 right-2.5 p-1 text-slate-500 hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
                   <MoreVertical size={13} />
@@ -153,7 +153,7 @@ export function DocumentsClient({
             {documents.map(doc => (
               <div 
                 key={doc.id}
-                className="group p-5 bg-white/[0.04] backdrop-blur-2xl hover:bg-white/[0.08] border border-white/[0.08] hover:border-amber-500/40 rounded-3xl flex flex-col items-center justify-center transition-all relative shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
+                className="group p-5 bg-white/[0.04] backdrop-blur-2xl hover:bg-white/[0.08] border border-white/[0.08] hover:border-emerald-500/40 rounded-3xl flex flex-col items-center justify-center transition-all relative shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]"
               >
                 <div className="h-14 flex items-center justify-center mb-2">
                   {getFileIcon(doc.mimeType)}

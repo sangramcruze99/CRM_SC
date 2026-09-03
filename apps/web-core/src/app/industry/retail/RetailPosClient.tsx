@@ -40,18 +40,11 @@ const initialCatalog: ProductCatalogItem[] = [
   { id: 'PRD-06', name: 'Greek Organic Honey 350g', category: 'Spreads', price: 9.90, stock: 14, barcode: '890123456794' },
 ];
 
-const initialKhataCustomers = [
-  { id: 'KH-01', name: 'Robert Vance (Neighbor #42)', balanceDue: 45.50, lastPaymentDate: '2026-08-20', phone: '+1 555-0192', status: 'ACTIVE_CREDIT' },
-  { id: 'KH-02', name: 'Maya Lin (Weekly Grocery)', balanceDue: 120.00, lastPaymentDate: '2026-08-15', phone: '+1 555-0144', status: 'OVERDUE_PING_SENT' },
-  { id: 'KH-03', name: 'Daniel Cho', balanceDue: 0.00, lastPaymentDate: '2026-08-28', phone: '+1 555-0187', status: 'SETTLED' },
-];
+const initialKhataCustomers: Array<{ id: string; name: string; balanceDue: number; lastPaymentDate: string; phone: string; status: string }> = [];
 
 export function RetailPosClient() {
   const [catalogProducts, setCatalogProducts] = useState<ProductCatalogItem[]>(initialCatalog);
-  const [cart, setCart] = useState<CartItem[]>([
-    { id: 'PRD-01', name: 'Organic Almond Milk 1L', price: 4.50, qty: 2, barcode: '890123456789' },
-    { id: 'PRD-03', name: 'Single Origin Espresso Beans 500g', price: 18.00, qty: 1, barcode: '890123456791' },
-  ]);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [khataCustomers, setKhataCustomers] = useState(initialKhataCustomers);
   const [searchProduct, setSearchProduct] = useState('');
   const [alert, setAlert] = useState<string | null>(null);
@@ -88,8 +81,8 @@ export function RetailPosClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -98,12 +91,12 @@ export function RetailPosClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               RETAIL & LOCAL STORE OS
             </span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5 mt-1">
-            <ShoppingBag className="text-amber-400" size={24} />
+            <ShoppingBag className="text-emerald-400" size={24} />
             Local Retail, Grocery & Khata POS Console
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -119,7 +112,7 @@ export function RetailPosClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                <Barcode size={16} className="text-amber-400" />
+                <Barcode size={16} className="text-emerald-400" />
                 <span>Quick Item Catalog & Barcode Scanner</span>
               </h2>
               <span className="text-[11px] text-slate-500 font-mono">Terminal POS #1</span>
@@ -141,20 +134,20 @@ export function RetailPosClient() {
                 <div
                   key={prod.id}
                   onClick={() => addToCart(prod)}
-                  className="p-3 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-amber-500/40 rounded-2xl transition-all cursor-pointer flex flex-col justify-between space-y-2 group shadow-2xs"
+                  className="p-3 bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.06] hover:border-emerald-500/40 rounded-2xl transition-all cursor-pointer flex flex-col justify-between space-y-2 group shadow-2xs"
                 >
                   <div>
-                    <h3 className="font-bold text-xs text-white group-hover:text-amber-300 transition-colors line-clamp-2">
+                    <h3 className="font-bold text-xs text-white group-hover:text-emerald-300 transition-colors line-clamp-2">
                       {prod.name}
                     </h3>
                     <span className="text-[10px] text-slate-400 font-mono">Stock: {prod.stock}</span>
                   </div>
 
                   <div className="flex items-center justify-between pt-1 border-t border-white/[0.06]">
-                    <span className="font-mono font-extrabold text-xs text-amber-400">
+                    <span className="font-mono font-extrabold text-xs text-emerald-400">
                       ${prod.price.toFixed(2)}
                     </span>
-                    <span className="text-[10px] text-slate-950 font-bold bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-0.5 rounded-lg shadow-xs">
+                    <span className="text-[10px] text-slate-950 font-bold bg-gradient-to-r from-emerald-500 to-teal-500 px-2 py-0.5 rounded-lg shadow-xs">
                       + Add
                     </span>
                   </div>
@@ -167,10 +160,10 @@ export function RetailPosClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between border-b border-white/[0.06] pb-3">
               <span className="flex items-center gap-1.5">
-                <Wallet size={15} className="text-amber-400" />
+                <Wallet size={15} className="text-emerald-400" />
                 <span>Customer Khata Credit Book (Ledger)</span>
               </span>
-              <span className="text-[11px] text-amber-400 font-bold cursor-pointer hover:underline">View All Ledgers →</span>
+              <span className="text-[11px] text-emerald-400 font-bold cursor-pointer hover:underline">View All Ledgers →</span>
             </h3>
 
             <div className="space-y-2.5">
@@ -206,7 +199,7 @@ export function RetailPosClient() {
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                  <Receipt size={16} className="text-amber-400" />
+                  <Receipt size={16} className="text-emerald-400" />
                   <span>Current Cart ({cart.length} items)</span>
                 </h3>
                 {cart.length > 0 && (
@@ -249,7 +242,7 @@ export function RetailPosClient() {
                         </button>
                       </div>
 
-                      <div className="w-16 text-right font-mono font-extrabold text-xs text-amber-400 ml-2">
+                      <div className="w-16 text-right font-mono font-extrabold text-xs text-emerald-400 ml-2">
                         ${(item.price * item.qty).toFixed(2)}
                       </div>
                     </div>
@@ -269,7 +262,7 @@ export function RetailPosClient() {
                 </div>
                 <div className="flex justify-between text-sm font-extrabold text-white pt-2 border-t border-white/[0.08]">
                   <span>Total Amount Due</span>
-                  <span className="font-mono text-lg text-amber-400">${total.toFixed(2)}</span>
+                  <span className="font-mono text-lg text-emerald-400">${total.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -290,7 +283,7 @@ export function RetailPosClient() {
                   type="button"
                   onClick={() => handleCheckout('CARD')}
                   disabled={cart.length === 0}
-                  className="py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-500/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <CreditCard size={14} />
                   <span>Card POS</span>

@@ -148,7 +148,7 @@ export default function SnakeGame() {
           <div className="flex items-center space-x-2 text-emerald-400">
             <span>SCORE: {score}</span>
           </div>
-          <div className="flex items-center space-x-2 text-amber-400">
+          <div className="flex items-center space-x-2 text-emerald-400">
             <Trophy size={16} />
             <span>BEST: {highScore}</span>
           </div>

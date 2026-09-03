@@ -117,8 +117,8 @@ export function CustomizationClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -127,7 +127,7 @@ export function CustomizationClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Sliders className="text-amber-400" size={24} />
+            <Sliders className="text-emerald-400" size={24} />
             Platform Customization & Extensibility Studio
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -152,7 +152,7 @@ export function CustomizationClient() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
                 isActive
-                  ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-slate-950 shadow-lg shadow-orange-500/25'
+                  ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-slate-950 shadow-lg shadow-emerald-500/25'
                   : 'bg-transparent text-slate-400 hover:text-white hover:bg-white/[0.06]'
               }`}
             >
@@ -223,7 +223,7 @@ export function CustomizationClient() {
                   id="req_box"
                   checked={newRequired}
                   onChange={(e) => setNewRequired(e.target.checked)}
-                  className="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 border-white/20 cursor-pointer"
+                  className="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-400 border-white/20 cursor-pointer"
                 />
                 <label htmlFor="req_box" className="text-xs text-slate-300 font-semibold cursor-pointer">
                   Mandatory Field (Required)
@@ -232,7 +232,7 @@ export function CustomizationClient() {
 
               <button
                 type="submit"
-                className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <Plus size={14} />
                 <span>Add Custom Field</span>
@@ -260,7 +260,7 @@ export function CustomizationClient() {
                       <span className="font-mono text-[10px] text-slate-400">custom.{field.fieldKey}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                         {field.targetModule}
                       </span>
                     </td>
@@ -298,7 +298,7 @@ export function CustomizationClient() {
               <h2 className="text-base font-bold text-white">Custom Business Entities & Schema Studio</h2>
               <p className="text-xs text-slate-400 mt-0.5">Extend Business OS with custom tables, data models, and entity associations.</p>
             </div>
-            <button className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-orange-500/25 flex items-center gap-1.5 cursor-pointer">
+            <button className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer">
               <Plus size={13} />
               <span>Define Custom Object</span>
             </button>
@@ -326,7 +326,7 @@ export function CustomizationClient() {
 
                 <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-slate-400">
                   <span>{obj.recordCount} Records</span>
-                  <span className="text-amber-400">{obj.propertiesCount} Custom Attributes</span>
+                  <span className="text-emerald-400">{obj.propertiesCount} Custom Attributes</span>
                 </div>
               </div>
             ))}
@@ -344,7 +344,7 @@ export function CustomizationClient() {
               <h2 className="text-base font-bold text-white">Visual If-This-Then-That Workflow Rules Engine</h2>
               <p className="text-xs text-slate-400 mt-0.5">Automate sales assignments, WhatsApp alerts, and webhook dispatches.</p>
             </div>
-            <button className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-orange-500/25 flex items-center gap-1.5 cursor-pointer">
+            <button className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer">
               <Plus size={13} />
               <span>Create Automation Rule</span>
             </button>
@@ -369,7 +369,7 @@ export function CustomizationClient() {
                   </div>
 
                   <div className="space-y-1 font-mono text-xs">
-                    <p className="text-amber-400 font-semibold">{aut.triggerEvent}</p>
+                    <p className="text-emerald-400 font-semibold">{aut.triggerEvent}</p>
                     <p className="text-sky-300 font-semibold">{aut.condition}</p>
                     <p className="text-emerald-300 font-semibold">{aut.action}</p>
                   </div>
@@ -437,7 +437,7 @@ export function CustomizationClient() {
                   setAlert('🎨 Branding and custom domain settings updated successfully!');
                   setTimeout(() => setAlert(null), 3000);
                 }}
-                className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 cursor-pointer"
+                className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 cursor-pointer"
               >
                 Save Branding Configurations
               </button>

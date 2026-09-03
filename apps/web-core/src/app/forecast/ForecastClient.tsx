@@ -39,7 +39,7 @@ export function ForecastClient() {
           <div className="grid grid-cols-3 gap-3">
             <div className="p-4 bg-white/[0.04] border border-white/[0.08] rounded-2xl">
               <span className="text-[10px] text-slate-400 uppercase font-bold block">Current ARR</span>
-              <span className="text-xl font-mono font-extrabold text-amber-400">$1.20M</span>
+              <span className="text-xl font-mono font-extrabold text-emerald-400">$1.20M</span>
               <span className="text-[10px] text-emerald-400 block mt-1">+48% QoQ Growth</span>
             </div>
             <div className="p-4 bg-white/[0.04] border border-white/[0.08] rounded-2xl">
@@ -64,9 +64,9 @@ export function ForecastClient() {
       subtitle: 'Predictive Scenario Modeling',
       content: (
         <div className="space-y-4">
-          <div className="p-5 bg-gradient-to-r from-amber-500/15 via-white/[0.04] to-transparent border border-amber-500/30 rounded-2xl flex items-center justify-between">
+          <div className="p-5 bg-gradient-to-r from-amber-500/15 via-white/[0.04] to-transparent border border-emerald-500/30 rounded-2xl flex items-center justify-between">
             <div>
-              <span className="text-[10px] uppercase font-bold text-amber-400 block">
+              <span className="text-[10px] uppercase font-bold text-emerald-400 block">
                 12-Month Projected ARR ({forecastScenario.toUpperCase()})
               </span>
               <div className="text-3xl font-mono font-extrabold text-white mt-0.5">
@@ -129,7 +129,7 @@ export function ForecastClient() {
               </div>
               <div className="flex justify-between text-slate-300">
                 <span>Net Free Cash Flow Margin</span>
-                <span className="font-mono font-bold text-amber-400">+68%</span>
+                <span className="font-mono font-bold text-emerald-400">+68%</span>
               </div>
             </div>
           </div>
@@ -147,7 +147,7 @@ export function ForecastClient() {
               <span className="text-[10px] text-slate-400 block mt-1">Current Headcount</span>
             </div>
             <div className="p-3 bg-white/[0.04] border border-white/[0.08] rounded-xl">
-              <span className="text-xl font-mono font-extrabold text-amber-400">$72.4k</span>
+              <span className="text-xl font-mono font-extrabold text-emerald-400">$72.4k</span>
               <span className="text-[10px] text-slate-400 block mt-1">Monthly Payroll</span>
             </div>
             <div className="p-3 bg-white/[0.04] border border-white/[0.08] rounded-xl">
@@ -174,8 +174,8 @@ export function ForecastClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -184,7 +184,7 @@ export function ForecastClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Presentation className="text-amber-400" size={24} />
+            <Presentation className="text-emerald-400" size={24} />
             Executive Boardroom Deck & 12-Month Financial Forecast
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -201,7 +201,7 @@ export function ForecastClient() {
                 onClick={() => setForecastScenario(sc)}
                 className={`px-3 py-1.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer ${
                   forecastScenario === sc
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold shadow-md'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-extrabold shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -213,7 +213,7 @@ export function ForecastClient() {
           <button
             type="button"
             onClick={handleExportDeck}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Download size={14} />
             <span>Export Slide Deck (PDF)</span>
@@ -226,7 +226,7 @@ export function ForecastClient() {
         {/* Slide Header */}
         <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
           <div>
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
+            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400">
               BOARDROOM PRESENTATION DECK
             </span>
             <h2 className="text-lg font-bold text-white mt-0.5">{slides[currentSlide].title}</h2>
@@ -271,7 +271,7 @@ export function ForecastClient() {
             type="button"
             disabled={currentSlide === slides.length - 1}
             onClick={() => setCurrentSlide((prev) => Math.min(slides.length - 1, prev + 1))}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1 shadow-md cursor-pointer disabled:opacity-30"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1 shadow-md cursor-pointer disabled:opacity-30"
           >
             <span>Next Slide</span>
             <ChevronRight size={14} />

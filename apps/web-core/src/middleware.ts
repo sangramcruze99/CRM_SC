@@ -2,15 +2,17 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-  // If user is trying to access a protected UI route without a token
   const token = request.cookies.get('access_token')?.value;
-  
-  if (!token && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/_next') && !request.nextUrl.pathname.startsWith('/api')) {
+  const isDev = process.env.NODE_ENV !== 'production';
+
+  // In production, require token for non-public routes
+  if (!isDev && !token && !request.nextUrl.pathname.startsWith('/login') && !request.nextUrl.pathname.startsWith('/_next') && !request.nextUrl.pathname.startsWith('/api')) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
   
   // Set the tenant ID header based on the JWT token for all requests (UI or API)
   const response = NextResponse.next();
+  const tenantId = 'default-tenant';
   
   if (token) {
     try {
@@ -22,7 +24,6 @@ export function middleware(request: NextRequest) {
           response.headers.set('x-tenant-id', payload.tenantId);
           response.headers.set('Authorization', `Bearer ${token}`);
           
-          // Also set it on the request object so Next.js rewrites forward it
           const requestHeaders = new Headers(request.headers);
           requestHeaders.set('x-tenant-id', payload.tenantId);
           requestHeaders.set('Authorization', `Bearer ${token}`);
@@ -39,7 +40,13 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  return response;
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-tenant-id', tenantId);
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 }
 
 export const config = {

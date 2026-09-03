@@ -7,10 +7,10 @@ export class GlobalSearchController {
 
   @Get()
   async search(
-    @Headers('x-tenant-id') tenantId: string,
+    @Headers('x-tenant-id') tenantIdHeader: string,
     @Query('q') query: string
   ) {
-    if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
+    const tenantId = tenantIdHeader || 'default-tenant';
     if (!query) return [];
     
     return this.searchService.search(tenantId, query);

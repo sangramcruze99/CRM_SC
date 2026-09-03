@@ -100,7 +100,7 @@ export function LocalizationClient({ initialLocales = [] }: { initialLocales?: a
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Languages className="text-amber-400" size={24} />
+            <Languages className="text-emerald-400" size={24} />
             Internationalization & Localization
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -109,7 +109,7 @@ export function LocalizationClient({ initialLocales = [] }: { initialLocales?: a
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <Plus size={16} />
           <span>Add Translation Key</span>
@@ -142,7 +142,7 @@ export function LocalizationClient({ initialLocales = [] }: { initialLocales?: a
               onClick={() => setActiveLanguage(l.code as any)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeLanguage === l.code
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                   : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1]'
               }`}
             >
@@ -166,7 +166,7 @@ export function LocalizationClient({ initialLocales = [] }: { initialLocales?: a
           <tbody className="divide-y divide-white/[0.05]">
             {filtered.map((t) => (
               <tr key={t.id} className="hover:bg-white/[0.04] transition-colors">
-                <td className="px-6 py-4 font-mono font-bold text-amber-400 text-xs">{t.keyName}</td>
+                <td className="px-6 py-4 font-mono font-bold text-emerald-400 text-xs">{t.keyName}</td>
                 <td className="px-6 py-4">
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/[0.08] text-slate-300 border border-white/10">
                     {t.namespace}
@@ -237,7 +237,7 @@ export function LocalizationClient({ initialLocales = [] }: { initialLocales?: a
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 cursor-pointer"
                 >
                   Save Translation
                 </button>

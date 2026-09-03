@@ -11,7 +11,7 @@ export function CreateCustomObjectModal() {
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-amber-400/40 cursor-pointer"
+        className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-emerald-400/40 cursor-pointer"
       >
         <Plus size={15} />
         <span>New Custom Object</span>
@@ -23,7 +23,7 @@ export function CreateCustomObjectModal() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-amber-400/40 cursor-pointer"
+        className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-emerald-400/40 cursor-pointer"
       >
         <Plus size={15} />
         <span>New Custom Object</span>
@@ -59,7 +59,7 @@ export function CreateCustomObjectModal() {
               <button type="button" onClick={() => setIsOpen(false)} className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 rounded-xl border border-white/[0.1] transition-colors cursor-pointer">
                 Cancel
               </button>
-              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 cursor-pointer">
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 cursor-pointer">
                 Create Object
               </button>
             </div>

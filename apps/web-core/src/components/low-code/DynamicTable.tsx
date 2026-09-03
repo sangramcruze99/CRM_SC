@@ -30,7 +30,7 @@ function getStatusBadgeClass(val: string): string {
     return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30';
   }
   if (['pending', 'in review', 'in progress', 'review', 'warm', 'medium'].some((k) => v.includes(k))) {
-    return 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30';
+    return 'bg-emerald-500/15 text-amber-700 dark:text-emerald-300 border-emerald-500/30';
   }
   if (['urgent', 'high', 'critical', 'overdue', 'cancelled', 'lost', 'failed', 'rejected'].some((k) => v.includes(k))) {
     return 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30';
@@ -80,7 +80,7 @@ export function DynamicTable({ schema, data, onEdit, onDelete }: DynamicTablePro
       });
       return (
         <span className="inline-flex items-center gap-1.5 font-mono text-xs text-slate-700 dark:text-slate-300">
-          <Calendar size={12} className="text-amber-500 dark:text-amber-400 shrink-0" />
+          <Calendar size={12} className="text-emerald-500 dark:text-emerald-400 shrink-0" />
           <span>{dateStr}</span>
         </span>
       );
@@ -97,7 +97,7 @@ export function DynamicTable({ schema, data, onEdit, onDelete }: DynamicTablePro
         field.name.toLowerCase().includes('salary');
 
       return (
-        <span className="font-mono font-bold text-xs text-amber-600 dark:text-amber-400">
+        <span className="font-mono font-bold text-xs text-emerald-600 dark:text-emerald-400">
           {isCurrency ? `$${num.toLocaleString()}` : num.toLocaleString()}
         </span>
       );
@@ -130,7 +130,7 @@ export function DynamicTable({ schema, data, onEdit, onDelete }: DynamicTablePro
       return (
         <a
           href={`mailto:${strVal}`}
-          className="inline-flex items-center gap-1 text-xs text-slate-800 dark:text-slate-200 hover:text-amber-600 dark:hover:text-amber-400 transition-colors font-mono"
+          className="inline-flex items-center gap-1 text-xs text-slate-800 dark:text-slate-200 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-mono"
         >
           <Mail size={12} className="text-slate-400 shrink-0" />
           <span className="truncate max-w-[180px]">{strVal}</span>
@@ -155,7 +155,7 @@ export function DynamicTable({ schema, data, onEdit, onDelete }: DynamicTablePro
             <tr>
               <th className="px-5 py-3.5 w-24">
                 <span className="flex items-center gap-1">
-                  <Hash size={11} className="text-amber-500 dark:text-amber-400" />
+                  <Hash size={11} className="text-emerald-500 dark:text-emerald-400" />
                   <span>ID</span>
                 </span>
               </th>
@@ -212,7 +212,7 @@ export function DynamicTable({ schema, data, onEdit, onDelete }: DynamicTablePro
                       {onEdit && (
                         <button
                           type="button"
-                          className="p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-300 hover:bg-amber-500/10 rounded-xl transition-all cursor-pointer inline-flex items-center"
+                          className="p-1.5 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-300 hover:bg-emerald-500/10 rounded-xl transition-all cursor-pointer inline-flex items-center"
                           onClick={() => onEdit(record)}
                           title="Edit Record"
                         >

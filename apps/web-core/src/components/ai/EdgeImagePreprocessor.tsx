@@ -73,7 +73,7 @@ export function EdgeImagePreprocessor({ imageSrc, onProcessed }: EdgeImagePrepro
     <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4 space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Sparkles size={14} className="text-amber-400" />
+          <Sparkles size={14} className="text-emerald-400" />
           <span className="text-xs font-bold text-white uppercase tracking-wider">
             Edge Preprocessing (Client Canvas)
           </span>
@@ -101,7 +101,7 @@ export function EdgeImagePreprocessor({ imageSrc, onProcessed }: EdgeImagePrepro
           }}
           className={`px-2.5 py-1.5 border rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
             contrast > 100
-              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
               : 'bg-white/[0.06] text-slate-300 border-white/[0.1]'
           }`}
         >

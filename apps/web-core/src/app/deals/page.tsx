@@ -1,16 +1,13 @@
 import { getTenantHeaders, safeFetch } from "../../lib/auth";
 import { Briefcase } from "lucide-react";
 import { CreateDealModal } from "../../components/CreateDealModal";
+import { DeleteActionButton } from "../../components/DeleteActionButton";
+import { deleteDeal } from "../actions";
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-const demoDeals = [
-  { id: 'deal_01', title: 'Cyberdyne AI Migration', stage: 'Proposal', amount: 120000, company: { name: 'Cyberdyne Systems' } },
-  { id: 'deal_02', title: 'Black Mesa Lab Expansion', stage: 'Meeting Scheduled', amount: 45000, company: { name: 'Black Mesa Research' } },
-  { id: 'deal_03', title: 'HyperScale Enterprise Rollout', stage: 'Closed Won', amount: 280000, company: { name: 'HyperScale AI' } },
-  { id: 'deal_04', title: 'Vanguard Security Pilot', stage: 'Lead', amount: 35000, company: { name: 'Vanguard Security' } },
-];
+const demoDeals: any[] = [];
 
 export default async function DealsPage() {
   const headers = await getTenantHeaders();
@@ -23,12 +20,12 @@ export default async function DealsPage() {
     []
   );
 
-  const deals = fetchedDeals.length > 0 ? fetchedDeals : demoDeals;
+  const deals = fetchedDeals || [];
 
   const stages = [
     { title: "Lead", color: "border-slate-500/40 text-slate-300 bg-white/[0.06]" },
     { title: "Meeting Scheduled", color: "border-sky-500/40 text-sky-300 bg-sky-500/10" },
-    { title: "Proposal", color: "border-amber-500/40 text-amber-300 bg-amber-500/10" },
+    { title: "Proposal", color: "border-emerald-500/40 text-emerald-300 bg-emerald-500/10" },
     { title: "Closed Won", color: "border-emerald-500/40 text-emerald-300 bg-emerald-500/10" },
   ];
 
@@ -43,7 +40,7 @@ export default async function DealsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Briefcase className="text-amber-400" size={24} />
+            <Briefcase className="text-emerald-400" size={24} />
             Deals & Opportunities Pipeline
           </h1>
           <p className="text-sm text-slate-400 mt-1">Manage pipeline velocity, probability forecasts, and active negotiations.</p>
@@ -66,18 +63,25 @@ export default async function DealsPage() {
             
             <div className="flex-1 flex flex-col gap-3 min-h-[140px] bg-white/[0.04] backdrop-blur-2xl rounded-3xl p-3 border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
               {col.items.map((item: any) => (
-                <div key={item.id} className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4.5 hover:border-amber-500/40 hover:bg-white/[0.07] transition-all shadow-xs group">
-                  <div className="flex justify-between items-start mb-1.5">
-                    <Link href={`/deals/${item.id}`} className="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">
+                <div key={item.id} className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-4.5 hover:border-emerald-500/40 hover:bg-white/[0.07] transition-all shadow-xs group">
+                  <div className="flex justify-between items-start mb-1.5 gap-2">
+                    <Link href={`/deals/${item.id}`} className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors flex-1">
                       {item.title}
                     </Link>
+                    <DeleteActionButton
+                      onDeleteAction={async () => {
+                        'use server';
+                        await deleteDeal(item.id);
+                      }}
+                      confirmTitle={`Delete opportunity "${item.title}"?`}
+                    />
                   </div>
                   <div className="text-xs text-slate-400 mb-3 font-medium">{item.company?.name || 'Enterprise Account'}</div>
                   <div className="flex justify-between items-center pt-2.5 border-t border-white/[0.06]">
-                    <span className="text-sm font-mono font-extrabold text-amber-400">
+                    <span className="text-sm font-mono font-extrabold text-emerald-400">
                       ${Number(item.amount).toLocaleString()}
                     </span>
-                    <Link href={`/deals/${item.id}`} className="text-xs text-slate-400 group-hover:text-amber-400 font-semibold transition-colors">
+                    <Link href={`/deals/${item.id}`} className="text-xs text-slate-400 group-hover:text-emerald-400 font-semibold transition-colors">
                       Overview →
                     </Link>
                   </div>

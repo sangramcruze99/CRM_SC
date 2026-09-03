@@ -74,43 +74,15 @@ interface SimSmsLog {
   timestamp: string;
 }
 
-const INITIAL_SMS_LOGS: SimSmsLog[] = [
-  {
-    id: 'sms_01',
-    recipientPhone: '+1 (555) 019-2834',
-    recipientName: 'Sarah Connor (Cyberdyne)',
-    messageText: 'Your invoice #INV-8891 ($14,500) has been generated. Pay online via Stripe or wire.',
-    simSlot: 1,
-    status: 'DELIVERED',
-    timestamp: '10:45 AM',
-  },
-  {
-    id: 'sms_02',
-    recipientPhone: '+1 (555) 342-8911',
-    recipientName: 'Alex Vance (Black Mesa)',
-    messageText: 'Appointment confirmed for clinical telemetry scan today at 2:00 PM.',
-    simSlot: 2,
-    status: 'DELIVERED',
-    timestamp: '09:12 AM',
-  },
-  {
-    id: 'sms_03',
-    recipientPhone: '+1 (555) 782-9021',
-    recipientName: 'David Ross (HyperScale)',
-    messageText: 'Dual Khata Ledger balance reminder: $4,850.00 outstanding.',
-    simSlot: 1,
-    status: 'DELIVERED',
-    timestamp: 'Yesterday',
-  },
-];
+const INITIAL_SMS_LOGS: SimSmsLog[] = [];
 
 export function SimGatewayClient() {
   const [simSlots, setSimSlots] = useState<SimSlot[]>(INITIAL_SIM_SLOTS);
   const [smsLogs, setSmsLogs] = useState<SimSmsLog[]>(INITIAL_SMS_LOGS);
   const [selectedSim, setSelectedSim] = useState<number>(1);
-  const [recipientNumber, setRecipientNumber] = useState('+1 (555) 019-2834');
-  const [recipientName, setRecipientName] = useState('Sarah Connor');
-  const [smsContent, setSmsContent] = useState('Hello Sarah, this is a direct cellular SMS from Business OS SIM Gateway.');
+  const [recipientNumber, setRecipientNumber] = useState('');
+  const [recipientName, setRecipientName] = useState('');
+  const [smsContent, setSmsContent] = useState('');
   const [ussdCode, setUssdCode] = useState('*121#');
   const [ussdResponse, setUssdResponse] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
@@ -149,8 +121,8 @@ export function SimGatewayClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -159,7 +131,7 @@ export function SimGatewayClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Smartphone className="text-amber-400" size={24} />
+            <Smartphone className="text-emerald-400" size={24} />
             Cellular SIM Call & SMS Gateway Engine
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -191,12 +163,12 @@ export function SimGatewayClient() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold">
                     SIM {sim.slotNumber}
                   </div>
                   <div>
                     <h3 className="font-bold text-sm text-white">{sim.carrierName}</h3>
-                    <span className="text-xs font-mono font-bold text-amber-400">{sim.phoneNumber}</span>
+                    <span className="text-xs font-mono font-bold text-emerald-400">{sim.phoneNumber}</span>
                   </div>
                 </div>
 
@@ -225,7 +197,7 @@ export function SimGatewayClient() {
 
               <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1">
                 <span>IMEI: {sim.imei}</span>
-                <span className="text-amber-400 font-bold">{isSelected ? '✓ Default for Outbound' : 'Click to select'}</span>
+                <span className="text-emerald-400 font-bold">{isSelected ? '✓ Default for Outbound' : 'Click to select'}</span>
               </div>
             </div>
           );
@@ -238,10 +210,10 @@ export function SimGatewayClient() {
         <div className="lg:col-span-6 bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
           <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
             <div className="flex items-center gap-2">
-              <MessageSquare size={18} className="text-amber-400" />
+              <MessageSquare size={18} className="text-emerald-400" />
               <h3 className="font-bold text-sm text-white">Direct Cellular SMS Dispatcher</h3>
             </div>
-            <span className="text-xs font-mono text-amber-400 font-bold">
+            <span className="text-xs font-mono text-emerald-400 font-bold">
               Using SIM {selectedSim} ({simSlots[selectedSim - 1].carrierName})
             </span>
           </div>
@@ -268,7 +240,7 @@ export function SimGatewayClient() {
                   type="text"
                   value={recipientNumber}
                   onChange={(e) => setRecipientNumber(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-amber-400"
+                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-emerald-400"
                 />
               </div>
             </div>
@@ -293,7 +265,7 @@ export function SimGatewayClient() {
             <button
               type="submit"
               disabled={isSending}
-              className="w-full py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Send size={15} />
               <span>{isSending ? 'Transmitting via SIM baseband...' : `Dispatch SMS via SIM ${selectedSim}`}</span>
@@ -307,7 +279,7 @@ export function SimGatewayClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <div className="flex items-center gap-2">
-                <QrCode size={18} className="text-amber-400" />
+                <QrCode size={18} className="text-emerald-400" />
                 <h3 className="font-bold text-sm text-white">Mobile SIM Bridge (Android / iOS)</h3>
               </div>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 font-mono">
@@ -332,7 +304,7 @@ export function SimGatewayClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
               <div className="flex items-center gap-2">
-                <Hash size={16} className="text-amber-400" />
+                <Hash size={16} className="text-emerald-400" />
                 <h3 className="font-bold text-xs uppercase tracking-wider text-slate-400">
                   Carrier USSD Balance & Airtime Query
                 </h3>
@@ -344,7 +316,7 @@ export function SimGatewayClient() {
                 type="text"
                 value={ussdCode}
                 onChange={(e) => setUssdCode(e.target.value)}
-                className="flex-1 px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-amber-400"
+                className="flex-1 px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-emerald-400"
               />
               <button
                 type="button"
@@ -356,7 +328,7 @@ export function SimGatewayClient() {
             </div>
 
             {ussdResponse && (
-              <div className="p-3 bg-slate-950/80 border border-amber-500/30 rounded-xl text-xs font-mono text-amber-300">
+              <div className="p-3 bg-slate-950/80 border border-emerald-500/30 rounded-xl text-xs font-mono text-emerald-300">
                 {ussdResponse}
               </div>
             )}
@@ -390,7 +362,7 @@ export function SimGatewayClient() {
                     <span className="text-[10px] font-mono text-slate-400">{log.recipientPhone}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                       SIM #{log.simSlot}
                     </span>
                   </td>
@@ -403,6 +375,13 @@ export function SimGatewayClient() {
                   </td>
                 </tr>
               ))}
+              {smsLogs.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                    No SIM SMS messages transmitted yet. Compose an SMS above to dispatch via SIM #1 or SIM #2.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

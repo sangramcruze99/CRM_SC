@@ -60,7 +60,7 @@ export function SalaryPayrollHub({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
         <div>
           <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <DollarSign className="text-amber-400" size={20} />
+            <DollarSign className="text-emerald-400" size={20} />
             <span>Salary Structure & Monthly Payroll Disbursement Engine</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -81,7 +81,7 @@ export function SalaryPayrollHub({
           <button
             type="button"
             onClick={onRunPayrollBatch}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center gap-1.5 active:scale-[0.98] cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 active:scale-[0.98] cursor-pointer"
           >
             <Zap size={14} />
             <span>Disburse Payroll Run (${totalMonthlyNet.toLocaleString()})</span>
@@ -95,9 +95,9 @@ export function SalaryPayrollHub({
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[10px] font-bold uppercase tracking-wider">Total Monthly Payroll</span>
-            <DollarSign size={16} className="text-amber-400" />
+            <DollarSign size={16} className="text-emerald-400" />
           </div>
-          <div className="text-2xl font-mono font-extrabold text-amber-400">
+          <div className="text-2xl font-mono font-extrabold text-emerald-400">
             ${totalMonthlyNet.toLocaleString()}
           </div>
           <div className="text-[11px] text-slate-400 mt-1 font-medium">Net Disbursed Take-Home</div>
@@ -161,7 +161,7 @@ export function SalaryPayrollHub({
               onClick={() => setSelectedDept(dept)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 selectedDept === dept
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold shadow-md shadow-orange-500/20'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20'
                   : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1]'
               }`}
             >
@@ -194,7 +194,7 @@ export function SalaryPayrollHub({
                     <div className="flex items-center gap-3">
                       <img src={emp.avatar} alt={emp.firstName} className="w-9 h-9 rounded-xl object-cover" />
                       <div>
-                        <span className="font-bold text-white text-sm block group-hover:text-amber-300 transition-colors">
+                        <span className="font-bold text-white text-sm block group-hover:text-emerald-300 transition-colors">
                           {emp.firstName} {emp.lastName}
                         </span>
                         <span className="text-[11px] text-slate-400">{emp.jobTitle}</span>
@@ -202,7 +202,7 @@ export function SalaryPayrollHub({
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-white/[0.08] text-amber-300 border border-white/10">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold font-mono bg-white/[0.08] text-emerald-300 border border-white/10">
                       L{emp.level}
                     </span>
                   </td>
@@ -215,7 +215,7 @@ export function SalaryPayrollHub({
                   <td className="px-6 py-4 font-mono text-rose-300">
                     -${emp.salary.taxDeductions.toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 font-mono font-extrabold text-sm text-amber-400">
+                  <td className="px-6 py-4 font-mono font-extrabold text-sm text-emerald-400">
                     ${emp.salary.netMonthly.toLocaleString()}
                   </td>
                   <td className="px-6 py-4">
@@ -224,7 +224,7 @@ export function SalaryPayrollHub({
                         emp.salary.paymentStatus === 'PAID'
                           ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                           : emp.salary.paymentStatus === 'PROCESSING'
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                           : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
                       }`}
                     >

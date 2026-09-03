@@ -13,44 +13,7 @@ interface PriceBookItem {
   billingFrequency: 'One-Time' | 'Monthly' | 'Yearly';
 }
 
-const initialDemoItems: PriceBookItem[] = [
-  {
-    id: 'pb_01',
-    sku: 'BOS-ENT-CORE',
-    name: 'Business OS Enterprise License',
-    category: 'Core Software',
-    unitPrice: 1200,
-    enterprisePrice: 950,
-    billingFrequency: 'Monthly',
-  },
-  {
-    id: 'pb_02',
-    sku: 'BOS-PRO-SEAT',
-    name: 'Professional User Addon Seat',
-    category: 'Addons',
-    unitPrice: 45,
-    enterprisePrice: 32,
-    billingFrequency: 'Monthly',
-  },
-  {
-    id: 'pb_03',
-    sku: 'BOS-AI-TOKEN-PACK',
-    name: 'AI Engine Dedicated Compute (10M Tokens)',
-    category: 'Compute & AI',
-    unitPrice: 250,
-    enterprisePrice: 199,
-    billingFrequency: 'One-Time',
-  },
-  {
-    id: 'pb_04',
-    sku: 'BOS-ONBOARD-VIP',
-    name: 'Dedicated Solutions Architect Onboarding',
-    category: 'Professional Services',
-    unitPrice: 4500,
-    enterprisePrice: 3500,
-    billingFrequency: 'One-Time',
-  },
-];
+const initialDemoItems: PriceBookItem[] = [];
 
 export function PriceBooksClient({ initialPriceBooks = [] }: { initialPriceBooks?: any[] }) {
   const [items, setItems] = useState<PriceBookItem[]>(
@@ -104,7 +67,7 @@ export function PriceBooksClient({ initialPriceBooks = [] }: { initialPriceBooks
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Layers className="text-amber-400" size={24} />
+            <Layers className="text-emerald-400" size={24} />
             Price Books & SKU Catalog
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -118,7 +81,7 @@ export function PriceBooksClient({ initialPriceBooks = [] }: { initialPriceBooks
                 key={curr}
                 onClick={() => setCurrency(curr)}
                 className={`px-3 py-1 text-xs font-bold rounded-xl transition-all cursor-pointer ${
-                  currency === curr ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20' : 'text-slate-400 hover:text-white'
+                  currency === curr ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 {curr}
@@ -127,7 +90,7 @@ export function PriceBooksClient({ initialPriceBooks = [] }: { initialPriceBooks
           </div>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
           >
             <Plus size={16} />
             <span>Add Catalog Item</span>
@@ -164,7 +127,7 @@ export function PriceBooksClient({ initialPriceBooks = [] }: { initialPriceBooks
               <tr key={item.id} className="hover:bg-white/[0.04] transition-colors">
                 <td className="px-6 py-4">
                   <div className="font-bold text-white text-sm">{item.name}</div>
-                  <div className="text-xs font-mono font-semibold text-amber-400">{item.sku}</div>
+                  <div className="text-xs font-mono font-semibold text-emerald-400">{item.sku}</div>
                 </td>
                 <td className="px-6 py-4">
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/[0.08] text-slate-300 border border-white/10">
@@ -175,13 +138,20 @@ export function PriceBooksClient({ initialPriceBooks = [] }: { initialPriceBooks
                   {currencySymbol}
                   {Math.round(item.unitPrice * currencyRate).toLocaleString()}
                 </td>
-                <td className="px-6 py-4 font-mono font-extrabold text-amber-400">
+                <td className="px-6 py-4 font-mono font-extrabold text-emerald-400">
                   {currencySymbol}
                   {Math.round(item.enterprisePrice * currencyRate).toLocaleString()}
                 </td>
                 <td className="px-6 py-4 text-slate-400 text-xs font-medium">{item.billingFrequency}</td>
               </tr>
             ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                  No products or services in catalog yet. Click <span className="text-emerald-400 font-bold">"Add Product / SKU"</span> to create your first rate card.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -283,7 +253,7 @@ export function PriceBooksClient({ initialPriceBooks = [] }: { initialPriceBooks
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 cursor-pointer"
                 >
                   Save Item
                 </button>

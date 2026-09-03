@@ -21,7 +21,7 @@ export function PayslipModal({ isOpen, onClose, employee }: PayslipModalProps) {
         {/* Header */}
         <div className="flex justify-between items-start border-b border-white/[0.08] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold">
               <DollarSign size={20} />
             </div>
             <div>
@@ -63,7 +63,7 @@ export function PayslipModal({ isOpen, onClose, employee }: PayslipModalProps) {
               <span className="text-[10px] uppercase font-bold text-slate-500 block">Department & Role</span>
               <span className="font-medium text-white">{employee.department}</span>
               <span className="text-slate-400 block">Type: {employee.employmentType}</span>
-              <span className="text-amber-400 text-[11px] font-semibold">Hierarchy Level {employee.level}</span>
+              <span className="text-emerald-400 text-[11px] font-semibold">Hierarchy Level {employee.level}</span>
             </div>
           </div>
 
@@ -113,14 +113,14 @@ export function PayslipModal({ isOpen, onClose, employee }: PayslipModalProps) {
           </div>
 
           {/* Net Take-Home Pay Box */}
-          <div className="p-3.5 bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-transparent border border-amber-500/40 rounded-xl flex items-center justify-between">
+          <div className="p-3.5 bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-transparent border border-emerald-500/40 rounded-xl flex items-center justify-between">
             <div>
-              <span className="text-[10px] uppercase font-extrabold text-amber-300 tracking-wider block">
+              <span className="text-[10px] uppercase font-extrabold text-emerald-300 tracking-wider block">
                 Net Disbursed Take-Home Pay
               </span>
               <span className="text-xs text-slate-300">Direct Wire to Employee Bank Account</span>
             </div>
-            <span className="text-2xl font-mono font-extrabold text-amber-400">
+            <span className="text-2xl font-mono font-extrabold text-emerald-400">
               ${employee.salary.netMonthly.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
           </div>
@@ -139,7 +139,7 @@ export function PayslipModal({ isOpen, onClose, employee }: PayslipModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs shadow-md shadow-orange-500/20 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs shadow-md shadow-emerald-500/20 cursor-pointer"
           >
             Close Viewer
           </button>

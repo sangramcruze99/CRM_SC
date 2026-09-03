@@ -6,20 +6,20 @@ export class PluginsController {
   constructor(private readonly pluginsService: PluginsService) {}
 
   @Get()
-  findAll(@Headers('x-tenant-id') tenantId: string) {
-    if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
+  findAll(@Headers('x-tenant-id') tenantIdHeader?: string) {
+    const tenantId = tenantIdHeader || 'default-tenant';
     return this.pluginsService.findAll(tenantId);
   }
 
   @Post(':id/install')
-  install(@Param('id') id: string, @Headers('x-tenant-id') tenantId: string) {
-    if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
+  install(@Param('id') id: string, @Headers('x-tenant-id') tenantIdHeader?: string) {
+    const tenantId = tenantIdHeader || 'default-tenant';
     return this.pluginsService.install(tenantId, id);
   }
 
   @Delete(':id/uninstall')
-  uninstall(@Param('id') id: string, @Headers('x-tenant-id') tenantId: string) {
-    if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
+  uninstall(@Param('id') id: string, @Headers('x-tenant-id') tenantIdHeader?: string) {
+    const tenantId = tenantIdHeader || 'default-tenant';
     return this.pluginsService.uninstall(tenantId, id);
   }
 }

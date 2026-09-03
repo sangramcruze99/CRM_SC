@@ -35,42 +35,11 @@ interface CallRecord {
   timestamp: string;
 }
 
-const INITIAL_CALL_LOGS: CallRecord[] = [
-  {
-    id: 'call_01',
-    contactName: 'Sarah Connor',
-    company: 'Cyberdyne Systems',
-    phone: '+1 (555) 019-2834',
-    duration: '04:12',
-    sentiment: 'POSITIVE',
-    summary: 'Agreed on Enterprise Kubernetes cluster rollout. Requested CPQ quote with 10% annual discount.',
-    timestamp: 'Today, 10:45 AM',
-  },
-  {
-    id: 'call_02',
-    contactName: 'Alex Vance',
-    company: 'Black Mesa Labs',
-    phone: '+1 (555) 342-8911',
-    duration: '02:45',
-    sentiment: 'NEUTRAL',
-    summary: 'Discussed OCR Neural Vision scanner throughput. Forwarded SOC2 Type II compliance audit report.',
-    timestamp: 'Today, 09:15 AM',
-  },
-  {
-    id: 'call_03',
-    contactName: 'David Ross',
-    company: 'HyperScale AI',
-    phone: '+1 (555) 782-9021',
-    duration: '06:30',
-    sentiment: 'POSITIVE',
-    summary: 'Reviewed Dual Khata ledger integration. Customer approved $18.5k annual license invoice.',
-    timestamp: 'Yesterday, 04:20 PM',
-  },
-];
+const INITIAL_CALL_LOGS: CallRecord[] = [];
 
 export function VoiceClient() {
-  const [phoneNumber, setPhoneNumber] = useState('+1 (555) 019-2834');
-  const [contactName, setContactName] = useState('Sarah Connor (Cyberdyne Systems)');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [contactName, setContactName] = useState('');
   const [isCalling, setIsCalling] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [callRoute, setCallRoute] = useState<'voip' | 'sim1' | 'sim2'>('voip');
@@ -79,16 +48,10 @@ export function VoiceClient() {
   const [alert, setAlert] = useState<string | null>(null);
 
   // Live real-time transcript lines
-  const [transcript, setTranscript] = useState<Array<{ speaker: string; text: string; time: string }>>([
-    { speaker: 'Agent', text: 'Hello Sarah, thank you for taking my call! How are operations going at Cyberdyne today?', time: '00:05' },
-    { speaker: 'Sarah', text: 'Hi! We are looking to scale our dedicated infrastructure clusters, but we need high reliability.', time: '00:12' },
-  ]);
+  const [transcript, setTranscript] = useState<Array<{ speaker: string; text: string; time: string }>>([]);
 
   // Live AI Copilot Battlecard Suggestions
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([
-    'Customer is scaling infrastructure: Mention our 99.99% SLA guarantee & multi-region automated failover.',
-    'Competitor Alert: If they mention AWS EKS pricing, highlight that our dedicated clusters include free zero-egress data transfer.',
-  ]);
+  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
 
   // Call timer interval
   useEffect(() => {
@@ -164,8 +127,8 @@ export function VoiceClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -174,7 +137,7 @@ export function VoiceClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Phone className="text-amber-400" size={24} />
+            <Phone className="text-emerald-400" size={24} />
             AI Voice Telephony & Live Call Intelligence
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -185,7 +148,7 @@ export function VoiceClient() {
         <div className="flex items-center gap-2.5">
           <Link
             href="/sim-gateway"
-            className="px-3.5 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-amber-300 rounded-xl text-xs font-bold border border-white/[0.1] flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-emerald-300 rounded-xl text-xs font-bold border border-white/[0.1] flex items-center gap-1.5 cursor-pointer"
           >
             <span>📱 Manage SIM Cards (Dual-SIM)</span>
           </Link>
@@ -205,7 +168,7 @@ export function VoiceClient() {
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 Outbound Carrier & Trunk
               </span>
-              <span className="text-xs font-mono font-bold text-amber-400">
+              <span className="text-xs font-mono font-bold text-emerald-400">
                 {isCalling ? `Connected · ${formatTime(callDuration)}` : 'Ready to Dial'}
               </span>
             </div>
@@ -248,14 +211,14 @@ export function VoiceClient() {
                   type="text"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-amber-400 focus:outline-none focus:bg-white/[0.08]"
+                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-emerald-400 focus:outline-none focus:bg-white/[0.08]"
                 />
               </div>
             </div>
 
             {/* Audio Waveform Visualizer (Active during call) */}
             {isCalling ? (
-              <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl space-y-2 text-center">
+              <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl space-y-2 text-center">
                 <div className="flex items-center justify-center gap-1 h-8">
                   {[40, 75, 100, 60, 90, 45, 80, 100, 65, 85, 50, 70, 95].map((h, i) => (
                     <div
@@ -268,7 +231,7 @@ export function VoiceClient() {
                     />
                   ))}
                 </div>
-                <span className="text-[11px] font-mono font-bold text-amber-300 block">
+                <span className="text-[11px] font-mono font-bold text-emerald-300 block">
                   Live HD Voice Stream (48 kHz)
                 </span>
               </div>
@@ -281,7 +244,7 @@ export function VoiceClient() {
                   key={digit}
                   type="button"
                   onClick={() => setPhoneNumber((prev) => prev + digit)}
-                  className="p-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-amber-500/40 rounded-2xl font-mono font-bold text-sm text-white transition-all cursor-pointer"
+                  className="p-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-emerald-500/40 rounded-2xl font-mono font-bold text-sm text-white transition-all cursor-pointer"
                 >
                   {digit}
                 </button>
@@ -333,7 +296,7 @@ export function VoiceClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <div className="flex items-center gap-2">
-                <Activity size={16} className="text-amber-400" />
+                <Activity size={16} className="text-emerald-400" />
                 <h3 className="text-sm font-bold text-white">Live Real-Time Speech-to-Text Transcription</h3>
               </div>
               <span className="text-[10px] font-mono text-slate-400 bg-white/[0.06] px-2 py-0.5 rounded-md">
@@ -342,36 +305,41 @@ export function VoiceClient() {
             </div>
 
             <div className="space-y-3 min-h-[160px] max-h-[220px] overflow-y-auto pr-2">
-              {transcript.map((line, idx) => (
+              {transcript.map((line, i) => (
                 <div
-                  key={idx}
+                  key={i}
                   className={`p-3 rounded-2xl text-xs space-y-1 ${
                     line.speaker === 'Agent'
-                      ? 'bg-amber-500/10 border border-amber-500/20 text-slate-200'
-                      : 'bg-white/[0.03] border border-white/[0.06] text-white'
+                      ? 'bg-emerald-500/15 border border-emerald-500/30 text-amber-200 ml-6'
+                      : 'bg-white/[0.05] border border-white/[0.1] text-slate-200 mr-6'
                   }`}
                 >
                   <div className="flex justify-between items-center text-[10px] font-bold">
-                    <span className={line.speaker === 'Agent' ? 'text-amber-400' : 'text-sky-400'}>
-                      {line.speaker === 'Agent' ? 'You (Sales Rep)' : contactName.split('(')[0]}
+                    <span className={line.speaker === 'Agent' ? 'text-emerald-400' : 'text-slate-400'}>
+                      {line.speaker}
                     </span>
                     <span className="text-slate-500 font-mono">{line.time}</span>
                   </div>
                   <p className="leading-relaxed">{line.text}</p>
                 </div>
               ))}
+              {transcript.length === 0 && (
+                <div className="py-8 text-center text-slate-500 text-xs font-medium">
+                  Dial a customer or test number to view live speech transcription.
+                </div>
+              )}
             </div>
           </div>
 
           {/* Real-Time AI Copilot Battlecard Suggestions */}
-          <div className="bg-gradient-to-r from-amber-500/10 via-white/[0.04] to-orange-500/10 backdrop-blur-2xl border border-amber-500/30 rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3">
+          <div className="bg-gradient-to-r from-amber-500/10 via-white/[0.04] to-orange-500/10 backdrop-blur-2xl border border-emerald-500/30 rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Bot size={18} className="text-amber-400" />
+                <Bot size={18} className="text-emerald-400" />
                 <h3 className="text-sm font-bold text-white">Real-Time AI Call Copilot Battlecards</h3>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
-                Listening...
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono">
+                {isCalling ? 'Listening...' : 'Standby'}
               </span>
             </div>
 
@@ -379,12 +347,17 @@ export function VoiceClient() {
               {aiSuggestions.map((sug, i) => (
                 <div
                   key={i}
-                  className="p-3 bg-slate-950/70 border border-amber-500/30 rounded-2xl text-xs text-amber-200 flex items-start gap-2.5 shadow-sm"
+                  className="p-3 bg-slate-950/70 border border-emerald-500/30 rounded-2xl text-xs text-amber-200 flex items-start gap-2.5 shadow-sm"
                 >
-                  <Sparkles size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                  <Sparkles size={14} className="text-emerald-400 flex-shrink-0 mt-0.5" />
                   <span className="leading-relaxed">{sug}</span>
                 </div>
               ))}
+              {aiSuggestions.length === 0 && (
+                <div className="py-4 text-center text-slate-500 text-xs font-medium">
+                  AI battlecards will trigger automatically during active customer calls.
+                </div>
+              )}
             </div>
           </div>
 
@@ -392,7 +365,7 @@ export function VoiceClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <h3 className="text-sm font-bold text-white">Recent Call Logs & Summaries</h3>
-              <span className="text-xs text-slate-400">Total 48 Calls This Month</span>
+              <span className="text-xs text-slate-400">Total {callLogs.length} Calls</span>
             </div>
 
             <div className="space-y-3">
@@ -413,11 +386,16 @@ export function VoiceClient() {
                   </div>
 
                   <div className="text-right flex-shrink-0 space-y-1">
-                    <span className="font-mono font-bold text-amber-400 block">{log.duration}</span>
+                    <span className="font-mono font-bold text-emerald-400 block">{log.duration}</span>
                     <span className="text-[10px] text-slate-500 block">{log.timestamp}</span>
                   </div>
                 </div>
               ))}
+              {callLogs.length === 0 && (
+                <div className="py-8 text-center text-slate-500 text-xs font-medium">
+                  No previous call records logged. Use the dialpad to place your first VoIP/SIM call.
+                </div>
+              )}
             </div>
           </div>
         </div>

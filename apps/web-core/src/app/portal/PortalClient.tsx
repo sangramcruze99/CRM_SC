@@ -42,8 +42,8 @@ export function PortalClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -51,7 +51,7 @@ export function PortalClient() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-slate-950 flex items-center justify-center text-2xl font-bold shadow-lg shadow-orange-500/25">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-slate-950 flex items-center justify-center text-2xl font-bold shadow-lg shadow-emerald-500/25">
             {nicheConfig.icon}
           </div>
           <div>
@@ -85,7 +85,7 @@ export function PortalClient() {
                 onClick={() => setSelectedTab(tab.id as any)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   selectedTab === tab.id
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md'
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -110,7 +110,7 @@ export function PortalClient() {
                 className={`px-3 py-1 rounded-full text-xs font-mono font-bold ${
                   isInvoicePaid
                     ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                    : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                    : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
                 }`}
               >
                 {isInvoicePaid ? 'PAID IN FULL' : 'PAYMENT DUE'}
@@ -127,9 +127,9 @@ export function PortalClient() {
                 <span>Dual Khata Ledger & Real-Time Sync Engine Module</span>
                 <span className="font-mono font-bold text-white">$2,500.00</span>
               </div>
-              <div className="flex justify-between p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl font-bold text-sm">
+              <div className="flex justify-between p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl font-bold text-sm">
                 <span>Total Amount Due</span>
-                <span className="font-mono text-amber-400 text-base">$14,500.00 USD</span>
+                <span className="font-mono text-emerald-400 text-base">$14,500.00 USD</span>
               </div>
             </div>
 
@@ -173,7 +173,7 @@ export function PortalClient() {
               <div className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.06] space-y-1">
                 <span className="text-[10px] uppercase font-bold text-slate-400 block">Dedicated Account Manager</span>
                 <span className="font-bold text-white">Sophia Martinez</span>
-                <span className="text-[11px] text-amber-400 block">+1 (555) 392-8812</span>
+                <span className="text-[11px] text-emerald-400 block">+1 (555) 392-8812</span>
               </div>
             </div>
           </div>
@@ -192,7 +192,7 @@ export function PortalClient() {
               className={`px-3 py-1 rounded-full text-xs font-mono font-bold ${
                 isContractSigned
                   ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                  : 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                  : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
               }`}
             >
               {isContractSigned ? 'SIGNED & SEALED' : 'SIGNATURE REQUIRED'}
@@ -215,7 +215,7 @@ export function PortalClient() {
             <button
               type="button"
               onClick={handleSignContract}
-              className="w-full py-3.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-sm rounded-2xl shadow-xl shadow-orange-500/25 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-sm rounded-2xl shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
             >
               <FileSignature size={18} />
               <span>Click to Digitally Sign Document (Sarah Connor)</span>
@@ -234,7 +234,7 @@ export function PortalClient() {
       {/* Tab 3 & 4: Tickets & Bookings placeholder preview */}
       {(selectedTab === 'tickets' || selectedTab === 'appointments') && (
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] text-center space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto">
             <Calendar size={24} />
           </div>
           <h3 className="font-bold text-base text-white">

@@ -92,8 +92,8 @@ export function SuperAdminClient({ initialTenants = [] }: { initialTenants?: any
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -102,7 +102,7 @@ export function SuperAdminClient({ initialTenants = [] }: { initialTenants?: any
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Building className="text-amber-400" size={24} />
+            <Building className="text-emerald-400" size={24} />
             Superadmin & Multi-Tenant Orchestration
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -111,7 +111,7 @@ export function SuperAdminClient({ initialTenants = [] }: { initialTenants?: any
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <Plus size={16} />
           <span>Provision Tenant</span>
@@ -123,7 +123,7 @@ export function SuperAdminClient({ initialTenants = [] }: { initialTenants?: any
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Active Tenants</span>
-            <Building size={18} className="text-amber-400" />
+            <Building size={18} className="text-emerald-400" />
           </div>
           <div className="text-3xl font-extrabold text-white font-mono">{tenants.length} Workspaces</div>
           <div className="text-xs text-emerald-400 mt-2 font-bold">100% database partition health</div>
@@ -171,11 +171,11 @@ export function SuperAdminClient({ initialTenants = [] }: { initialTenants?: any
                   <div className="text-xs font-mono text-slate-500">{tenant.id}</div>
                 </td>
                 <td className="px-6 py-4 text-slate-300 font-mono text-xs flex items-center gap-1.5 pt-5">
-                  <Globe size={13} className="text-amber-400" />
+                  <Globe size={13} className="text-emerald-400" />
                   <span>{tenant.domain}</span>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                     {tenant.plan}
                   </span>
                 </td>
@@ -259,7 +259,7 @@ export function SuperAdminClient({ initialTenants = [] }: { initialTenants?: any
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 cursor-pointer"
                 >
                   Provision Instance
                 </button>

@@ -16,12 +16,12 @@ export default function RolesAndPermissionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Shield className="text-amber-400" size={24} />
+            <Shield className="text-emerald-400" size={24} />
             Roles & Permissions
           </h1>
           <p className="text-sm text-slate-400 mt-1">Manage access control and define granular permissions.</p>
         </div>
-        <button className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer">
+        <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer">
           <Plus size={16} /> New Role
         </button>
       </div>
@@ -36,10 +36,10 @@ export default function RolesAndPermissionsPage() {
             {roles.map((role, idx) => (
               <div 
                 key={role.id} 
-                className={`p-4 cursor-pointer transition-colors ${idx === 1 ? 'bg-amber-500/15 border-l-4 border-l-amber-500' : 'hover:bg-white/[0.04] border-l-4 border-l-transparent'}`}
+                className={`p-4 cursor-pointer transition-colors ${idx === 1 ? 'bg-emerald-500/15 border-l-4 border-l-amber-500' : 'hover:bg-white/[0.04] border-l-4 border-l-transparent'}`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className={`font-bold text-sm ${idx === 1 ? 'text-amber-300' : 'text-white'}`}>
+                  <h3 className={`font-bold text-sm ${idx === 1 ? 'text-emerald-300' : 'text-white'}`}>
                     {role.name}
                   </h3>
                   {role.isSystem && (
@@ -88,7 +88,7 @@ export default function RolesAndPermissionsPage() {
                       <td key={`${obj}-${action}`} className="px-6 py-4 text-center">
                         <input 
                           type="checkbox" 
-                          className="w-4 h-4 rounded border-white/20 bg-white/10 text-amber-500 focus:ring-amber-400 cursor-pointer"
+                          className="w-4 h-4 rounded border-white/20 bg-white/10 text-emerald-500 focus:ring-emerald-400 cursor-pointer"
                           defaultChecked={obj !== 'CustomObject_Vehicles' || action === 'Read'}
                         />
                       </td>

@@ -21,18 +21,18 @@ import { Play, Settings, Mail, FileText, Database } from 'lucide-react';
 const nodeTypes = {
   triggerNode: ({ data }: { data: any }) => (
     <div className="bg-slate-900/95 border-2 border-amber-500 rounded-2xl shadow-xl p-3.5 w-48 flex items-center gap-3 text-white">
-      <div className="bg-amber-500/20 p-2 rounded-xl text-amber-400">
+      <div className="bg-emerald-500/20 p-2 rounded-xl text-emerald-400">
         <Play size={16} />
       </div>
       <div>
-        <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Trigger</div>
+        <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Trigger</div>
         <div className="text-xs font-bold text-white">{data.label}</div>
       </div>
     </div>
   ),
   actionNode: ({ data }: { data: any }) => (
     <div className="bg-slate-900/95 border border-white/[0.15] rounded-2xl shadow-xl p-3.5 w-48 flex items-center gap-3 text-white">
-      <div className="bg-white/[0.08] p-2 rounded-xl text-amber-400">
+      <div className="bg-white/[0.08] p-2 rounded-xl text-emerald-400">
         {data.icon || <Settings size={16} />}
       </div>
       <div>
@@ -104,7 +104,7 @@ export function VisualWorkflowBuilder() {
           <h1 className="text-xl font-bold text-white">Visual Workflow Builder</h1>
           <p className="text-xs text-slate-400">Design automation sequences</p>
         </div>
-        <button className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-orange-500/25 transition-all cursor-pointer">
+        <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/25 transition-all cursor-pointer">
           Save Workflow
         </button>
       </div>
@@ -116,23 +116,23 @@ export function VisualWorkflowBuilder() {
           
           <button 
             onClick={() => addActionNode('SEND_EMAIL', 'Send Email', <Mail size={16} />)}
-            className="flex items-center gap-3 w-full p-2.5 text-xs text-left bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-amber-500/40 hover:bg-white/[0.05] text-slate-200 hover:text-white transition-all cursor-pointer"
+            className="flex items-center gap-3 w-full p-2.5 text-xs text-left bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-emerald-500/40 hover:bg-white/[0.05] text-slate-200 hover:text-white transition-all cursor-pointer"
           >
-            <Mail size={16} className="text-amber-400" /> Send Email
+            <Mail size={16} className="text-emerald-400" /> Send Email
           </button>
           
           <button 
             onClick={() => addActionNode('CREATE_RECORD', 'Create Record', <Database size={16} />)}
-            className="flex items-center gap-3 w-full p-2.5 text-xs text-left bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-amber-500/40 hover:bg-white/[0.05] text-slate-200 hover:text-white transition-all cursor-pointer"
+            className="flex items-center gap-3 w-full p-2.5 text-xs text-left bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-emerald-500/40 hover:bg-white/[0.05] text-slate-200 hover:text-white transition-all cursor-pointer"
           >
-            <Database size={16} className="text-amber-400" /> Create Record
+            <Database size={16} className="text-emerald-400" /> Create Record
           </button>
 
           <button 
             onClick={() => addActionNode('GENERATE_PDF', 'Generate PDF', <FileText size={16} />)}
-            className="flex items-center gap-3 w-full p-2.5 text-xs text-left bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-amber-500/40 hover:bg-white/[0.05] text-slate-200 hover:text-white transition-all cursor-pointer"
+            className="flex items-center gap-3 w-full p-2.5 text-xs text-left bg-white/[0.02] border border-white/[0.08] rounded-2xl hover:border-emerald-500/40 hover:bg-white/[0.05] text-slate-200 hover:text-white transition-all cursor-pointer"
           >
-            <FileText size={16} className="text-amber-400" /> Generate PDF
+            <FileText size={16} className="text-emerald-400" /> Generate PDF
           </button>
         </div>
 

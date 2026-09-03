@@ -67,10 +67,10 @@ export function KitchenDisplaySystem() {
   const perGuest = splitGuests > 0 ? grandTotal / splitGuests : grandTotal;
 
   return (
-    <div className="bg-white/[0.04] backdrop-blur-2xl border border-amber-500/30 rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-6 text-white">
+    <div className="bg-white/[0.04] backdrop-blur-2xl border border-emerald-500/30 rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-6 text-white">
       {/* Alert */}
       {alert && (
-        <div className="p-3 bg-amber-500/15 border border-amber-500/30 rounded-xl text-amber-300 text-xs font-semibold flex items-center gap-2">
+        <div className="p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs font-semibold flex items-center gap-2">
           <CheckCircle2 size={15} />
           <span>{alert}</span>
         </div>
@@ -79,7 +79,7 @@ export function KitchenDisplaySystem() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-white/[0.06] pb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+          <div className="p-2.5 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
             <UtensilsCrossed size={20} />
           </div>
           <div>
@@ -100,11 +100,11 @@ export function KitchenDisplaySystem() {
         {tickets.map((ticket) => (
           <div
             key={ticket.id}
-            className="p-5 bg-white/[0.03] border border-amber-500/40 rounded-2xl space-y-4 flex flex-col justify-between"
+            className="p-5 bg-white/[0.03] border border-emerald-500/40 rounded-2xl space-y-4 flex flex-col justify-between"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
-                <span className="font-mono font-extrabold text-amber-400 text-sm">{ticket.id}</span>
+                <span className="font-mono font-extrabold text-emerald-400 text-sm">{ticket.id}</span>
                 <span className="flex items-center gap-1 text-xs font-mono font-bold text-rose-400">
                   <Clock size={12} /> {ticket.elapsedMinutes} min
                 </span>
@@ -120,10 +120,10 @@ export function KitchenDisplaySystem() {
                   <div key={idx} className="p-2 bg-white/[0.04] rounded-xl text-xs">
                     <div className="flex justify-between font-bold text-white">
                       <span>{item.name}</span>
-                      <span className="text-amber-400 font-mono font-extrabold">x{item.qty}</span>
+                      <span className="text-emerald-400 font-mono font-extrabold">x{item.qty}</span>
                     </div>
                     {item.note && (
-                      <span className="text-[10px] text-amber-300/80 font-medium block mt-0.5">
+                      <span className="text-[10px] text-emerald-300/80 font-medium block mt-0.5">
                         Note: {item.note}
                       </span>
                     )}
@@ -135,7 +135,7 @@ export function KitchenDisplaySystem() {
             <button
               type="button"
               onClick={() => handleBumpTicket(ticket.id)}
-              className="w-full py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs rounded-xl shadow-md hover:from-amber-400 hover:to-orange-400 transition-all cursor-pointer"
+              className="w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-extrabold text-xs rounded-xl shadow-md hover:from-amber-400 hover:to-orange-400 transition-all cursor-pointer"
             >
               Bump / Order Ready (Serve)
             </button>
@@ -146,8 +146,8 @@ export function KitchenDisplaySystem() {
       {/* Multi-Guest Table Split-Bill POS Calculator */}
       <div className="p-5 bg-white/[0.02] border border-white/[0.06] rounded-2xl space-y-4">
         <div className="flex items-center gap-2">
-          <Split size={16} className="text-amber-400" />
-          <h4 className="font-bold text-xs uppercase tracking-wider text-amber-400">
+          <Split size={16} className="text-emerald-400" />
+          <h4 className="font-bold text-xs uppercase tracking-wider text-emerald-400">
             Table Split-Bill POS Calculator
           </h4>
         </div>
@@ -185,9 +185,9 @@ export function KitchenDisplaySystem() {
             />
           </div>
 
-          <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex flex-col justify-center">
+          <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex flex-col justify-center">
             <span className="text-[10px] text-slate-400 uppercase font-bold">Split Per Guest</span>
-            <span className="text-lg font-mono font-extrabold text-amber-400">
+            <span className="text-lg font-mono font-extrabold text-emerald-400">
               ${perGuest.toFixed(2)}
             </span>
           </div>

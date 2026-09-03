@@ -11,7 +11,7 @@ export function CreatePromptModal() {
     return (
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-amber-400/40 cursor-pointer"
+        className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-emerald-400/40 cursor-pointer"
       >
         <Plus size={15} />
         <span>New Prompt</span>
@@ -23,7 +23,7 @@ export function CreatePromptModal() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-amber-400/40 cursor-pointer"
+        className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-emerald-400/40 cursor-pointer"
       >
         <Plus size={15} />
         <span>New Prompt</span>
@@ -63,7 +63,7 @@ export function CreatePromptModal() {
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-300 flex justify-between">
                 <span>System Prompt</span>
-                <span className="text-[11px] text-amber-400 font-mono">Use {'{{variable}}'} for tokens</span>
+                <span className="text-[11px] text-emerald-400 font-mono">Use {'{{variable}}'} for tokens</span>
               </label>
               <textarea required name="prompt" rows={5} className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:bg-white/[0.08] font-mono" placeholder="Write a persuasive sales email to {{contact_name}} about {{deal_name}}..."></textarea>
             </div>
@@ -72,7 +72,7 @@ export function CreatePromptModal() {
               <button type="button" onClick={() => setIsOpen(false)} className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 rounded-xl border border-white/[0.1] transition-colors cursor-pointer">
                 Cancel
               </button>
-              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 cursor-pointer">
+              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 cursor-pointer">
                 Save Template
               </button>
             </div>

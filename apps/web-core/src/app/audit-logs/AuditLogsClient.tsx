@@ -14,16 +14,16 @@ export function AuditLogsClient({ initialLogs }: { initialLogs: any[] }) {
   const getActionColor = (action: string) => {
     if (action.includes('DELETE') || action.includes('REMOVE')) return 'text-rose-300 bg-rose-500/15 border-rose-500/30';
     if (action.includes('CREATE') || action.includes('REGISTER')) return 'text-emerald-300 bg-emerald-500/15 border-emerald-500/30';
-    if (action.includes('LOGIN') || action.includes('AUTH')) return 'text-amber-300 bg-amber-500/15 border-amber-500/30';
-    return 'text-amber-300 bg-amber-500/15 border-amber-500/30';
+    if (action.includes('LOGIN') || action.includes('AUTH')) return 'text-emerald-300 bg-emerald-500/15 border-emerald-500/30';
+    return 'text-emerald-300 bg-emerald-500/15 border-emerald-500/30';
   };
 
   const getEntityIcon = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'auth': return <Shield size={14} className="text-amber-400" />;
-      case 'user': return <User size={14} className="text-amber-400" />;
-      case 'webhook': return <Globe size={14} className="text-amber-400" />;
-      default: return <Database size={14} className="text-amber-400" />;
+      case 'auth': return <Shield size={14} className="text-emerald-400" />;
+      case 'user': return <User size={14} className="text-emerald-400" />;
+      case 'webhook': return <Globe size={14} className="text-emerald-400" />;
+      default: return <Database size={14} className="text-emerald-400" />;
     }
   };
 
@@ -33,7 +33,7 @@ export function AuditLogsClient({ initialLogs }: { initialLogs: any[] }) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-white flex items-center space-x-2.5">
-            <Activity size={24} className="text-amber-400" />
+            <Activity size={24} className="text-emerald-400" />
             <span>System Audit Trail & Security Logs</span>
           </h2>
           <p className="text-xs text-slate-400 mt-1 font-medium">
@@ -104,8 +104,8 @@ export function AuditLogsClient({ initialLogs }: { initialLogs: any[] }) {
                   <td className="px-6 py-3.5">
                     {log.userId ? (
                       <div className="flex items-center space-x-2">
-                        <div className="w-5 h-5 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
-                          <User size={10} className="text-amber-400" />
+                        <div className="w-5 h-5 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
+                          <User size={10} className="text-emerald-400" />
                         </div>
                         <span className="font-mono text-xs text-slate-300 font-semibold">{log.userId}</span>
                       </div>

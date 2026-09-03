@@ -15,7 +15,7 @@ export function ThemeToggle() {
       title={`Switch to ${theme === 'dark' ? 'Light Porcelain' : 'Dark Obsidian'} Mode`}
     >
       {theme === 'dark' ? (
-        <Sun size={15} className="text-amber-400 group-hover:rotate-45 transition-transform" />
+        <Sun size={15} className="text-emerald-400 group-hover:rotate-45 transition-transform" />
       ) : (
         <Moon size={15} className="text-indigo-400 group-hover:-rotate-12 transition-transform" />
       )}

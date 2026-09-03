@@ -66,7 +66,7 @@ export default function SmartUploadPage() {
     <div className="h-full flex flex-col space-y-6 max-w-6xl mx-auto text-white">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-          <Sparkles className="text-amber-400" size={24} />
+          <Sparkles className="text-emerald-400" size={24} />
           Smart Ingestion & Schema Synthesizer
         </h1>
         <p className="text-sm text-slate-400 mt-1">Upload an invoice, receipt, or agreement. Our AI will automatically infer a relational schema and extract the structured data.</p>
@@ -91,7 +91,7 @@ export default function SmartUploadPage() {
                   className="border-2 border-dashed border-white/20 rounded-2xl p-12 flex flex-col items-center justify-center text-center hover:border-amber-400/50 hover:bg-white/[0.02] transition-all cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-3 shadow-2xs">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-3 shadow-2xs">
                     <UploadCloud size={28} />
                   </div>
                   <p className="text-white font-bold text-sm mb-1">Click to upload or drag & drop</p>
@@ -107,7 +107,7 @@ export default function SmartUploadPage() {
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center space-x-3 p-3.5 bg-white/[0.03] rounded-2xl border border-white/[0.08]">
-                    <div className="w-10 h-10 bg-amber-500/15 text-amber-400 flex items-center justify-center rounded-xl border border-amber-500/30">
+                    <div className="w-10 h-10 bg-emerald-500/15 text-emerald-400 flex items-center justify-center rounded-xl border border-emerald-500/30">
                       <FileText size={20} />
                     </div>
                     <div className="flex-1 overflow-hidden">
@@ -126,7 +126,7 @@ export default function SmartUploadPage() {
                   <button 
                     onClick={handleProcess}
                     disabled={isProcessing}
-                    className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    className="w-full py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isProcessing ? (
                       <>
@@ -161,11 +161,11 @@ export default function SmartUploadPage() {
             {result ? (
               <div className="p-6 space-y-6">
                 <div>
-                  <h3 className="text-xs font-bold text-amber-400 mb-3 uppercase tracking-wider">Inferred Custom Object Schema</h3>
+                  <h3 className="text-xs font-bold text-emerald-400 mb-3 uppercase tracking-wider">Inferred Custom Object Schema</h3>
                   <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-4">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-white font-bold text-xs">{result.schema?.name}</span>
-                      <span className="text-[11px] bg-amber-500/15 border border-amber-500/30 font-mono text-amber-300 px-2 py-0.5 rounded-lg font-bold">API: {result.schema?.apiName}</span>
+                      <span className="text-[11px] bg-emerald-500/15 border border-emerald-500/30 font-mono text-emerald-300 px-2 py-0.5 rounded-lg font-bold">API: {result.schema?.apiName}</span>
                     </div>
                     <p className="text-xs text-slate-400 mb-3">{result.schema?.description}</p>
                     
@@ -192,7 +192,7 @@ export default function SmartUploadPage() {
                   </div>
                 </div>
 
-                <button className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 cursor-pointer">
+                <button className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 cursor-pointer">
                   Accept Schema & Commit Entity
                 </button>
               </div>

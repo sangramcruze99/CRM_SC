@@ -154,38 +154,7 @@ const PRESET_MAPPINGS: SyncFieldMapping[] = [
   },
 ];
 
-const INITIAL_LOGS: SyncEventLog[] = [
-  {
-    id: 'log_1',
-    timestamp: '10:42:01 AM',
-    source: 'Stripe',
-    destination: 'Dual Khata Ledger',
-    entity: 'Invoice #ch_3Pq942 ($1,850.00)',
-    action: 'RECONCILED',
-    details: 'Synced customer payment status to Paid; updated Cash-Flow ledger.',
-    status: 'SUCCESS',
-  },
-  {
-    id: 'log_2',
-    timestamp: '10:41:48 AM',
-    source: 'Shopify',
-    destination: 'Airtable / Price Books',
-    entity: 'SKU #SURG-STEEL-TRAY',
-    action: 'UPDATED',
-    details: 'Stock inventory count updated from 42 to 41 across all retail channels.',
-    status: 'SUCCESS',
-  },
-  {
-    id: 'log_3',
-    timestamp: '10:40:12 AM',
-    source: 'Business OS CRM',
-    destination: 'Slack #revenue-vip',
-    entity: 'Deal Won: NovaPay ($42,000.00)',
-    action: 'CREATED',
-    details: 'Dispatched automated commission notification & customer onboarding trigger.',
-    status: 'SUCCESS',
-  },
-];
+const INITIAL_LOGS: SyncEventLog[] = [];
 
 export function DataSyncClient() {
   const [connectors, setConnectors] = useState<StackConnector[]>(PRESET_CONNECTORS);
@@ -221,8 +190,8 @@ export function DataSyncClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400 shrink-0" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
           <span>{alert}</span>
         </div>
       )}
@@ -231,7 +200,7 @@ export function DataSyncClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
               Operational Automation
             </span>
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
@@ -239,7 +208,7 @@ export function DataSyncClient() {
             </span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5 mt-1">
-            <ArrowRightLeft className="text-amber-400" size={24} />
+            <ArrowRightLeft className="text-emerald-400" size={24} />
             Operational "Data Sync" & Disparate Stack Tooling Hub
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -252,7 +221,7 @@ export function DataSyncClient() {
             type="button"
             disabled={isSyncing}
             onClick={handleTriggerManualSync}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
             <span>{isSyncing ? 'Syncing Stack Mesh...' : 'Sync All Stacks Now'}</span>
@@ -282,7 +251,7 @@ export function DataSyncClient() {
           <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
             Average Mesh Latency
           </span>
-          <div className="text-2xl font-extrabold font-mono text-amber-400">62ms</div>
+          <div className="text-2xl font-extrabold font-mono text-emerald-400">62ms</div>
           <span className="text-[10px] text-emerald-400 font-mono">Sub-100ms Target</span>
         </div>
 
@@ -299,7 +268,7 @@ export function DataSyncClient() {
       <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
         <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
           <div className="flex items-center gap-2">
-            <Layers size={16} className="text-amber-400" />
+            <Layers size={16} className="text-emerald-400" />
             <h3 className="text-xs font-bold text-white uppercase tracking-wider">
               Connected Enterprise Software Stack Grid
             </h3>
@@ -316,7 +285,7 @@ export function DataSyncClient() {
                 className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] transition-all space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
                     <IconComp size={16} />
                   </div>
                   <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-xs shadow-emerald-400" />
@@ -344,7 +313,7 @@ export function DataSyncClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-5">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <div className="flex items-center gap-2">
-                <Sliders size={16} className="text-amber-400" />
+                <Sliders size={16} className="text-emerald-400" />
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider">
                   Bidirectional Schema & Field Mapping Rules
                 </h3>
@@ -356,7 +325,7 @@ export function DataSyncClient() {
                 <select
                   value={conflictPolicy}
                   onChange={(e) => setConflictPolicy(e.target.value as any)}
-                  className="px-2 py-1 bg-white/[0.06] border border-white/[0.1] rounded-lg text-[10px] text-amber-300 font-bold font-mono focus:outline-none"
+                  className="px-2 py-1 bg-white/[0.06] border border-white/[0.1] rounded-lg text-[10px] text-emerald-300 font-bold font-mono focus:outline-none"
                 >
                   <option value="LATEST_TIMESTAMP">Latest Timestamp Wins</option>
                   <option value="SOURCE_WINS">Source System Wins</option>
@@ -374,7 +343,7 @@ export function DataSyncClient() {
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 font-mono">
-                      <span className="font-bold text-amber-400">{m.sourceStack}</span>
+                      <span className="font-bold text-emerald-400">{m.sourceStack}</span>
                       <span className="text-slate-500">({m.sourceField})</span>
                       <ArrowRightLeft size={12} className="text-slate-400" />
                       <span className="font-bold text-emerald-400">{m.destinationStack}</span>
@@ -399,7 +368,7 @@ export function DataSyncClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
               <div className="flex items-center gap-2">
-                <Activity size={16} className="text-amber-400" />
+                <Activity size={16} className="text-emerald-400" />
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider">
                   Live Stack Sync Audit Stream
                 </h3>
@@ -414,7 +383,7 @@ export function DataSyncClient() {
                   className="p-3 rounded-2xl bg-slate-950/80 border border-white/[0.06] space-y-1.5"
                 >
                   <div className="flex items-center justify-between text-[10px]">
-                    <span className="text-amber-400 font-bold">
+                    <span className="text-emerald-400 font-bold">
                       {log.source} ➔ {log.destination}
                     </span>
                     <span className="text-slate-500">{log.timestamp}</span>
@@ -429,6 +398,11 @@ export function DataSyncClient() {
                   </div>
                 </div>
               ))}
+              {logs.length === 0 && (
+                <div className="py-16 text-center text-slate-500 text-xs font-medium">
+                  Sync stream active. Webhook events and bidirectional updates will log here in real-time.
+                </div>
+              )}
             </div>
           </div>
         </div>

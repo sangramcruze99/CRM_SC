@@ -70,7 +70,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
         {/* Header */}
         <div className="flex justify-between items-start border-b border-white/[0.08] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xl">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xl">
               {nicheConfig.icon}
             </div>
             <div>
@@ -78,7 +78,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
                 <h2 className="text-lg font-bold text-white">
                   Customize Features for {nicheConfig.shortName}
                 </h2>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                   {activeFeatureIds.length} / 67 Active
                 </span>
               </div>
@@ -95,7 +95,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
 
         {/* Alert notification */}
         {alert && (
-          <div className="p-3 bg-amber-500/20 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+          <div className="p-3 bg-emerald-500/20 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in">
             <CheckCircle2 size={15} />
             <span>{alert}</span>
           </div>
@@ -121,7 +121,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
               <button
                 type="button"
                 onClick={handleSelectAll67}
-                className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs shadow-md shadow-orange-500/20 cursor-pointer"
+                className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs shadow-md shadow-emerald-500/20 cursor-pointer"
               >
                 Select All 67
               </button>
@@ -196,7 +196,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
                   onClick={() => toggleFeature(feat.id)}
                   className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-2 select-none ${
                     isEnabled
-                      ? 'bg-gradient-to-tr from-amber-500/15 via-white/[0.04] to-transparent border-amber-500/50 shadow-md shadow-orange-500/10'
+                      ? 'bg-gradient-to-tr from-emerald-500/15 via-white/[0.04] to-transparent border-emerald-500/50 shadow-md shadow-emerald-500/10'
                       : 'bg-white/[0.02] border-white/[0.06] opacity-60 hover:opacity-100 hover:border-white/[0.15]'
                   }`}
                 >
@@ -206,7 +206,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
                         <div
                           className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all ${
                             isEnabled
-                              ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
+                              ? 'bg-emerald-500 text-slate-950 border-emerald-400 font-bold'
                               : 'bg-white/[0.05] border-white/20 text-transparent'
                           }`}
                         >
@@ -218,7 +218,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
                       </div>
 
                       {feat.badge && (
-                        <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                           {feat.badge}
                         </span>
                       )}
@@ -231,7 +231,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
 
                   <div className="flex items-center justify-between pl-7 pt-1 border-t border-white/[0.04] text-[10px] text-slate-500 font-medium">
                     <span>{feat.categoryName}</span>
-                    <span className="font-mono text-amber-400/80">{feat.route}</span>
+                    <span className="font-mono text-emerald-400/80">{feat.route}</span>
                   </div>
                 </div>
               );
@@ -243,13 +243,13 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
         <div className="pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-xs text-slate-400">
             <span className="font-bold text-white">{activeFeatureIds.length} features active</span> for{' '}
-            <span className="text-amber-400 font-semibold">{nicheConfig.name}</span>. Homepage widgets will reflect these selections immediately.
+            <span className="text-emerald-400 font-semibold">{nicheConfig.name}</span>. Homepage widgets will reflect these selections immediately.
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <CheckCircle2 size={15} />
             <span>Apply & Update Homepage</span>

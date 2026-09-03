@@ -15,41 +15,7 @@ interface OfferLetter {
   expiryDate: string;
 }
 
-const initialDemoOffers: OfferLetter[] = [
-  {
-    id: 'off_901',
-    candidateName: 'Alexander Wright',
-    candidateEmail: 'a.wright@gmail.com',
-    role: 'Staff Infrastructure Engineer',
-    department: 'Engineering',
-    baseSalary: 185000,
-    equity: '0.15%',
-    status: 'ACCEPTED',
-    expiryDate: '2026-08-20',
-  },
-  {
-    id: 'off_902',
-    candidateName: 'Sophia Martinez',
-    candidateEmail: 's.martinez@outlook.com',
-    role: 'Enterprise Account Executive',
-    department: 'Sales',
-    baseSalary: 140000,
-    equity: '0.08%',
-    status: 'PENDING_REVIEW',
-    expiryDate: '2026-09-05',
-  },
-  {
-    id: 'off_903',
-    candidateName: 'Liam Zhang',
-    candidateEmail: 'liam.z@designhub.io',
-    role: 'Lead UI/UX Designer',
-    department: 'Product',
-    baseSalary: 160000,
-    equity: '0.10%',
-    status: 'ACCEPTED',
-    expiryDate: '2026-08-28',
-  },
-];
+const initialDemoOffers: OfferLetter[] = [];
 
 export function OfferLettersClient({ initialOffers = [] }: { initialOffers?: any[] }) {
   const [offers, setOffers] = useState<OfferLetter[]>(
@@ -93,8 +59,8 @@ export function OfferLettersClient({ initialOffers = [] }: { initialOffers?: any
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
-          <CheckCircle size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
+          <CheckCircle size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -103,7 +69,7 @@ export function OfferLettersClient({ initialOffers = [] }: { initialOffers?: any
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Award className="text-amber-400" size={24} />
+            <Award className="text-emerald-400" size={24} />
             Executive Offer Letters & Compensation
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -112,7 +78,7 @@ export function OfferLettersClient({ initialOffers = [] }: { initialOffers?: any
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <Plus size={16} />
           <span>Generate Offer Letter</span>
@@ -137,20 +103,20 @@ export function OfferLettersClient({ initialOffers = [] }: { initialOffers?: any
               <tr key={off.id} className="hover:bg-white/[0.04] transition-colors">
                 <td className="px-6 py-4">
                   <div className="font-bold text-white text-sm">{off.candidateName}</div>
-                  <div className="text-xs text-amber-400 font-semibold">{off.role}</div>
+                  <div className="text-xs text-emerald-400 font-semibold">{off.role}</div>
                   <div className="text-[11px] text-slate-400 font-medium">{off.candidateEmail}</div>
                 </td>
                 <td className="px-6 py-4 text-slate-300 text-xs font-medium">{off.department}</td>
                 <td className="px-6 py-4 font-mono font-extrabold text-white">
                   ${off.baseSalary.toLocaleString()} / yr
                 </td>
-                <td className="px-6 py-4 font-mono text-amber-400 text-xs font-bold">{off.equity}</td>
+                <td className="px-6 py-4 font-mono text-emerald-400 text-xs font-bold">{off.equity}</td>
                 <td className="px-6 py-4">
                   <span
                     className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${
                       off.status === 'ACCEPTED'
                         ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                        : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                     }`}
                   >
                     {off.status === 'ACCEPTED' ? <CheckCircle size={12} /> : <Clock size={12} />}
@@ -171,6 +137,13 @@ export function OfferLettersClient({ initialOffers = [] }: { initialOffers?: any
                 </td>
               </tr>
             ))}
+            {offers.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                  No offer letters drafted yet. Click <span className="text-emerald-400 font-bold">"Draft New Offer Letter"</span> to prepare your first candidate package.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -274,7 +247,7 @@ export function OfferLettersClient({ initialOffers = [] }: { initialOffers?: any
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Send size={14} />
                   <span>Send Offer</span>

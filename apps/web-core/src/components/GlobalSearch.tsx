@@ -179,16 +179,16 @@ export function GlobalSearch() {
       >
         <Search size={14} className="text-slate-400" />
         <span>Command Palette...</span>
-        <span className="text-[10px] font-mono font-bold bg-white/[0.08] text-amber-400 px-1.5 py-0.5 rounded-md border border-white/10 ml-2 shadow-2xs">⌘K</span>
+        <span className="text-[10px] font-mono font-bold bg-white/[0.08] text-emerald-400 px-1.5 py-0.5 rounded-md border border-white/10 ml-2 shadow-2xs">⌘K</span>
       </button>
 
       {isOpen && (
         <>
           <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 animate-in fade-in" onClick={() => setIsOpen(false)} />
-          <div className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-xl bg-slate-950/95 backdrop-blur-2xl border border-white/[0.14] rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-white">
+          <div className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-xl bg-white dark:bg-slate-950/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.14] rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-white">
             {/* Search Input Bar */}
-            <div className="p-4 border-b border-white/[0.08] flex items-center space-x-3 bg-white/[0.02]">
-              <Search size={18} className="text-amber-400" />
+            <div className="p-4 border-b border-slate-200 dark:border-white/[0.08] flex items-center space-x-3 bg-slate-50 dark:bg-white/[0.02]">
+              <Search size={18} className="text-emerald-600 dark:text-emerald-400" />
               <input
                 ref={inputRef}
                 type="text"
@@ -199,10 +199,10 @@ export function GlobalSearch() {
                 }}
                 onKeyDown={handleKeyDownNav}
                 placeholder="Type a command (e.g. 'scan', 'sales', 'deals', 'khata')..."
-                className="flex-1 bg-transparent border-none text-white placeholder-slate-500 focus:outline-none text-sm font-medium"
+                className="flex-1 bg-transparent border-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none text-sm font-medium"
               />
-              {isLoading && <Loader2 size={16} className="text-amber-400 animate-spin" />}
-              <span className="text-[10px] bg-white/[0.06] px-2 py-0.5 rounded-md text-slate-400 font-mono">
+              {isLoading && <Loader2 size={16} className="text-emerald-400 animate-spin" />}
+              <span className="text-[10px] bg-slate-200 dark:bg-white/[0.06] px-2 py-0.5 rounded-md text-slate-600 dark:text-slate-400 font-mono">
                 ↑↓ to navigate · ↵ select
               </span>
             </div>
@@ -232,18 +232,18 @@ export function GlobalSearch() {
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={`flex items-center justify-between p-2.5 rounded-2xl transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-gradient-to-r from-amber-500/20 via-orange-500/10 to-transparent border border-amber-500/30 text-white'
-                        : 'hover:bg-white/[0.04] text-slate-300 border border-transparent'
+                        ? 'bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-transparent border border-emerald-500/40 text-slate-950 dark:text-white shadow-xs'
+                        : 'hover:bg-slate-100 dark:hover:bg-white/[0.04] text-slate-700 dark:text-slate-300 border border-transparent'
                     }`}
                   >
                     <div className="flex items-center space-x-3">
                       <div className={`p-2 rounded-xl border ${
-                        isSelected ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-white/[0.04] border-white/[0.08] text-slate-400'
+                        isSelected ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-white/[0.04] border-white/[0.08] text-slate-400'
                       }`}>
                         <Icon size={16} />
                       </div>
                       <div>
-                        <span className={`text-xs font-bold block ${isSelected ? 'text-amber-300' : 'text-white'}`}>
+                        <span className={`text-xs font-bold block ${isSelected ? 'text-emerald-300' : 'text-white'}`}>
                           {cmd.title}
                         </span>
                         <span className="text-[11px] text-slate-400">{cmd.subtitle}</span>
@@ -254,7 +254,7 @@ export function GlobalSearch() {
                       <span className="text-[10px] uppercase font-mono font-bold px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
                         {cmd.type}
                       </span>
-                      <ArrowRight size={13} className={isSelected ? 'text-amber-400' : 'text-slate-600'} />
+                      <ArrowRight size={13} className={isSelected ? 'text-emerald-400' : 'text-slate-600'} />
                     </div>
                   </div>
                 );

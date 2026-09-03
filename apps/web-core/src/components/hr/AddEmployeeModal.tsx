@@ -80,7 +80,7 @@ export function AddEmployeeModal({
         {/* Header */}
         <div className="flex justify-between items-start border-b border-white/[0.08] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
               <UserPlus size={20} />
             </div>
             <div>
@@ -149,7 +149,7 @@ export function AddEmployeeModal({
 
           {/* Org Hierarchy Pipeline Level & Manager */}
           <div className="p-4 bg-white/[0.03] border border-white/[0.08] rounded-2xl space-y-3">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 block">
               Organizational Tree Hierarchy (Pipeline Position)
             </span>
 
@@ -258,7 +258,7 @@ export function AddEmployeeModal({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 transition-all cursor-pointer"
+              className="px-5 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all cursor-pointer"
             >
               Add to Organization & Payroll
             </button>

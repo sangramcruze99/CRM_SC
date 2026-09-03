@@ -32,7 +32,7 @@ export default async function AIEnginePage() {
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-          <Brain className="text-amber-400" size={24} />
+          <Brain className="text-emerald-400" size={24} />
           AI Engine & Vector Knowledge Base
         </h1>
         <p className="text-sm text-slate-400 mt-1">Configure LLM prompt templates and vector retrieval embeddings for autonomous CRM workflows.</p>
@@ -44,7 +44,7 @@ export default async function AIEnginePage() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Bot className="text-amber-400" size={18} />
+              <Bot className="text-emerald-400" size={18} />
               Prompt Templates
             </h2>
             <CreatePromptModal />
@@ -67,7 +67,7 @@ export default async function AIEnginePage() {
                         <div className="text-xs text-slate-400 mt-1 line-clamp-1 font-mono">{p.prompt}</div>
                       </td>
                       <td className="px-6 py-4 text-slate-300">
-                        <span className="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-mono font-bold bg-amber-500/15 text-amber-300 rounded-full border border-amber-500/30 shadow-2xs">
+                        <span className="inline-flex items-center justify-center px-2.5 py-0.5 text-xs font-mono font-bold bg-emerald-500/15 text-emerald-300 rounded-full border border-emerald-500/30 shadow-2xs">
                           {p.model}
                         </span>
                       </td>
@@ -83,7 +83,7 @@ export default async function AIEnginePage() {
         <div className="flex flex-col space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
-              <Database className="text-amber-400" size={18} />
+              <Database className="text-emerald-400" size={18} />
               Vector Knowledge Base
             </h2>
             <CreateKnowledgeModal />
@@ -103,7 +103,7 @@ export default async function AIEnginePage() {
                     <tr key={doc.id} className="hover:bg-white/[0.04] transition-colors">
                       <td className="px-6 py-4">
                         <span className="font-semibold text-slate-200 flex items-center gap-2 text-sm">
-                          <FileText size={15} className="text-amber-400 flex-shrink-0" />
+                          <FileText size={15} className="text-emerald-400 flex-shrink-0" />
                           <span className="truncate max-w-xs">{doc.title}</span>
                         </span>
                       </td>

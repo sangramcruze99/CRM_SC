@@ -12,7 +12,7 @@ export class ApiKeysController {
     // Mask the keys before returning them to the client
     return keys.map(k => ({
       ...k,
-      key: k.key.substring(0, 12) + '... (Masked for security)',
+      key: k.key ? (k.key.length > 12 ? k.key.substring(0, 12) + '... (Masked)' : k.key) : 'sk_live_...masked',
     }));
   }
 
@@ -25,6 +25,6 @@ export class ApiKeysController {
   @Delete(':id')
   remove(@Param('id') id: string, @Headers('x-tenant-id') tenantId: string) {
     const tenant = tenantId || 'default-tenant';
-    return this.apiKeysService.delete(id, tenant);
+    return this.apiKeysService.revoke(id, tenant);
   }
 }

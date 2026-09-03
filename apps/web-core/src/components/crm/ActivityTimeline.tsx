@@ -76,7 +76,7 @@ export function ActivityTimeline({ entityType, entityId }: { entityType: 'contac
       case 'EMAIL': return <MailIcon className="w-3.5 h-3.5 text-sky-400" />;
       case 'CALL': return <PhoneIcon className="w-3.5 h-3.5 text-emerald-400" />;
       case 'MEETING': return <CalendarIcon className="w-3.5 h-3.5 text-purple-400" />;
-      default: return <StickyNoteIcon className="w-3.5 h-3.5 text-amber-400" />;
+      default: return <StickyNoteIcon className="w-3.5 h-3.5 text-emerald-400" />;
     }
   };
 
@@ -93,7 +93,7 @@ export function ActivityTimeline({ entityType, entityId }: { entityType: 'contac
           <div className="flex justify-end space-x-2">
             <button type="button" className="px-3 py-1.5 bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-colors shadow-2xs cursor-pointer">Log Call</button>
             <button type="button" className="px-3 py-1.5 bg-white/[0.06] border border-white/[0.1] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-colors shadow-2xs cursor-pointer">Log Email</button>
-            <button type="button" onClick={handleAddNote} className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 cursor-pointer">Save Note</button>
+            <button type="button" onClick={handleAddNote} className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 cursor-pointer">Save Note</button>
           </div>
         </div>
       </div>
@@ -105,7 +105,7 @@ export function ActivityTimeline({ entityType, entityId }: { entityType: 'contac
           <p className="text-xs text-slate-400 text-center py-6 font-medium">No activity yet. Add a note to get started!</p>
         ) : (
           activities.map(activity => (
-            <div key={activity.id} className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-xs hover:border-amber-500/40 transition-colors">
+            <div key={activity.id} className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-xs hover:border-emerald-500/40 transition-colors">
               <div className="px-4 py-2.5 border-b border-white/[0.08] flex flex-row items-center space-x-3 bg-white/[0.02]">
                 <div className="p-1.5 bg-white/[0.06] rounded-xl border border-white/10 shadow-2xs">
                   {getIcon(activity.type)}

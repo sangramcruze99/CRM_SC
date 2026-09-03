@@ -1,0 +1,47 @@
+{
+  "name": "Business OS — Enterprise Workspace & CRM",
+  "short_name": "Business OS",
+  "description": "Unified Enterprise CRM & Business Operating System with Luxury Glassmorphism UI",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#07090e",
+  "theme_color": "#07090e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard & Cockpit",
+      "short_name": "Cockpit",
+      "description": "View live operational metrics and financial ledger",
+      "url": "/dashboard",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    },
+    {
+      "name": "Sales Pipeline & Deals",
+      "short_name": "Deals",
+      "description": "Manage active sales pipeline and deals",
+      "url": "/deals",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    },
+    {
+      "name": "Invoices & Billing",
+      "short_name": "Invoices",
+      "description": "Manage commercial billing and issue invoices",
+      "url": "/invoices",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    },
+    {
+      "name": "Contacts & CRM",
+      "short_name": "Contacts",
+      "description": "Access client leads and contact database",
+      "url": "/contacts",
+      "icons": [{ "src": "/favicon.ico", "sizes": "64x64" }]
+    }
+  ]
+}

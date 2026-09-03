@@ -59,7 +59,7 @@ export default async function ContactsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Users className="text-amber-400" size={24} />
+            <Users className="text-emerald-400" size={24} />
             Contacts & Client Accounts
           </h1>
           <p className="text-sm text-slate-400 mt-1">Manage leads, commercial stakeholders, and account relationships.</p>
@@ -94,11 +94,11 @@ export default async function ContactsPage() {
                 <tr key={contact.id} className="hover:bg-white/[0.04] transition-colors group">
                   <td className="px-6 py-4">
                     <Link href={`/contacts/${contact.id}`} className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs font-bold shadow-2xs">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xs font-bold shadow-2xs">
                         {contact.firstName?.[0]}{contact.lastName?.[0]}
                       </div>
                       <div>
-                        <span className="font-bold text-white group-hover:text-amber-400 transition-colors block text-sm">
+                        <span className="font-bold text-white group-hover:text-emerald-400 transition-colors block text-sm">
                           {contact.firstName} {contact.lastName}
                         </span>
                         <div className="text-[11px] text-slate-500 font-mono">{contact.id}</div>
@@ -107,7 +107,7 @@ export default async function ContactsPage() {
                   </td>
                   <td className="px-6 py-4 text-slate-300">
                     <div className="flex items-center space-x-2">
-                      <Building size={15} className="text-amber-400/80 flex-shrink-0" />
+                      <Building size={15} className="text-emerald-400/80 flex-shrink-0" />
                       <span className="font-medium text-xs text-slate-300">{contact.company?.name || 'Enterprise Account'}</span>
                     </div>
                   </td>

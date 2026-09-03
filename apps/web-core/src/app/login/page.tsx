@@ -44,12 +44,12 @@ export default function LoginPage() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#07090e] p-4 text-white overflow-hidden">
       {/* Decorative ambient background radial glows */}
-      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative w-full max-w-md z-10">
         <div className="text-center mb-8 flex flex-col items-center">
-          <div className="w-14 h-14 bg-gradient-to-tr from-amber-500 via-orange-500 to-amber-600 rounded-2xl flex items-center justify-center text-slate-950 font-extrabold text-2xl mb-4 shadow-xl shadow-orange-500/25 ring-2 ring-white/10">
+          <div className="w-14 h-14 bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 rounded-2xl flex items-center justify-center text-slate-950 font-extrabold text-2xl mb-4 shadow-xl shadow-emerald-500/25 ring-2 ring-white/10">
             <Sparkles size={26} />
           </div>
           <h1 className="text-3xl font-extrabold tracking-tight text-white">Business OS</h1>
@@ -86,7 +86,7 @@ export default function LoginPage() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Password</label>
-                {isLogin && <span className="text-xs text-amber-400 font-semibold">Default: admin123</span>}
+                {isLogin && <span className="text-xs text-emerald-400 font-semibold">Default: admin123</span>}
               </div>
               <div className="relative">
                 <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
@@ -94,7 +94,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <button type="submit" disabled={isLoading} className="w-full py-3 px-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-sm font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center justify-center space-x-2 group cursor-pointer border border-amber-400/40">
+            <button type="submit" disabled={isLoading} className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 text-sm font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] flex items-center justify-center space-x-2 group cursor-pointer border border-emerald-400/40">
               <span>{isLogin ? 'Sign In to Workspace' : 'Create Organization Account'}</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
@@ -103,7 +103,7 @@ export default function LoginPage() {
           <div className="p-4 bg-white/[0.02] border-t border-white/[0.06] text-center">
             <button 
               onClick={() => { setIsLogin(!isLogin); setError(''); }}
-              className="text-xs font-semibold text-slate-400 hover:text-amber-400 transition-colors cursor-pointer"
+              className="text-xs font-semibold text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
             >
               {isLogin ? "Need a new tenant workspace? Switch to Register" : "Already registered? Sign in"}
             </button>

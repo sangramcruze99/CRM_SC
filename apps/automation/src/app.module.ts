@@ -11,24 +11,25 @@ import { ExecutorModule } from './executor/executor.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { WorkflowsModule } from './workflows/workflows.module';
 
+const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HOST !== '127.0.0.1' && process.env.REDIS_HOST !== 'localhost');
+
 @Module({
   imports: [
     JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
     ScheduleModule.forRoot(),
-    BullModule.forRoot({
-      connection: {
-        host: process.env.REDIS_HOST || '127.0.0.1',
-        port: parseInt(process.env.REDIS_PORT || '6379', 10),
-        maxRetriesPerRequest: null,
-        enableOfflineQueue: false,
-        lazyConnect: true,
-        retryStrategy: (times: number) => Math.min(times * 100, 3000),
-      },
-    }),
+    ...(isRedisConfigured ? [
+      BullModule.forRoot({
+        connection: {
+          host: process.env.REDIS_HOST || '127.0.0.1',
+          port: parseInt(process.env.REDIS_PORT || '6379', 10),
+          maxRetriesPerRequest: null,
+        },
+      }),
+      ExecutorModule,
+    ] : []),
     WorkflowsModule,
     ActionsModule,
     PrismaModule,
-    ExecutorModule,
   ],
   controllers: [AppController],
   providers: [

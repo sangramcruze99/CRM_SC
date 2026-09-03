@@ -1,44 +1,13 @@
 import { getTenantHeaders, safeFetch } from "../lib/auth";
 import { Filter, Download, Mail, Phone, Building, Users, Sparkles } from "lucide-react";
 import { CreateContactModal } from "../components/CreateContactModal";
+import { DeleteActionButton } from "../components/DeleteActionButton";
+import { deleteContact } from "./actions";
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-const demoContacts = [
-  {
-    id: 'cnt_01',
-    firstName: 'Sarah',
-    lastName: 'Connor',
-    email: 'sarah.connor@cyberdyne.io',
-    phone: '+1 (555) 019-2834',
-    company: { name: 'Cyberdyne Systems Corp' },
-  },
-  {
-    id: 'cnt_02',
-    firstName: 'Alex',
-    lastName: 'Vance',
-    email: 'alex.vance@blackmesa.org',
-    phone: '+1 (555) 342-8911',
-    company: { name: 'Black Mesa Research' },
-  },
-  {
-    id: 'cnt_03',
-    firstName: 'David',
-    lastName: 'Ross',
-    email: 'd.ross@hyperscale.ai',
-    phone: '+1 (555) 782-9021',
-    company: { name: 'HyperScale AI Labs' },
-  },
-  {
-    id: 'cnt_04',
-    firstName: 'Elena',
-    lastName: 'Rostova',
-    email: 'elena.rostova@vanguard.tech',
-    phone: '+1 (555) 431-7782',
-    company: { name: 'Vanguard Security Systems' },
-  },
-];
+const demoContacts: any[] = [];
 
 export default async function ContactsPage() {
   const headers = await getTenantHeaders();
@@ -51,7 +20,7 @@ export default async function ContactsPage() {
     []
   );
 
-  const contacts = fetchedContacts.length > 0 ? fetchedContacts : demoContacts;
+  const contacts = fetchedContacts || [];
 
   return (
     <div className="h-full flex flex-col space-y-6 max-w-7xl mx-auto text-white">
@@ -59,7 +28,7 @@ export default async function ContactsPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Users className="text-amber-400" size={24} />
+            <Users className="text-emerald-400" size={24} />
             Contacts & Client Accounts
           </h1>
           <p className="text-sm text-slate-400 mt-1">Manage leads, commercial stakeholders, and account relationships.</p>
@@ -69,12 +38,12 @@ export default async function ContactsPage() {
             href="/migration"
             className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-all border border-white/[0.1] flex items-center space-x-1.5 cursor-pointer"
           >
-            <Sparkles size={14} className="text-amber-400" />
+            <Sparkles size={14} className="text-emerald-400" />
             <span>Migrate from Another CRM</span>
           </Link>
           <Link
             href="/lead-prospector"
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 flex items-center space-x-1.5 active:scale-[0.98]"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 flex items-center space-x-1.5 active:scale-[0.98]"
           >
             <Sparkles size={14} />
             <span>⚡ Import from Apollo / ZoomInfo</span>
@@ -108,11 +77,11 @@ export default async function ContactsPage() {
                 <tr key={contact.id} className="hover:bg-white/[0.04] transition-colors group">
                   <td className="px-6 py-4">
                     <Link href={`/contacts/${contact.id}`} className="flex items-center space-x-3">
-                      <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs font-bold shadow-2xs">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/30 flex items-center justify-center text-xs font-bold shadow-2xs">
                         {contact.firstName?.[0]}{contact.lastName?.[0]}
                       </div>
                       <div>
-                        <span className="font-bold text-white group-hover:text-amber-400 transition-colors block text-sm">
+                        <span className="font-bold text-white group-hover:text-emerald-400 transition-colors block text-sm">
                           {contact.firstName} {contact.lastName}
                         </span>
                         <div className="text-[11px] text-slate-500 font-mono">{contact.id}</div>
@@ -121,7 +90,7 @@ export default async function ContactsPage() {
                   </td>
                   <td className="px-6 py-4 text-slate-300">
                     <div className="flex items-center space-x-2">
-                      <Building size={15} className="text-amber-400 flex-shrink-0" />
+                      <Building size={15} className="text-emerald-400 flex-shrink-0" />
                       <span className="font-medium text-xs text-white">{contact.company?.name || 'Enterprise Account'}</span>
                     </div>
                   </td>
@@ -138,15 +107,31 @@ export default async function ContactsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <Link
-                      href={`/contacts/${contact.id}`}
-                      className="px-3.5 py-1.5 bg-white/[0.06] hover:bg-amber-500 hover:text-slate-950 text-slate-300 rounded-xl text-xs font-bold transition-all border border-white/[0.1] inline-block shadow-2xs cursor-pointer"
-                    >
-                      Profile & Khata →
-                    </Link>
+                    <div className="flex items-center justify-end space-x-2">
+                      <Link
+                        href={`/contacts/${contact.id}`}
+                        className="px-3.5 py-1.5 bg-white/[0.06] hover:bg-emerald-500 hover:text-slate-950 text-slate-300 rounded-xl text-xs font-bold transition-all border border-white/[0.1] inline-block shadow-2xs cursor-pointer"
+                      >
+                        Profile & Khata →
+                      </Link>
+                      <DeleteActionButton
+                        onDeleteAction={async () => {
+                          'use server';
+                          await deleteContact(contact.id);
+                        }}
+                        confirmTitle={`Delete contact "${contact.firstName} ${contact.lastName}"?`}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}
+              {contacts.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                    No contacts created yet. Click <span className="text-emerald-400 font-bold">"Add Contact"</span> above to add your first client record.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

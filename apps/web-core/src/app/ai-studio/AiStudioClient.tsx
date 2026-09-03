@@ -79,125 +79,11 @@ interface ChurnAlert {
   recommendedAction: string;
 }
 
-const initialContacts: EnrichedContact[] = [
-  {
-    id: 'cnt_1',
-    name: 'Sarah Connor',
-    email: 'sarah.connor@cyberdyne.io',
-    role: 'VP of Technology & Security',
-    company: 'Cyberdyne Systems Corp',
-    companySize: '1,200+ employees',
-    industry: 'Enterprise Robotics & AI',
-    techStack: ['AWS', 'Kubernetes', 'PostgreSQL', 'Stripe', 'Salesforce'],
-    sentimentScore: 94,
-    sentimentLabel: 'POSITIVE',
-    summaryBullets: [
-      'Led Q3 evaluation of Business OS multi-tenant architecture with 0 security exceptions.',
-      'Expressed strong enthusiasm for automated Khata billing ledgers and sub-10ms querying.',
-      'Next decision milestone: Board sign-off on 500-seat Enterprise license expected by Friday.',
-    ],
-    isEnriched: true,
-    optimalSendTime: 'Tuesday at 09:15 AM EST (92% Open Probability)',
-  },
-  {
-    id: 'cnt_2',
-    name: 'Michael Scott',
-    email: 'michael.scott@dunder.com',
-    role: 'Regional Managing Director',
-    company: 'Dunder Mifflin Paper & Logistics',
-    companySize: '250 employees',
-    industry: 'Commercial Supply & Distribution',
-    techStack: ['Microsoft 365', 'QuickBooks', 'Twilio'],
-    sentimentScore: 52,
-    sentimentLabel: 'NEUTRAL',
-    summaryBullets: [
-      'Attended 2 discovery calls focused on reducing invoice reconciliation lag time.',
-      'Concerns raised regarding team onboarding timeline across 4 regional branch locations.',
-      'Requested customized ROI calculator comparing per-seat pricing vs current software.',
-    ],
-    isEnriched: true,
-    optimalSendTime: 'Thursday at 02:30 PM EST (84% Open Probability)',
-  },
-  {
-    id: 'cnt_3',
-    name: 'Alex Rivera',
-    email: 'alex.rivera@nexastech.com',
-    role: 'Chief Technology Officer',
-    company: 'Nexus Tech Global',
-    companySize: '480 employees',
-    industry: 'Cloud Infrastructure SaaS',
-    techStack: ['GCP', 'Terraform', 'Next.js', 'Snowflake'],
-    sentimentScore: 28,
-    sentimentLabel: 'AT_RISK',
-    summaryBullets: [
-      'Communication velocity decreased by 65% over past 14 days following competitor review.',
-      'Submitted support ticket regarding custom webhook payload latency on high-volume batches.',
-      'Urgent intervention recommended before upcoming annual contract renewal window.',
-    ],
-    isEnriched: true,
-    optimalSendTime: 'Wednesday at 11:00 AM EST (78% Open Probability)',
-  },
-];
+const initialContacts: EnrichedContact[] = [];
 
-const initialDeals: IntelligentDeal[] = [
-  {
-    id: 'dl_1',
-    title: 'Enterprise Workspace Multi-Tenant Expansion',
-    company: 'Cyberdyne Systems Corp',
-    amount: 145000,
-    stage: 'Proposal / Contract',
-    predictiveScore: 92,
-    winProbability: 88,
-    healthStatus: 'HEALTHY',
-    healthReason: 'High executive engagement, 4 email touchpoints in last 72 hours, SOC2 approved.',
-    nextBestAction: 'Send personalized DocuSign envelope with pre-filled annual discount terms.',
-  },
-  {
-    id: 'dl_2',
-    title: 'Multi-Branch Supply Ledger Migration',
-    company: 'Dunder Mifflin Paper & Logistics',
-    amount: 58000,
-    stage: 'Discovery & Evaluation',
-    predictiveScore: 68,
-    winProbability: 62,
-    healthStatus: 'STALLED',
-    healthReason: 'Deal has stalled in "Discovery" for 19 days (2.3x longer than team average).',
-    nextBestAction: 'Schedule 15-min implementation roadmap call with Regional Director.',
-  },
-  {
-    id: 'dl_3',
-    title: 'Global Developer API & Webhooks Integration',
-    company: 'Nexus Tech Global',
-    amount: 92000,
-    stage: 'Negotiation',
-    predictiveScore: 34,
-    winProbability: 31,
-    healthStatus: 'GHOSTING_RISK',
-    healthReason: 'Lead ghosting signal detected. No response to last 3 emails; competitor mentioned in call.',
-    nextBestAction: 'Trigger executive sponsor re-engagement sequence from VP of Sales.',
-  },
-];
+const initialDeals: IntelligentDeal[] = [];
 
-const initialChurnAlerts: ChurnAlert[] = [
-  {
-    id: 'ch_1',
-    company: 'Nexus Tech Global',
-    mrr: 7500,
-    healthIndex: 32,
-    churnRisk: 'HIGH',
-    riskFactor: 'Active user logins dropped 48% and 2 negative sentiment tickets logged.',
-    recommendedAction: 'Assign dedicated Technical Account Manager for architectural review.',
-  },
-  {
-    id: 'ch_2',
-    company: 'Apex Cloud Solutions',
-    mrr: 4200,
-    healthIndex: 58,
-    churnRisk: 'MEDIUM',
-    riskFactor: 'Payment method expiration in 3 days; billing admin uncontacted.',
-    recommendedAction: 'Send automated WhatsApp payment link reminder to financial controller.',
-  },
-];
+const initialChurnAlerts: ChurnAlert[] = [];
 
 export function AiStudioClient() {
   const [activeTab, setActiveTab] = useState<
@@ -206,7 +92,7 @@ export function AiStudioClient() {
 
   // Contact States
   const [contacts, setContacts] = useState<EnrichedContact[]>(initialContacts);
-  const [selectedContact, setSelectedContact] = useState<EnrichedContact>(initialContacts[0]);
+  const [selectedContact, setSelectedContact] = useState<EnrichedContact | null>(null);
   const [isEnriching, setIsEnriching] = useState(false);
 
   // Deals States
@@ -303,7 +189,7 @@ export function AiStudioClient() {
         })
       );
       setIsEnriching(false);
-      setAlert(`✨ Enriched ${selectedContact.name}'s profile with public registry and tech stack data!`);
+      setAlert(`✨ Enriched ${selectedContact?.name || 'Contact'}'s profile with public registry and tech stack data!`);
       setTimeout(() => setAlert(null), 3500);
     }, 1000);
   };
@@ -459,7 +345,7 @@ export function AiStudioClient() {
               Select Contact Profile
             </h3>
             {contacts.map((c) => {
-              const isSelected = selectedContact.id === c.id;
+              const isSelected = selectedContact?.id === c.id;
               return (
                 <div
                   key={c.id}
@@ -496,79 +382,88 @@ export function AiStudioClient() {
                 </div>
               );
             })}
+            {contacts.length === 0 && (
+              <div className="p-8 text-center text-slate-400 text-xs font-medium border border-slate-200/80 rounded-2xl bg-white/50">
+                No contact profiles in queue. Contacts added from CRM or Lead Prospector will appear here for AI enrichment.
+              </div>
+            )}
           </div>
 
           {/* Right Column: AI Enrichment & Intelligence Card (8 cols) */}
           <div className="lg:col-span-8 space-y-5">
-            <div className="bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-5">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white font-extrabold text-lg flex items-center justify-center shadow-md shadow-indigo-500/20">
-                    {selectedContact.name[0]}
+            {selectedContact ? (
+              <div className="bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-5">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white font-extrabold text-lg flex items-center justify-center shadow-md shadow-indigo-500/20">
+                      {selectedContact.name[0]}
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span>{selectedContact.name}</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                          ✓ AI Enriched
+                        </span>
+                      </h2>
+                      <p className="text-xs text-slate-500 font-medium">{selectedContact.role} · {selectedContact.company}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                      <span>{selectedContact.name}</span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
-                        ✓ AI Enriched
+
+                  <button
+                    type="button"
+                    onClick={() => handleEnrichContact(selectedContact.id)}
+                    disabled={isEnriching}
+                    className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+                  >
+                    <RefreshCw size={13} className={isEnriching ? 'animate-spin' : ''} />
+                    <span>{isEnriching ? 'Scanning Registries...' : 'Re-Scan Public Registries'}</span>
+                  </button>
+                </div>
+
+                {/* Verified Firmographics & Tech Stack */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Company Size</span>
+                    <span className="text-xs font-bold text-slate-900">{selectedContact.companySize}</span>
+                  </div>
+                  <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Primary Industry</span>
+                    <span className="text-xs font-bold text-slate-900">{selectedContact.industry}</span>
+                  </div>
+                  <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Optimal Send Time</span>
+                    <span className="text-xs font-bold text-emerald-700">{selectedContact.optimalSendTime.split('(')[0]}</span>
+                  </div>
+                </div>
+
+                {/* Tech Stack Pills */}
+                <div>
+                  <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1.5">
+                    Detected Technology Stack
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedContact.techStack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold border border-slate-200/80"
+                      >
+                        {tech}
                       </span>
-                    </h2>
-                    <p className="text-xs text-slate-500 font-medium">{selectedContact.role} · {selectedContact.company}</p>
+                    ))}
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleEnrichContact(selectedContact.id)}
-                  disabled={isEnriching}
-                  className="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
-                >
-                  <RefreshCw size={13} className={isEnriching ? 'animate-spin' : ''} />
-                  <span>{isEnriching ? 'Scanning Registries...' : 'Re-Scan Public Registries'}</span>
-                </button>
-              </div>
-
-              {/* Verified Firmographics & Tech Stack */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Company Size</span>
-                  <span className="text-xs font-bold text-slate-900">{selectedContact.companySize}</span>
-                </div>
-                <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Primary Industry</span>
-                  <span className="text-xs font-bold text-slate-900">{selectedContact.industry}</span>
-                </div>
-                <div className="p-3 bg-slate-50 border border-slate-200/60 rounded-xl">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Optimal Send Time</span>
-                  <span className="text-xs font-bold text-emerald-700">{selectedContact.optimalSendTime.split('(')[0]}</span>
-                </div>
-              </div>
-
-              {/* Tech Stack Pills */}
-              <div>
-                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1.5">
-                  Detected Technology Stack
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedContact.techStack.map((tech) => (
-                    <span key={tech} className="px-2.5 py-1 bg-slate-100 border border-slate-200 rounded-lg text-xs font-mono font-semibold text-slate-700">
-                      {tech}
+                {/* Sentiment Meter */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span className="text-slate-600 flex items-center gap-1.5">
+                      <HeartPulse size={14} className="text-emerald-500" />
+                      <span>Engagement & Sentiment Health</span>
                     </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Real-time Sentiment Radar */}
-              <div className="p-4 bg-slate-50/80 border border-slate-200 rounded-xl space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <HeartPulse size={15} className="text-rose-500" />
-                    <span>Real-Time NLP Sentiment Radar</span>
-                  </span>
-                  <span className="font-mono font-extrabold text-slate-900">
-                    {selectedContact.sentimentScore} / 100 ({selectedContact.sentimentLabel})
-                  </span>
-                </div>
+                    <span className="font-mono font-extrabold text-slate-900">
+                      {selectedContact.sentimentScore} / 100 ({selectedContact.sentimentLabel})
+                    </span>
+                  </div>
                 <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
@@ -599,6 +494,13 @@ export function AiStudioClient() {
                 </div>
               </div>
             </div>
+          ) : (
+            <div className="p-16 text-center text-slate-400 text-xs font-medium border border-slate-200/80 rounded-2xl bg-white/70">
+                <Brain size={32} className="mx-auto text-indigo-400 mb-2" />
+                <h4 className="font-bold text-slate-800 text-sm">No Profile Selected</h4>
+                <p className="mt-1 text-slate-500">Select a contact profile from the left column to view AI firmographic enrichment, sentiment diagnostics, and pre-call briefings.</p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -694,6 +596,11 @@ export function AiStudioClient() {
                 </div>
               </div>
             ))}
+            {deals.length === 0 && (
+              <div className="col-span-3 py-16 text-center text-slate-400 text-xs font-medium border border-slate-200/80 rounded-2xl bg-white/50">
+                No active deals in predictive pipeline. Opportunities created in the Deals pipeline will be analyzed here for health risks and automated win probabilities.
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -707,7 +614,7 @@ export function AiStudioClient() {
           <div className="bg-white/90 backdrop-blur-xl border border-slate-200/80 rounded-2xl p-6 shadow-sm space-y-5">
             <div>
               <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Zap size={18} className="text-amber-500" />
+                <Zap size={18} className="text-emerald-500" />
                 <span>Natural Language Smart Trigger Generator</span>
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -741,7 +648,7 @@ export function AiStudioClient() {
 
             {generatedTrigger && (
               <div className="p-4 bg-slate-900 text-slate-100 rounded-2xl space-y-2 font-mono text-xs shadow-inner">
-                <span className="text-[10px] font-bold text-amber-400 uppercase tracking-widest block font-sans">
+                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest block font-sans">
                   Active Executable Automation Rule
                 </span>
                 <p className="text-emerald-400">{generatedTrigger.triggerEvent}</p>
@@ -1011,6 +918,11 @@ export function AiStudioClient() {
                   </div>
                 </div>
               ))}
+              {initialChurnAlerts.length === 0 && (
+                <div className="col-span-2 py-12 text-center text-slate-400 text-xs font-medium border border-slate-200/80 rounded-2xl bg-white/50">
+                  Zero churn risk anomalies detected. Customer health telemetry is optimal across all client accounts.
+                </div>
+              )}
             </div>
           </div>
         </div>

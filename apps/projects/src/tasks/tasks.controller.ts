@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Headers, BadRequestException, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Headers, BadRequestException, Param, Patch, Delete } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 
 @Controller('projects')
@@ -7,19 +7,13 @@ export class TasksController {
 
   @Get()
   async getProjects(@Headers('x-tenant-id') tenantId: string) {
-    if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
+    const effectiveTenantId = tenantId || 'default-tenant';
     
-    let projects = await this.tasksService.findProjects(tenantId);
+    let projects = await this.tasksService.findProjects(effectiveTenantId);
     
-    // Seed some initial data for demo purposes
     if (projects.length === 0) {
-      const p = await this.tasksService.getOrCreateProject(tenantId, "Q3 Marketing Launch");
-      await this.tasksService.createTask(p.id, { title: "Draft campaign brief", status: "DONE" });
-      await this.tasksService.createTask(p.id, { title: "Design ad creatives", status: "REVIEW" });
-      await this.tasksService.createTask(p.id, { title: "Setup tracking pixels", status: "IN_PROGRESS" });
-      await this.tasksService.createTask(p.id, { title: "Approve budget allocation", status: "TODO" });
-      
-      projects = await this.tasksService.findProjects(tenantId);
+      await this.tasksService.getOrCreateProject(effectiveTenantId, "Main Workspace Sprint");
+      projects = await this.tasksService.findProjects(effectiveTenantId);
     }
     
     return projects;
@@ -39,5 +33,10 @@ export class TasksController {
     @Body() data: { status: string }
   ) {
     return this.tasksService.updateTaskStatus(id, data.status);
+  }
+
+  @Delete('tasks/:id')
+  async deleteTask(@Param('id') id: string) {
+    return this.tasksService.deleteTask(id);
   }
 }

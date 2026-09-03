@@ -44,8 +44,8 @@ export function SearchIndexClient({ initialRecords = [] }: { initialRecords?: an
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-pulse">
-          <CheckCircle size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-pulse">
+          <CheckCircle size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -54,7 +54,7 @@ export function SearchIndexClient({ initialRecords = [] }: { initialRecords?: an
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Database className="text-amber-400" size={24} />
+            <Database className="text-emerald-400" size={24} />
             Full-Text Search Index Console
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -64,7 +64,7 @@ export function SearchIndexClient({ initialRecords = [] }: { initialRecords?: an
         <button
           onClick={handleReindex}
           disabled={isReindexing}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <RefreshCw size={15} className={isReindexing ? 'animate-spin' : ''} />
           <span>{isReindexing ? 'Re-indexing Database...' : 'Re-index Entire Workspace'}</span>
@@ -76,7 +76,7 @@ export function SearchIndexClient({ initialRecords = [] }: { initialRecords?: an
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Total Indexed Entities</span>
-            <Database size={18} className="text-amber-400" />
+            <Database size={18} className="text-emerald-400" />
           </div>
           <div className="text-3xl font-extrabold text-white font-mono">
             {entities.reduce((acc, e) => acc + e.count, 0).toLocaleString()}
@@ -96,9 +96,9 @@ export function SearchIndexClient({ initialRecords = [] }: { initialRecords?: an
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Average Latency</span>
-            <Zap size={18} className="text-amber-400" />
+            <Zap size={18} className="text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-amber-400 font-mono">4.8 ms</div>
+          <div className="text-3xl font-extrabold text-emerald-400 font-mono">4.8 ms</div>
           <div className="text-xs text-emerald-400 mt-2 font-bold">Ranked #1 percentile</div>
         </div>
       </div>
@@ -118,7 +118,7 @@ export function SearchIndexClient({ initialRecords = [] }: { initialRecords?: an
             {entities.map((e) => (
               <tr key={e.name} className="hover:bg-white/[0.04] transition-colors">
                 <td className="px-6 py-4 font-bold text-white flex items-center gap-2 text-sm">
-                  <Search size={15} className="text-amber-400" />
+                  <Search size={15} className="text-emerald-400" />
                   <span>{e.name}</span>
                 </td>
                 <td className="px-6 py-4 font-mono font-semibold text-slate-300 text-xs">

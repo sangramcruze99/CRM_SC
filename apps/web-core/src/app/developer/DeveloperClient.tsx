@@ -74,14 +74,14 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
       <div className="flex border-b border-white/[0.08]">
         <button
           onClick={() => setActiveTab('api')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 flex items-center space-x-2 transition-all cursor-pointer ${activeTab === 'api' ? 'border-amber-400 text-amber-400' : 'border-transparent text-slate-400 hover:text-white'}`}
+          className={`px-5 py-3 text-xs font-bold border-b-2 flex items-center space-x-2 transition-all cursor-pointer ${activeTab === 'api' ? 'border-amber-400 text-emerald-400' : 'border-transparent text-slate-400 hover:text-white'}`}
         >
           <Key size={14} />
           <span>API Keys & Credentials</span>
         </button>
         <button
           onClick={() => setActiveTab('webhooks')}
-          className={`px-5 py-3 text-xs font-bold border-b-2 flex items-center space-x-2 transition-all cursor-pointer ${activeTab === 'webhooks' ? 'border-amber-400 text-amber-400' : 'border-transparent text-slate-400 hover:text-white'}`}
+          className={`px-5 py-3 text-xs font-bold border-b-2 flex items-center space-x-2 transition-all cursor-pointer ${activeTab === 'webhooks' ? 'border-amber-400 text-emerald-400' : 'border-transparent text-slate-400 hover:text-white'}`}
         >
           <Webhook size={14} />
           <span>Webhooks & Subscriptions</span>
@@ -89,10 +89,10 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
       </div>
 
       {newKeyRaw && (
-        <div className="p-4 bg-amber-500/15 border border-amber-500/40 rounded-2xl animate-in fade-in zoom-in-95 shadow-2xl backdrop-blur-xl">
+        <div className="p-4 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl animate-in fade-in zoom-in-95 shadow-2xl backdrop-blur-xl">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-amber-300 font-bold text-xs flex items-center space-x-2">
+              <h3 className="text-emerald-300 font-bold text-xs flex items-center space-x-2">
                 <CheckCircle2 size={15} /> <span>API Key Generated Successfully</span>
               </h3>
               <p className="text-slate-300 text-xs mt-1 font-medium">
@@ -104,7 +104,7 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
                 </code>
                 <button 
                   onClick={copyToClipboard}
-                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl transition-all flex items-center space-x-1 text-xs font-bold shadow-md shadow-orange-500/20 cursor-pointer"
+                  className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl transition-all flex items-center space-x-1 text-xs font-bold shadow-md shadow-emerald-500/20 cursor-pointer"
                 >
                   {copied ? <Check size={13} /> : <Copy size={13} />}
                   <span>{copied ? 'Copied' : 'Copy Key'}</span>
@@ -126,7 +126,7 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
               <p className="text-xs text-slate-400 font-medium">Manage authorization keys for external REST API and webhook integrations.</p>
               <button 
                 onClick={handleGenerateKey}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
               >
                 <Plus size={15} />
                 <span>Create Secret Key</span>
@@ -154,7 +154,7 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
                   {apiKeys.map(key => (
                     <tr key={key.id} className="hover:bg-white/[0.04] transition-colors">
                       <td className="px-6 py-4 font-bold text-white text-xs flex items-center space-x-2">
-                        <Key size={14} className="text-amber-400" />
+                        <Key size={14} className="text-emerald-400" />
                         <span>{key.name}</span>
                       </td>
                       <td className="px-6 py-4 font-mono text-xs text-slate-400 font-medium">{key.key}</td>
@@ -176,7 +176,7 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
               <p className="text-xs text-slate-400 font-medium">Register webhook listeners to stream real-time workspace mutations.</p>
               <button 
                 onClick={handleRegisterWebhook}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
               >
                 <Plus size={15} />
                 <span>Add Endpoint</span>
@@ -204,13 +204,13 @@ export function DeveloperClient({ initialApiKeys, initialWebhooks }: { initialAp
                   {webhooks.map(wh => (
                     <tr key={wh.id} className="hover:bg-white/[0.04] transition-colors">
                       <td className="px-6 py-4 font-mono font-semibold text-white text-xs flex items-center space-x-2">
-                        <Webhook size={14} className="text-amber-400" />
+                        <Webhook size={14} className="text-emerald-400" />
                         <span>{wh.url}</span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-1 flex-wrap">
                           {wh.events.map((e: string) => (
-                            <span key={e} className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.08] text-amber-300 border border-white/10">
+                            <span key={e} className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.08] text-emerald-300 border border-white/10">
                               {e}
                             </span>
                           ))}

@@ -35,17 +35,44 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
   }
 
   const remainingPath = resolvedParams.route.slice(1).join('/');
-  // The auth service mounts login/register under @Controller('auth'), so that prefix must
-  // survive the strip. Its users/roles controllers are mounted at the root and must not.
-  const backendPath =
-    servicePrefix === 'auth' && ['login', 'register'].includes(remainingPath)
-      ? `auth/${remainingPath}`
-      : remainingPath;
+  
+  // List of microservices whose controllers are mounted with the service prefix in NestJS
+  const prefixedServices = ['chat', 'hr', 'settings', 'inventory', 'platform', 'bi', 'developer'];
+  
+  let backendPath = remainingPath;
+  if (prefixedServices.includes(servicePrefix)) {
+    backendPath = `${servicePrefix}/${remainingPath}`;
+  } else if (servicePrefix === 'auth' && ['login', 'register'].includes(remainingPath)) {
+    backendPath = `auth/${remainingPath}`;
+  }
+  
   const targetUrl = `${targetBase}/${backendPath}${req.nextUrl.search}`;
 
-  // The middleware has already verified the JWT and injected the x-tenant-id into the req.headers
-  const tenantId = req.headers.get('x-tenant-id');
-  
+  // Extract tenantId from headers or extract directly from JWT cookie/bearer
+  let tenantId = req.headers.get('x-tenant-id');
+  const authHeader = req.headers.get('authorization');
+  const token = req.cookies.get('access_token')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : undefined);
+
+  if (!tenantId && token) {
+    try {
+      const payloadBase64 = token.split('.')[1];
+      if (payloadBase64) {
+        const payloadJson = Buffer.from(payloadBase64, 'base64').toString('utf-8');
+        const payload = JSON.parse(payloadJson);
+        if (payload.tenantId) {
+          tenantId = payload.tenantId;
+        }
+      }
+    } catch {
+      // ignore token parse error
+    }
+  }
+
+  // Fallback to default tenant if not in production
+  if (!tenantId && process.env.NODE_ENV !== 'production') {
+    tenantId = 'default-tenant';
+  }
+
   const isPublicCms = servicePrefix === 'cms' && remainingPath.startsWith('pages/public');
   
   if (!tenantId && servicePrefix !== 'auth' && !isPublicCms) {
@@ -61,8 +88,6 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
   if (tenantId) {
     newHeaders.set('x-tenant-id', tenantId);
   }
-  const authHeader = req.headers.get('authorization');
-  const token = req.cookies.get('access_token')?.value;
   if (authHeader) {
     newHeaders.set('authorization', authHeader);
   } else if (token) {

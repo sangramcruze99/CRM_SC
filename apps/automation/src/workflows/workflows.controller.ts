@@ -30,6 +30,15 @@ export class WorkflowsController {
     return this.workflowsService.findOne(this.getTenant(tenantIdHeader), id);
   }
 
+  @Post('trigger')
+  triggerDirect(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Body() body: any
+  ) {
+    const workflowId = body.workflowId || body.id || 'default_workflow';
+    return this.workflowsService.trigger(this.getTenant(tenantIdHeader), workflowId, body.triggerData || body);
+  }
+
   @Post(':id/trigger')
   trigger(
     @Headers('x-tenant-id') tenantIdHeader: string,

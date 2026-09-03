@@ -15,7 +15,7 @@ export function CreditUsageDrawer() {
         {/* Header */}
         <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
               <Zap size={18} />
             </div>
             <div>
@@ -34,16 +34,16 @@ export function CreditUsageDrawer() {
           <div className="p-4 bg-white/[0.03] border border-white/[0.08] rounded-2xl space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-white flex items-center gap-1.5">
-                <Scan size={14} className="text-amber-400" />
+                <Scan size={14} className="text-emerald-400" />
                 Neural OCR Document Scans
               </span>
-              <span className="font-mono font-bold text-amber-400">
+              <span className="font-mono font-bold text-emerald-400">
                 {credits.ocrScansRemaining} / {credits.ocrScansTotal} Left
               </span>
             </div>
             <div className="w-full h-2 bg-white/[0.06] rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"
+                className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
                 style={{ width: `${(credits.ocrScansRemaining / credits.ocrScansTotal) * 100}%` }}
               />
             </div>
@@ -51,7 +51,7 @@ export function CreditUsageDrawer() {
               <span>$0.15 / scan after quota</span>
               <button
                 onClick={() => topUpCredits('ocr')}
-                className="px-2.5 py-1 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 rounded-lg font-bold flex items-center gap-1 cursor-pointer"
+                className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 rounded-lg font-bold flex items-center gap-1 cursor-pointer"
               >
                 <Plus size={11} /> +100 Scans ($15)
               </button>
@@ -120,7 +120,7 @@ export function CreditUsageDrawer() {
           <span className="text-xs text-slate-400 font-medium">Billed via Stripe on monthly settlement</span>
           <button
             onClick={() => topUpCredits('all')}
-            className="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 cursor-pointer"
+            className="px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 cursor-pointer"
           >
             Top Up All Bundles ($75)
           </button>

@@ -100,8 +100,8 @@ export function DirectoryClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -110,7 +110,7 @@ export function DirectoryClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Users className="text-amber-400" size={24} />
+            <Users className="text-emerald-400" size={24} />
             Employee Management, Salary & Organization Tree
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -125,7 +125,7 @@ export function DirectoryClient() {
             onClick={() => setActiveTab('tree')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'tree'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -138,7 +138,7 @@ export function DirectoryClient() {
             onClick={() => setActiveTab('payroll')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'payroll'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
@@ -151,7 +151,7 @@ export function DirectoryClient() {
             onClick={() => setActiveTab('roster')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
               activeTab === 'roster'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md'
                 : 'text-slate-400 hover:text-white'
             }`}
           >

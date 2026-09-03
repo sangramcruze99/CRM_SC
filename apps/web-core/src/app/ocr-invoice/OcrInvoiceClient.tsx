@@ -14,11 +14,15 @@ import {
   Scan,
   ShieldCheck,
   Sparkles,
+  Mail,
+  Printer,
+  Send,
 } from 'lucide-react';
 import Link from 'next/link';
 import { EdgeImagePreprocessor } from '@/components/ai/EdgeImagePreprocessor';
 import { FinancialGuardrailsModal } from '@/components/ai/FinancialGuardrailsModal';
 import { AutonomousPipelineRunner } from '@/components/ai/AutonomousPipelineRunner';
+import { InvoiceDispatchModal } from '@/components/billing/InvoiceDispatchModal';
 import { useCreditMetering } from '@/components/platform/CreditMeteringContext';
 
 interface LineItem {
@@ -44,6 +48,7 @@ interface ParsedInvoice {
   currency: string;
   taxRate: number;
   discount: number;
+  discountType?: 'amount' | 'percentage';
   items: LineItem[];
   paymentTerms: string;
   bankDetails: string;
@@ -117,6 +122,8 @@ export function OcrInvoiceClient() {
   const [alert, setAlert] = useState<string | null>(null);
   const [scanProgress, setScanProgress] = useState(0);
   const [isGuardrailOpen, setIsGuardrailOpen] = useState(false);
+  const [isDispatchOpen, setIsDispatchOpen] = useState(false);
+  const [dispatchTab, setDispatchTab] = useState<'email' | 'receipt'>('email');
 
   const { credits, deductOcrScan } = useCreditMetering();
 
@@ -125,9 +132,14 @@ export function OcrInvoiceClient() {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Totals calculations
-  const subtotal = invoice.items.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
-  const taxAmount = (subtotal * invoice.taxRate) / 100;
-  const grandTotal = Math.max(0, subtotal + taxAmount - invoice.discount);
+  const subtotal = invoice.items.reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0), 0);
+  const taxAmount = (subtotal * (Number(invoice.taxRate) || 0)) / 100;
+  const discountType = invoice.discountType || 'amount';
+  const discountValue = Number(invoice.discount) || 0;
+  const discountAmount = discountType === 'percentage'
+    ? (subtotal * discountValue) / 100
+    : discountValue;
+  const grandTotal = Math.max(0, subtotal + taxAmount - discountAmount);
 
   // Simulate OCR extraction with progress
   const processImageOCR = (imageUrl: string, customData?: ParsedInvoice) => {
@@ -266,8 +278,8 @@ export function OcrInvoiceClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -276,7 +288,7 @@ export function OcrInvoiceClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Scan className="text-amber-400" size={24} />
+            <Scan className="text-emerald-400" size={24} />
             AI Neural Vision OCR Invoice Maker & Scanner
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -285,15 +297,41 @@ export function OcrInvoiceClient() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
-          <div className="px-3 py-1.5 bg-white/[0.06] border border-white/[0.1] rounded-xl text-xs font-mono text-amber-300 flex items-center gap-1.5">
-            <Sparkles size={13} className="text-amber-400" />
+          <div className="px-3 py-1.5 bg-white/[0.06] border border-white/[0.1] rounded-xl text-xs font-mono text-emerald-300 flex items-center gap-1.5">
+            <Sparkles size={13} className="text-emerald-400" />
             <span>OCR Credits: {credits.ocrScansRemaining}/{credits.ocrScansTotal}</span>
           </div>
 
           <button
             type="button"
+            onClick={() => {
+              setDispatchTab('email');
+              setIsDispatchOpen(true);
+            }}
+            className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-xl text-xs font-bold transition-all border border-white/[0.1] flex items-center gap-1.5 cursor-pointer shadow-sm"
+            title="Send formal invoice via email to customer"
+          >
+            <Mail size={14} className="text-emerald-400" />
+            <span>Send Email</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setDispatchTab('receipt');
+              setIsDispatchOpen(true);
+            }}
+            className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-xl text-xs font-bold transition-all border border-white/[0.1] flex items-center gap-1.5 cursor-pointer shadow-sm"
+            title="Print 80mm thermal POS receipt or A4 invoice"
+          >
+            <Printer size={14} className="text-teal-400" />
+            <span>Physical Receipt</span>
+          </button>
+
+          <button
+            type="button"
             onClick={handleTriggerGuardrail}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 flex items-center gap-1.5 cursor-pointer"
           >
             <ShieldCheck size={14} />
             <span>Audit & Commit to Ledger</span>
@@ -334,7 +372,7 @@ export function OcrInvoiceClient() {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-orange-500/20 active:scale-[0.98]"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-emerald-500/20 active:scale-[0.98]"
           >
             <Upload size={14} />
             <span>Upload Invoice Image / PDF</span>
@@ -345,7 +383,7 @@ export function OcrInvoiceClient() {
             onClick={isCameraActive ? stopCamera : startCamera}
             className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.1] rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-2 cursor-pointer active:scale-[0.98]"
           >
-            <Camera size={14} className="text-amber-400" />
+            <Camera size={14} className="text-emerald-400" />
             <span>{isCameraActive ? 'Cancel Camera' : 'Live Camera Snap'}</span>
           </button>
         </div>
@@ -360,7 +398,7 @@ export function OcrInvoiceClient() {
               key={idx}
               type="button"
               onClick={() => processImageOCR(preset.image, preset.data)}
-              className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] hover:text-amber-300 border border-white/[0.1] rounded-xl text-xs font-medium text-slate-300 transition-all cursor-pointer"
+              className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] hover:text-emerald-300 border border-white/[0.1] rounded-xl text-xs font-medium text-slate-300 transition-all cursor-pointer"
             >
               Preset #{idx + 1}
             </button>
@@ -383,7 +421,7 @@ export function OcrInvoiceClient() {
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-4 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3">
             <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
               <div className="flex items-center gap-1.5">
-                <FileText size={15} className="text-amber-400" />
+                <FileText size={15} className="text-emerald-400" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
                   Source Document Scan
                 </h3>
@@ -418,8 +456,8 @@ export function OcrInvoiceClient() {
                 {isScanning && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-3 bg-slate-950/60 backdrop-blur-xs">
                     <div className="w-full h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent absolute top-1/2 -translate-y-1/2 animate-bounce" />
-                    <div className="p-3 bg-slate-950/90 backdrop-blur-md rounded-2xl border border-amber-500/50 text-amber-300 font-mono text-xs font-bold flex items-center gap-2 shadow-2xl">
-                      <RefreshCw size={15} className="animate-spin text-amber-400" />
+                    <div className="p-3 bg-slate-950/90 backdrop-blur-md rounded-2xl border border-amber-500/50 text-emerald-300 font-mono text-xs font-bold flex items-center gap-2 shadow-2xl">
+                      <RefreshCw size={15} className="animate-spin text-emerald-400" />
                       <span>Neural OCR Processing: {scanProgress}%</span>
                     </div>
                   </div>
@@ -512,8 +550,8 @@ export function OcrInvoiceClient() {
               </div>
 
               {/* Client Box */}
-              <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl space-y-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 block">
+              <div className="p-3.5 bg-emerald-500/10 border border-amber-500/20 rounded-2xl space-y-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">
                   Billed To / Customer
                 </span>
                 <input
@@ -521,21 +559,21 @@ export function OcrInvoiceClient() {
                   placeholder="Client / Company Name"
                   value={invoice.clientCompany}
                   onChange={(e) => setInvoice({ ...invoice, clientCompany: e.target.value })}
-                  className="w-full px-2.5 py-1.5 bg-white/[0.05] border border-amber-500/30 rounded-lg text-xs font-bold text-white focus:outline-none"
+                  className="w-full px-2.5 py-1.5 bg-white/[0.05] border border-emerald-500/30 rounded-lg text-xs font-bold text-white focus:outline-none"
                 />
                 <input
                   type="text"
                   placeholder="Contact Name & Email"
                   value={invoice.clientEmail}
                   onChange={(e) => setInvoice({ ...invoice, clientEmail: e.target.value })}
-                  className="w-full px-2.5 py-1 bg-white/[0.05] border border-amber-500/30 rounded-lg text-[11px] text-slate-300 focus:outline-none"
+                  className="w-full px-2.5 py-1 bg-white/[0.05] border border-emerald-500/30 rounded-lg text-[11px] text-slate-300 focus:outline-none"
                 />
                 <input
                   type="text"
                   placeholder="Billing Address"
                   value={invoice.clientAddress}
                   onChange={(e) => setInvoice({ ...invoice, clientAddress: e.target.value })}
-                  className="w-full px-2.5 py-1 bg-white/[0.05] border border-amber-500/30 rounded-lg text-[11px] text-slate-400 focus:outline-none truncate"
+                  className="w-full px-2.5 py-1 bg-white/[0.05] border border-emerald-500/30 rounded-lg text-[11px] text-slate-400 focus:outline-none truncate"
                 />
               </div>
             </div>
@@ -549,7 +587,7 @@ export function OcrInvoiceClient() {
                 <button
                   type="button"
                   onClick={addItem}
-                  className="px-2.5 py-1 bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer"
                 >
                   <Plus size={12} />
                   <span>Add Line Item</span>
@@ -575,26 +613,70 @@ export function OcrInvoiceClient() {
                             type="text"
                             value={item.description}
                             onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                            className="w-full px-2 py-1 bg-transparent border border-transparent hover:border-white/[0.1] focus:border-amber-400 rounded text-xs font-medium text-white focus:outline-none"
+                            className="w-full px-2 py-1 bg-transparent border border-transparent hover:border-white/[0.1] focus:border-emerald-500 rounded text-xs font-medium text-white focus:outline-none"
                           />
                         </td>
                         <td className="p-2">
                           <input
-                            type="number"
-                            value={item.quantity}
-                            onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
-                            className="w-full px-1 py-1 bg-transparent border border-transparent hover:border-white/[0.1] focus:border-amber-400 rounded text-xs font-mono text-center text-white focus:outline-none"
+                            type="text"
+                            inputMode="numeric"
+                            value={item.quantity === 0 ? '' : String(item.quantity)}
+                            placeholder="1"
+                            onFocus={(e) => e.target.select()}
+                            onKeyDown={(e) => {
+                              if (e.currentTarget.value === '0' && /^[1-9]$/.test(e.key)) {
+                                e.currentTarget.value = '';
+                              }
+                            }}
+                            onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                              const target = e.currentTarget;
+                              let val = target.value.replace(/[^0-9]/g, '');
+                              val = val.replace(/^0+(?=\d)/, '');
+                              if (target.value !== val) target.value = val;
+                            }}
+                            onChange={(e) => {
+                              let val = e.target.value.replace(/[^0-9]/g, '');
+                              val = val.replace(/^0+(?=\d)/, '');
+                              e.target.value = val;
+                              const parsed = val === '' ? 0 : parseInt(val, 10);
+                              updateItem(item.id, 'quantity', isNaN(parsed) ? 0 : parsed);
+                            }}
+                            className="w-full px-1 py-1 bg-transparent border border-transparent hover:border-white/[0.1] focus:border-emerald-500 rounded text-xs font-mono text-center text-white focus:outline-none"
                           />
                         </td>
                         <td className="p-2 text-right">
                           <input
-                            type="number"
-                            value={item.unitPrice}
-                            onChange={(e) => updateItem(item.id, 'unitPrice', Number(e.target.value))}
-                            className="w-full px-1 py-1 bg-transparent border border-transparent hover:border-white/[0.1] focus:border-amber-400 rounded text-xs font-mono text-right text-white focus:outline-none"
+                            type="text"
+                            inputMode="decimal"
+                            value={item.unitPrice === 0 ? '' : String(item.unitPrice)}
+                            placeholder="0.00"
+                            onFocus={(e) => e.target.select()}
+                            onKeyDown={(e) => {
+                              if (e.currentTarget.value === '0' && /^[1-9]$/.test(e.key)) {
+                                e.currentTarget.value = '';
+                              }
+                            }}
+                            onInput={(e: React.FormEvent<HTMLInputElement>) => {
+                              const target = e.currentTarget;
+                              let val = target.value.replace(/[^0-9.]/g, '');
+                              const parts = val.split('.');
+                              if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+                              val = val.replace(/^0+(?=\d)/, '');
+                              if (target.value !== val) target.value = val;
+                            }}
+                            onChange={(e) => {
+                              let val = e.target.value.replace(/[^0-9.]/g, '');
+                              const parts = val.split('.');
+                              if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+                              val = val.replace(/^0+(?=\d)/, '');
+                              e.target.value = val;
+                              const parsed = val === '' ? 0 : parseFloat(val);
+                              updateItem(item.id, 'unitPrice', isNaN(parsed) ? 0 : parsed);
+                            }}
+                            className="w-full px-1 py-1 bg-transparent border border-transparent hover:border-white/[0.1] focus:border-emerald-500 rounded text-xs font-mono text-right text-white focus:outline-none"
                           />
                         </td>
-                        <td className="p-2 text-right font-mono font-bold text-amber-400">
+                        <td className="p-2 text-right font-mono font-bold text-emerald-400">
                           {invoice.currency}
                           {(item.quantity * item.unitPrice).toFixed(2)}
                         </td>
@@ -624,42 +706,185 @@ export function OcrInvoiceClient() {
               </div>
 
               {/* Totals Summary Card */}
-              <div className="w-full sm:w-64 p-3.5 bg-white/[0.03] border border-white/[0.06] rounded-2xl space-y-1.5 font-medium">
+              <div className="w-full sm:w-80 p-4 bg-white/[0.03] border border-white/[0.08] rounded-2xl space-y-2.5 font-medium shadow-inner">
+                {/* Subtotal */}
                 <div className="flex justify-between text-slate-400">
-                  <span>Subtotal</span>
+                  <span className="text-xs font-semibold">Subtotal</span>
                   <span className="font-mono font-bold text-white">
                     {invoice.currency}
                     {subtotal.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between text-slate-400">
-                  <span>Tax ({invoice.taxRate}%)</span>
-                  <span className="font-mono text-white">
+
+                {/* Tax Rate (Customizable) */}
+                <div className="flex items-center justify-between text-slate-400">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-semibold">Tax Rate</span>
+                    <div className="flex items-center bg-white/[0.05] border border-white/[0.1] rounded-lg px-2 py-0.5 focus-within:border-emerald-500">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0"
+                        value={invoice.taxRate === 0 ? '' : String(invoice.taxRate)}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => {
+                          let val = e.target.value.replace(/[^0-9.]/g, '');
+                          const parts = val.split('.');
+                          if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+                          val = val.replace(/^0+(?=\d)/, '');
+                          const parsed = val === '' ? 0 : parseFloat(val);
+                          setInvoice({ ...invoice, taxRate: isNaN(parsed) ? 0 : Math.max(0, parsed) });
+                        }}
+                        className="w-12 bg-transparent text-white font-mono text-xs focus:outline-none text-right font-semibold"
+                      />
+                      <span className="text-[10px] text-slate-400 ml-0.5 font-bold">%</span>
+                    </div>
+                  </div>
+                  <span className="font-mono text-white text-xs">
                     +{invoice.currency}
                     {taxAmount.toFixed(2)}
                   </span>
                 </div>
-                {invoice.discount > 0 && (
-                  <div className="flex justify-between text-emerald-400">
-                    <span>Discount</span>
-                    <span className="font-mono">
-                      -{invoice.currency}
-                      {invoice.discount.toFixed(2)}
-                    </span>
+
+                {/* Discount (Customizable - Amount or Percentage) */}
+                <div className="space-y-1.5 pt-1.5 border-t border-white/[0.05]">
+                  <div className="flex items-center justify-between text-emerald-400">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-semibold">Discount</span>
+                      {/* Segmented Toggle: $ vs % */}
+                      <div className="inline-flex rounded-lg bg-black/40 p-0.5 border border-white/[0.1]">
+                        <button
+                          type="button"
+                          onClick={() => setInvoice({ ...invoice, discountType: 'amount' })}
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                            discountType === 'amount'
+                              ? 'bg-emerald-500 text-slate-950 shadow-xs'
+                              : 'text-slate-400 hover:text-white'
+                          }`}
+                          title="Fixed Amount ($)"
+                        >
+                          $
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setInvoice({ ...invoice, discountType: 'percentage' })}
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                            discountType === 'percentage'
+                              ? 'bg-emerald-500 text-slate-950 shadow-xs'
+                              : 'text-slate-400 hover:text-white'
+                          }`}
+                          title="Percentage Discount (%)"
+                        >
+                          %
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Discount Input Box */}
+                    <div className="flex items-center bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-2 py-0.5 focus-within:border-emerald-400">
+                      <span className="text-[11px] text-emerald-400 mr-0.5 font-mono font-bold">
+                        {discountType === 'amount' ? invoice.currency : ''}
+                      </span>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="0"
+                        value={invoice.discount === 0 ? '' : String(invoice.discount)}
+                        onFocus={(e) => e.target.select()}
+                        onChange={(e) => {
+                          let val = e.target.value.replace(/[^0-9.]/g, '');
+                          const parts = val.split('.');
+                          if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+                          val = val.replace(/^0+(?=\d)/, '');
+                          const parsed = val === '' ? 0 : parseFloat(val);
+                          setInvoice({ ...invoice, discount: isNaN(parsed) ? 0 : Math.max(0, parsed) });
+                        }}
+                        className="w-16 bg-transparent text-emerald-300 font-mono text-xs focus:outline-none text-right font-bold placeholder-emerald-700"
+                      />
+                      <span className="text-[11px] text-emerald-400 ml-0.5 font-mono font-bold">
+                        {discountType === 'percentage' ? '%' : ''}
+                      </span>
+                    </div>
                   </div>
-                )}
-                <div className="flex justify-between text-sm font-extrabold text-white pt-1.5 border-t border-white/[0.08]">
+
+                  {/* Calculated Deduction Display */}
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-[11px] text-emerald-400/90 font-mono pl-1">
+                      <span>Deduction:</span>
+                      <span>-{invoice.currency}{discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Grand Total */}
+                <div className="flex justify-between text-sm font-extrabold text-white pt-2 border-t border-white/[0.08]">
                   <span>Grand Total</span>
-                  <span className="font-mono text-amber-400">
+                  <span className="font-mono text-emerald-400 text-base">
                     {invoice.currency}
                     {grandTotal.toFixed(2)}
                   </span>
+                </div>
+
+                {/* Dispatch & Print Buttons */}
+                <div className="pt-3 grid grid-cols-2 gap-2 border-t border-white/[0.08]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDispatchTab('email');
+                      setIsDispatchOpen(true);
+                    }}
+                    className="w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-[11px] rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Mail size={13} />
+                    <span>Email Client</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDispatchTab('receipt');
+                      setIsDispatchOpen(true);
+                    }}
+                    className="w-full py-2 bg-white/[0.08] hover:bg-white/[0.14] text-white font-bold text-[11px] rounded-xl transition-all border border-white/[0.1] flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Printer size={13} />
+                    <span>Print Receipt</span>
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Invoice Dispatch & Physical Receipt Modal */}
+      <InvoiceDispatchModal
+        isOpen={isDispatchOpen}
+        onClose={() => setIsDispatchOpen(false)}
+        initialTab={dispatchTab}
+        invoice={{
+          invoiceNumber: invoice.invoiceNumber,
+          vendorName: invoice.vendorName,
+          vendorEmail: invoice.vendorEmail,
+          vendorAddress: invoice.vendorAddress,
+          vendorTaxId: invoice.vendorTaxId,
+          clientName: invoice.clientName,
+          clientCompany: invoice.clientCompany,
+          clientEmail: invoice.clientEmail,
+          clientAddress: invoice.clientAddress,
+          issueDate: invoice.issueDate,
+          dueDate: invoice.dueDate,
+          currency: invoice.currency,
+          taxRate: invoice.taxRate,
+          discount: invoice.discount,
+          items: invoice.items,
+          paymentTerms: invoice.paymentTerms,
+          bankDetails: invoice.bankDetails,
+          subtotal,
+          taxAmount,
+          grandTotal,
+        }}
+      />
 
       {/* Financial Guardrails Verification Modal */}
       <FinancialGuardrailsModal

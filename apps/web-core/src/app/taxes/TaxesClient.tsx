@@ -14,48 +14,7 @@ interface TaxRule {
   isActive: boolean;
 }
 
-const initialDemoTaxes: TaxRule[] = [
-  {
-    id: 'tax_01',
-    name: 'United States - California Sales Tax',
-    country: 'United States (US)',
-    region: 'California (CA)',
-    rate: 7.25,
-    type: 'Sales Tax',
-    isCompound: false,
-    isActive: true,
-  },
-  {
-    id: 'tax_02',
-    name: 'United Kingdom Standard VAT',
-    country: 'United Kingdom (UK)',
-    region: 'Nationwide',
-    rate: 20.0,
-    type: 'VAT',
-    isCompound: false,
-    isActive: true,
-  },
-  {
-    id: 'tax_03',
-    name: 'European Union Digital Services VAT',
-    country: 'European Union (EU)',
-    region: 'Cross-Border B2C',
-    rate: 21.0,
-    type: 'VAT',
-    isCompound: false,
-    isActive: true,
-  },
-  {
-    id: 'tax_04',
-    name: 'India Goods & Services Tax (Software / SaaS)',
-    country: 'India (IN)',
-    region: 'Nationwide',
-    rate: 18.0,
-    type: 'GST',
-    isCompound: false,
-    isActive: true,
-  },
-];
+const initialDemoTaxes: TaxRule[] = [];
 
 export function TaxesClient({ initialTaxes = [] }: { initialTaxes?: any[] }) {
   const [taxes, setTaxes] = useState<TaxRule[]>(
@@ -102,7 +61,7 @@ export function TaxesClient({ initialTaxes = [] }: { initialTaxes?: any[] }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Scale className="text-amber-400" size={24} />
+            <Scale className="text-emerald-400" size={24} />
             Global Tax & VAT Nexus Rules
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -111,7 +70,7 @@ export function TaxesClient({ initialTaxes = [] }: { initialTaxes?: any[] }) {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <Plus size={16} />
           <span>New Tax Nexus Rule</span>
@@ -142,11 +101,11 @@ export function TaxesClient({ initialTaxes = [] }: { initialTaxes?: any[] }) {
                   <div className="text-xs text-slate-400">{tax.region}</div>
                 </td>
                 <td className="px-6 py-4">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                     {tax.type}
                   </span>
                 </td>
-                <td className="px-6 py-4 font-mono font-extrabold text-amber-400 text-base">
+                <td className="px-6 py-4 font-mono font-extrabold text-emerald-400 text-base">
                   {tax.rate}%
                 </td>
                 <td className="px-6 py-4 text-right">
@@ -163,6 +122,13 @@ export function TaxesClient({ initialTaxes = [] }: { initialTaxes?: any[] }) {
                 </td>
               </tr>
             ))}
+            {taxes.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                    No tax rules configured yet. Click <span className="text-emerald-400 font-bold">"New Tax Nexus Rule"</span> to establish your first jurisdiction.
+                  </td>
+                </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -257,7 +223,7 @@ export function TaxesClient({ initialTaxes = [] }: { initialTaxes?: any[] }) {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 cursor-pointer"
                 >
                   Save Tax Rule
                 </button>

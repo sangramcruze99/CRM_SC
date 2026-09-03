@@ -107,7 +107,7 @@ export function DigitalRxPrescriptionMaker() {
               type="text"
               value={patientEhrId}
               onChange={(e) => setPatientEhrId(e.target.value)}
-              className="w-full px-3 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono text-amber-400"
+              className="w-full px-3 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono text-emerald-400"
             />
           </div>
           <div>

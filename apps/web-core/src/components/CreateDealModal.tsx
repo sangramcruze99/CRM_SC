@@ -1,17 +1,35 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Loader2 } from 'lucide-react';
 import { createDeal } from '../app/actions';
+import { useRouter } from 'next/navigation';
 
 export function CreateDealModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const formData = new FormData(e.currentTarget);
+      await createDeal(formData);
+      setIsOpen(false);
+      router.refresh();
+    } catch (err) {
+      console.error('Failed to create deal:', err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-amber-400/40 cursor-pointer"
+        className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] flex items-center space-x-1.5 border border-emerald-400/40 cursor-pointer"
       >
         <Plus size={16} />
         <span>New Deal</span>
@@ -27,13 +45,7 @@ export function CreateDealModal() {
               </button>
             </div>
             
-            <form 
-              action={async (formData) => {
-                await createDeal(formData);
-                setIsOpen(false);
-              }} 
-              className="p-6 space-y-4"
-            >
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-slate-300">Deal Title</label>
                 <input required name="title" type="text" className="w-full bg-white/[0.05] border border-white/[0.1] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:bg-white/[0.08]" placeholder="e.g. Enterprise License Expansion" />
@@ -55,11 +67,12 @@ export function CreateDealModal() {
               </div>
               
               <div className="pt-4 flex justify-end space-x-3 border-t border-white/[0.08]">
-                <button type="button" onClick={() => setIsOpen(false)} className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 rounded-xl border border-white/[0.1] transition-colors cursor-pointer">
+                <button type="button" disabled={isSubmitting} onClick={() => setIsOpen(false)} className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 rounded-xl border border-white/[0.1] transition-colors cursor-pointer disabled:opacity-50">
                   Cancel
                 </button>
-                <button type="submit" className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 cursor-pointer">
-                  Save Opportunity
+                <button type="submit" disabled={isSubmitting} className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 cursor-pointer disabled:opacity-50 flex items-center gap-1.5">
+                  {isSubmitting ? <Loader2 size={14} className="animate-spin" /> : null}
+                  <span>{isSubmitting ? 'Saving...' : 'Save Opportunity'}</span>
                 </button>
               </div>
             </form>

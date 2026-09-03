@@ -51,7 +51,7 @@ function SortableItem({ id, record, titleField }: { id: string, record: any, tit
       style={style}
       {...attributes}
       {...listeners}
-      className="bg-white/[0.04] p-3.5 rounded-2xl shadow-sm border border-white/[0.08] cursor-grab active:cursor-grabbing hover:border-amber-500/40 hover:shadow transition-all text-white"
+      className="bg-white/[0.04] p-3.5 rounded-2xl shadow-sm border border-white/[0.08] cursor-grab active:cursor-grabbing hover:border-emerald-500/40 hover:shadow transition-all text-white"
     >
       <div className="font-bold text-white text-xs">
         {record.data[titleField] || `Record ${record.id.substring(0, 8)}`}
@@ -68,7 +68,7 @@ function Column({ id, title, records, titleField }: { id: string, title: string,
     <div className="flex flex-col bg-white/[0.03] border border-white/[0.08] rounded-3xl w-72 flex-shrink-0 max-h-full">
       <div className="p-3.5 border-b border-white/[0.08] bg-white/[0.02] rounded-t-3xl flex items-center justify-between">
         <h3 className="font-bold text-xs uppercase tracking-wider text-slate-300">{title}</h3>
-        <span className="bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs px-2 py-0.5 rounded-full font-bold">{records.length}</span>
+        <span className="bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs px-2 py-0.5 rounded-full font-bold">{records.length}</span>
       </div>
       <div className="p-3.5 flex-1 overflow-y-auto space-y-3 min-h-[150px]">
         <SortableContext items={records.map(r => r.id)} strategy={verticalListSortingStrategy}>

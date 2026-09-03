@@ -41,14 +41,14 @@ function SortableNavItem({ item }: { item: NavItem }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-3 p-3.5 bg-white/[0.04] border border-white/[0.08] rounded-2xl shadow-sm mb-2.5 group hover:border-amber-500/40 transition-colors">
+    <div ref={setNodeRef} style={style} className="flex items-center gap-3 p-3.5 bg-white/[0.04] border border-white/[0.08] rounded-2xl shadow-sm mb-2.5 group hover:border-emerald-500/40 transition-colors">
       <div {...attributes} {...listeners} className="cursor-grab text-slate-500 hover:text-white">
         <GripVertical size={18} />
       </div>
       <div className="flex-1">
         <div className="font-bold text-sm text-white">{item.title}</div>
         <div className="text-xs text-slate-400 flex items-center gap-1 mt-0.5 font-medium">
-          {item.type === 'object' ? <Box size={11} className="text-amber-400" /> : <FileText size={11} className="text-amber-400" />}
+          {item.type === 'object' ? <Box size={11} className="text-emerald-400" /> : <FileText size={11} className="text-emerald-400" />}
           <span>{item.type === 'object' ? 'Custom Object' : 'Custom Page'}</span>
         </div>
       </div>
@@ -91,12 +91,12 @@ export default function NavigationBuilderPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <LayoutList className="text-amber-400" size={24} />
+            <LayoutList className="text-emerald-400" size={24} />
             Navigation Builder
           </h1>
           <p className="text-sm text-slate-400 mt-1">Drag and drop to configure the sidebar menu for your users.</p>
         </div>
-        <button className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer">
+        <button className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer">
           Save Layout
         </button>
       </div>
@@ -108,17 +108,17 @@ export default function NavigationBuilderPage() {
           <div className="space-y-4">
             <div>
               <div className="text-xs font-semibold text-slate-400 mb-2">Custom Objects</div>
-              <button className="w-full flex items-center justify-between p-2.5 text-xs text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-amber-500/30 rounded-xl transition-colors cursor-pointer">
-                <span className="flex items-center gap-2 font-medium"><Box size={14} className="text-amber-400" /> Properties</span>
-                <Plus size={14} className="text-amber-400" />
+              <button className="w-full flex items-center justify-between p-2.5 text-xs text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-emerald-500/30 rounded-xl transition-colors cursor-pointer">
+                <span className="flex items-center gap-2 font-medium"><Box size={14} className="text-emerald-400" /> Properties</span>
+                <Plus size={14} className="text-emerald-400" />
               </button>
             </div>
             
             <div>
               <div className="text-xs font-semibold text-slate-400 mb-2">Custom Pages</div>
-              <button className="w-full flex items-center justify-between p-2.5 text-xs text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-amber-500/30 rounded-xl transition-colors cursor-pointer">
-                <span className="flex items-center gap-2 font-medium"><FileText size={14} className="text-amber-400" /> Sales Report</span>
-                <Plus size={14} className="text-amber-400" />
+              <button className="w-full flex items-center justify-between p-2.5 text-xs text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-emerald-500/30 rounded-xl transition-colors cursor-pointer">
+                <span className="flex items-center gap-2 font-medium"><FileText size={14} className="text-emerald-400" /> Sales Report</span>
+                <Plus size={14} className="text-emerald-400" />
               </button>
             </div>
           </div>

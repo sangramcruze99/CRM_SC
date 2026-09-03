@@ -23,50 +23,7 @@ interface Envelope {
   completedDate?: string;
 }
 
-const initialDemoEnvelopes: Envelope[] = [
-  {
-    id: 'env_881',
-    title: 'Master Services Agreement (MSA) - Acme Corp',
-    recipientName: 'Sarah Jenkins (CEO)',
-    recipientEmail: 's.jenkins@acme.corp',
-    status: 'SIGNED',
-    sentDate: '2026-08-20',
-    completedDate: '2026-08-21',
-  },
-  {
-    id: 'env_882',
-    title: 'Mutual Non-Disclosure Agreement (NDA) - Starlight',
-    recipientName: 'Michael Chen',
-    recipientEmail: 'm.chen@starlight.io',
-    status: 'SIGNED',
-    sentDate: '2026-08-24',
-    completedDate: '2026-08-25',
-  },
-  {
-    id: 'env_883',
-    title: 'Enterprise Statement of Work (SOW) #1042',
-    recipientName: 'David Ross',
-    recipientEmail: 'd.ross@hyperscale.ai',
-    status: 'PENDING',
-    sentDate: '2026-08-27',
-  },
-  {
-    id: 'env_884',
-    title: 'Executive Employment Offer Letter - Lead Architect',
-    recipientName: 'Elena Rostova',
-    recipientEmail: 'e.rostova@gmail.com',
-    status: 'PENDING',
-    sentDate: '2026-08-28',
-  },
-  {
-    id: 'env_885',
-    title: 'Vendor Data Processing Addendum (DPA)',
-    recipientName: 'Legal Team',
-    recipientEmail: 'legal@vanguard.tech',
-    status: 'EXPIRED',
-    sentDate: '2026-07-15',
-  },
-];
+const initialDemoEnvelopes: Envelope[] = [];
 
 export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?: any[] }) {
   const [envelopes, setEnvelopes] = useState<Envelope[]>(
@@ -130,8 +87,8 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Flash Alert */}
       {alertMessage && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alertMessage}</span>
         </div>
       )}
@@ -140,7 +97,7 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <FileCheck2 className="text-amber-400" size={24} />
+            <FileCheck2 className="text-emerald-400" size={24} />
             E-Signatures & Digital Contracts
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -149,7 +106,7 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
         >
           <Send size={16} />
           <span>Send Document for Sign</span>
@@ -161,7 +118,7 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Total Envelopes</span>
-            <FileText size={18} className="text-amber-400" />
+            <FileText size={18} className="text-emerald-400" />
           </div>
           <div className="text-3xl font-extrabold text-white font-mono">{envelopes.length}</div>
           <div className="text-xs text-slate-400 mt-2 font-medium">All time contracts</div>
@@ -181,12 +138,12 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
           <div className="flex items-center justify-between text-slate-400 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Awaiting Signature</span>
-            <Clock size={18} className="text-amber-400" />
+            <Clock size={18} className="text-emerald-400" />
           </div>
-          <div className="text-3xl font-extrabold text-amber-400 font-mono">
+          <div className="text-3xl font-extrabold text-emerald-400 font-mono">
             {envelopes.filter((e) => e.status === 'PENDING').length}
           </div>
-          <div className="text-xs text-amber-400 mt-2 font-medium">Avg 1.2 days to sign</div>
+          <div className="text-xs text-emerald-400 mt-2 font-medium">Avg 1.2 days to sign</div>
         </div>
 
         <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
@@ -209,7 +166,7 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
             onClick={() => setSelectedStatus(st)}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
               selectedStatus === st
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1]'
             }`}
           >
@@ -247,7 +204,7 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
                       env.status === 'SIGNED'
                         ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                         : env.status === 'PENDING'
-                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                         : 'bg-white/[0.08] text-slate-400 border border-white/10'
                     }`}
                   >
@@ -288,6 +245,13 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
                 </td>
               </tr>
             ))}
+            {filteredEnvelopes.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                  No signature envelopes found. Click <span className="text-emerald-400 font-bold">"Send for Signature"</span> to dispatch a document.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -350,7 +314,7 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 flex items-center gap-1.5 cursor-pointer"
+                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer"
                 >
                   <Send size={14} />
                   <span>Send Envelope</span>

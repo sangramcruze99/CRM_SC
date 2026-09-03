@@ -64,7 +64,7 @@ export function AutonomousPipelineRunner({ extractedData, onComplete }: Autonomo
     <div className="bg-white/[0.03] border border-white/[0.08] rounded-3xl p-5 space-y-4 text-white">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center">
+          <div className="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
             <Sparkles size={14} />
           </div>
           <div>
@@ -82,7 +82,7 @@ export function AutonomousPipelineRunner({ extractedData, onComplete }: Autonomo
             type="button"
             disabled={isRunning}
             onClick={executePipeline}
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-orange-500/25 flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
           >
             {isRunning ? (
               <>
@@ -113,7 +113,7 @@ export function AutonomousPipelineRunner({ extractedData, onComplete }: Autonomo
                 isPassed
                   ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
                   : isActive
-                  ? 'bg-amber-500/15 border-amber-500/40 text-amber-300 animate-pulse'
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-300 animate-pulse'
                   : 'bg-white/[0.02] border-white/[0.06] text-slate-400'
               }`}
             >
@@ -127,7 +127,7 @@ export function AutonomousPipelineRunner({ extractedData, onComplete }: Autonomo
                 {isPassed ? (
                   <CheckCircle2 size={15} className="text-emerald-400" />
                 ) : isActive ? (
-                  <Loader2 size={15} className="animate-spin text-amber-400" />
+                  <Loader2 size={15} className="animate-spin text-emerald-400" />
                 ) : null}
               </div>
               <p className="text-[11px] text-slate-300 line-clamp-2">{step.desc}</p>

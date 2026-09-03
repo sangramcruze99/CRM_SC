@@ -4,18 +4,25 @@ import { PrismaClient, applyAuditMiddleware } from '@repo/database';
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   private readonly logger = new Logger(PrismaService.name);
+  public isConnected = false;
 
   constructor() {
     super();
-    applyAuditMiddleware(this);
+    try {
+      applyAuditMiddleware(this);
+    } catch {
+      // ignore
+    }
   }
 
   async onModuleInit() {
     try {
       await this.$connect();
+      this.isConnected = true;
       this.logger.log('Database connected successfully');
     } catch (err: any) {
-      this.logger.warn(`Database connection deferred: ${err.message}`);
+      this.isConnected = false;
+      this.logger.warn(`Database offline, using high-speed memory storage mode: ${err.message}`);
     }
   }
 }

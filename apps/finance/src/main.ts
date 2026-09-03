@@ -4,6 +4,9 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
-  await app.listen(process.env.FINANCE_PORT ?? 3015);
+  const port = process.env.FINANCE_PORT ?? 3015;
+  await app.listen(port);
+  console.log(`[Finance Service] Ready on port ${port}`);
 }
 bootstrap();
+

@@ -93,7 +93,7 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
         <div className="flex justify-between items-start border-b border-white/[0.08] pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <Sparkles className="text-amber-400" size={22} />
+              <Sparkles className="text-emerald-400" size={22} />
               <h2 className="text-xl font-bold text-white">Tiered Product Packaging & Workspace Editions</h2>
             </div>
             <p className="text-xs text-slate-400 mt-1">
@@ -114,7 +114,7 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
               onClick={() => setBillingCycle('monthly')}
               className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 billingCycle === 'monthly'
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -125,7 +125,7 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
               onClick={() => setBillingCycle('annual')}
               className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 billingCycle === 'annual'
-                  ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md'
+                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -149,19 +149,19 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
                   tier.popular
                     ? 'bg-gradient-to-b from-amber-500/10 via-white/[0.04] to-white/[0.02] border-amber-500/50 shadow-lg shadow-orange-500/10'
                     : isCurrent
-                    ? 'bg-white/[0.06] border-amber-400/40'
+                    ? 'bg-white/[0.06] border-emerald-400/40'
                     : 'bg-white/[0.03] border-white/[0.08] hover:border-white/[0.15]'
                 }`}
               >
                 {tier.popular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-md">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-md">
                     <Star size={10} fill="currentColor" /> Most Popular
                   </div>
                 )}
 
                 <div className="space-y-4">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
                       {tier.badge}
                     </span>
                     <h3 className="text-sm font-bold text-white mt-0.5">{tier.title}</h3>
@@ -179,7 +179,7 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
                     </span>
                     {tier.features.map((feat, idx) => (
                       <div key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-300">
-                        <Check size={13} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                        <Check size={13} className="text-emerald-400 flex-shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </div>
                     ))}
@@ -195,9 +195,9 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
                     }}
                     className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       isCurrent
-                        ? 'bg-white/[0.08] text-amber-300 border border-amber-500/30'
+                        ? 'bg-white/[0.08] text-emerald-300 border border-emerald-500/30'
                         : tier.popular
-                        ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 shadow-lg shadow-orange-500/25'
+                        ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/25'
                         : 'bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.1]'
                     }`}
                   >

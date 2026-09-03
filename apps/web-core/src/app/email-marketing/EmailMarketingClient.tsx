@@ -228,64 +228,11 @@ const initialTemplates: EmailTemplate[] = [
   },
 ];
 
-const initialCampaigns: EmailCampaign[] = [
-  {
-    id: 'cmp_1',
-    name: 'Q3 Enterprise Feature Release Announcement',
-    subject: 'Introducing Business OS 2.0: Real-time Telemetry & Autonomous AI',
-    audience: 'All Enterprise Contacts (2,840)',
-    recipientCount: 2840,
-    status: 'SENT',
-    sentAt: 'Yesterday at 14:30',
-    metrics: { delivered: 2812, opened: 1294, clicked: 512, bounced: 28 },
-  },
-  {
-    id: 'cmp_2',
-    name: 'Executive Webinar VIP Invitation',
-    subject: 'Invitation: Scaling Revenue Operations with Multi-Niche Workspaces',
-    audience: 'VP & C-Level Decision Makers (890)',
-    recipientCount: 890,
-    status: 'SENT',
-    sentAt: '3 days ago',
-    metrics: { delivered: 885, opened: 489, clicked: 231, bounced: 5 },
-  },
-];
+const initialCampaigns: EmailCampaign[] = [];
 
-const liveEmailEvents: EmailEvent[] = [
-  {
-    id: 'ev_1',
-    recipientEmail: 'sarah.connor@cyberdyne.io',
-    recipientName: 'Sarah Connor',
-    company: 'Cyberdyne Systems Corp',
-    campaignTitle: 'Q3 Enterprise Feature Release Announcement',
-    eventType: 'CLICK',
-    timestamp: '2 mins ago',
-    device: 'Apple Mail (iOS 19)',
-    location: 'San Francisco, US',
-  },
-  {
-    id: 'ev_2',
-    recipientEmail: 'michael.scott@dunder.com',
-    recipientName: 'Michael Scott',
-    company: 'Dunder Mifflin Inc',
-    campaignTitle: 'Q3 Enterprise Feature Release Announcement',
-    eventType: 'OPEN',
-    timestamp: '5 mins ago',
-    device: 'Chrome on macOS',
-    location: 'Scranton, US',
-  },
-];
+const liveEmailEvents: EmailEvent[] = [];
 
-const INITIAL_BULK_LEADS: BulkLead[] = [
-  { id: 'lead_1', name: 'Sophia Chen', email: 'sophia.chen@apexhealth.org', company: 'Apex Memorial Healthcare', jobTitle: 'Chief Medical Officer', industry: 'Healthcare', stage: 'SQL', dealValue: 85000, region: 'North America', score: 94, source: 'Apollo.io', deliverability: 'VERIFIED' },
-  { id: 'lead_2', name: 'Alexander Sterling', email: 'a.sterling@sterlingvillas.com', company: 'Sterling Luxury Brokerage', jobTitle: 'Managing Partner', industry: 'Real Estate', stage: 'Negotiation', dealValue: 140000, region: 'North America', score: 91, source: 'ZoomInfo', deliverability: 'VERIFIED' },
-  { id: 'lead_3', name: 'Jean-Luc Dubois', email: 'jldubois@bistromarchand.fr', company: 'Bistro Marchand Group', jobTitle: 'Operations Director', industry: 'Restaurant', stage: 'MQL', dealValue: 32000, region: 'EMEA', score: 78, source: 'CSV Ingest', deliverability: 'VERIFIED' },
-  { id: 'lead_4', name: 'Elena Rostova', email: 'e.rostova@hyperioncloud.de', company: 'Hyperion Cloud Technologies', jobTitle: 'VP Enterprise Sales', industry: 'Enterprise SaaS', stage: 'SQL', dealValue: 220000, region: 'EMEA', score: 98, source: 'Apollo.io', deliverability: 'VERIFIED' },
-  { id: 'lead_5', name: 'Rajesh Patel', email: 'r.patel@omnimartretail.in', company: 'OmniMart Superstores', jobTitle: 'Supply Chain VP', industry: 'Retail', stage: 'Cold', dealValue: 65000, region: 'APAC', score: 62, source: 'Inbound Form', deliverability: 'VERIFIED' },
-  { id: 'lead_6', name: 'Mateo Hernandez', email: 'mateo@andinafintech.co', company: 'Andina Financial Group', jobTitle: 'Head of Treasury', industry: 'Enterprise SaaS', stage: 'MQL', dealValue: 110000, region: 'LATAM', score: 85, source: 'LinkedIn', deliverability: 'VERIFIED' },
-  { id: 'lead_7', name: 'Dr. Emily Watson', email: 'e.watson@horizonclinic.co.uk', company: 'Horizon Specialist Clinics', jobTitle: 'Clinical Director', industry: 'Healthcare', stage: 'Cold', dealValue: 45000, region: 'EMEA', score: 58, source: 'ZoomInfo', deliverability: 'VERIFIED' },
-  { id: 'lead_8', name: 'Tariq Al-Mansoor', email: 'tariq@gulfrealtygroup.ae', company: 'Gulf Crest Properties', jobTitle: 'CEO', industry: 'Real Estate', stage: 'SQL', dealValue: 350000, region: 'EMEA', score: 96, source: 'Apollo.io', deliverability: 'VERIFIED' },
-];
+const INITIAL_BULK_LEADS: BulkLead[] = [];
 
 export function EmailMarketingClient() {
   const [activeTab, setActiveTab] = useState<'builder' | 'bulk-blast' | 'campaigns' | 'tracking' | 'templates'>('builder');
@@ -538,8 +485,8 @@ export function EmailMarketingClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -548,7 +495,7 @@ export function EmailMarketingClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Mail className="text-amber-400" size={24} />
+            <Mail className="text-emerald-400" size={24} />
             Rich Media Newsletter & Bulk Email Studio
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -562,7 +509,7 @@ export function EmailMarketingClient() {
             onClick={() => setActiveTab('builder')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'builder'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
@@ -574,7 +521,7 @@ export function EmailMarketingClient() {
             onClick={() => setActiveTab('bulk-blast')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'bulk-blast'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
@@ -586,7 +533,7 @@ export function EmailMarketingClient() {
             onClick={() => setActiveTab('campaigns')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'campaigns'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
@@ -598,7 +545,7 @@ export function EmailMarketingClient() {
             onClick={() => setActiveTab('tracking')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'tracking'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
@@ -618,7 +565,7 @@ export function EmailMarketingClient() {
             {/* Meta & Subject Section */}
             <div className="luxe-box rounded-3xl p-5 space-y-3.5">
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-                <Settings2 size={14} className="text-amber-400" />
+                <Settings2 size={14} className="text-emerald-400" />
                 <span>Newsletter Subject & Sender Configuration</span>
               </h2>
 
@@ -668,10 +615,10 @@ export function EmailMarketingClient() {
             <div className="luxe-box rounded-3xl p-4 space-y-2.5">
               <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
                 <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider flex items-center gap-1.5">
-                  <Plus size={13} className="text-amber-400" />
+                  <Plus size={13} className="text-emerald-400" />
                   <span>Insert Newsletter Content Block</span>
                 </span>
-                <span className="text-[10px] font-mono text-amber-400">Click to Append</span>
+                <span className="text-[10px] font-mono text-emerald-400">Click to Append</span>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -691,9 +638,9 @@ export function EmailMarketingClient() {
                       key={btn.type}
                       type="button"
                       onClick={() => handleAddSection(btn.type)}
-                      className="p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-amber-500/40 border border-white/[0.06] flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer shadow-xs"
+                      className="p-2 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] hover:border-emerald-500/40 border border-white/[0.06] flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer shadow-xs"
                     >
-                      <Icon size={14} className="text-amber-400 shrink-0" />
+                      <Icon size={14} className="text-emerald-400 shrink-0" />
                       <span className="truncate">{btn.label}</span>
                     </button>
                   );
@@ -712,14 +659,14 @@ export function EmailMarketingClient() {
                     onClick={() => setSelectedSectionId(sec.id)}
                     className={`luxe-box rounded-3xl p-5 space-y-3.5 transition-all border ${
                       isSelected
-                        ? 'border-amber-500 ring-2 ring-amber-500/20 bg-white/[0.04]'
+                        ? 'border-amber-500 ring-2 ring-emerald-500/20 bg-white/[0.04]'
                         : 'border-white/[0.08] hover:border-white/20'
                     }`}
                   >
                     {/* Section Header with Re-order & Delete Controls */}
                     <div className="flex items-center justify-between border-b border-white/[0.06] pb-2.5">
                       <div className="flex items-center gap-2">
-                        <span className="w-5 h-5 rounded-lg bg-amber-500/20 text-amber-400 font-mono text-[10px] font-bold flex items-center justify-center">
+                        <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold flex items-center justify-center">
                           {index + 1}
                         </span>
                         <span className="text-xs font-bold text-white uppercase tracking-wider">
@@ -781,7 +728,7 @@ export function EmailMarketingClient() {
                         <div>
                           <div className="flex items-center justify-between mb-1">
                             <label className="text-[10px] uppercase font-bold text-slate-400">Story Body Copy (Big Box)</label>
-                            <div className="flex gap-1 text-[10px] font-mono text-amber-300">
+                            <div className="flex gap-1 text-[10px] font-mono text-emerald-300">
                               <button
                                 type="button"
                                 onClick={() => handleUpdateSectionField(sec.id, 'body', `${sec.body || ''} {{firstName}}`)}
@@ -883,7 +830,7 @@ export function EmailMarketingClient() {
                               type="text"
                               value={sec.productPrice || ''}
                               onChange={(e) => handleUpdateSectionField(sec.id, 'productPrice', e.target.value)}
-                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-amber-400 font-mono font-bold focus:outline-none"
+                              className="w-full px-3 py-2 bg-white/[0.05] border border-white/10 rounded-xl text-xs text-emerald-400 font-mono font-bold focus:outline-none"
                             />
                           </div>
                         </div>
@@ -1014,7 +961,7 @@ export function EmailMarketingClient() {
               <button
                 type="button"
                 onClick={() => setActiveTab('bulk-blast')}
-                className="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-orange-500/25 flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 flex items-center gap-2 cursor-pointer"
               >
                 <span>Continue to Bulk Blast Lead Filter</span>
                 <ArrowRight size={14} />
@@ -1031,7 +978,7 @@ export function EmailMarketingClient() {
                   <button
                     type="button"
                     onClick={() => setViewMode('desktop')}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewMode === 'desktop' ? 'bg-amber-500/20 text-amber-300' : 'text-slate-400'}`}
+                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewMode === 'desktop' ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-400'}`}
                     title="Desktop Preview"
                   >
                     <Monitor size={15} />
@@ -1039,7 +986,7 @@ export function EmailMarketingClient() {
                   <button
                     type="button"
                     onClick={() => setViewMode('mobile')}
-                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewMode === 'mobile' ? 'bg-amber-500/20 text-amber-300' : 'text-slate-400'}`}
+                    className={`p-1.5 rounded-lg transition-colors cursor-pointer ${viewMode === 'mobile' ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-400'}`}
                     title="Mobile Preview"
                   >
                     <Smartphone size={15} />
@@ -1094,7 +1041,7 @@ export function EmailMarketingClient() {
                           </div>
                           <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent flex items-center justify-between">
                             <span className="font-bold text-xs text-white truncate max-w-[200px]">{sec.videoTitle}</span>
-                            <span className="px-2 py-0.5 bg-black/60 rounded text-[9px] font-mono text-amber-300">{sec.badge || 'Watch'}</span>
+                            <span className="px-2 py-0.5 bg-black/60 rounded text-[9px] font-mono text-emerald-300">{sec.badge || 'Watch'}</span>
                           </div>
                         </div>
                       )}
@@ -1106,11 +1053,11 @@ export function EmailMarketingClient() {
                           )}
                           <div className="flex justify-between items-start">
                             <h4 className="font-bold text-xs text-white">{sec.title}</h4>
-                            <span className="font-mono font-extrabold text-amber-400 text-xs">{sec.productPrice}</span>
+                            <span className="font-mono font-extrabold text-emerald-400 text-xs">{sec.productPrice}</span>
                           </div>
                           <p className="text-[11px] text-slate-300 leading-relaxed">{sec.body}</p>
                           {sec.buttonText && (
-                            <span className="inline-block px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold text-[11px] rounded-lg">
+                            <span className="inline-block px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-[11px] rounded-lg">
                               {sec.buttonText}
                             </span>
                           )}
@@ -1118,11 +1065,11 @@ export function EmailMarketingClient() {
                       )}
 
                       {sec.type === 'CALLOUT_QUOTE' && (
-                        <div className="p-4 rounded-2xl bg-amber-500/10 border-l-4 border-amber-500 space-y-2">
+                        <div className="p-4 rounded-2xl bg-emerald-500/10 border-l-4 border-amber-500 space-y-2">
                           <p className="text-xs text-slate-200 italic leading-relaxed">"{sec.body}"</p>
                           {(sec.quoteAuthor || sec.quoteRole) && (
                             <div className="text-[11px]">
-                              <strong className="text-amber-400 block">{sec.quoteAuthor}</strong>
+                              <strong className="text-emerald-400 block">{sec.quoteAuthor}</strong>
                               <span className="text-slate-400">{sec.quoteRole}</span>
                             </div>
                           )}
@@ -1131,7 +1078,7 @@ export function EmailMarketingClient() {
 
                       {sec.type === 'BUTTON_CTA' && sec.buttonText && (
                         <div className="text-center pt-2">
-                          <span className="inline-block px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-orange-500/25">
+                          <span className="inline-block px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-emerald-500/25">
                             {sec.buttonText}
                           </span>
                         </div>
@@ -1140,7 +1087,7 @@ export function EmailMarketingClient() {
                       {sec.type === 'AUTHOR_SIGNATURE' && (
                         <div className="pt-3 border-t border-white/[0.08] flex items-center gap-3">
                           {sec.authorAvatar && (
-                            <img src={sec.authorAvatar} alt="Author" className="w-10 h-10 rounded-full object-cover border border-amber-500/40" />
+                            <img src={sec.authorAvatar} alt="Author" className="w-10 h-10 rounded-full object-cover border border-emerald-500/40" />
                           )}
                           <div>
                             <span className="font-bold text-xs text-white block">{sec.authorName}</span>
@@ -1177,7 +1124,7 @@ export function EmailMarketingClient() {
               <div key={camp.id} className="luxe-box rounded-3xl p-5 space-y-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="text-[10px] font-mono text-amber-400 font-bold">{camp.audience}</span>
+                    <span className="text-[10px] font-mono text-emerald-400 font-bold">{camp.audience}</span>
                     <h3 className="font-bold text-sm text-white mt-0.5">{camp.name}</h3>
                     <p className="text-xs text-slate-400 italic mt-0.5">"{camp.subject}"</p>
                   </div>
@@ -1197,7 +1144,7 @@ export function EmailMarketingClient() {
                   </div>
                   <div className="p-2 bg-white/[0.02] rounded-xl border border-white/[0.04]">
                     <span className="text-[10px] text-slate-400 block">Clicks</span>
-                    <span className="font-mono font-bold text-xs text-amber-400">{camp.metrics.clicked.toLocaleString()}</span>
+                    <span className="font-mono font-bold text-xs text-emerald-400">{camp.metrics.clicked.toLocaleString()}</span>
                   </div>
                   <div className="p-2 bg-white/[0.02] rounded-xl border border-white/[0.04]">
                     <span className="text-[10px] text-slate-400 block">Bounce</span>
@@ -1206,6 +1153,11 @@ export function EmailMarketingClient() {
                 </div>
               </div>
             ))}
+            {campaigns.length === 0 && (
+              <div className="col-span-2 py-16 text-center text-slate-500 text-xs font-medium border border-white/[0.06] rounded-3xl bg-white/[0.02]">
+                No email campaigns broadcasted yet. Compose and send a campaign in the <span className="text-emerald-400 font-bold">"Newsletter Designer"</span> or <span className="text-emerald-400 font-bold">"Bulk Blast"</span> tabs.
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1223,7 +1175,7 @@ export function EmailMarketingClient() {
                 </div>
                 <div className="text-right">
                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
-                    ev.eventType === 'CLICK' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'
+                    ev.eventType === 'CLICK' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-emerald-500/20 text-emerald-300'
                   }`}>
                     {ev.eventType}
                   </span>
@@ -1231,6 +1183,11 @@ export function EmailMarketingClient() {
                 </div>
               </div>
             ))}
+            {events.length === 0 && (
+              <div className="py-16 text-center text-slate-500 text-xs font-medium">
+                Live recipient telemetry will stream in real-time as email subscribers open emails and click embedded CTA links.
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1241,11 +1198,11 @@ export function EmailMarketingClient() {
           {initialTemplates.map((tmpl) => (
             <div key={tmpl.id} className="luxe-box rounded-3xl p-5 space-y-4 flex flex-col justify-between">
               <div>
-                <span className="text-[10px] font-mono font-bold text-amber-400">{tmpl.category}</span>
+                <span className="text-[10px] font-mono font-bold text-emerald-400">{tmpl.category}</span>
                 <h3 className="font-bold text-sm text-white mt-1">{tmpl.name}</h3>
                 <p className="text-xs text-slate-400 italic mt-0.5">"{tmpl.subject}"</p>
                 <div className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
-                  <Layers size={13} className="text-amber-400" />
+                  <Layers size={13} className="text-emerald-400" />
                   <span>{tmpl.sections.length} Modular Content Blocks</span>
                 </div>
               </div>
@@ -1289,7 +1246,7 @@ export function EmailMarketingClient() {
                   setAlert(`📨 Test email sent to ${testEmailAddress}!`);
                   setTimeout(() => setAlert(null), 3000);
                 }}
-                className="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs"
+                className="px-4 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs"
               >
                 Send Test
               </button>

@@ -35,7 +35,7 @@ export function SchemaBuilderClient({ initialObjects }: { initialObjects: any[] 
     switch (type) {
       case 'TEXT': return <Type size={14} className="text-blue-400" />;
       case 'NUMBER': return <Hash size={14} className="text-emerald-400" />;
-      case 'DATE': return <Calendar size={14} className="text-amber-400" />;
+      case 'DATE': return <Calendar size={14} className="text-emerald-400" />;
       case 'BOOLEAN': return <CheckSquare size={14} className="text-purple-400" />;
       case 'RELATION': return <LinkIcon size={14} className="text-rose-400" />;
       default: return <Type size={14} className="text-slate-400" />;
@@ -48,7 +48,7 @@ export function SchemaBuilderClient({ initialObjects }: { initialObjects: any[] 
       <div className="w-64 border-r border-white/[0.08] bg-white/[0.02] flex flex-col">
         <div className="p-4 border-b border-white/[0.08] flex justify-between items-center bg-transparent">
           <h2 className="text-sm font-semibold text-white flex items-center space-x-2">
-            <Database size={16} className="text-amber-400" />
+            <Database size={16} className="text-emerald-400" />
             <span>Objects</span>
           </h2>
           <button 
@@ -71,12 +71,12 @@ export function SchemaBuilderClient({ initialObjects }: { initialObjects: any[] 
               }}
               className={`w-full text-left px-3 py-2 rounded-xl text-sm font-medium transition-colors flex items-center justify-between cursor-pointer ${
                 selectedObjectId === obj.id 
-                  ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-2xs font-bold' 
+                  ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-2xs font-bold' 
                   : 'text-slate-300 hover:bg-white/[0.06] hover:text-white border border-transparent'
               }`}
             >
               <div className="flex items-center space-x-2">
-                <DatabaseZap size={14} className={selectedObjectId === obj.id ? 'text-amber-400' : 'text-slate-500'} />
+                <DatabaseZap size={14} className={selectedObjectId === obj.id ? 'text-emerald-400' : 'text-slate-500'} />
                 <span>{obj.name}</span>
               </div>
               <span className="text-xs bg-white/[0.08] border border-white/10 px-1.5 py-0.5 rounded text-slate-300">{obj.fields?.length || 0}</span>
@@ -105,7 +105,7 @@ export function SchemaBuilderClient({ initialObjects }: { initialObjects: any[] 
             <div className="flex justify-between items-start">
               <div>
                 <h2 className="text-2xl font-bold text-white">{selectedObject.name}</h2>
-                <p className="text-sm text-slate-400 mt-1">API Identifier: <code className="text-amber-400 bg-amber-500/15 px-1.5 py-0.5 rounded text-xs border border-amber-500/30">{selectedObject.apiName}</code></p>
+                <p className="text-sm text-slate-400 mt-1">API Identifier: <code className="text-emerald-400 bg-emerald-500/15 px-1.5 py-0.5 rounded text-xs border border-emerald-500/30">{selectedObject.apiName}</code></p>
                 <p className="text-sm text-slate-300 mt-2">{selectedObject.description}</p>
               </div>
             </div>
@@ -126,7 +126,7 @@ export function SchemaBuilderClient({ initialObjects }: { initialObjects: any[] 
                 <tbody className="divide-y divide-white/[0.05]">
                   <tr className="hover:bg-white/[0.04] transition-colors">
                     <td className="px-4 py-3 font-medium text-slate-200 flex items-center space-x-2">
-                      <Key size={14} className="text-amber-400" />
+                      <Key size={14} className="text-emerald-400" />
                       <span>ID</span>
                     </td>
                     <td className="px-4 py-3 text-slate-400 font-mono text-xs">id</td>

@@ -2,15 +2,13 @@ import Link from "next/link";
 import { getTenantHeaders, safeFetch } from "../../lib/auth";
 import { FileText, Plus, Download, Receipt, Scan } from "lucide-react";
 import { revalidatePath } from "next/cache";
+import { DeleteActionButton } from "../../components/DeleteActionButton";
+import { deleteInvoice } from "../actions";
+import { InvoiceRowActions } from "./InvoiceRowActions";
 
 export const dynamic = 'force-dynamic';
 
-const demoInvoices = [
-  { id: 'inv_01', invoiceNum: 'INV-2026-001', amount: 14500, status: 'PAID', dueDate: '2026-09-01', createdAt: '2026-08-15' },
-  { id: 'inv_02', invoiceNum: 'INV-2026-002', amount: 36000, status: 'SENT', dueDate: '2026-09-15', createdAt: '2026-08-20' },
-  { id: 'inv_03', invoiceNum: 'INV-2026-003', amount: 8200, status: 'PAID', dueDate: '2026-08-28', createdAt: '2026-08-10' },
-  { id: 'inv_04', invoiceNum: 'INV-2026-004', amount: 19400, status: 'SENT', dueDate: '2026-09-30', createdAt: '2026-08-25' },
-];
+const demoInvoices: any[] = [];
 
 export default async function InvoicesPage() {
   const headers = await getTenantHeaders();
@@ -20,18 +18,17 @@ export default async function InvoicesPage() {
     []
   );
 
-  const invoices = fetchedInvoices.length > 0 ? fetchedInvoices : demoInvoices;
+  const invoices = fetchedInvoices || [];
 
   async function createInvoice(formData: FormData) {
     "use server";
     const amount = parseFloat(formData.get("amount") as string);
-    if (!amount || isNaN(amount)) return;
-
+    const tenantHeaders = await getTenantHeaders();
     await safeFetch("http://localhost:3015/invoices", {
       method: "POST",
       headers: { 
         "Content-Type": "application/json",
-        "x-tenant-id": "default-tenant" 
+        ...tenantHeaders
       },
       body: JSON.stringify({ amount })
     });
@@ -45,7 +42,7 @@ export default async function InvoicesPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Receipt className="text-amber-400" size={24} />
+            <Receipt className="text-emerald-400" size={24} />
             Commercial Invoices & Billing
           </h1>
           <p className="text-sm text-slate-400 mt-1">Manage accounts receivable, customer ledgers, and automated wire reconciliation.</p>
@@ -53,7 +50,7 @@ export default async function InvoicesPage() {
         <div className="flex items-center space-x-3">
           <Link
             href="/ocr-invoice"
-            className="px-4 py-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-orange-500/25 flex items-center gap-1.5 active:scale-[0.98]"
+            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 active:scale-[0.98]"
           >
             <Scan size={14} />
             <span>AI OCR Invoice Scanner</span>
@@ -80,7 +77,7 @@ export default async function InvoicesPage() {
           <div className="text-3xl font-extrabold text-white font-mono">
             ${invoices.filter((i: any) => i.status !== 'PAID').reduce((sum: number, i: any) => sum + i.amount, 0).toLocaleString(undefined, {minimumFractionDigits: 2})}
           </div>
-          <div className="text-xs text-amber-400 font-medium mt-2 flex items-center gap-1.5">
+          <div className="text-xs text-emerald-400 font-medium mt-2 flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-amber-400 inline-block animate-pulse" /> Awaiting customer wire transfer
           </div>
         </div>
@@ -121,7 +118,7 @@ export default async function InvoicesPage() {
                 <tr key={invoice.id} className="hover:bg-white/[0.04] transition-colors group">
                   <td className="px-6 py-4 font-mono font-bold text-white">
                     <div className="flex items-center space-x-2">
-                      <FileText size={15} className="text-amber-400" />
+                      <FileText size={15} className="text-emerald-400" />
                       <span>{invoice.invoiceNum}</span>
                     </div>
                   </td>
@@ -131,7 +128,7 @@ export default async function InvoicesPage() {
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                       invoice.status === 'PAID' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 
-                      invoice.status === 'SENT' ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30' : 
+                      invoice.status === 'SENT' ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30' : 
                       'bg-white/[0.08] text-slate-300 border border-white/10'
                     }`}>
                       {invoice.status}
@@ -144,13 +141,17 @@ export default async function InvoicesPage() {
                     {invoice.createdAt}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="px-3 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all border border-white/[0.1] inline-flex items-center gap-1 cursor-pointer">
-                      <Download size={12} />
-                      <span>PDF</span>
-                    </button>
+                    <InvoiceRowActions invoice={invoice} />
                   </td>
                 </tr>
               ))}
+              {invoices.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                    No invoices generated yet. Use the <span className="text-emerald-400 font-bold">"Quick Add"</span> form or <span className="text-emerald-400 font-bold">"AI OCR Invoice Scanner"</span> above to create your first billing record.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

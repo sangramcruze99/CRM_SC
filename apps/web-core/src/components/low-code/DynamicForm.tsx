@@ -80,7 +80,7 @@ export function DynamicForm({ schema, initialData, onSubmit, onCancel }: Dynamic
   const renderFieldInput = (field: FieldDefinition) => {
     const value = formData[field.apiName] || '';
     const hasError = !!errors[field.apiName];
-    const inputClass = `w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/40 bg-white/70 dark:bg-white/[0.05] text-slate-900 dark:text-white text-xs placeholder:text-slate-400 ${
+    const inputClass = `w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/40 bg-white/70 dark:bg-white/[0.05] text-slate-900 dark:text-white text-xs placeholder:text-slate-400 ${
       hasError ? 'border-rose-500 ring-1 ring-rose-500/30' : 'border-slate-200 dark:border-white/[0.1]'
     }`;
 
@@ -125,7 +125,7 @@ export function DynamicForm({ schema, initialData, onSubmit, onCancel }: Dynamic
               type="checkbox"
               checked={!!value}
               onChange={(e) => handleChange(field.apiName, e.target.checked)}
-              className="h-4 w-4 rounded border-slate-300 dark:border-white/20 bg-white dark:bg-white/10 accent-amber-500 focus:ring-amber-400 cursor-pointer"
+              className="h-4 w-4 rounded border-slate-300 dark:border-white/20 bg-white dark:bg-white/10 accent-amber-500 focus:ring-emerald-400 cursor-pointer"
             />
           </div>
         );
@@ -226,7 +226,7 @@ export function DynamicForm({ schema, initialData, onSubmit, onCancel }: Dynamic
         )}
         <button
           type="submit"
-          className="px-5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-orange-500/25 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+          className="px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
           disabled={isSubmitting}
         >
           <Save size={13} />

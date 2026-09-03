@@ -105,40 +105,13 @@ const initialAccounts: SocialAccount[] = [
   },
 ];
 
-const demoPastPosts: SocialPost[] = [
-  {
-    id: 'sp_1',
-    content: '🚀 Excited to announce our Q3 Business OS Upgrade! Real-time revenue telemetry, AI OCR schema inference, and lightning-fast sub-10ms querying are now live. Experience the future of Enterprise CRM today.',
-    mediaUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
-    platforms: ['x', 'linkedin', 'facebook'],
-    status: 'PUBLISHED',
-    publishedAt: '2 hours ago',
-    metrics: { impressions: 14820, likes: 942, shares: 318, clicks: 1250 },
-  },
-  {
-    id: 'sp_2',
-    content: 'Transform the way your global sales team operates. Seamless multi-currency price books, instant PDF e-signatures, and real-time Khata ledger tracking in one unified workspace. #CRM #SalesTech #EnterpriseAI',
-    mediaUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
-    platforms: ['instagram', 'x', 'facebook'],
-    status: 'PUBLISHED',
-    publishedAt: 'Yesterday',
-    metrics: { impressions: 8940, likes: 612, shares: 144, clicks: 780 },
-  },
-  {
-    id: 'sp_3',
-    content: 'Join our exclusive webinar this Thursday: "Scaling B2B Operations with Autonomous AI Copilots & Real-Time Deal Intelligence". Register now for free access! 🎟️✨',
-    platforms: ['linkedin', 'x'],
-    status: 'SCHEDULED',
-    scheduledFor: 'Tomorrow, 10:00 AM EST',
-    metrics: { impressions: 0, likes: 0, shares: 0, clicks: 0 },
-  },
-];
+const demoPastPosts: SocialPost[] = [];
 
 const samplePrompts = [
   'Announce our new AI Deal Pipeline assistant with 10x closing velocity',
   'Post about our SOC2 Type II compliance certification and enterprise grade security',
-  'Customer success spotlight on Acme Corp increasing team productivity by 45%',
-  'Special limited-time promotional discount for annual enterprise seat upgrades',
+  'Customer success spotlight on increasing team productivity by 45%',
+  'Special promotional discount for annual enterprise seat upgrades',
 ];
 
 export function SocialMediaClient() {
@@ -155,12 +128,8 @@ export function SocialMediaClient() {
   ]);
   const [topicPrompt, setTopicPrompt] = useState('');
   const [tone, setTone] = useState<'professional' | 'viral' | 'casual' | 'fomo' | 'educational'>('viral');
-  const [generatedContent, setGeneratedContent] = useState(
-    '⚡ Supercharge your enterprise revenue operations with Business OS. Automated multi-channel pipelines, instant billing ledgers, and intelligent AI copilot assistance — built for high-growth modern teams.\n\n👉 Discover the platform today: https://businessos.io\n\n#CRM #BusinessOS #EnterpriseSaaS #Productivity #AI'
-  );
-  const [mediaUrl, setMediaUrl] = useState<string>(
-    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80'
-  );
+  const [generatedContent, setGeneratedContent] = useState('');
+  const [mediaUrl, setMediaUrl] = useState<string>('');
   const [previewPlatform, setPreviewPlatform] = useState<'x' | 'facebook' | 'instagram' | 'linkedin'>('x');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -291,7 +260,7 @@ export function SocialMediaClient() {
       case 'tiktok':
         return <span className="font-bold text-sm text-white">🎵</span>;
       default:
-        return <Globe size={14} className="text-amber-400" />;
+        return <Globe size={14} className="text-emerald-400" />;
     }
   };
 
@@ -299,8 +268,8 @@ export function SocialMediaClient() {
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-amber-500/15 border border-amber-500/40 rounded-2xl text-amber-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
-          <CheckCircle2 size={16} className="text-amber-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -309,7 +278,7 @@ export function SocialMediaClient() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Share2 className="text-amber-400" size={24} />
+            <Share2 className="text-emerald-400" size={24} />
             Social Media Hub & AI Post Studio
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -322,7 +291,7 @@ export function SocialMediaClient() {
             onClick={() => setActiveTab('generator')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'generator'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
@@ -333,7 +302,7 @@ export function SocialMediaClient() {
             onClick={() => setActiveTab('scheduled')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'scheduled'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
@@ -344,7 +313,7 @@ export function SocialMediaClient() {
             onClick={() => setActiveTab('analytics')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'analytics'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
@@ -355,7 +324,7 @@ export function SocialMediaClient() {
             onClick={() => setActiveTab('accounts')}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer ${
               activeTab === 'accounts'
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                 : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.1]'
             }`}
           >
@@ -402,7 +371,7 @@ export function SocialMediaClient() {
                     >
                       <span>{item.label}</span>
                       {isSelected ? (
-                        <Check size={14} className="text-amber-400" />
+                        <Check size={14} className="text-emerald-400" />
                       ) : (
                         <Plus size={14} className="text-slate-600" />
                       )}
@@ -417,10 +386,10 @@ export function SocialMediaClient() {
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                    <Sparkles size={14} className="text-amber-400" />
+                    <Sparkles size={14} className="text-emerald-400" />
                     <span>Campaign Topic or Goal Prompt</span>
                   </label>
-                  <span className="text-[11px] text-amber-400 font-semibold cursor-pointer hover:underline" onClick={() => setTopicPrompt(samplePrompts[Math.floor(Math.random() * samplePrompts.length)])}>
+                  <span className="text-[11px] text-emerald-400 font-semibold cursor-pointer hover:underline" onClick={() => setTopicPrompt(samplePrompts[Math.floor(Math.random() * samplePrompts.length)])}>
                     🎲 Try Random Prompt
                   </span>
                 </div>
@@ -452,7 +421,7 @@ export function SocialMediaClient() {
                       onClick={() => setTone(t.id as any)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         tone === t.id
-                          ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-md shadow-orange-500/20'
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md shadow-emerald-500/20'
                           : 'bg-white/[0.06] text-slate-300 hover:text-white hover:bg-white/[0.1]'
                       }`}
                     >
@@ -484,7 +453,7 @@ export function SocialMediaClient() {
               {/* Media URL / Asset */}
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <ImageIcon size={14} className="text-amber-400" />
+                  <ImageIcon size={14} className="text-emerald-400" />
                   <span>Attach Image or Video Preview URL</span>
                 </label>
                 <div className="flex gap-2">
@@ -511,7 +480,7 @@ export function SocialMediaClient() {
                   type="button"
                   onClick={handleAIGenerate}
                   disabled={isGenerating}
-                  className="px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-amber-300 border border-amber-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer active:scale-[0.98]"
+                  className="px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-emerald-300 border border-emerald-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer active:scale-[0.98]"
                 >
                   <Sparkles size={14} className={isGenerating ? 'animate-spin' : ''} />
                   <span>{isGenerating ? 'Generating with Neural AI...' : 'Re-Generate AI Copy'}</span>
@@ -531,7 +500,7 @@ export function SocialMediaClient() {
                     type="button"
                     onClick={handlePublishNow}
                     disabled={isPublishing}
-                    className="px-5 py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-orange-500/25 active:scale-[0.98] border border-amber-400/40 cursor-pointer disabled:opacity-50"
+                    className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer disabled:opacity-50"
                   >
                     <Send size={14} />
                     <span>{isPublishing ? 'Transmitting to APIs...' : `Publish Now to ${selectedPlatforms.length} Networks`}</span>
@@ -557,7 +526,7 @@ export function SocialMediaClient() {
                       type="button"
                       onClick={handleSchedulePost}
                       disabled={!scheduleDateTime}
-                      className="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 font-bold rounded-xl text-xs shadow-md cursor-pointer"
+                      className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 font-bold rounded-xl text-xs shadow-md cursor-pointer"
                     >
                       Confirm Schedule
                     </button>
@@ -572,7 +541,7 @@ export function SocialMediaClient() {
             <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
               <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
                 <div className="flex items-center gap-2">
-                  <Eye size={16} className="text-amber-400" />
+                  <Eye size={16} className="text-emerald-400" />
                   <span className="text-xs font-bold text-white uppercase tracking-wider">
                     Live Channel Mockup
                   </span>
@@ -587,7 +556,7 @@ export function SocialMediaClient() {
                       onClick={() => setPreviewPlatform(p)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition-all cursor-pointer ${
                         previewPlatform === p
-                          ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 shadow-2xs'
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-2xs'
                           : 'text-slate-400 hover:text-white'
                       }`}
                     >
@@ -602,13 +571,13 @@ export function SocialMediaClient() {
                 <div className="border border-white/[0.08] rounded-2xl p-4 bg-white/[0.02] shadow-2xs space-y-3 font-sans">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-slate-950 font-bold text-sm shadow-xs">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-slate-950 font-bold text-sm shadow-xs">
                         B
                       </div>
                       <div>
                         <div className="flex items-center gap-1">
                           <span className="font-bold text-xs text-white">Business OS</span>
-                          <span className="text-amber-400 text-xs">✓</span>
+                          <span className="text-emerald-400 text-xs">✓</span>
                         </div>
                         <span className="text-[11px] text-slate-400">@BusinessOS · 1m</span>
                       </div>
@@ -627,7 +596,7 @@ export function SocialMediaClient() {
                   )}
 
                   <div className="flex items-center justify-between text-slate-400 text-xs pt-2 border-t border-white/[0.08] font-medium">
-                    <div className="flex items-center gap-1 hover:text-amber-400 cursor-pointer">
+                    <div className="flex items-center gap-1 hover:text-emerald-400 cursor-pointer">
                       <MessageSquare size={13} /> <span>18</span>
                     </div>
                     <div className="flex items-center gap-1 hover:text-emerald-400 cursor-pointer">
@@ -700,7 +669,7 @@ export function SocialMediaClient() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 p-[2px]">
-                        <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center font-bold text-xs text-amber-400">
+                        <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center font-bold text-xs text-emerald-400">
                           BO
                         </div>
                       </div>
@@ -725,8 +694,8 @@ export function SocialMediaClient() {
                   <div className="flex items-center justify-between text-slate-400">
                     <div className="flex items-center gap-3">
                       <Heart size={16} className="hover:text-rose-400 cursor-pointer" />
-                      <MessageSquare size={16} className="hover:text-amber-400 cursor-pointer" />
-                      <Send size={16} className="hover:text-amber-400 cursor-pointer" />
+                      <MessageSquare size={16} className="hover:text-emerald-400 cursor-pointer" />
+                      <Send size={16} className="hover:text-emerald-400 cursor-pointer" />
                     </div>
                     <Bookmark size={16} className="hover:text-white cursor-pointer" />
                   </div>
@@ -790,7 +759,7 @@ export function SocialMediaClient() {
             <h2 className="text-base font-bold text-white">Live Post Queue & Broadcast History</h2>
             <button
               onClick={() => setActiveTab('generator')}
-              className="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs shadow-md flex items-center gap-1.5 cursor-pointer"
             >
               <Plus size={14} />
               <span>Compose New Post</span>
@@ -833,7 +802,7 @@ export function SocialMediaClient() {
                         className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
                           p.status === 'PUBLISHED'
                             ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                            : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
                         }`}
                       >
                         {p.status}
@@ -847,6 +816,13 @@ export function SocialMediaClient() {
                     </td>
                   </tr>
                 ))}
+                {posts.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
+                      No social posts in queue. Click <span className="text-emerald-400 font-bold">"Compose New Post"</span> above to draft and schedule your first broadcast.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -861,7 +837,7 @@ export function SocialMediaClient() {
             <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
               <div className="flex items-center justify-between text-slate-400 mb-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider">Total Impressions</span>
-                <Eye size={18} className="text-amber-400" />
+                <Eye size={18} className="text-emerald-400" />
               </div>
               <div className="text-3xl font-extrabold text-white font-mono">148,290</div>
               <div className="text-xs text-emerald-400 mt-2 font-bold flex items-center gap-1">
@@ -892,9 +868,9 @@ export function SocialMediaClient() {
             <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
               <div className="flex items-center justify-between text-slate-400 mb-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider">AI Virality Index</span>
-                <Flame size={18} className="text-amber-400" />
+                <Flame size={18} className="text-emerald-400" />
               </div>
-              <div className="text-3xl font-extrabold text-amber-400 font-mono">94 / 100</div>
+              <div className="text-3xl font-extrabold text-emerald-400 font-mono">94 / 100</div>
               <div className="text-xs text-slate-400 mt-2 font-medium">Top 5% SaaS engagement tier</div>
             </div>
           </div>
@@ -939,7 +915,7 @@ export function SocialMediaClient() {
                   <div key={i} className="flex items-center justify-between p-3 bg-white/[0.03] border border-white/[0.06] rounded-2xl text-xs">
                     <div>
                       <span className="font-bold text-white block">{item.topic}</span>
-                      <span className="text-amber-400 text-[11px] font-semibold">{item.leads} generated</span>
+                      <span className="text-emerald-400 text-[11px] font-semibold">{item.leads} generated</span>
                     </div>
                     <span className="font-mono font-bold text-emerald-300 bg-emerald-500/15 px-2.5 py-1 rounded-xl border border-emerald-500/30">
                       {item.rate}
@@ -1007,7 +983,7 @@ export function SocialMediaClient() {
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border cursor-pointer ${
                       acc.connected
                         ? 'bg-rose-500/15 text-rose-300 border-rose-500/30 hover:bg-rose-500/25'
-                        : 'bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-bold border-amber-400/40'
+                        : 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold border-emerald-400/40'
                     }`}
                   >
                     {acc.connected ? 'Disconnect' : 'Connect Channel'}
