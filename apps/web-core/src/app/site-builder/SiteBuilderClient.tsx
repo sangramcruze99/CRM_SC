@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Layout,
   Plus,
@@ -9,6 +10,7 @@ import {
   MoveDown,
   Copy,
   Eye,
+  X,
   Smartphone,
   Tablet,
   Monitor,
@@ -209,6 +211,9 @@ const TEMPLATE_PRESETS: Record<string, { name: string; icon: any; blocks: SiteBl
 };
 
 export function SiteBuilderClient() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const [blocks, setBlocks] = useState<SiteBlock[]>(TEMPLATE_PRESETS.saas.blocks);
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(blocks[0].id);
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
@@ -840,31 +845,58 @@ export function SiteBuilderClient() {
         </div>
       </div>
 
-      {/* Fullscreen Live Preview Modal */}
-      {isPreviewModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl animate-in fade-in">
-          <div className="bg-[#0b0f19] border border-white/15 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl p-8 space-y-8">
-            <div className="flex justify-between items-center border-b border-white/[0.08] pb-4">
-              <span className="font-bold text-sm text-white">Full-Screen Website Preview</span>
+      {/* Remodeled Luxury Glass Portal Modal */}
+      {isPreviewModalOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-4xl max-h-[90vh] bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl p-6 sm:p-8 shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl text-white space-y-6 animate-in zoom-in-95 duration-200 overflow-y-auto">
+            {/* Top Specular Flare */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+
+            {/* Header with category badge */}
+            <div className="flex items-start justify-between pb-4 border-b border-white/[0.08] relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-teal-500/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                  <Eye size={20} />
+                </div>
+                <div>
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-black tracking-widest text-emerald-300 uppercase">
+                    SITE PREVIEW ENGINE
+                  </span>
+                  <h2 className="text-base font-bold text-white tracking-tight mt-0.5">Full-Screen Website Live Render</h2>
+                  <p className="text-xs text-slate-400 font-medium">Responsive multi-block viewport simulation</p>
+                </div>
+              </div>
               <button
                 type="button"
                 onClick={() => setIsPreviewModalOpen(false)}
-                className="px-3 py-1 bg-white/[0.08] hover:bg-white/[0.15] text-white rounded-xl text-xs font-bold cursor-pointer"
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="space-y-6 relative z-10">
+              {blocks.map((block) => (
+                <div key={block.id} className="p-6 rounded-2xl bg-black/40 border border-white/[0.08]">
+                  <h3 className="font-extrabold text-xl text-white">{block.title}</h3>
+                  <p className="text-xs text-slate-400 mt-1 font-medium">{block.subtitle}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end relative z-10">
+              <button
+                type="button"
+                onClick={() => setIsPreviewModalOpen(false)}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 transition-all cursor-pointer"
               >
                 Close Preview
               </button>
             </div>
-
-            <div className="space-y-6">
-              {blocks.map((block) => (
-                <div key={block.id} className="p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
-                  <h3 className="font-extrabold text-xl text-white">{block.title}</h3>
-                  <p className="text-xs text-slate-400 mt-1">{block.subtitle}</p>
-                </div>
-              ))}
-            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -52,58 +52,7 @@ interface SocialPost {
   };
 }
 
-const initialAccounts: SocialAccount[] = [
-  {
-    id: 'acc_x',
-    platform: 'x',
-    name: 'Business OS',
-    handle: '@BusinessOS',
-    avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop&q=80',
-    followers: '28.4K',
-    connected: true,
-    status: 'active',
-  },
-  {
-    id: 'acc_fb',
-    platform: 'facebook',
-    name: 'Business OS Platform',
-    handle: '@businessos.global',
-    avatar: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=120&auto=format&fit=crop&q=80',
-    followers: '45.1K',
-    connected: true,
-    status: 'active',
-  },
-  {
-    id: 'acc_ig',
-    platform: 'instagram',
-    name: 'businessos.hq',
-    handle: '@businessos.hq',
-    avatar: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop&q=80',
-    followers: '19.8K',
-    connected: true,
-    status: 'active',
-  },
-  {
-    id: 'acc_li',
-    platform: 'linkedin',
-    name: 'Business OS Enterprise Systems',
-    handle: 'business-os-global',
-    avatar: 'https://images.unsplash.com/photo-1557683316-973673baf926?w=120&auto=format&fit=crop&q=80',
-    followers: '62.7K',
-    connected: true,
-    status: 'active',
-  },
-  {
-    id: 'acc_tt',
-    platform: 'tiktok',
-    name: 'Business OS Tech',
-    handle: '@businessos_tech',
-    avatar: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=120&auto=format&fit=crop&q=80',
-    followers: '11.2K',
-    connected: true,
-    status: 'active',
-  },
-];
+const initialAccounts: SocialAccount[] = [];
 
 const demoPastPosts: SocialPost[] = [];
 

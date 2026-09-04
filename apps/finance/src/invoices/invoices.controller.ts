@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Headers, BadRequestException, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Headers, BadRequestException, Param, Delete, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { InvoicesService } from './invoices.service';
 
@@ -15,10 +15,20 @@ export class InvoicesController {
   @Post()
   async createInvoice(
     @Headers('x-tenant-id') tenantId: string,
-    @Body() data: { amount: number, status?: string, lineItems?: any[] }
+    @Body() data: { amount: number, status?: string, clientName?: string, dueDate?: Date, lineItems?: any[] }
   ) {
     if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
     return this.invoicesService.create(tenantId, data);
+  }
+
+  @Patch(':id')
+  async updateInvoice(
+    @Headers('x-tenant-id') tenantId: string,
+    @Param('id') id: string,
+    @Body() data: any
+  ) {
+    const effectiveTenantId = tenantId || 'default-tenant';
+    return this.invoicesService.update(id, effectiveTenantId, data);
   }
 
   @Post(':id/send')

@@ -1,27 +1,33 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { Plus, X, Zap, Sparkles, FileText, Activity } from 'lucide-react';
 import { createWorkflow } from '../../app/automations/actions';
 
 export function CreateWorkflowModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) {
-    return (
-      <button 
-        onClick={() => setIsOpen(true)}
-        className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center space-x-1.5 cursor-pointer"
-      >
-        <Plus size={15} />
-        <span>New Workflow</span>
-      </button>
-    );
-  }
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
 
   return (
     <>
       <button 
+        type="button"
         onClick={() => setIsOpen(true)}
         className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center space-x-1.5 cursor-pointer"
       >
@@ -29,53 +35,124 @@ export function CreateWorkflowModal() {
         <span>New Workflow</span>
       </button>
 
-      <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div className="bg-white dark:bg-slate-950/95 border border-slate-200 dark:border-white/[0.12] rounded-3xl shadow-2xl w-full max-w-md overflow-hidden text-slate-900 dark:text-white animate-in fade-in zoom-in-95">
-          <div className="px-6 py-4 border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between">
-            <h2 className="text-base font-bold">Create Automated Workflow</h2>
-            <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">
-              <X size={18} />
-            </button>
-          </div>
-          
-          <form 
-            action={async (formData) => {
-              await createWorkflow(formData);
-              setIsOpen(false);
-            }} 
-            className="p-6 space-y-4"
-          >
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Workflow Name</label>
-              <input required name="name" type="text" className="w-full bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500" placeholder="e.g. New Lead Welcome Sequence" />
-            </div>
+      {isOpen && mounted && createPortal(
+        <div
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsOpen(false);
+          }}
+        >
+          <div className="relative bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-150 text-white my-auto">
+            {/* Ambient Top Glow Line */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Description</label>
-              <textarea name="description" rows={2} className="w-full bg-slate-50 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500" placeholder="What actions does this trigger?"></textarea>
-            </div>
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/25 border border-emerald-300/30">
+                  <Zap size={18} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-base font-extrabold text-white tracking-tight">Create Automation Workflow</h2>
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 uppercase">
+                      Robotics
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Trigger automated actions on database events, cron intervals, or webhooks
+                  </p>
+                </div>
+              </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Trigger Event</label>
-              <select required name="triggerType" className="w-full text-xs">
-                <option value="ON_RECORD_CREATE">When a record is created</option>
-                <option value="ON_RECORD_UPDATE">When a record is updated</option>
-                <option value="SCHEDULED">On a schedule / Cron</option>
-                <option value="WEBHOOK">Incoming HTTP Webhook</option>
-              </select>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
             </div>
             
-            <div className="pt-4 flex justify-end space-x-2.5">
-              <button type="button" onClick={() => setIsOpen(false)} className="px-4 py-2 bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] text-xs font-semibold text-slate-700 dark:text-slate-300 rounded-xl transition-colors cursor-pointer">
-                Cancel
-              </button>
-              <button type="submit" className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-xs font-bold text-slate-950 rounded-xl transition-all shadow-md shadow-emerald-500/25 cursor-pointer">
-                Create Workflow
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+            <form 
+              action={async (formData) => {
+                await createWorkflow(formData);
+                setIsOpen(false);
+              }} 
+              className="p-6 space-y-4"
+            >
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                  <Sparkles size={12} className="text-emerald-400" />
+                  <span>Workflow Name</span>
+                </label>
+                <div className="relative">
+                  <Sparkles size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <input 
+                    required 
+                    name="name" 
+                    type="text" 
+                    className="w-full pl-9.5 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" 
+                    placeholder="e.g. New Lead Welcome Sequence" 
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                  <FileText size={12} className="text-emerald-400" />
+                  <span>Description</span>
+                </label>
+                <textarea 
+                  name="description" 
+                  rows={2} 
+                  className="w-full p-3 bg-black/40 border border-white/[0.12] rounded-xl text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium resize-none" 
+                  placeholder="What actions does this trigger and what conditions are evaluated?"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                  <Activity size={12} className="text-emerald-400" />
+                  <span>Trigger Event</span>
+                </label>
+                <div className="relative">
+                  <Activity size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <select 
+                    required 
+                    name="triggerType" 
+                    className="w-full pl-9.5 pr-3.5 py-2.5 bg-slate-900 border border-white/[0.12] rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium appearance-none cursor-pointer"
+                  >
+                    <option value="ON_RECORD_CREATE" className="bg-slate-900 text-white">When a record is created</option>
+                    <option value="ON_RECORD_UPDATE" className="bg-slate-900 text-white">When a record is updated</option>
+                    <option value="SCHEDULED" className="bg-slate-900 text-white">On a schedule / Cron</option>
+                    <option value="WEBHOOK" className="bg-slate-900 text-white">Incoming HTTP Webhook</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/[0.08]">
+                <button 
+                  type="button" 
+                  onClick={() => setIsOpen(false)} 
+                  className="px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-bold text-slate-300 hover:text-white rounded-xl border border-white/[0.1] transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-xs font-extrabold text-slate-950 rounded-xl transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] cursor-pointer flex items-center gap-2"
+                >
+                  <Zap size={14} />
+                  <span>Create Workflow</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>,
+        document.body
+      )}
     </>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Check, Zap, X, Shield, Sparkles, Star } from 'lucide-react';
 import { useRoleWorkspace, WorkspaceRole } from '@/components/platform/RoleWorkspaceContext';
 
@@ -12,8 +13,24 @@ interface TieredPackagingModalProps {
 export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalProps) {
   const { currentRole, setRole } = useRoleWorkspace();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !mounted) return null;
 
   const tiers = [
     {
@@ -86,36 +103,56 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
     },
   ];
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in overflow-y-auto">
-      <div className="bg-slate-950/95 border border-white/[0.12] rounded-3xl max-w-5xl w-full p-6 sm:p-8 shadow-2xl space-y-6 text-white my-8 animate-in zoom-in-95">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/40 dark:bg-slate-950/80 backdrop-blur-xl p-4 animate-in fade-in overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="relative bg-white dark:bg-gradient-to-b dark:from-slate-900/95 dark:via-slate-950/98 dark:to-slate-950/99 border border-slate-200 dark:border-white/[0.14] rounded-3xl max-w-5xl w-full p-6 sm:p-8 shadow-[0_25px_70px_rgba(0,0,0,0.25)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl space-y-6 text-slate-900 dark:text-white my-8 animate-in zoom-in-95 overflow-hidden">
+        {/* Ambient Top Glow Line */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent pointer-events-none" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+
         {/* Header */}
-        <div className="flex justify-between items-start border-b border-white/[0.08] pb-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <Sparkles className="text-emerald-400" size={22} />
-              <h2 className="text-xl font-bold text-white">Tiered Product Packaging & Workspace Editions</h2>
+        <div className="flex justify-between items-start border-b border-slate-200 dark:border-white/[0.08] pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/25 border border-emerald-300/30">
+              <Sparkles size={18} />
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              Select a specialized functional edition or unlock the complete 67-feature Business OS suite.
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">Tiered Product Packaging & Workspace Editions</h2>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 uppercase">
+                  Subscriptions
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Select a specialized functional edition or unlock the complete 67-feature Business OS suite
+              </p>
+            </div>
           </div>
 
-          <button onClick={onClose} className="text-slate-400 hover:text-white p-1 rounded-lg cursor-pointer">
-            <X size={20} />
+          <button 
+            type="button" 
+            onClick={onClose} 
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
+          >
+            <X size={18} />
           </button>
         </div>
 
         {/* Billing Cycle Switcher */}
         <div className="flex justify-center">
-          <div className="flex items-center p-1 bg-white/[0.04] border border-white/[0.08] rounded-2xl">
+          <div className="flex items-center p-1 bg-slate-100 dark:bg-black/40 border border-slate-200 dark:border-white/[0.1] rounded-2xl">
             <button
               type="button"
               onClick={() => setBillingCycle('monthly')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 billingCycle === 'monthly'
                   ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               Monthly Billing
@@ -123,14 +160,14 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
             <button
               type="button"
               onClick={() => setBillingCycle('annual')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 billingCycle === 'annual'
                   ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               <span>Annual Billing</span>
-              <span className="px-1.5 py-0.2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded text-[9px]">
+              <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 rounded-md text-[9px] font-extrabold">
                 Save 20%
               </span>
             </button>
@@ -147,10 +184,10 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
                 key={tier.id}
                 className={`p-5 rounded-3xl border flex flex-col justify-between transition-all relative ${
                   tier.popular
-                    ? 'bg-gradient-to-b from-amber-500/10 via-white/[0.04] to-white/[0.02] border-amber-500/50 shadow-lg shadow-orange-500/10'
+                    ? 'bg-emerald-500/[0.06] dark:bg-gradient-to-b dark:from-emerald-500/15 dark:via-black/40 dark:to-black/60 border-emerald-500/50 shadow-lg shadow-emerald-500/10'
                     : isCurrent
-                    ? 'bg-white/[0.06] border-emerald-400/40'
-                    : 'bg-white/[0.03] border-white/[0.08] hover:border-white/[0.15]'
+                    ? 'bg-slate-50 dark:bg-black/50 border-emerald-500/50 shadow-md shadow-emerald-500/10'
+                    : 'bg-white dark:bg-black/30 border-slate-200 dark:border-white/[0.08] hover:border-emerald-500/30 dark:hover:border-white/[0.18]'
                 }`}
               >
                 {tier.popular && (
@@ -161,25 +198,25 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
 
                 <div className="space-y-4">
                   <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                       {tier.badge}
                     </span>
-                    <h3 className="text-sm font-bold text-white mt-0.5">{tier.title}</h3>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{tier.description}</p>
+                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white mt-0.5">{tier.title}</h3>
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{tier.description}</p>
                   </div>
 
                   <div>
-                    <span className="text-3xl font-extrabold font-mono text-white">${tier.price}</span>
-                    <span className="text-xs text-slate-400 font-medium"> / seat / mo</span>
+                    <span className="text-3xl font-extrabold font-mono text-slate-900 dark:text-white">${tier.price}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium"> / seat / mo</span>
                   </div>
 
-                  <div className="space-y-2 pt-2 border-t border-white/[0.06]">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                  <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-white/[0.06]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
                       Included Modules:
                     </span>
                     {tier.features.map((feat, idx) => (
-                      <div key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-300">
-                        <Check size={13} className="text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <div key={idx} className="flex items-start gap-1.5 text-[11px] text-slate-700 dark:text-slate-300">
+                        <Check size={13} className="text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
                         <span>{feat}</span>
                       </div>
                     ))}
@@ -195,10 +232,10 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
                     }}
                     className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                       isCurrent
-                        ? 'bg-white/[0.08] text-emerald-300 border border-emerald-500/30'
+                        ? 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/40 font-extrabold'
                         : tier.popular
-                        ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/25'
-                        : 'bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.1]'
+                        ? 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 shadow-lg shadow-emerald-500/25 font-extrabold'
+                        : 'bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] text-slate-900 dark:text-white border border-slate-200 dark:border-white/[0.1]'
                     }`}
                   >
                     {isCurrent ? '✓ Current Workspace' : tier.cta}
@@ -209,6 +246,7 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
           })}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -70,7 +70,7 @@ model Contact {
   companyId String?
   
   // Dynamic fields for Low-Code flexibility
-  customData Json?   @default("{}")
+  customData String?  @default("{}")
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -88,7 +88,7 @@ model Company {
   industry  String?
   
   // Dynamic fields for Low-Code flexibility
-  customData Json?   @default("{}")
+  customData String?  @default("{}")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -113,7 +113,7 @@ model Deal {
   contactId   String?
   
   // Dynamic fields for Low-Code flexibility
-  customData  Json?    @default("{}")
+  customData  String?  @default("{}")
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -132,7 +132,7 @@ model Activity {
   tenantId    String
   type        String   // 'NOTE', 'EMAIL', 'CALL', 'MEETING', 'SYSTEM'
   title       String?  // Optional short title
-  content     String   @db.Text
+  content     String
   
   // Polymorphic relations (optional associations)
   contactId   String?
@@ -161,7 +161,7 @@ model Workflow {
   description String?
   isActive    Boolean  @default(false)
   triggerType String   // e.g., 'ON_RECORD_CREATE', 'SCHEDULED', 'WEBHOOK'
-  triggerData Json?    @default("{}") // Specific configuration for the trigger
+  triggerData String?  @default("{}") // Specific configuration for the trigger
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -174,7 +174,7 @@ model WorkflowAction {
   id            String   @id @default(cuid())
   workflowId    String
   actionType    String   // e.g., 'SEND_EMAIL', 'CREATE_RECORD', 'HTTP_REQUEST'
-  actionData    Json?    @default("{}") // Configuration for the action
+  actionData    String?  @default("{}") // Configuration for the action
   orderIndex    Int      // Execution order
   parentActionId String? // Support for branching logic
 
@@ -214,12 +214,12 @@ model CustomField {
   apiName        String
   fieldType      String   // e.g., 'TEXT', 'NUMBER', 'DATE', 'BOOLEAN', 'RELATION'
   isRequired     Boolean  @default(false)
-  options        Json?    // For dropdowns/multi-selects
+  options        String?  // For dropdowns/multi-selects
 
   defaultValue   String?
   isUnique       Boolean  @default(false)
   isSearchable   Boolean  @default(false)
-  validationRules Json?
+  validationRules String?
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -233,7 +233,7 @@ model CustomRecord {
   id             String   @id @default(cuid())
   tenantId       String
   customObjectId String
-  data           Json     @default("{}") // The actual row data
+  data           String   @default("{}") // The actual row data
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -251,7 +251,7 @@ model AIPromptTemplate {
   id          String   @id @default(cuid())
   tenantId    String
   name        String
-  prompt      String   @db.Text
+  prompt      String
   model       String   @default("gpt-4o") // LLM Model to use
 
   createdAt   DateTime @default(now())
@@ -264,8 +264,8 @@ model KnowledgeBaseDocument {
   id          String   @id @default(cuid())
   tenantId    String
   title       String
-  content     String   @db.Text
-  vectorEmbeddings Json? // Mocking vector storage, in production use pgvector
+  content     String
+  vectorEmbeddings String? // Mocking vector storage, in production use pgvector
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -540,7 +540,7 @@ model ApiKey {
   id          String   @id @default(uuid())
   name        String
   key         String   @unique
-  permissions String[]
+  permissions String   @default("")
   
   tenantId    String
   createdAt   DateTime @default(now())
@@ -550,7 +550,7 @@ model ApiKey {
 model Webhook {
   id        String   @id @default(uuid())
   url       String
-  events    String[]
+  events    String   @default("")
   secret    String?
   isActive  Boolean  @default(true)
   
@@ -569,7 +569,7 @@ model AuditLog {
   entityType  String   // e.g., "User", "Contact"
   entityId    String?
   userId      String?
-  metadata    Json?
+  metadata    String?
   
   tenantId    String
   createdAt   DateTime @default(now())
@@ -613,7 +613,7 @@ model PageBlock {
   id            String   @id @default(uuid())
   landingPageId String
   type          String   // e.g., 'HERO', 'FEATURES', 'PRICING'
-  content       Json     @default("{}") // Block specific configurations/content
+  content       String   @default("{}") // Block specific configurations/content
   orderIndex    Int
   
   landingPage   LandingPage @relation(fields: [landingPageId], references: [id], onDelete: Cascade)
@@ -707,7 +707,7 @@ model ReportTemplate {
   id        String   @id @default(uuid())
   tenantId  String
   name      String
-  config    Json
+  config    String   @default("{}")
   createdAt DateTime @default(now())
 }
 
@@ -731,7 +731,7 @@ model Localization {
   id        String   @id @default(uuid())
   tenantId  String
   language  String
-  keys      Json
+  keys      String   @default("{}")
   createdAt DateTime @default(now())
 }
 
@@ -773,7 +773,7 @@ model Permission {
   roleId      String
   action      String   // e.g., 'create', 'read', 'update', 'delete', 'manage'
   subject     String   // e.g., 'CustomObject', 'Deal', 'Contact' or specific custom object apiName
-  conditions  Json?    @default("{}") // ABAC rules (e.g., { "ownerId": "{userId}" })
+  conditions  String?  @default("{}") // ABAC rules (e.g., { "ownerId": "{userId}" })
   
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

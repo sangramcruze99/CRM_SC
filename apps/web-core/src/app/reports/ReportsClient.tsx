@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Activity,
   TrendingUp,
@@ -11,6 +12,9 @@ import {
   BarChart3,
   CheckCircle,
   Sparkles,
+  X,
+  FileText,
+  Layers,
 } from 'lucide-react';
 
 interface Report {
@@ -63,6 +67,9 @@ const initialDemoReports: Report[] = [
 ];
 
 export function ReportsClient({ initialReports = [] }: { initialReports?: any[] }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const [reports, setReports] = useState<Report[]>(
     initialReports.length > 0 ? initialReports : initialDemoReports
   );
@@ -103,11 +110,11 @@ export function ReportsClient({ initialReports = [] }: { initialReports?: any[] 
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-white">
+    <div className="space-y-6 max-w-7xl mx-auto text-slate-900 dark:text-white">
       {/* Top Notification */}
       {downloadSuccess && (
-        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle size={16} className="text-emerald-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" />
           <span>{downloadSuccess} Complete! Download initiated.</span>
         </div>
       )}
@@ -115,11 +122,11 @@ export function ReportsClient({ initialReports = [] }: { initialReports?: any[] 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Activity className="text-emerald-400" size={24} />
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+            <Activity className="text-emerald-600 dark:text-emerald-400" size={24} />
             Analytics & Executive BI Reports
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
             Real-time pipeline analytics, financial performance summaries, and custom export generation.
           </p>
         </div>
@@ -243,62 +250,89 @@ export function ReportsClient({ initialReports = [] }: { initialReports?: any[] 
         </table>
       </div>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
-          <div className="bg-slate-950/95 border border-white/[0.12] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150 text-white">
-            <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
-              <h2 className="text-base font-bold text-white">Generate Executive BI Report</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
-                ✕
+      {/* Remodeled Luxury Glass Portal Modal */}
+      {isModalOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl text-white space-y-5 animate-in zoom-in-95 duration-200 overflow-hidden">
+            {/* Top Specular Flare */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+
+            {/* Header with category badge */}
+            <div className="flex items-start justify-between pb-4 border-b border-white/[0.08] relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-teal-500/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                  <BarChart3 size={20} />
+                </div>
+                <div>
+                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-black tracking-widest text-emerald-300 uppercase">
+                    ANALYTICS & BI ENGINE
+                  </span>
+                  <h2 className="text-base font-bold text-white tracking-tight mt-0.5">Generate Executive BI Report</h2>
+                  <p className="text-xs text-slate-400 font-medium">Query cross-tenant analytics data with automated charting</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all cursor-pointer"
+              >
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Report Title</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Q4 Executive ARR Forecast"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08]"
-                />
+            <form onSubmit={handleCreate} className="space-y-4 text-xs relative z-10">
+              <div className="space-y-1.5">
+                <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Report Title</label>
+                <div className="relative">
+                  <FileText size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Q4 Executive ARR Forecast & Cohort Retention"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Analytics Domain</label>
-                <select
-                  value={category}
-                  onChange={(e: any) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none"
-                >
-                  <option value="Sales">Sales & Opportunities</option>
-                  <option value="Finance">Finance & MRR</option>
-                  <option value="Helpdesk">Helpdesk & Support SLAs</option>
-                  <option value="Executive">Executive Operations</option>
-                </select>
+              <div className="space-y-1.5">
+                <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Analytics Domain</label>
+                <div className="relative">
+                  <Layers size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <select
+                    value={category}
+                    onChange={(e: any) => setCategory(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
+                  >
+                    <option value="Sales">Sales & Deals Pipeline</option>
+                    <option value="Finance">Finance & MRR Khata</option>
+                    <option value="Helpdesk">Helpdesk & Support SLAs</option>
+                    <option value="Executive">Executive Operations</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
+              <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-xl text-xs font-semibold border border-white/[0.1] cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/[0.08] text-xs font-semibold transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  Run Query & Generate
+                  <Sparkles size={13} />
+                  <span>Run Query & Generate</span>
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

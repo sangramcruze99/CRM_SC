@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Mail,
   Printer,
@@ -60,6 +61,9 @@ export function InvoiceDispatchModal({
   invoice,
   initialTab = 'email',
 }: InvoiceDispatchModalProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const [activeTab, setActiveTab] = useState<'email' | 'receipt'>(initialTab);
   const [receiptFormat, setReceiptFormat] = useState<'thermal' | 'a4'>('thermal');
   
@@ -76,7 +80,7 @@ export function InvoiceDispatchModal({
   const [isSent, setIsSent] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const handleSendEmail = (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,29 +107,37 @@ export function InvoiceDispatchModal({
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-white/[0.12] rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-white animate-in zoom-in-95 duration-200">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-200">
+      <div className="relative bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-white animate-in zoom-in-95 duration-200">
+        {/* Ambient Top Glow Line */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+        <div className="px-6 py-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/25 border border-emerald-300/30">
               <Share2 size={18} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white flex items-center gap-2">
-                Send & Print Invoice #{invoice.invoiceNumber}
-              </h2>
-              <p className="text-xs text-slate-400">
-                Dispatch official digital billing via email or generate physical POS / A4 paper receipts.
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-extrabold text-white flex items-center gap-2 tracking-tight">
+                  Send & Print Invoice #{invoice.invoiceNumber}
+                </h2>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 uppercase">
+                  Billing
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Dispatch official digital billing via email or generate physical POS / A4 paper receipts
               </p>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
             {/* Tab Switcher */}
-            <div className="flex bg-white/[0.06] p-1 rounded-xl border border-white/[0.08]">
+            <div className="flex bg-black/40 p-1 rounded-xl border border-white/[0.1]">
               <button
                 type="button"
                 onClick={() => setActiveTab('email')}
@@ -154,7 +166,7 @@ export function InvoiceDispatchModal({
 
             <button
               onClick={onClose}
-              className="p-1.5 text-slate-400 hover:text-white hover:bg-white/[0.08] rounded-xl transition-colors cursor-pointer"
+              className="p-2 text-slate-400 hover:text-white hover:bg-white/[0.08] rounded-xl transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -565,6 +577,7 @@ export function InvoiceDispatchModal({
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

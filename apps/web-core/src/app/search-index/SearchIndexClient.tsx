@@ -11,11 +11,11 @@ interface IndexEntity {
 }
 
 const initialEntities: IndexEntity[] = [
-  { name: 'Contacts & Accounts', count: 1240, lastIndexed: '5 mins ago', status: 'SYNCHRONIZED' },
-  { name: 'Deals & Opportunities', count: 480, lastIndexed: '5 mins ago', status: 'SYNCHRONIZED' },
-  { name: 'Helpdesk Tickets & Messages', count: 3250, lastIndexed: '5 mins ago', status: 'SYNCHRONIZED' },
-  { name: 'Invoices & Transactions', count: 890, lastIndexed: '5 mins ago', status: 'SYNCHRONIZED' },
-  { name: 'Documents & Knowledge Base', count: 620, lastIndexed: '5 mins ago', status: 'SYNCHRONIZED' },
+  { name: 'Contacts & Accounts', count: 0, lastIndexed: 'Never', status: 'SYNCHRONIZED' },
+  { name: 'Deals & Opportunities', count: 0, lastIndexed: 'Never', status: 'SYNCHRONIZED' },
+  { name: 'Helpdesk Tickets & Messages', count: 0, lastIndexed: 'Never', status: 'SYNCHRONIZED' },
+  { name: 'Invoices & Transactions', count: 0, lastIndexed: 'Never', status: 'SYNCHRONIZED' },
+  { name: 'Documents & Knowledge Base', count: 0, lastIndexed: 'Never', status: 'SYNCHRONIZED' },
 ];
 
 export function SearchIndexClient({ initialRecords = [] }: { initialRecords?: any[] }) {

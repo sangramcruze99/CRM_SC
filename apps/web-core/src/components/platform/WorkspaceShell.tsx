@@ -46,7 +46,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
   // Authenticated workspace view with full SidebarNav, Topbar, AI Copilot, and Metering
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-[#07090e]">
+    <div className="flex flex-col h-full w-full overflow-hidden bg-transparent relative">
       {/* Native Desktop Window Header Bar */}
       <NativeAppTitlebar />
 
@@ -58,9 +58,9 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
         <GlowingOrbitalBackground />
 
         {/* Main Workspace Area */}
-        <main className="flex-1 flex flex-col h-full overflow-hidden bg-transparent relative z-0">
+        <main className="flex-1 flex flex-col h-full overflow-hidden bg-transparent relative z-10">
           {/* Floating Frosted Glass Topbar */}
-          <header className="h-14 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-5 sm:px-8 bg-white/85 dark:bg-[#0c1411]/75 backdrop-blur-3xl z-10 shadow-xs dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)] shrink-0">
+          <header className="h-14 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-5 sm:px-8 bg-white/85 dark:bg-[#0c1411]/75 backdrop-blur-3xl z-20 shadow-xs dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)] shrink-0">
             <div className="flex items-center space-x-3 text-sm font-medium text-slate-700 dark:text-slate-400">
               <SidebarToggle />
               <div className="flex items-center">

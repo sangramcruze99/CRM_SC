@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Printer,
   Download,
@@ -10,6 +11,7 @@ import {
   CheckCircle2,
   Building,
   QrCode,
+  Sparkles,
 } from 'lucide-react';
 
 export interface PdfExportData {
@@ -50,30 +52,62 @@ interface PdfExportModalProps {
 
 export function PdfExportModal({ isOpen, onClose, data }: PdfExportModalProps) {
   const printRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !mounted) return null;
 
   const handleTriggerPrint = () => {
     window.print();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-in fade-in">
-      <div className="bg-[#0f1422] border border-white/15 rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl flex flex-col max-h-[92vh]">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xl overflow-y-auto animate-in fade-in">
+      <div className="relative bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl w-full max-w-3xl overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl flex flex-col max-h-[92vh]">
+        {/* Ambient Top Glow Line */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+
         {/* Modal Top Control Bar */}
-        <div className="p-4 px-6 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
-          <div className="flex items-center gap-2">
-            <FileText size={18} className="text-emerald-400" />
-            <h3 className="font-bold text-sm text-white">
-              High-Fidelity PDF Preview & Vector Print Exporter
-            </h3>
+        <div className="px-6 py-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/25 border border-emerald-300/30">
+              <FileText size={18} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-extrabold text-sm text-white tracking-tight">
+                  High-Fidelity PDF Preview & Vector Exporter
+                </h3>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 uppercase">
+                  Engine
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Print or export cryptographically signed document
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-2.5">
             <button
               type="button"
               onClick={handleTriggerPrint}
-              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-emerald-500/25 cursor-pointer"
+              className="px-4 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-all cursor-pointer"
             >
               <Printer size={14} />
               <span>Print / Download PDF</span>
@@ -84,7 +118,7 @@ export function PdfExportModal({ isOpen, onClose, data }: PdfExportModalProps) {
               onClick={onClose}
               className="p-2 text-slate-400 hover:text-white rounded-xl bg-white/[0.05] hover:bg-white/[0.1] transition-colors cursor-pointer"
             >
-              <X size={16} />
+              <X size={18} />
             </button>
           </div>
         </div>
@@ -242,6 +276,7 @@ export function PdfExportModal({ isOpen, onClose, data }: PdfExportModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

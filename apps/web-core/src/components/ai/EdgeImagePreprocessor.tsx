@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { RotateCw, SunMedium, Sparkles, Check, RefreshCcw, Crop } from 'lucide-react';
 
 interface EdgeImagePreprocessorProps {
-  imageSrc: string;
+  imageSrc: string | null;
   onProcessed: (processedBase64: string) => void;
 }
 
@@ -14,9 +14,10 @@ export function EdgeImagePreprocessor({ imageSrc, onProcessed }: EdgeImagePrepro
   const [contrast, setContrast] = useState<number>(120); // 100% is normal
   const [brightness, setBrightness] = useState<number>(105);
   const [isBinarized, setIsBinarized] = useState(false);
-  const [processedPreview, setProcessedPreview] = useState<string>(imageSrc);
+  const [processedPreview, setProcessedPreview] = useState<string | null>(imageSrc);
 
   const applyCanvasFilters = () => {
+    if (!imageSrc) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 

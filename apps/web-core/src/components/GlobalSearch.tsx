@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   Search,
   Briefcase,
@@ -18,6 +19,7 @@ import {
   ArrowRight,
   Terminal,
   Zap,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRoleWorkspace, WorkspaceRole } from "./platform/RoleWorkspaceContext";
@@ -34,6 +36,7 @@ interface CommandItem {
 
 export function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -41,6 +44,10 @@ export function GlobalSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const { setRole } = useRoleWorkspace();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const QUICK_COMMANDS: CommandItem[] = [
     {
@@ -175,20 +182,31 @@ export function GlobalSearch() {
           setIsOpen(true);
           setTimeout(() => inputRef.current?.focus(), 100);
         }}
-        className="flex items-center space-x-2.5 px-3.5 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-medium transition-all border border-white/[0.1] shadow-xs cursor-pointer"
+        className="flex items-center space-x-2.5 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white rounded-xl text-xs font-semibold transition-all border border-slate-200 dark:border-white/[0.1] shadow-xs cursor-pointer active:scale-[0.98]"
       >
-        <Search size={14} className="text-slate-400" />
+        <Search size={14} className="text-emerald-600 dark:text-emerald-400" />
         <span>Command Palette...</span>
-        <span className="text-[10px] font-mono font-bold bg-white/[0.08] text-emerald-400 px-1.5 py-0.5 rounded-md border border-white/10 ml-2 shadow-2xs">⌘K</span>
+        <span className="text-[10px] font-mono font-bold bg-slate-200 dark:bg-white/[0.08] text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-md border border-slate-300 dark:border-white/10 ml-2 shadow-2xs">⌘K</span>
       </button>
 
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50 animate-in fade-in" onClick={() => setIsOpen(false)} />
-          <div className="fixed top-20 left-1/2 -translate-x-1/2 w-full max-w-xl bg-white dark:bg-slate-950/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.14] rounded-3xl shadow-2xl z-50 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-white">
+      {isOpen && mounted && createPortal(
+        <div
+          className="fixed inset-0 z-[9999] bg-slate-950/40 dark:bg-slate-950/80 backdrop-blur-xl flex items-start justify-center pt-20 px-4 animate-in fade-in duration-150"
+          onClick={() => setIsOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-xl bg-white/95 dark:bg-gradient-to-b dark:from-slate-900/95 dark:via-slate-950/98 dark:to-slate-950/99 backdrop-blur-2xl border border-slate-200/90 dark:border-white/[0.14] rounded-3xl shadow-[0_25px_70px_rgba(15,23,42,0.15),0_0_0_1px_rgba(16,185,129,0.15)] dark:shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-white"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top Specular Glow Lines */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+
             {/* Search Input Bar */}
-            <div className="p-4 border-b border-slate-200 dark:border-white/[0.08] flex items-center space-x-3 bg-slate-50 dark:bg-white/[0.02]">
-              <Search size={18} className="text-emerald-600 dark:text-emerald-400" />
+            <div className="p-4 border-b border-slate-200 dark:border-white/[0.08] flex items-center space-x-3 bg-slate-50/50 dark:bg-black/30 relative z-10">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                <Search size={16} />
+              </div>
               <input
                 ref={inputRef}
                 type="text"
@@ -201,16 +219,23 @@ export function GlobalSearch() {
                 placeholder="Type a command (e.g. 'scan', 'sales', 'deals', 'khata')..."
                 className="flex-1 bg-transparent border-none text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none text-sm font-medium"
               />
-              {isLoading && <Loader2 size={16} className="text-emerald-400 animate-spin" />}
-              <span className="text-[10px] bg-slate-200 dark:bg-white/[0.06] px-2 py-0.5 rounded-md text-slate-600 dark:text-slate-400 font-mono">
+              {isLoading && <Loader2 size={16} className="text-emerald-500 dark:text-emerald-400 animate-spin" />}
+              <span className="text-[10px] bg-slate-100 dark:bg-white/[0.08] px-2 py-0.5 rounded-lg text-slate-600 dark:text-slate-400 font-mono border border-slate-200 dark:border-white/[0.1]">
                 ↑↓ to navigate · ↵ select
               </span>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-white/[0.08] cursor-pointer"
+              >
+                <X size={15} />
+              </button>
             </div>
             
             {/* Command & Quick Actions List */}
-            <div className="max-h-[380px] overflow-y-auto p-2 space-y-1">
-              <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 px-3 py-1">
-                Suggested Actions & Navigation
+            <div className="max-h-[380px] overflow-y-auto p-2.5 space-y-1 relative z-10">
+              <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 px-3 py-1 flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Suggested Actions & Navigation</span>
               </div>
 
               {filteredCommands.map((cmd, idx) => {
@@ -232,29 +257,29 @@ export function GlobalSearch() {
                     onMouseEnter={() => setSelectedIndex(idx)}
                     className={`flex items-center justify-between p-2.5 rounded-2xl transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-gradient-to-r from-emerald-500/20 via-teal-500/10 to-transparent border border-emerald-500/40 text-slate-950 dark:text-white shadow-xs'
+                        ? 'bg-emerald-500/15 dark:bg-gradient-to-r dark:from-emerald-500/20 dark:via-teal-500/15 dark:to-emerald-500/10 border border-emerald-500/40 text-slate-900 dark:text-white shadow-xs'
                         : 'hover:bg-slate-100 dark:hover:bg-white/[0.04] text-slate-700 dark:text-slate-300 border border-transparent'
                     }`}
                   >
-                    <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-xl border ${
-                        isSelected ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-white/[0.04] border-white/[0.08] text-slate-400'
+                    <div className="flex items-center space-x-3 min-w-0">
+                      <div className={`p-2 rounded-xl border transition-all ${
+                        isSelected ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-800 dark:text-emerald-300 shadow-xs' : 'bg-slate-100 dark:bg-black/40 border-slate-200 dark:border-white/[0.1] text-slate-500 dark:text-slate-400'
                       }`}>
                         <Icon size={16} />
                       </div>
-                      <div>
-                        <span className={`text-xs font-bold block ${isSelected ? 'text-emerald-300' : 'text-white'}`}>
+                      <div className="truncate">
+                        <span className={`text-xs font-bold block truncate ${isSelected ? 'text-emerald-800 dark:text-emerald-300' : 'text-slate-900 dark:text-white'}`}>
                           {cmd.title}
                         </span>
-                        <span className="text-[11px] text-slate-400">{cmd.subtitle}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate font-medium">{cmd.subtitle}</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] uppercase font-mono font-bold px-1.5 py-0.5 rounded bg-white/[0.06] text-slate-400">
+                    <div className="flex items-center gap-2 shrink-0 ml-3">
+                      <span className="text-[9px] uppercase font-mono font-black px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/[0.06] text-emerald-800 dark:text-emerald-300 border border-slate-200 dark:border-emerald-500/20">
                         {cmd.type}
                       </span>
-                      <ArrowRight size={13} className={isSelected ? 'text-emerald-400' : 'text-slate-600'} />
+                      <ArrowRight size={13} className={isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-600'} />
                     </div>
                   </div>
                 );
@@ -262,15 +287,16 @@ export function GlobalSearch() {
             </div>
             
             {/* Footer */}
-            <div className="p-3 border-t border-white/[0.08] bg-white/[0.02] flex justify-between items-center text-xs">
-              <span className="text-[11px] font-bold text-slate-400 tracking-wider flex items-center space-x-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block animate-pulse" />
-                <span>Command Engine Active</span>
+            <div className="p-3 border-t border-slate-200 dark:border-white/[0.08] bg-slate-50 dark:bg-black/40 flex justify-between items-center text-xs relative z-10">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider flex items-center space-x-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 inline-block animate-pulse" />
+                <span className="text-emerald-700 dark:text-emerald-300 font-semibold">Command Engine Active</span>
               </span>
-              <span className="text-[11px] text-slate-500 font-mono">ESC to dismiss</span>
+              <span className="text-[11px] text-slate-500 font-mono">ESC or click outside to dismiss</span>
             </div>
           </div>
-        </>
+        </div>,
+        document.body
       )}
     </div>
   );

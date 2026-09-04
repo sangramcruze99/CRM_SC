@@ -11,6 +11,10 @@ import {
   Sparkles,
   Plus,
   Trash2,
+  User,
+  FileText,
+  Activity,
+  HeartPulse,
 } from 'lucide-react';
 
 interface MedicationItem {
@@ -50,31 +54,42 @@ export function DigitalRxPrescriptionMaker() {
   };
 
   return (
-    <div className="bg-white/[0.04] backdrop-blur-2xl border border-rose-500/30 rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-6 text-white">
+    <div className="relative bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(244,63,94,0.15)] backdrop-blur-2xl space-y-6 text-white overflow-hidden">
+      {/* Top Specular Glow Lines */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-rose-400/50 to-transparent pointer-events-none" />
+      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-rose-500/10 blur-3xl rounded-full" />
+
       {/* Alert */}
       {alert && (
-        <div className="p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs font-semibold flex items-center gap-2">
-          <CheckCircle2 size={15} />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 relative z-10">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
 
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-white/[0.06] pb-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30">
-            <Stethoscope size={20} />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/[0.08] pb-5 relative z-10">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-400/20 to-pink-500/10 border border-rose-400/30 flex items-center justify-center text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]">
+            <Stethoscope size={22} />
           </div>
           <div>
-            <h3 className="font-bold text-base text-white">Digital Rx Prescription & Drug Interaction Engine</h3>
-            <span className="text-xs text-slate-400">Hospital Medical Board Compliant · E-Prescribe Ready</span>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 rounded-md bg-rose-500/15 border border-rose-500/30 text-[9px] font-black tracking-widest text-rose-300 uppercase">
+                HEALTHCARE EHR
+              </span>
+            </div>
+            <h3 className="font-bold text-base text-white tracking-tight mt-0.5">
+              Digital Rx Prescription & Drug Interaction Engine
+            </h3>
+            <span className="text-xs text-slate-400 font-medium">Hospital Medical Board Compliant · E-Prescribe Ready</span>
           </div>
         </div>
 
         <button
           type="button"
           onClick={handlePrintRx}
-          className="px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-rose-500/20 cursor-pointer"
+          className="px-4 py-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-400 hover:to-pink-400 text-white font-black rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-rose-500/25 cursor-pointer transition-all active:scale-[0.98] border border-rose-400/40"
         >
           <Printer size={14} />
           <span>Sign & Print Prescription (Rx)</span>
@@ -82,55 +97,64 @@ export function DigitalRxPrescriptionMaker() {
       </div>
 
       {/* AI Drug Contraindication Safety Shield */}
-      <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-2xl flex items-center gap-3 text-xs text-rose-200">
-        <ShieldAlert size={18} className="text-rose-400 flex-shrink-0" />
-        <span>
-          <strong>AI Safety Check:</strong> 0 contraindications or lethal drug interactions detected between current medications and patient allergy records.
+      <div className="p-4 bg-rose-500/10 border border-rose-500/25 rounded-2xl flex items-center gap-3 text-xs text-rose-200 relative z-10">
+        <ShieldAlert size={18} className="text-rose-400 shrink-0" />
+        <span className="font-medium">
+          <strong className="font-bold text-white">AI Safety Check:</strong> 0 contraindications or lethal drug interactions detected between current medications and patient allergy records.
         </span>
       </div>
 
       {/* Prescription Form Canvas */}
-      <div className="p-5 bg-white/[0.02] border border-white/[0.06] rounded-2xl space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div>
-            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Patient Name</label>
-            <input
-              type="text"
-              value={patientName}
-              onChange={(e) => setPatientName(e.target.value)}
-              className="w-full px-3 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white"
-            />
+      <div className="p-5 bg-black/40 border border-white/[0.1] rounded-2xl space-y-4 relative z-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 text-xs">
+          <div className="space-y-1.5">
+            <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Patient Name</label>
+            <div className="relative">
+              <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-black/50 border border-white/[0.12] rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/20 transition-all"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">EHR Record ID</label>
-            <input
-              type="text"
-              value={patientEhrId}
-              onChange={(e) => setPatientEhrId(e.target.value)}
-              className="w-full px-3 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono text-emerald-400"
-            />
+          <div className="space-y-1.5">
+            <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">EHR Record ID</label>
+            <div className="relative">
+              <FileText size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                value={patientEhrId}
+                onChange={(e) => setPatientEhrId(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-black/50 border border-white/[0.12] rounded-xl text-xs font-mono font-bold text-emerald-400 focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/20 transition-all"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Diagnosis</label>
-            <input
-              type="text"
-              value={diagnosis}
-              onChange={(e) => setDiagnosis(e.target.value)}
-              className="w-full px-3 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white"
-            />
+          <div className="space-y-1.5">
+            <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Diagnosis</label>
+            <div className="relative">
+              <HeartPulse size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <input
+                type="text"
+                value={diagnosis}
+                onChange={(e) => setDiagnosis(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 bg-black/50 border border-white/[0.12] rounded-xl text-xs font-semibold text-white focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/20 transition-all"
+              />
+            </div>
           </div>
         </div>
 
         {/* Medications List */}
-        <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+        <div className="space-y-2.5 pt-3 border-t border-white/[0.08]">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-rose-300">Prescribed Medications (Rx)</span>
+            <span className="text-xs font-black uppercase tracking-wider text-rose-300">Prescribed Medications (Rx)</span>
             <button
               type="button"
               onClick={handleAddMedication}
-              className="px-2.5 py-1 bg-white/[0.06] hover:bg-white/[0.1] text-xs text-slate-300 rounded-lg flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-xs font-bold text-slate-200 hover:text-white rounded-xl flex items-center gap-1.5 cursor-pointer border border-white/[0.1] transition-all"
             >
-              <Plus size={12} /> Add Drug
+              <Plus size={13} /> Add Drug
             </button>
           </div>
 
@@ -138,19 +162,21 @@ export function DigitalRxPrescriptionMaker() {
             {medications.map((med, idx) => (
               <div
                 key={idx}
-                className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-xl flex items-center justify-between gap-3 text-xs"
+                className="p-3.5 bg-black/50 border border-white/[0.1] rounded-xl flex items-center justify-between gap-3 text-xs"
               >
-                <div className="flex items-center gap-2.5">
-                  <Pill size={15} className="text-rose-400" />
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                    <Pill size={16} />
+                  </div>
                   <div>
                     <span className="font-bold text-white block">{med.drugName} ({med.dosage})</span>
-                    <span className="text-[11px] text-slate-400">{med.frequency} · {med.duration}</span>
+                    <span className="text-[11px] text-slate-400 font-medium">{med.frequency} · {med.duration}</span>
                   </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleRemoveMedication(idx)}
-                  className="text-slate-500 hover:text-rose-400 cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-rose-500/10 cursor-pointer transition-colors"
                 >
                   <Trash2 size={14} />
                 </button>

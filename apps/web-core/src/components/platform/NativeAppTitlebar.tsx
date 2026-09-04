@@ -68,7 +68,7 @@ export function NativeAppTitlebar() {
   };
 
   return (
-    <div className="h-9 px-3.5 bg-[#080d0b] dark:bg-[#060908] border-b border-white/[0.08] flex items-center justify-between select-none text-xs text-slate-400 z-50 shrink-0">
+    <div className="h-9 px-3.5 bg-slate-100 dark:bg-[#060908] border-b border-slate-200 dark:border-white/[0.08] flex items-center justify-between select-none text-xs text-slate-600 dark:text-slate-400 z-50 shrink-0">
       {/* Left: macOS Native Window Beads & App Badge */}
       <div className="flex items-center gap-3">
         {/* Window Beads */}
@@ -78,13 +78,13 @@ export function NativeAppTitlebar() {
           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 group-hover:bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)] transition-colors" />
         </div>
 
-        <div className="h-3 w-px bg-white/10" />
+        <div className="h-3 w-px bg-slate-300 dark:bg-white/10" />
 
         {/* App Title & Current Breadcrumb */}
         <div className="flex items-center gap-1.5 font-semibold text-[11px]">
-          <span className="text-white font-bold tracking-tight">Business OS</span>
-          <span className="text-slate-600">/</span>
-          <span className="text-emerald-400 truncate max-w-[140px] sm:max-w-none">
+          <span className="text-slate-900 dark:text-white font-bold tracking-tight">Business OS</span>
+          <span className="text-slate-400 dark:text-slate-600">/</span>
+          <span className="text-emerald-700 dark:text-emerald-400 font-bold truncate max-w-[140px] sm:max-w-none">
             {formatBreadcrumb(pathname)}
           </span>
         </div>
@@ -94,11 +94,11 @@ export function NativeAppTitlebar() {
       <button
         type="button"
         onClick={triggerCommandPalette}
-        className="hidden md:flex items-center gap-2 px-3 py-1 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-emerald-500/30 rounded-full text-[11px] text-slate-300 hover:text-white transition-all cursor-pointer shadow-xs"
+        className="hidden md:flex items-center gap-2 px-3 py-1 bg-white hover:bg-slate-50 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/10 hover:border-emerald-500/30 rounded-full text-[11px] text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white transition-all cursor-pointer shadow-xs"
       >
-        <Search size={11} className="text-emerald-400" />
+        <Search size={11} className="text-emerald-600 dark:text-emerald-400" />
         <span className="font-medium">Search or jump to...</span>
-        <kbd className="font-mono text-[9px] px-1.5 py-0.2 bg-white/10 border border-white/15 rounded text-emerald-300 font-bold">
+        <kbd className="font-mono text-[9px] px-1.5 py-0.2 bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/15 rounded text-emerald-700 dark:text-emerald-300 font-bold">
           Ctrl + K
         </kbd>
       </button>

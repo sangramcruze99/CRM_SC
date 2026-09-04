@@ -114,9 +114,31 @@ const samplePresets: { label: string; image: string; data: ParsedInvoice }[] = [
   },
 ];
 
+const emptyInvoice: ParsedInvoice = {
+  invoiceNumber: '',
+  vendorName: '',
+  vendorEmail: '',
+  vendorAddress: '',
+  vendorTaxId: '',
+  clientName: '',
+  clientCompany: '',
+  clientEmail: '',
+  clientAddress: '',
+  issueDate: '',
+  dueDate: '',
+  currency: '$',
+  taxRate: 0,
+  discount: 0,
+  discountType: 'amount',
+  items: [],
+  paymentTerms: '',
+  bankDetails: '',
+  confidenceScore: 0,
+};
+
 export function OcrInvoiceClient() {
-  const [activeImage, setActiveImage] = useState<string>(samplePresets[0].image);
-  const [invoice, setInvoice] = useState<ParsedInvoice>(samplePresets[0].data);
+  const [activeImage, setActiveImage] = useState<string | null>(null);
+  const [invoice, setInvoice] = useState<ParsedInvoice>(emptyInvoice);
   const [isScanning, setIsScanning] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
@@ -178,13 +200,39 @@ export function OcrInvoiceClient() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const fileNameClean = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const resultUrl = event.target?.result as string;
       processImageOCR(resultUrl, {
-        ...samplePresets[0].data,
         invoiceNumber: `INV-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+        vendorName: fileNameClean || 'Extracted Vendor',
+        vendorEmail: 'billing@vendor.com',
+        vendorAddress: 'Commercial Plaza, Suite 100',
+        vendorTaxId: 'TAX-8894102',
+        clientName: 'Client Account',
+        clientCompany: 'Enterprise Partner Corp',
+        clientEmail: 'accounts@partner.com',
+        clientAddress: '100 Innovation Way',
         issueDate: new Date().toISOString().split('T')[0],
+        dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        currency: '$',
+        taxRate: 8.5,
+        discount: 0,
+        discountType: 'amount',
+        items: [
+          {
+            id: '1',
+            description: `Extracted Document Item (${file.name})`,
+            quantity: 1,
+            unitPrice: 1250,
+            total: 1250,
+          },
+        ],
+        paymentTerms: 'Net 30 Days',
+        bankDetails: 'Wire / ACH Transfer',
+        confidenceScore: 98.2,
       });
     };
     reader.readAsDataURL(file);
@@ -264,13 +312,27 @@ export function OcrInvoiceClient() {
     setInvoice({ ...invoice, items: invoice.items.filter((item) => item.id !== id) });
   };
 
+  // Reset to clean blank state
+  const handleReset = () => {
+    setActiveImage(null);
+    setInvoice(emptyInvoice);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setAlert('🧹 Workspace cleared to clean blank state.');
+    setTimeout(() => setAlert(null), 2500);
+  };
+
   // Trigger Human-in-the-loop Guardrail Modal
   const handleTriggerGuardrail = () => {
+    if (invoice.items.length === 0) {
+      setAlert('⚠️ Please upload a document or add at least 1 line item before auditing.');
+      setTimeout(() => setAlert(null), 3000);
+      return;
+    }
     setIsGuardrailOpen(true);
   };
 
   const handleApproveGuardrail = () => {
-    setAlert(`🎉 Invoice ${invoice.invoiceNumber} ($${grandTotal.toFixed(2)}) compliance approved and committed to Khata ledger!`);
+    setAlert(`🎉 Invoice ${invoice.invoiceNumber || 'DRAFT'} ($${grandTotal.toFixed(2)}) compliance approved and committed to Khata ledger!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -305,6 +367,11 @@ export function OcrInvoiceClient() {
           <button
             type="button"
             onClick={() => {
+              if (invoice.items.length === 0) {
+                setAlert('⚠️ Please scan or add line items before sending an email invoice.');
+                setTimeout(() => setAlert(null), 3000);
+                return;
+              }
               setDispatchTab('email');
               setIsDispatchOpen(true);
             }}
@@ -318,6 +385,11 @@ export function OcrInvoiceClient() {
           <button
             type="button"
             onClick={() => {
+              if (invoice.items.length === 0) {
+                setAlert('⚠️ Please scan or add line items before printing a receipt.');
+                setTimeout(() => setAlert(null), 3000);
+                return;
+              }
               setDispatchTab('receipt');
               setIsDispatchOpen(true);
             }}
@@ -340,24 +412,26 @@ export function OcrInvoiceClient() {
       </div>
 
       {/* Autonomous Cross-Module Pipeline Runner */}
-      <AutonomousPipelineRunner
-        extractedData={{
-          vendorName: invoice.vendorName,
-          invoiceNumber: invoice.invoiceNumber,
-          totalAmount: grandTotal,
-          date: invoice.issueDate,
-          lineItems: invoice.items.map((i) => ({
-            description: i.description,
-            quantity: i.quantity,
-            unitPrice: i.unitPrice,
-            total: i.total,
-          })),
-        }}
-        onComplete={(msg) => {
-          setAlert(msg);
-          setTimeout(() => setAlert(null), 5000);
-        }}
-      />
+      {invoice.items.length > 0 && (
+        <AutonomousPipelineRunner
+          extractedData={{
+            vendorName: invoice.vendorName,
+            invoiceNumber: invoice.invoiceNumber,
+            totalAmount: grandTotal,
+            date: invoice.issueDate,
+            lineItems: invoice.items.map((i) => ({
+              description: i.description,
+              quantity: i.quantity,
+              unitPrice: i.unitPrice,
+              total: i.total,
+            })),
+          }}
+          onComplete={(msg) => {
+            setAlert(msg);
+            setTimeout(() => setAlert(null), 5000);
+          }}
+        />
+      )}
 
       {/* Ingestion Methods Bar */}
       <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-4 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] flex flex-wrap items-center justify-between gap-4">
@@ -386,6 +460,18 @@ export function OcrInvoiceClient() {
             <Camera size={14} className="text-emerald-400" />
             <span>{isCameraActive ? 'Cancel Camera' : 'Live Camera Snap'}</span>
           </button>
+
+          {(activeImage || invoice.items.length > 0) && (
+            <button
+              type="button"
+              onClick={handleReset}
+              className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+              title="Clear all fields and start blank"
+            >
+              <Trash2 size={13} />
+              <span>Clear Workspace</span>
+            </button>
+          )}
         </div>
 
         {/* Demo Presets Selector */}
@@ -407,12 +493,14 @@ export function OcrInvoiceClient() {
       </div>
 
       {/* Edge Preprocessing Controls */}
-      <EdgeImagePreprocessor
-        imageSrc={activeImage}
-        onProcessed={(processedUrl) => {
-          // edge canvas preprocessed
-        }}
-      />
+      {activeImage && (
+        <EdgeImagePreprocessor
+          imageSrc={activeImage}
+          onProcessed={(processedUrl) => {
+            // edge canvas preprocessed
+          }}
+        />
+      )}
 
       {/* Main OCR Workspace: Image Viewfinder (Left) & Editable Form (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -443,7 +531,7 @@ export function OcrInvoiceClient() {
                   <span>Capture & Scan</span>
                 </button>
               </div>
-            ) : (
+            ) : activeImage ? (
               <div className="relative rounded-2xl overflow-hidden bg-slate-950 border border-white/[0.08] aspect-3/4 max-h-[540px] flex items-center justify-center group">
                 <img
                   src={activeImage}
@@ -473,6 +561,45 @@ export function OcrInvoiceClient() {
                   </div>
                 )}
               </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="relative rounded-2xl overflow-hidden bg-white/[0.02] border-2 border-dashed border-white/[0.12] hover:border-emerald-500/40 aspect-3/4 max-h-[540px] flex flex-col items-center justify-center p-6 text-center group cursor-pointer transition-all hover:bg-white/[0.04]"
+              >
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
+                  <Scan size={36} />
+                </div>
+                <h4 className="text-sm font-bold text-white mb-1">
+                  Awaiting Document Scan
+                </h4>
+                <p className="text-xs text-slate-400 max-w-xs leading-relaxed mb-5">
+                  Upload an invoice image/PDF or snap a photo with your camera to begin OCR extraction.
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileInputRef.current?.click();
+                    }}
+                    className="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Upload size={13} />
+                    <span>Upload File</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startCamera();
+                    }}
+                    className="px-3.5 py-1.5 bg-white/[0.08] hover:bg-white/[0.14] text-white border border-white/[0.1] rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Camera size={13} className="text-emerald-400" />
+                    <span>Live Camera</span>
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -488,6 +615,7 @@ export function OcrInvoiceClient() {
                 </label>
                 <input
                   type="text"
+                  placeholder="e.g. INV-2026-001"
                   value={invoice.invoiceNumber}
                   onChange={(e) => setInvoice({ ...invoice, invoiceNumber: e.target.value })}
                   className="w-full px-3 py-1.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-mono font-bold text-white focus:outline-none focus:bg-white/[0.08]"
@@ -550,7 +678,7 @@ export function OcrInvoiceClient() {
               </div>
 
               {/* Client Box */}
-              <div className="p-3.5 bg-emerald-500/10 border border-amber-500/20 rounded-2xl space-y-2">
+              <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl space-y-2">
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300 block">
                   Billed To / Customer
                 </span>
@@ -606,7 +734,28 @@ export function OcrInvoiceClient() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/[0.05]">
-                    {invoice.items.map((item) => (
+                    {invoice.items.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-slate-400">
+                          <div className="flex flex-col items-center justify-center space-y-2">
+                            <FileText size={24} className="text-slate-500 opacity-60" />
+                            <p className="text-xs font-semibold text-slate-300">No Line Items Extracted Yet</p>
+                            <p className="text-[11px] text-slate-500 max-w-sm">
+                              Upload an invoice image/PDF above, or click{' '}
+                              <button
+                                type="button"
+                                onClick={addItem}
+                                className="text-emerald-400 hover:text-emerald-300 font-semibold underline underline-offset-2 cursor-pointer"
+                              >
+                                + Add Line Item
+                              </button>{' '}
+                              to manually enter data.
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      invoice.items.map((item) => (
                       <tr key={item.id} className="hover:bg-white/[0.03]">
                         <td className="p-2">
                           <input
@@ -690,7 +839,8 @@ export function OcrInvoiceClient() {
                           </button>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  )}
                   </tbody>
                 </table>
               </div>

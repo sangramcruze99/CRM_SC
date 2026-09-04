@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   FileBadge,
   Plus,
@@ -9,6 +10,10 @@ import {
   CheckCircle,
   Clock,
   Send,
+  Building2,
+  Calendar,
+  Sparkles,
+  X,
 } from 'lucide-react';
 
 interface Quote {
@@ -28,10 +33,15 @@ export function QuotesClient({ initialQuotes = [] }: { initialQuotes?: any[] }) 
     initialQuotes.length > 0 ? initialQuotes : initialDemoQuotes
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [client, setClient] = useState('');
   const [amount, setAmount] = useState('');
   const [validDays, setValidDays] = useState('30');
   const [alert, setAlert] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -68,10 +78,10 @@ export function QuotesClient({ initialQuotes = [] }: { initialQuotes?: any[] }) 
   }
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-white">
+    <div className="space-y-6 max-w-7xl mx-auto text-slate-900 dark:text-white">
       {alert && (
-        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle size={16} className="text-emerald-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle size={16} className="text-emerald-600 dark:text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
@@ -79,8 +89,8 @@ export function QuotesClient({ initialQuotes = [] }: { initialQuotes?: any[] }) 
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <FileBadge className="text-emerald-400" size={24} />
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
+            <FileBadge className="text-emerald-600 dark:text-emerald-400" size={24} />
             Commercial Quotes & Proposals
           </h1>
           <p className="text-sm text-slate-400 mt-1">
@@ -206,74 +216,105 @@ export function QuotesClient({ initialQuotes = [] }: { initialQuotes?: any[] }) 
       </div>
 
       {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-4">
-          <div className="bg-slate-950/95 border border-white/[0.12] rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150 text-white">
-            <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
-              <h2 className="text-base font-bold text-white">Create New Price Proposal</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white cursor-pointer">
-                ✕
+      {isModalOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl text-white space-y-5 animate-in zoom-in-95 duration-200 overflow-hidden">
+            {/* Top Specular Glow Lines */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+
+            {/* Header */}
+            <div className="flex items-start justify-between pb-4 border-b border-white/[0.08] relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-teal-500/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                  <FileBadge size={20} />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-black tracking-widest text-emerald-300 uppercase">
+                      PROPOSALS & QUOTES
+                    </span>
+                  </div>
+                  <h2 className="text-base font-bold text-white tracking-tight mt-0.5">Create New Price Proposal</h2>
+                  <p className="text-xs text-slate-400 font-medium">Build customized quote package with validity expiration</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all cursor-pointer"
+              >
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreate} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Client / Company Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Acme Tech Solutions"
-                  value={client}
-                  onChange={(e) => setClient(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08]"
-                />
+            <form onSubmit={handleCreate} className="space-y-4 text-xs relative z-10">
+              <div className="space-y-1.5">
+                <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Client / Company Name</label>
+                <div className="relative">
+                  <Building2 size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Acme Tech Solutions"
+                    value={client}
+                    onChange={(e) => setClient(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Total Quoted Value ($ USD)</label>
-                <input
-                  type="number"
-                  required
-                  placeholder="e.g. 25000"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none focus:bg-white/[0.08] font-mono"
-                />
+              <div className="space-y-1.5">
+                <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Total Quoted Value ($ USD)</label>
+                <div className="relative">
+                  <DollarSign size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <input
+                    type="number"
+                    required
+                    placeholder="e.g. 25000"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 font-mono font-bold focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Offer Validity Window</label>
-                <select
-                  value={validDays}
-                  onChange={(e) => setValidDays(e.target.value)}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white focus:outline-none"
-                >
-                  <option value="15">15 Days</option>
-                  <option value="30">30 Days (Standard)</option>
-                  <option value="60">60 Days</option>
-                  <option value="90">90 Days</option>
-                </select>
+              <div className="space-y-1.5">
+                <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Offer Validity Window</label>
+                <div className="relative">
+                  <Calendar size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <select
+                    value={validDays}
+                    onChange={(e) => setValidDays(e.target.value)}
+                    className="w-full pl-9 pr-3.5 py-2.5 bg-[#0c1411] border border-white/[0.12] rounded-xl text-xs font-bold text-white focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  >
+                    <option value="15">15 Days</option>
+                    <option value="30">30 Days (Standard)</option>
+                    <option value="60">60 Days</option>
+                    <option value="90">90 Days</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.08]">
+              <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end gap-3 relative z-10">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 rounded-xl text-xs font-semibold border border-white/[0.1] cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/[0.08] text-xs font-semibold transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer"
+                  className="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 transition-all cursor-pointer flex items-center gap-1.5"
                 >
-                  <Send size={14} />
+                  <Send size={13} />
                   <span>Send Proposal</span>
                 </button>
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

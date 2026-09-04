@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${inter.className} bg-[#07090e] text-slate-100 flex h-screen overflow-hidden antialiased selection:bg-emerald-500 selection:text-slate-950`}
+        className={`${inter.className} bg-[#f8fafc] dark:bg-[#07090e] text-slate-900 dark:text-slate-100 flex h-screen overflow-hidden antialiased selection:bg-emerald-500 selection:text-slate-950`}
         suppressHydrationWarning
       >
         <ThemeProvider>

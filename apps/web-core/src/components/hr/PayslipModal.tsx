@@ -1,45 +1,84 @@
 'use client';
 
-import React from 'react';
-import { X, Download, Printer, CheckCircle2, ShieldCheck, DollarSign } from 'lucide-react';
-import { EmployeeNode } from '@/lib/hrData';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { X, Download, Printer, CheckCircle2, ShieldCheck, DollarSign, Trash2, Receipt, Sparkles } from 'lucide-react';
+import { EmployeeNode, TIER_DEFINITIONS, getTierFromLevel } from '@/lib/hrData';
 
 interface PayslipModalProps {
   isOpen: boolean;
   onClose: () => void;
   employee: EmployeeNode | null;
+  onRemoveEmployee?: (empId: string) => void;
 }
 
-export function PayslipModal({ isOpen, onClose, employee }: PayslipModalProps) {
-  if (!isOpen || !employee) return null;
+export function PayslipModal({ isOpen, onClose, employee, onRemoveEmployee }: PayslipModalProps) {
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !employee || !mounted) return null;
+
+  const tier = employee.tier || getTierFromLevel(employee.level);
+  const tierMeta = TIER_DEFINITIONS[tier] || TIER_DEFINITIONS.TIER_C;
   const grossMonthly = employee.salary.baseMonthly + employee.salary.allowances + employee.salary.bonus;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-md p-4 animate-in fade-in overflow-y-auto">
-      <div className="bg-slate-950/95 border border-white/[0.14] rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-6 text-white my-8 animate-in zoom-in-95">
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/80 backdrop-blur-xl p-4 animate-in fade-in overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="relative bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl space-y-6 text-white my-8 animate-in zoom-in-95 overflow-hidden">
+        {/* Ambient Top Glow Line */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+
         {/* Header */}
         <div className="flex justify-between items-start border-b border-white/[0.08] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold">
-              <DollarSign size={20} />
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/25 border border-emerald-300/30">
+              <Receipt size={18} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Itemized Employee Payslip</h2>
-              <p className="text-xs text-slate-400">
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-extrabold text-white tracking-tight">Itemized Employee Payslip</h2>
+                <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 uppercase">
+                  Payroll Ledger
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
                 Period: August 2026 · Ref: PS-{employee.id.toUpperCase()}-202608
               </p>
             </div>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white cursor-pointer">
-            <X size={20} />
+          <button 
+            type="button" 
+            onClick={onClose} 
+            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+          >
+            <X size={18} />
           </button>
         </div>
 
         {/* Payslip Document Canvas */}
-        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-5 space-y-4">
+        <div className="bg-black/30 border border-white/[0.1] rounded-2xl p-5 space-y-4">
           {/* Company & Employee Identity */}
-          <div className="flex justify-between items-start border-b border-white/[0.06] pb-3 text-xs">
+          <div className="flex justify-between items-start border-b border-white/[0.08] pb-3 text-xs">
             <div>
               <span className="font-extrabold text-white text-sm block">Business OS Platform</span>
               <span className="text-slate-400">Enterprise HR & Payroll Ledger</span>
@@ -60,10 +99,14 @@ export function PayslipModal({ isOpen, onClose, employee }: PayslipModalProps) {
               <span className="text-slate-500 text-[11px] font-mono">ID: {employee.id}</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] uppercase font-bold text-slate-500 block">Department & Role</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500 block">Department & Hierarchy</span>
               <span className="font-medium text-white">{employee.department}</span>
               <span className="text-slate-400 block">Type: {employee.employmentType}</span>
-              <span className="text-emerald-400 text-[11px] font-semibold">Hierarchy Level {employee.level}</span>
+              <span
+                className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold font-mono border ${tierMeta.badgeBg} ${tierMeta.badgeText} ${tierMeta.badgeBorder}`}
+              >
+                {tierMeta.code}: {tierMeta.title}
+              </span>
             </div>
           </div>
 
@@ -113,7 +156,7 @@ export function PayslipModal({ isOpen, onClose, employee }: PayslipModalProps) {
           </div>
 
           {/* Net Take-Home Pay Box */}
-          <div className="p-3.5 bg-gradient-to-r from-amber-500/20 via-orange-500/15 to-transparent border border-emerald-500/40 rounded-xl flex items-center justify-between">
+          <div className="p-3.5 bg-gradient-to-r from-emerald-500/20 via-teal-500/15 to-transparent border border-emerald-500/40 rounded-xl flex items-center justify-between">
             <div>
               <span className="text-[10px] uppercase font-extrabold text-emerald-300 tracking-wider block">
                 Net Disbursed Take-Home Pay
@@ -127,24 +170,43 @@ export function PayslipModal({ isOpen, onClose, employee }: PayslipModalProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 pt-2 border-t border-white/[0.08]">
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 border border-white/[0.1] cursor-pointer"
-          >
-            <Printer size={14} />
-            <span>Print Payslip</span>
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl text-xs shadow-md shadow-emerald-500/20 cursor-pointer"
-          >
-            Close Viewer
-          </button>
+        <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/[0.08]">
+          {onRemoveEmployee ? (
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm(`Are you sure you want to remove and offboard ${employee.firstName} ${employee.lastName} from the organization?`)) {
+                  onRemoveEmployee(employee.id);
+                  onClose();
+                }
+              }}
+              className="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 rounded-xl text-xs font-bold transition-all border border-rose-500/30 flex items-center gap-1.5 cursor-pointer"
+            >
+              <Trash2 size={13} />
+              <span>Remove Employee</span>
+            </button>
+          ) : <div />}
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1.5 border border-white/[0.1] transition-all cursor-pointer"
+            >
+              <Printer size={14} />
+              <span>Print Payslip</span>
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg shadow-emerald-500/25 active:scale-[0.98] transition-all cursor-pointer"
+            >
+              Close Viewer
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
