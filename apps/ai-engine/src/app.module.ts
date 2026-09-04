@@ -8,11 +8,13 @@ import { KnowledgeModule } from './knowledge/knowledge.module';
 import { OcrModule } from './ocr/ocr.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PromptsModule } from './prompts/prompts.module';
+import { AgentsModule } from './agents/agents.module';
 
 @Module({
   imports: [
     JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
     PromptsModule,
+    AgentsModule,
     KnowledgeModule,
     OcrModule,
     PrismaModule,

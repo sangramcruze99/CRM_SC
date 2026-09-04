@@ -2,8 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { X, UserPlus, DollarSign, Building, Sparkles, User, Briefcase, Layers, ShieldCheck, Mail, Phone } from 'lucide-react';
-import { EmployeeNode, getTierFromLevel, TIER_DEFINITIONS } from '@/lib/hrData';
+import {
+  X,
+  UserPlus,
+  DollarSign,
+  Building,
+  Sparkles,
+  User,
+  Briefcase,
+  Layers,
+  ShieldCheck,
+  Mail,
+  Phone,
+  Landmark,
+  CreditCard,
+  Wallet,
+  QrCode,
+  Coins,
+} from 'lucide-react';
+import { EmployeeNode, getTierFromLevel, TIER_DEFINITIONS, EmployeePayoutMethod } from '@/lib/hrData';
+import { FX_RATES } from '@/app/banking/BankingClient';
 import { useIndustry } from '@/components/industry/IndustryContext';
 
 interface AddEmployeeModalProps {
@@ -36,6 +54,17 @@ export function AddEmployeeModal({
   const [allowances, setAllowances] = useState<number>(600);
   const [bonus, setBonus] = useState<number>(500);
   const [taxDeductions, setTaxDeductions] = useState<number>(1100);
+
+  // Bank & Payment System State
+  const [payoutMethod, setPayoutMethod] = useState<EmployeePayoutMethod>('DIRECT_DEPOSIT');
+  const [bankName, setBankName] = useState('JPMorgan Chase Private Bank');
+  const [accountNumber, setAccountNumber] = useState('8920194821');
+  const [routingNumber, setRoutingNumber] = useState('021000021');
+  const [payoutCurrency, setPayoutCurrency] = useState('USD');
+  const [paypalEmail, setPaypalEmail] = useState('');
+  const [cryptoAddress, setCryptoAddress] = useState('');
+  const [qrPurpose, setQrPurpose] = useState<'CONSULTING_FEE' | 'TIPS_GRATUITY' | 'SALES_COMMISSION' | 'DIRECT_RETAINER'>('TIPS_GRATUITY');
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -83,9 +112,42 @@ export function AddEmployeeModal({
         bonus,
         taxDeductions,
         netMonthly,
-        currency: '$',
+        currency: FX_RATES[payoutCurrency]?.symbol || '$',
         paymentStatus: 'PAID',
         lastPayDate: new Date().toISOString().split('T')[0],
+      },
+      bankDetails: {
+        bankName:
+          payoutMethod === 'PAYPAL'
+            ? 'PayPal Global Payouts'
+            : payoutMethod === 'CRYPTO_VAULT'
+            ? 'Web3 Multi-Chain Vault'
+            : bankName || 'JPMorgan Chase Private Bank',
+        accountNumberMasked: accountNumber ? `•••• ${accountNumber.slice(-4)}` : '•••• 8421',
+        routingNumber: routingNumber || '021000021',
+        payoutCurrency,
+        payoutMethod,
+        paypalEmail: payoutMethod === 'PAYPAL' ? (paypalEmail || email) : undefined,
+        cryptoAddress: payoutMethod === 'CRYPTO_VAULT' ? (cryptoAddress || '0x71C...a49B') : undefined,
+        disbursementHistory: [
+          {
+            id: `disb_init_${Date.now()}`,
+            date: new Date().toISOString().split('T')[0],
+            amount: netMonthly,
+            currency: payoutCurrency,
+            corporateAccountId: 'acc_primary_treasury',
+            corporateAccountName: 'Corporate Operating Treasury',
+            payoutMethod,
+            txHashOrRef: `TX-WIRE-${Math.floor(100000 + Math.random() * 900000)}`,
+            status: 'COMPLETED',
+          },
+        ],
+      },
+      paymentQr: {
+        qrId: `qr_emp_${Date.now().toString().slice(-6)}`,
+        purpose: qrPurpose,
+        totalTipsOrCommissions: 0,
+        lastPaymentReceived: 'Ready for scanning',
       },
       niche: currentNiche,
     };
@@ -322,6 +384,157 @@ export function AddEmployeeModal({
                   onChange={(e) => setTaxDeductions(Number(e.target.value))}
                   className="w-full px-3 py-2 bg-black/40 border border-rose-500/30 rounded-xl text-xs font-mono font-bold text-rose-300 focus:outline-none focus:border-rose-400 focus:ring-2 focus:ring-rose-500/20"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Bank & Payment System Configuration */}
+          <div className="p-4 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent border border-emerald-500/30 rounded-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                <Landmark size={14} />
+                <span>Employee Bank Payout Rail & Payment QR</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                Treasury Connected
+              </span>
+            </div>
+
+            {/* Payout Rail Switcher */}
+            <div>
+              <label className="block text-[10px] uppercase font-bold text-slate-300 mb-1.5">
+                Designated Disbursement Rail
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { id: 'DIRECT_DEPOSIT', label: 'Direct Deposit', desc: 'ACH Standard' },
+                  { id: 'WIRE', label: 'Bank Wire', desc: 'SWIFT / Fedwire' },
+                  { id: 'PAYPAL', label: 'PayPal Global', desc: 'Instant Payout' },
+                  { id: 'CRYPTO_VAULT', label: 'Crypto Vault', desc: 'USDC / ETH' },
+                ].map((rail) => {
+                  const isSelected = payoutMethod === rail.id;
+                  return (
+                    <button
+                      key={rail.id}
+                      type="button"
+                      onClick={() => setPayoutMethod(rail.id as EmployeePayoutMethod)}
+                      className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                        isSelected
+                          ? 'bg-emerald-500 text-slate-950 font-black border-emerald-400 shadow-md'
+                          : 'bg-black/40 border-white/10 text-slate-300 hover:text-white hover:border-white/20'
+                      }`}
+                    >
+                      <span className="block text-xs font-bold">{rail.label}</span>
+                      <span className={`text-[9px] block ${isSelected ? 'text-slate-900' : 'text-slate-500'}`}>
+                        {rail.desc}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Rail-Specific Fields */}
+            {(payoutMethod === 'DIRECT_DEPOSIT' || payoutMethod === 'WIRE') && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-slate-400">Receiving Bank</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. JPMorgan Chase"
+                    value={bankName}
+                    onChange={(e) => setBankName(e.target.value)}
+                    className="w-full px-3 py-2 bg-black/40 border border-white/[0.12] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-slate-400">Account Number</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 8920194821"
+                    value={accountNumber}
+                    onChange={(e) => setAccountNumber(e.target.value)}
+                    className="w-full px-3 py-2 bg-black/40 border border-white/[0.12] rounded-xl text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="block text-[10px] uppercase font-bold text-slate-400">Routing / SWIFT</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 021000021"
+                    value={routingNumber}
+                    onChange={(e) => setRoutingNumber(e.target.value)}
+                    className="w-full px-3 py-2 bg-black/40 border border-white/[0.12] rounded-xl text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                  />
+                </div>
+              </div>
+            )}
+
+            {payoutMethod === 'PAYPAL' && (
+              <div className="space-y-1">
+                <label className="block text-[10px] uppercase font-bold text-slate-400">Recipient PayPal Email</label>
+                <input
+                  type="email"
+                  required
+                  placeholder="employee.payout@paypal.com"
+                  value={paypalEmail}
+                  onChange={(e) => setPaypalEmail(e.target.value)}
+                  className="w-full px-3 py-2 bg-black/40 border border-white/[0.12] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+            )}
+
+            {payoutMethod === 'CRYPTO_VAULT' && (
+              <div className="space-y-1">
+                <label className="block text-[10px] uppercase font-bold text-slate-400">
+                  Web3 EVM Wallet / ENS Destination Address
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="0x71C...a49B or employee.eth"
+                  value={cryptoAddress}
+                  onChange={(e) => setCryptoAddress(e.target.value)}
+                  className="w-full px-3 py-2 bg-black/40 border border-white/[0.12] rounded-xl text-xs font-mono text-emerald-300 placeholder-slate-500 focus:outline-none focus:border-emerald-400"
+                />
+              </div>
+            )}
+
+            {/* Currency & QR Code Configuration */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-white/[0.08]">
+              <div className="space-y-1">
+                <label className="block text-[10px] uppercase font-bold text-slate-400">Preferred Payout Currency</label>
+                <select
+                  value={payoutCurrency}
+                  onChange={(e) => setPayoutCurrency(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-white/[0.12] rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400 cursor-pointer"
+                >
+                  {Object.entries(FX_RATES).map(([code, meta]) => (
+                    <option key={code} value={code}>
+                      {code} ({meta.symbol}) - {meta.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+                  <QrCode size={11} className="text-emerald-400" />
+                  <span>Personal Employee QR Purpose</span>
+                </label>
+                <select
+                  value={qrPurpose}
+                  onChange={(e) => setQrPurpose(e.target.value as any)}
+                  className="w-full px-3 py-2 bg-slate-900 border border-white/[0.12] rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400 cursor-pointer"
+                >
+                  <option value="TIPS_GRATUITY">Tips &amp; Gratuity Standee</option>
+                  <option value="CONSULTING_FEE">Consulting Fee / Direct Billing</option>
+                  <option value="SALES_COMMISSION">Sales Commission Payout</option>
+                  <option value="DIRECT_RETAINER">Direct Retainer Settlement</option>
+                </select>
               </div>
             </div>
           </div>

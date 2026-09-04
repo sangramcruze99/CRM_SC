@@ -161,11 +161,76 @@ export function PayslipModal({ isOpen, onClose, employee, onRemoveEmployee }: Pa
               <span className="text-[10px] uppercase font-extrabold text-emerald-300 tracking-wider block">
                 Net Disbursed Take-Home Pay
               </span>
-              <span className="text-xs text-slate-300">Direct Wire to Employee Bank Account</span>
+              <span className="text-xs text-slate-300">
+                {employee.bankDetails?.payoutMethod === 'PAYPAL'
+                  ? 'Instant PayPal Payout'
+                  : employee.bankDetails?.payoutMethod === 'CRYPTO_VAULT'
+                  ? 'On-Chain Smart Contract Payout'
+                  : 'Direct Deposit / Wire to Employee Bank'}
+              </span>
             </div>
             <span className="text-2xl font-mono font-extrabold text-emerald-400">
-              ${employee.salary.netMonthly.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              {employee.salary.currency || '$'}{employee.salary.netMonthly.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
+          </div>
+
+          {/* Banking Payout & Treasury Wire Details */}
+          <div className="p-3.5 bg-white/[0.02] border border-white/[0.08] rounded-xl space-y-2.5 text-xs">
+            <div className="flex items-center justify-between border-b border-white/[0.06] pb-2">
+              <span className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1.5">
+                <span>Direct Banking Settlement Rails</span>
+              </span>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                ACH / DUAL KHATA RECONCILED
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-[11px]">
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Disbursement Rail</span>
+                <span className="text-white font-semibold">
+                  {employee.bankDetails?.payoutMethod || 'DIRECT_DEPOSIT'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Beneficiary Bank / Venue</span>
+                <span className="text-white font-semibold truncate block">
+                  {employee.bankDetails?.bankName || 'JPMorgan Chase Private Bank'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Account / Wallet Ref</span>
+                <span className="text-emerald-300 font-mono font-bold truncate block">
+                  {employee.bankDetails?.accountNumberMasked ||
+                    employee.bankDetails?.paypalEmail ||
+                    employee.bankDetails?.cryptoAddress ||
+                    '•••• 8421'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Routing / SWIFT</span>
+                <span className="text-slate-300 font-mono">
+                  {employee.bankDetails?.routingNumber || '021000021'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Settlement Currency</span>
+                <span className="text-slate-300 font-bold">
+                  {employee.bankDetails?.payoutCurrency || 'USD'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-500 block text-[10px] uppercase font-bold">Trace Ref Hash</span>
+                <span className="text-slate-400 font-mono text-[10px]">
+                  TX-FED-{employee.id.slice(-6).toUpperCase()}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -5,6 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { WorkflowExecutionService } from '../executor/workflow-execution.service';
 import { ExecutionPersistenceService } from '../executor/execution-persistence.service';
+import { BusinessEventBusService } from '../event-bus/business-event-bus.service';
 
 @Injectable()
 export class WorkflowsService {
@@ -14,8 +15,11 @@ export class WorkflowsService {
     private readonly prisma: PrismaService,
     private readonly executionService: WorkflowExecutionService,
     private readonly persistence: ExecutionPersistenceService,
+    private readonly eventBus: BusinessEventBusService,
     @Optional() @InjectQueue('workflows') private readonly workflowQueue?: Queue
-  ) {}
+  ) {
+    this.eventBus.setWorkflowExecutor(this.executionService);
+  }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async evaluateReminders() {
@@ -380,4 +384,34 @@ export class WorkflowsService {
     if (idx !== -1) WorkflowsService.inMemoryWorkflows.splice(idx, 1);
     return workflow;
   }
+
+  // --- Enterprise Event Bus Delegation ---
+  async publishEvent(tenantId: string, eventData: any) {
+    return this.eventBus.publish({
+      tenantId,
+      type: eventData.type || eventData.eventType || 'CUSTOM_EVENT',
+      payload: eventData.payload || eventData,
+      source: eventData.source || 'api',
+      correlationId: eventData.correlationId,
+      actor: eventData.actor || { type: 'USER' },
+      idempotencyKey: eventData.idempotencyKey,
+    });
+  }
+
+  getEventHistory(tenantId?: string, limit?: number) {
+    return this.eventBus.getHistory(tenantId, limit);
+  }
+
+  getDeadLetterQueue(tenantId?: string) {
+    return this.eventBus.getDeadLetterQueue(tenantId);
+  }
+
+  replayEvent(tenantId: string, eventId: string) {
+    return this.eventBus.replay(eventId, tenantId);
+  }
+
+  checkCollisions(tenantId: string, contacts: string[], targetWorkflowId: string) {
+    return this.executionService.checkCollisions(tenantId, contacts, targetWorkflowId);
+  }
 }
+

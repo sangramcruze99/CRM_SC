@@ -2,6 +2,43 @@ import { IndustryNiche } from '@/components/industry/IndustryContext';
 
 export type EmployeeTier = 'TIER_A' | 'TIER_B' | 'TIER_C' | 'TIER_D';
 
+export type EmployeePayoutMethod =
+  | 'DIRECT_DEPOSIT'
+  | 'WIRE'
+  | 'PAYPAL'
+  | 'CRYPTO_VAULT'
+  | 'CASH_CARD';
+
+export interface EmployeeDisbursementRecord {
+  id: string;
+  date: string;
+  amount: number;
+  currency: string;
+  corporateAccountId: string;
+  corporateAccountName: string;
+  payoutMethod: EmployeePayoutMethod;
+  txHashOrRef: string;
+  status: 'COMPLETED' | 'PENDING' | 'FAILED';
+}
+
+export interface EmployeeBankDetails {
+  bankName: string;
+  accountNumberMasked: string;
+  routingNumber: string; // ACH or SWIFT
+  payoutCurrency: string;
+  payoutMethod: EmployeePayoutMethod;
+  paypalEmail?: string;
+  cryptoAddress?: string;
+  disbursementHistory?: EmployeeDisbursementRecord[];
+}
+
+export interface EmployeePaymentQr {
+  qrId: string;
+  purpose: 'CONSULTING_FEE' | 'TIPS_GRATUITY' | 'SALES_COMMISSION' | 'DIRECT_RETAINER';
+  totalTipsOrCommissions: number;
+  lastPaymentReceived?: string;
+}
+
 export interface EmployeeNode {
   id: string;
   firstName: string;
@@ -26,6 +63,8 @@ export interface EmployeeNode {
     paymentStatus: 'PAID' | 'PROCESSING' | 'PENDING';
     lastPayDate: string;
   };
+  bankDetails?: EmployeeBankDetails;
+  paymentQr?: EmployeePaymentQr;
   niche: IndustryNiche;
 }
 

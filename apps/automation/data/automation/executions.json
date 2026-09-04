@@ -355,5 +355,184 @@
     "completedAt": "2026-09-04T15:39:41.419Z",
     "durationMs": 87,
     "conversionGoal": "CONVERTED"
+  },
+  {
+    "id": "exec_1788542097685_ov8ut",
+    "workflowId": "wf_revenue_kickoff",
+    "workflowName": "Flagship Enterprise Nurture (wf_revenue_kickoff)",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "CONVERTED",
+    "triggerEvent": "CONTACT_ADDED",
+    "startedAt": "2026-09-04T17:14:57.685Z",
+    "currentStepIndex": 8,
+    "steps": [
+      {
+        "stepIndex": 0,
+        "nodeId": "act_email_1",
+        "nodeType": "SEND_EMAIL",
+        "nodeTitle": "Email 1 (Welcome / Value)",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-04T17:14:57.691Z",
+        "completedAt": "2026-09-04T17:15:01.839Z",
+        "durationMs": 4148,
+        "output": {
+          "actionType": "SEND_EMAIL",
+          "nodeId": "act_email_1",
+          "stepName": "Email 1 (Welcome / Value)",
+          "to": "elena.rostova@hyperion.io",
+          "subject": "Executive Briefing: Business OS ROI & Architecture for Hyperion Technologies",
+          "preview": "**Reasoning & Approach**\n\nBelow is a concise summary of the thought process that guided the email composition:\n\n- **Goal:** Create a high‑converting, executive‑",
+          "activityId": "cmtn7se2p000125p6khr16a1t",
+          "optimalSendTime": "Tuesday at 10:15 AM (Local Time)",
+          "optimalSendRationale": "B2B Tech & SaaS executives demonstrate peak email triage and link click-through velocity on Tuesday mid-mornings.",
+          "smartIndustryBlockApplied": "Enterprise SaaS",
+          "status": "DELIVERED"
+        }
+      },
+      {
+        "stepIndex": 1,
+        "nodeId": "act_delay_1",
+        "nodeType": "DELAY",
+        "nodeTitle": "Wait 24 HOURS",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-04T17:15:01.841Z",
+        "completedAt": "2026-09-04T17:15:01.841Z",
+        "durationMs": 0,
+        "output": {
+          "actionType": "DELAY",
+          "nodeId": "act_delay_1",
+          "duration": 24,
+          "unit": "HOURS",
+          "resumeAt": "2026-09-05T17:15:01.841Z",
+          "status": "SCHEDULED"
+        }
+      },
+      {
+        "stepIndex": 2,
+        "nodeId": "act_cond_1",
+        "nodeType": "CONDITION",
+        "nodeTitle": "Did contact click link in Email 1?",
+        "branch": "YES",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-04T17:15:01.844Z",
+        "completedAt": "2026-09-04T17:15:01.844Z",
+        "durationMs": 0,
+        "output": {
+          "actionType": "CONDITION",
+          "nodeId": "act_cond_1",
+          "conditionType": "CLICKED_EMAIL",
+          "description": "Did contact click link in Email 1?",
+          "evaluationResult": "YES",
+          "selectedBranch": "YES Branch",
+          "rationale": "Link click telemetry event detected within 24h window.",
+          "status": "EVALUATED"
+        }
+      },
+      {
+        "stepIndex": 3,
+        "nodeId": "act_score_10",
+        "nodeType": "UPDATE_LEAD_SCORE",
+        "nodeTitle": "Update Lead Score (+10)",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-04T17:15:01.845Z",
+        "completedAt": "2026-09-04T17:15:01.869Z",
+        "durationMs": 24,
+        "output": {
+          "actionType": "UPDATE_LEAD_SCORE",
+          "nodeId": "act_score_10",
+          "scoreDelta": 10,
+          "previousScore": 65,
+          "newScore": 75,
+          "thresholdReached": true,
+          "status": "APPLIED"
+        }
+      },
+      {
+        "stepIndex": 4,
+        "nodeId": "act_score_gate",
+        "nodeType": "CONDITION",
+        "nodeTitle": "Check if lead score is >= 50 for Sales Qualification",
+        "branch": "YES",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-04T17:15:01.871Z",
+        "completedAt": "2026-09-04T17:15:01.872Z",
+        "durationMs": 1,
+        "output": {
+          "actionType": "CONDITION",
+          "nodeId": "act_score_gate",
+          "conditionType": "SCORE_ABOVE",
+          "description": "Check if lead score is >= 50 for Sales Qualification",
+          "evaluationResult": "YES",
+          "selectedBranch": "YES Branch",
+          "rationale": "Current lead score (75) >= threshold (50).",
+          "status": "EVALUATED"
+        }
+      },
+      {
+        "stepIndex": 5,
+        "nodeId": "act_notify_sales",
+        "nodeType": "NOTIFY_SALES",
+        "nodeTitle": "Notify Sales (Enterprise Account Executive)",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-04T17:15:01.873Z",
+        "completedAt": "2026-09-04T17:15:01.902Z",
+        "durationMs": 29,
+        "output": {
+          "actionType": "NOTIFY_SALES",
+          "nodeId": "act_notify_sales",
+          "rep": "Enterprise Account Executive",
+          "channel": "SLACK",
+          "message": "🔥 Hot Lead Qualified: Elena Rostova from Hyperion Technologies reached 65 points!",
+          "activityId": "cmtn7se44000525p6nxeo0k6o",
+          "status": "DISPATCHED"
+        }
+      },
+      {
+        "stepIndex": 6,
+        "nodeId": "act_create_task",
+        "nodeType": "CREATE_CRM_TASK",
+        "nodeTitle": "Create Task: \"Schedule 15-min Architecture Review for Elena (Hyperion Technologies)\"",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-04T17:15:01.906Z",
+        "completedAt": "2026-09-04T17:15:01.954Z",
+        "durationMs": 48,
+        "output": {
+          "actionType": "CREATE_CRM_TASK",
+          "nodeId": "act_create_task",
+          "taskTitle": "Schedule 15-min Architecture Review for Elena (Hyperion Technologies)",
+          "taskId": "cmtn7se51000725p6uftgeetd",
+          "assignedTo": "Active Account Exec",
+          "priority": "HIGH",
+          "activityId": "cmtn7se5k000925p66f7i1nle",
+          "status": "CREATED"
+        }
+      },
+      {
+        "stepIndex": 7,
+        "nodeId": "act_exit_goal",
+        "nodeType": "EXIT_WORKFLOW",
+        "nodeTitle": "Goal Achieved: CONVERTED",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-04T17:15:01.956Z",
+        "completedAt": "2026-09-04T17:15:01.974Z",
+        "durationMs": 18,
+        "output": {
+          "actionType": "EXIT_WORKFLOW",
+          "nodeId": "act_exit_goal",
+          "goal": "CONVERTED",
+          "status": "GOAL_COMPLETED"
+        }
+      }
+    ],
+    "finalLeadScore": 75,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-04T17:15:01.977Z",
+    "durationMs": 4292,
+    "conversionGoal": "CONVERTED"
   }
 ]

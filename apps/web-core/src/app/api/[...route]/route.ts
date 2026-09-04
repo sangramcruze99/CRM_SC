@@ -5,10 +5,11 @@ const serviceMap: Record<string, string> = {
   'crm': 'http://localhost:3001',
   'sales': 'http://localhost:3005',
   'platform': 'http://localhost:3008',
-  'ai': 'http://localhost:3010',
+  'custom-objects': 'http://localhost:3008',
   'automation': 'http://localhost:3009',
-  'marketplace': 'http://localhost:3012',
+  'ai': 'http://localhost:3010',
   'auth': 'http://localhost:3011',
+  'marketplace': 'http://localhost:3012',
   'bi': 'http://localhost:3013',
   'chat': 'http://localhost:3014',
   'finance': 'http://localhost:3015',
@@ -36,14 +37,31 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
 
   const remainingPath = resolvedParams.route.slice(1).join('/');
   
-  // List of microservices whose controllers are mounted with the service prefix in NestJS
-  const prefixedServices = ['chat', 'hr', 'settings', 'inventory', 'platform', 'bi', 'developer'];
-  
   let backendPath = remainingPath;
-  if (prefixedServices.includes(servicePrefix)) {
-    backendPath = `${servicePrefix}/${remainingPath}`;
-  } else if (servicePrefix === 'auth' && ['login', 'register'].includes(remainingPath)) {
-    backendPath = `auth/${remainingPath}`;
+  if (servicePrefix === 'custom-objects') {
+    backendPath = `custom-objects${remainingPath ? '/' + remainingPath : ''}`;
+  } else if (servicePrefix === 'chat') {
+    backendPath = `chat/${remainingPath}`;
+  } else if (servicePrefix === 'search') {
+    backendPath = `search/${remainingPath}`;
+  } else if (servicePrefix === 'auth') {
+    if (['login', 'register', 'me'].includes(remainingPath)) {
+      backendPath = `auth/${remainingPath}`;
+    } else {
+      backendPath = remainingPath;
+    }
+  } else if (servicePrefix === 'hr') {
+    if (remainingPath.startsWith('employees')) {
+      backendPath = `hr/${remainingPath}`;
+    } else {
+      backendPath = remainingPath;
+    }
+  } else if (servicePrefix === 'settings') {
+    if (remainingPath === 'workspace' || remainingPath.startsWith('workspace/')) {
+      backendPath = `settings/${remainingPath}`;
+    } else {
+      backendPath = remainingPath;
+    }
   } else if (servicePrefix === 'ai' && remainingPath === 'ask') {
     backendPath = 'prompts/ask';
   }

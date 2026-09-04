@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Phone, Building2, Calendar, Search, Filter, UserPlus, DollarSign, ArrowRight, Trash2, Layers } from 'lucide-react';
+import { Mail, Phone, Building2, Calendar, Search, Filter, UserPlus, DollarSign, ArrowRight, Trash2, Layers, Landmark } from 'lucide-react';
 import { EmployeeNode, TIER_DEFINITIONS, getTierFromLevel } from '@/lib/hrData';
 
 interface EmployeeRosterProps {
@@ -153,10 +153,26 @@ export function EmployeeRoster({ employees, onSelectEmployee, onRemoveEmployee, 
                   <span>Joined {emp.startDate}</span>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between gap-2">
-                  <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                    ${emp.salary.netMonthly.toLocaleString()}/mo
+                {/* Bank Account Payout Rail */}
+                <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between text-[11px]">
+                  <div className="flex items-center gap-1.5 truncate text-slate-700 dark:text-slate-300">
+                    <Landmark size={12} className="text-emerald-500 flex-shrink-0" />
+                    <span className="truncate font-semibold">{emp.bankDetails?.bankName || 'JPMorgan Chase'}</span>
+                  </div>
+                  <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold ml-1 flex-shrink-0 text-[10px]">
+                    {emp.bankDetails?.accountNumberMasked || '•••• 8421'}
                   </span>
+                </div>
+
+                <div className="pt-2 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between gap-2">
+                  <div className="flex flex-col">
+                    <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                      ${emp.salary.netMonthly.toLocaleString()}/mo
+                    </span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
+                      {emp.salary.paymentStatus === 'PAID' ? '✓ Disbursed' : '⏳ Pending'}
+                    </span>
+                  </div>
                   <div className="flex items-center gap-1.5">
                     <button
                       type="button"

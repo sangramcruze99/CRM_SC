@@ -18,3 +18,5 @@ export interface Company {
   industry?: string;
   customData?: any;
 }
+
+export * from './events';

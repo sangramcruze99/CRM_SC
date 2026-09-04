@@ -6,5 +6,13 @@
     "nodeId": "act_email_1",
     "recipientEmail": "elena.rostova@hyperion.io",
     "timestamp": "2026-09-04T15:39:31.104Z"
+  },
+  {
+    "hash": "3e90f1786c3a04486c933dd8d99d618f823190a6910bdec5cf88de9cb3b56097",
+    "tenantId": "default-tenant",
+    "workflowId": "wf_revenue_kickoff",
+    "nodeId": "act_email_1",
+    "recipientEmail": "elena.rostova@hyperion.io",
+    "timestamp": "2026-09-04T17:14:57.692Z"
   }
 ]

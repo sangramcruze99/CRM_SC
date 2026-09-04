@@ -332,7 +332,7 @@ const FLAGSHIP_WORKFLOW: AutomationWorkflow = {
         title: 'Update Contact: Set Stage = "Sales Qualified (SQL)"',
         subtitle: 'Advances pipeline stage automatically.',
         config: { contactField: 'lifecycleStage', contactValue: 'Sales Qualified Lead (SQL)' },
-        analytics: { sentCount: 220, openRatePct: '100%', clickRatePct: '0%' },
+        analytics: { sentCount: 220, openRatePct: '100%', clickRatePct: '0%', dropoffPct: '0%' },
       },
     ],
     noPath: [

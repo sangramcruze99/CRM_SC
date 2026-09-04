@@ -726,7 +726,7 @@ Return ONLY a valid JSON array with NO markdown code backticks:
         setDynamicAiSuggestions(parsed);
       }
     } catch (e: any) {
-      alert('Could not generate AI subjects: ' + (e?.message || 'Please try again'));
+      setAlert('Could not generate AI subjects: ' + (e?.message || 'Please try again'));
     } finally {
       setIsGeneratingCustomSubjects(false);
     }
@@ -806,7 +806,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
       setAlert('✨ AI Generated Full Newsletter Loaded Successfully!');
       setTimeout(() => setAlert(null), 4000);
     } catch (e: any) {
-      alert('Could not draft full newsletter: ' + (e?.message || 'Please try again'));
+      setAlert('Could not draft full newsletter: ' + (e?.message || 'Please try again'));
     } finally {
       setIsGeneratingFullNewsletter(false);
     }

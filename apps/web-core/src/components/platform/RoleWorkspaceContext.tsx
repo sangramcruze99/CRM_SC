@@ -22,7 +22,7 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     icon: '🌐',
     description: 'Unrestricted access to all 72 platform features across 13 functional pillars.',
     allowedCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/invoices', '/quotes', '/subscriptions', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/lead-prospector', '/ocr-invoice', '/chat', '/documents', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/developer', '/super-admin', '/customization', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/onboarding', '/smart-upload', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations'],
+    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/invoices', '/quotes', '/subscriptions', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/lead-prospector', '/ocr-invoice', '/chat', '/documents', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/developer', '/super-admin', '/customization', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/onboarding', '/smart-upload', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations', '/banking', '/payment-links', '/qr-payments'],
   },
   sales: {
     id: 'sales',
@@ -31,7 +31,7 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     icon: '💼',
     description: 'Focuses on pipeline velocity, AI prospecting, social amplification, and contact relationships.',
     allowedCategories: [1, 5, 6, 8, 13],
-    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/lead-prospector', '/chat', '/chat-widgets', '/contacts', '/onboarding', '/lead-qualification', '/content-repurpose', '/ai-support', '/automations'],
+    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/lead-prospector', '/chat', '/chat-widgets', '/contacts', '/onboarding', '/lead-qualification', '/content-repurpose', '/ai-support', '/automations', '/payment-links', '/qr-payments'],
   },
   finance: {
     id: 'finance',
@@ -40,7 +40,7 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     icon: '⚖️',
     description: 'Focused on Dual Khata ledger reconciliations, OCR billing extraction, subscriptions, NDAs, and CPQ.',
     allowedCategories: [3, 7, 9, 13],
-    visiblePaths: ['/dashboard', '/invoices', '/quotes', '/subscriptions', '/price-books', '/payment-links', '/taxes', '/ocr-invoice', '/smart-upload', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/documents', '/s3-uploads', '/idp', '/data-sync', '/automations'],
+    visiblePaths: ['/dashboard', '/invoices', '/quotes', '/subscriptions', '/price-books', '/payment-links', '/qr-payments', '/banking', '/taxes', '/ocr-invoice', '/smart-upload', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/documents', '/s3-uploads', '/idp', '/data-sync', '/automations'],
   },
   admin: {
     id: 'admin',

@@ -338,6 +338,7 @@ export class WorkflowExecutionService {
     let goalAchieved = false;
     let goalName = '';
     let executionStatus: 'COMPLETED' | 'CONVERTED' | 'FAILED' | 'TRANSFERRED' = 'COMPLETED';
+    const isDryRun = Boolean(triggerData?.dryRun || (data as any)?.dryRun);
 
     // Step Execution Loop
     for (let stepIndex = 0; stepIndex < actions.length; stepIndex++) {
@@ -1069,6 +1070,399 @@ Tone: Executive, compelling, concise. Include a strong CTA to book an architectu
             break;
           }
 
+          // 13. CREATE_PROJECT (Project Management Orchestration)
+          case 'CREATE_PROJECT': {
+            const rawProjectName = actionData.projectName || actionData.name || `Onboarding: {{company}} Client Deployment`;
+            const projectName = this.interpolate(rawProjectName, dynamicContext);
+            const description = this.interpolate(actionData.description || `Enterprise implementation project for {{company}} initiated by workflow.`, dynamicContext);
+
+            let createdProjectId = `proj_${Date.now()}`;
+            if (!isDryRun) {
+              try {
+                const proj = await this.prisma.project.create({
+                  data: {
+                    tenantId: targetTenantId,
+                    name: projectName,
+                    description,
+                    status: 'ACTIVE',
+                  },
+                });
+                createdProjectId = proj.id;
+
+                const defaultTasks = actionData.tasks || ['Technical Discovery & Data Sync', 'Configure RBAC & Workspace', 'Kickoff Call with Stakeholders'];
+                for (const tTitle of defaultTasks) {
+                  await this.prisma.task.create({
+                    data: {
+                      projectId: proj.id,
+                      title: this.interpolate(tTitle, dynamicContext),
+                      priority: 'HIGH',
+                      status: 'TODO',
+                    },
+                  }).catch(() => null);
+                }
+              } catch (e: any) {
+                this.logger.warn(`Prisma project create fallback: ${e.message}`);
+              }
+
+              await this.prisma.activity.create({
+                data: {
+                  tenantId: targetTenantId,
+                  type: 'NOTE',
+                  title: `🚀 Project Created: ${projectName}`,
+                  content: `Automated project kickoff provisioned for ${contactCompany}.\nProject ID: ${createdProjectId}`,
+                  contactId: contactId || null,
+                },
+              }).catch(() => null);
+            }
+
+            const projectResult = {
+              actionType: 'CREATE_PROJECT',
+              nodeId: action.id,
+              projectName,
+              projectId: createdProjectId,
+              simulated: isDryRun,
+              status: isDryRun ? 'SIMULATED' : 'PROJECT_CREATED',
+            };
+            actionResults.push(projectResult);
+
+            this.persistence.logStep(execution.id, {
+              stepIndex,
+              nodeId: action.id || `node_${stepIndex}`,
+              nodeType: action.actionType,
+              nodeTitle: `Create Project: "${projectName}"`,
+              status: 'SUCCESS',
+              startedAt: stepStartTime.toISOString(),
+              completedAt: new Date().toISOString(),
+              durationMs: Date.now() - stepStartTime.getTime(),
+              output: projectResult,
+            });
+            break;
+          }
+
+          // 14. GENERATE_INVOICE (Finance & Revenue Orchestration)
+          case 'GENERATE_INVOICE': {
+            const rawAmount = actionData.amount || actionData.invoiceAmount || 5000;
+            const amount = typeof rawAmount === 'string' ? parseFloat(this.interpolate(rawAmount, dynamicContext)) || 5000 : rawAmount;
+            const invoiceNum = `INV-${Date.now().toString().slice(-6)}`;
+            const dueDate = new Date(Date.now() + (actionData.dueDays || 14) * 86400000);
+
+            let createdInvoiceId = `inv_${Date.now()}`;
+            if (!isDryRun) {
+              try {
+                const inv = await this.prisma.invoice.create({
+                  data: {
+                    tenantId: targetTenantId,
+                    invoiceNum,
+                    amount,
+                    status: actionData.status || 'SENT',
+                    dueDate,
+                    lineItems: {
+                      create: [
+                        {
+                          description: actionData.itemDescription || `Business OS Enterprise License - ${contactCompany}`,
+                          quantity: 1,
+                          unitPrice: amount,
+                          total: amount,
+                        },
+                      ],
+                    },
+                  },
+                });
+                createdInvoiceId = inv.id;
+              } catch (e: any) {
+                this.logger.warn(`Invoice create fallback: ${e.message}`);
+              }
+
+              await this.prisma.activity.create({
+                data: {
+                  tenantId: targetTenantId,
+                  type: 'SYSTEM',
+                  title: `💳 Commercial Invoice Generated: ${invoiceNum} ($${amount})`,
+                  content: `Invoice generated for ${contactCompany}.\nDue: ${dueDate.toLocaleDateString()}\nStatus: ${actionData.status || 'SENT'}`,
+                  contactId: contactId || null,
+                },
+              }).catch(() => null);
+            }
+
+            const invoiceResult = {
+              actionType: 'GENERATE_INVOICE',
+              nodeId: action.id,
+              invoiceNum,
+              amount,
+              dueDate: dueDate.toISOString(),
+              invoiceId: createdInvoiceId,
+              simulated: isDryRun,
+              status: isDryRun ? 'SIMULATED' : 'INVOICE_GENERATED',
+            };
+            actionResults.push(invoiceResult);
+
+            this.persistence.logStep(execution.id, {
+              stepIndex,
+              nodeId: action.id || `node_${stepIndex}`,
+              nodeType: action.actionType,
+              nodeTitle: `Generate Invoice (${invoiceNum}: $${amount})`,
+              status: 'SUCCESS',
+              startedAt: stepStartTime.toISOString(),
+              completedAt: new Date().toISOString(),
+              durationMs: Date.now() - stepStartTime.getTime(),
+              output: invoiceResult,
+            });
+            break;
+          }
+
+          // 15. ESCALATE_TICKET (Helpdesk Orchestration)
+          case 'ESCALATE_TICKET': {
+            const rawTitle = actionData.ticketTitle || `🚨 Critical Escalation: {{company}} Retention Alert`;
+            const title = this.interpolate(rawTitle, dynamicContext);
+            const priority = actionData.priority || 'URGENT';
+            const description = this.interpolate(actionData.description || `Automated retention escalation triggered. Sentiment or churn threshold breached for {{firstName}} {{lastName}} at {{company}}.`, dynamicContext);
+
+            let ticketId = `tkt_${Date.now()}`;
+            if (!isDryRun) {
+              try {
+                const ticket = await this.prisma.ticket.create({
+                  data: {
+                    tenantId: targetTenantId,
+                    title,
+                    description,
+                    priority,
+                    status: 'PENDING',
+                  },
+                });
+                ticketId = ticket.id;
+              } catch (e: any) {
+                this.logger.warn(`Ticket create fallback: ${e.message}`);
+              }
+
+              await this.prisma.activity.create({
+                data: {
+                  tenantId: targetTenantId,
+                  type: 'NOTE',
+                  title: `🚨 Helpdesk Ticket Escalated: ${title}`,
+                  content: `Priority: ${priority}\nDescription: ${description}`,
+                  contactId: contactId || null,
+                },
+              }).catch(() => null);
+            }
+
+            const escalateResult = {
+              actionType: 'ESCALATE_TICKET',
+              nodeId: action.id,
+              title,
+              priority,
+              ticketId,
+              simulated: isDryRun,
+              status: isDryRun ? 'SIMULATED' : 'TICKET_ESCALATED',
+            };
+            actionResults.push(escalateResult);
+
+            this.persistence.logStep(execution.id, {
+              stepIndex,
+              nodeId: action.id || `node_${stepIndex}`,
+              nodeType: action.actionType,
+              nodeTitle: `Escalate Ticket: "${title}"`,
+              status: 'SUCCESS',
+              startedAt: stepStartTime.toISOString(),
+              completedAt: new Date().toISOString(),
+              durationMs: Date.now() - stepStartTime.getTime(),
+              output: escalateResult,
+            });
+            break;
+          }
+
+          // 16. SEND_SMS (Omnichannel Communication Dispatch)
+          case 'SEND_SMS': {
+            const rawText = actionData.message || `Hi {{firstName}}, quick update from Business OS regarding {{company}}. Reply YES to confirm our call.`;
+            const message = this.interpolate(rawText, dynamicContext);
+            const toPhone = contactPhone || actionData.phone || '+1-555-0199';
+
+            if (!isDryRun) {
+              await this.prisma.activity.create({
+                data: {
+                  tenantId: targetTenantId,
+                  type: 'CALL',
+                  title: `📱 SMS Dispatched to ${toPhone}`,
+                  content: message,
+                  contactId: contactId || null,
+                },
+              }).catch(() => null);
+            }
+
+            const smsResult = {
+              actionType: 'SEND_SMS',
+              nodeId: action.id,
+              to: toPhone,
+              message,
+              simulated: isDryRun,
+              status: isDryRun ? 'SIMULATED' : 'SMS_DISPATCHED',
+            };
+            actionResults.push(smsResult);
+
+            this.persistence.logStep(execution.id, {
+              stepIndex,
+              nodeId: action.id || `node_${stepIndex}`,
+              nodeType: action.actionType,
+              nodeTitle: `Send SMS to ${toPhone}`,
+              status: 'SUCCESS',
+              startedAt: stepStartTime.toISOString(),
+              completedAt: new Date().toISOString(),
+              durationMs: Date.now() - stepStartTime.getTime(),
+              output: smsResult,
+            });
+            break;
+          }
+
+          // 17. PROVISION_EMPLOYEE_ONBOARDING (HR Orchestration)
+          case 'PROVISION_EMPLOYEE_ONBOARDING': {
+            const empName = `${contactFirstName} ${contactLastName}`.trim() || 'New Hire';
+            const tasks = actionData.tasks || [
+              'Sign Confidentiality NDA',
+              'Setup Corporate SSO & Email Access',
+              'Assign Hardware & Laptop',
+              'Schedule Team Orientation',
+            ];
+
+            let employeeId = `emp_${Date.now()}`;
+            if (!isDryRun) {
+              try {
+                let emp = await this.prisma.employee.findFirst({ where: { tenantId: targetTenantId, email: contactEmail } });
+                if (!emp && contactEmail) {
+                  emp = await this.prisma.employee.create({
+                    data: {
+                      tenantId: targetTenantId,
+                      firstName: contactFirstName || 'New',
+                      lastName: contactLastName || 'Employee',
+                      email: contactEmail,
+                      jobTitle: contactJobTitle || 'Specialist',
+                    },
+                  });
+                }
+                if (emp) {
+                  employeeId = emp.id;
+                  for (const t of tasks) {
+                    await this.prisma.onboardingTask.create({
+                      data: {
+                        tenantId: targetTenantId,
+                        employeeId: emp.id,
+                        description: this.interpolate(t, dynamicContext),
+                        status: 'PENDING',
+                      },
+                    }).catch(() => null);
+                  }
+                }
+              } catch (e: any) {
+                this.logger.warn(`HR onboarding create warning: ${e.message}`);
+              }
+            }
+
+            const hrResult = {
+              actionType: 'PROVISION_EMPLOYEE_ONBOARDING',
+              nodeId: action.id,
+              employeeName: empName,
+              employeeId,
+              tasksProvisioned: tasks.length,
+              simulated: isDryRun,
+              status: isDryRun ? 'SIMULATED' : 'HR_ONBOARDING_PROVISIONED',
+            };
+            actionResults.push(hrResult);
+
+            this.persistence.logStep(execution.id, {
+              stepIndex,
+              nodeId: action.id || `node_${stepIndex}`,
+              nodeType: action.actionType,
+              nodeTitle: `Provision HR Onboarding for ${empName}`,
+              status: 'SUCCESS',
+              startedAt: stepStartTime.toISOString(),
+              completedAt: new Date().toISOString(),
+              durationMs: Date.now() - stepStartTime.getTime(),
+              output: hrResult,
+            });
+            break;
+          }
+
+          // 18. DETERMINE_NEXT_BEST_ACTION (AI Decision Engine Node)
+          case 'DETERMINE_NEXT_BEST_ACTION':
+          case 'AI_DECISION': {
+            let recommendation = 'SCHEDULE_SALES_CALL';
+            let confidence = 0.88;
+            let rationale = 'Lead demonstrated high intent with multiple page visits and high lead score.';
+            const signals: string[] = [];
+
+            if (currentScore >= 60) {
+              signals.push(`High Lead Score: ${currentScore} pts`);
+              recommendation = 'CALL_CUSTOMER';
+              confidence = 0.92;
+              rationale = 'Enterprise decision-maker reached priority threshold. Recommend direct phone outreach.';
+            } else if (triggerData?.visitedPricing) {
+              signals.push('Pricing page visited within 24h');
+              recommendation = 'SEND_CUSTOM_QUOTE';
+              confidence = 0.85;
+              rationale = 'Prospect reviewing pricing tiers. Send tailored ROI proposal.';
+            } else if (activeTags.includes('Churn Risk')) {
+              signals.push('Tagged with Churn Risk');
+              recommendation = 'ASSIGN_CSM_TASK';
+              confidence = 0.94;
+              rationale = 'Account flagged for churn prevention. Schedule executive health check.';
+            } else {
+              signals.push('Standard nurture engagement');
+              recommendation = 'DISPATCH_CASE_STUDY_EMAIL';
+              confidence = 0.79;
+              rationale = 'Continue automated drip sequence with relevant industry social proof.';
+            }
+
+            const decisionResult = {
+              actionType: 'DETERMINE_NEXT_BEST_ACTION',
+              nodeId: action.id,
+              recommendedAction: recommendation,
+              confidence,
+              rationale,
+              signals,
+              status: 'DECIDED',
+            };
+            actionResults.push(decisionResult);
+
+            this.persistence.logStep(execution.id, {
+              stepIndex,
+              nodeId: action.id || `node_${stepIndex}`,
+              nodeType: action.actionType,
+              nodeTitle: `Next Best Action: ${recommendation} (${(confidence * 100).toFixed(0)}%)`,
+              status: 'SUCCESS',
+              startedAt: stepStartTime.toISOString(),
+              completedAt: new Date().toISOString(),
+              durationMs: Date.now() - stepStartTime.getTime(),
+              output: decisionResult,
+            });
+            break;
+          }
+
+          // 19. WAIT_UNTIL_EVENT (Event Bus Synchronization)
+          case 'WAIT_UNTIL_EVENT': {
+            const expectedEvent = actionData.expectedEvent || 'PAYMENT_RECEIVED';
+            const timeoutHours = actionData.timeoutHours || 48;
+
+            const waitResult = {
+              actionType: 'WAIT_UNTIL_EVENT',
+              nodeId: action.id,
+              expectedEvent,
+              timeoutHours,
+              status: 'AWAITING_EVENT',
+            };
+            actionResults.push(waitResult);
+
+            this.persistence.logStep(execution.id, {
+              stepIndex,
+              nodeId: action.id || `node_${stepIndex}`,
+              nodeType: action.actionType,
+              nodeTitle: `Wait Until Event: ${expectedEvent}`,
+              status: 'SUCCESS',
+              startedAt: stepStartTime.toISOString(),
+              completedAt: new Date().toISOString(),
+              durationMs: Date.now() - stepStartTime.getTime(),
+              output: waitResult,
+            });
+            break;
+          }
+
           default: {
             this.logger.log(`Action ${action.actionType} completed.`);
             actionResults.push({ actionType: action.actionType, status: 'SUCCESS' });
@@ -1142,4 +1536,43 @@ Tone: Executive, compelling, concise. Include a strong CTA to book an architectu
       triggerData,
     });
   }
+
+  /**
+   * Collision Management: Detects conflicting active workflow enrollments for target contacts
+   */
+  async checkCollisions(tenantId: string, contacts: string[], targetWorkflowId: string) {
+    const activeRuns = this.persistence.getExecutions(tenantId, undefined, 100);
+    const overlapping: Array<{
+      contactEmail: string;
+      currentWorkflowId: string;
+      currentWorkflowName: string;
+      enrolledAt: string;
+      status: string;
+    }> = [];
+
+    for (const run of activeRuns) {
+      if (run.status === 'RUNNING' && run.workflowId !== targetWorkflowId) {
+        if (contacts.includes(run.contactEmail)) {
+          overlapping.push({
+            contactEmail: run.contactEmail,
+            currentWorkflowId: run.workflowId,
+            currentWorkflowName: run.workflowName,
+            enrolledAt: run.startedAt,
+            status: run.status,
+          });
+        }
+      }
+    }
+
+    return {
+      totalContactsChecked: contacts.length,
+      collisionsDetected: overlapping.length,
+      hasCollisions: overlapping.length > 0,
+      overlappingContacts: overlapping,
+      recommendation: overlapping.length > 0
+        ? 'Multiple overlapping workflow enrollments detected. Recommended action: Skip Overlap or Pause Prior.'
+        : 'Zero collisions detected. Safe to enroll.',
+    };
+  }
 }
+

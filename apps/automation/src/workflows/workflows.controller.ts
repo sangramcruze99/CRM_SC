@@ -34,6 +34,65 @@ export class WorkflowsController {
     return this.workflowsService.ingestEvent(this.getTenant(tenantIdHeader), body);
   }
 
+  /**
+   * Unified Enterprise Event Bus: Publish Standardized Business Event
+   */
+  @Post('events/publish')
+  publishEvent(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Body() body: any
+  ) {
+    return this.workflowsService.publishEvent(this.getTenant(tenantIdHeader), body);
+  }
+
+  /**
+   * Query Event Bus History for Observability
+   */
+  @Get('events/history')
+  getEventHistory(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Query('limit') limit?: string
+  ) {
+    return this.workflowsService.getEventHistory(
+      this.getTenant(tenantIdHeader),
+      limit ? parseInt(limit, 10) : 50
+    );
+  }
+
+  /**
+   * Query Dead Letter Queue
+   */
+  @Get('events/dead-letter')
+  getDeadLetterQueue(@Headers('x-tenant-id') tenantIdHeader: string) {
+    return this.workflowsService.getDeadLetterQueue(this.getTenant(tenantIdHeader));
+  }
+
+  /**
+   * Replay Event from Dead Letter / History
+   */
+  @Post('events/:eventId/replay')
+  replayEvent(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('eventId') eventId: string
+  ) {
+    return this.workflowsService.replayEvent(this.getTenant(tenantIdHeader), eventId);
+  }
+
+  /**
+   * Workflow Collision Management Check
+   */
+  @Post('collisions')
+  checkCollisions(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Body() body: { contacts: string[]; workflowId: string }
+  ) {
+    return this.workflowsService.checkCollisions(
+      this.getTenant(tenantIdHeader),
+      body.contacts || [],
+      body.workflowId || 'current'
+    );
+  }
+
   @Get(':id')
   findOne(
     @Headers('x-tenant-id') tenantIdHeader: string,

@@ -64,7 +64,7 @@ export class PagesService {
             tenantId,
             title: data.title,
             slug: data.slug,
-            published: data.published || false,
+            published: Boolean(data.published || data.status === 'PUBLISHED'),
           },
         });
       } catch {
@@ -76,7 +76,7 @@ export class PagesService {
       tenantId,
       title: data.title,
       slug: data.slug,
-      published: data.published || false,
+      published: Boolean(data.published || data.status === 'PUBLISHED'),
       blocks: [],
       createdAt: new Date(),
       updatedAt: new Date()

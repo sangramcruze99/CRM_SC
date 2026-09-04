@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Users,
   ChevronDown,
@@ -20,9 +21,56 @@ import {
   Network,
   Cpu,
   HeartHandshake,
+  Landmark,
+  CreditCard,
+  Wallet,
+  QrCode,
+  Zap,
+  AlertCircle,
+  X,
+  Printer,
+  Check,
+  Smartphone,
 } from 'lucide-react';
 import { EmployeeNode, EmployeeTier, TIER_DEFINITIONS, getTierFromLevel } from '@/lib/hrData';
+import { FinancialAccount, BankTransaction, FX_RATES } from '@/app/banking/BankingClient';
 import { useIndustry } from '@/components/industry/IndustryContext';
+
+const DEFAULT_CORPORATE_ACCOUNTS: FinancialAccount[] = [
+  {
+    id: 'corp_chase_treasury',
+    name: 'JPMorgan Chase Corporate Treasury',
+    type: 'BANK_ACCOUNT',
+    provider: 'JPMorgan Chase & Co.',
+    accountNumberMasked: '•••• 8831',
+    balance: 840500,
+    currency: 'USD',
+    status: 'PRIMARY',
+    lastSynced: 'Live (Dual Khata)',
+  },
+  {
+    id: 'corp_svb_reserve',
+    name: 'Silicon Valley Bank Reserve',
+    type: 'BANK_ACCOUNT',
+    provider: 'First Citizens / SVB',
+    accountNumberMasked: '•••• 4120',
+    balance: 290000,
+    currency: 'USD',
+    status: 'ACTIVE',
+    lastSynced: 'Live (Dual Khata)',
+  },
+  {
+    id: 'corp_paypal_treasury',
+    name: 'Corporate PayPal Treasury',
+    type: 'PAYPAL',
+    provider: 'PayPal Commercial',
+    accountNumberMasked: 'treasury@enterprise-os.io',
+    balance: 64200,
+    currency: 'USD',
+    status: 'ACTIVE',
+    lastSynced: 'Live (Instant Wire)',
+  },
+];
 
 interface OrgHierarchyTreeProps {
   employees: EmployeeNode[];
@@ -31,6 +79,7 @@ interface OrgHierarchyTreeProps {
   onRemoveEmployee: (empId: string) => void;
   onOpenAddModal: () => void;
   onResetNicheEmployees?: () => void;
+  onUpdateEmployee?: (emp: EmployeeNode) => void;
 }
 
 export function OrgHierarchyTree({
@@ -40,11 +89,54 @@ export function OrgHierarchyTree({
   onRemoveEmployee,
   onOpenAddModal,
   onResetNicheEmployees,
+  onUpdateEmployee,
 }: OrgHierarchyTreeProps) {
   const { nicheConfig } = useIndustry();
   const [viewMode, setViewMode] = useState<'tree' | 'matrix'>('matrix');
   const [collapsedNodes, setCollapsedNodes] = useState<Record<string, boolean>>({});
   const [editingManagerFor, setEditingManagerFor] = useState<string | null>(null);
+
+  // Bank & Payment State
+  const [mounted, setMounted] = useState(false);
+  const [corporateAccounts, setCorporateAccounts] = useState<FinancialAccount[]>(DEFAULT_CORPORATE_ACCOUNTS);
+  const [disburseEmployeeTarget, setDisburseEmployeeTarget] = useState<EmployeeNode | null>(null);
+  const [selectedCorpAccountId, setSelectedCorpAccountId] = useState<string>('');
+  const [disburseFeedback, setDisburseFeedback] = useState<string | null>(null);
+  const [qrEmployeeTarget, setQrEmployeeTarget] = useState<EmployeeNode | null>(null);
+  const [simulatedTipAmount, setSimulatedTipAmount] = useState<number>(50);
+  const [qrFeedback, setQrFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+    const loadAccounts = () => {
+      try {
+        const stored = localStorage.getItem('enterprise_financial_accounts');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setCorporateAccounts(parsed);
+            return;
+          }
+        }
+        setCorporateAccounts(DEFAULT_CORPORATE_ACCOUNTS);
+      } catch (e) {
+        setCorporateAccounts(DEFAULT_CORPORATE_ACCOUNTS);
+      }
+    };
+    loadAccounts();
+    window.addEventListener('enterprise_finance_updated', loadAccounts);
+    window.addEventListener('storage', loadAccounts);
+    return () => {
+      window.removeEventListener('enterprise_finance_updated', loadAccounts);
+      window.removeEventListener('storage', loadAccounts);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (corporateAccounts.length > 0 && !selectedCorpAccountId) {
+      setSelectedCorpAccountId(corporateAccounts[0].id);
+    }
+  }, [corporateAccounts, selectedCorpAccountId]);
 
   const toggleCollapse = (id: string) => {
     setCollapsedNodes((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -68,6 +160,160 @@ export function OrgHierarchyTree({
     return TIER_DEFINITIONS[tier] || TIER_DEFINITIONS.TIER_C;
   };
 
+  const handleExecuteDisbursement = (emp: EmployeeNode) => {
+    const corpAcc = corporateAccounts.find((a) => a.id === selectedCorpAccountId) || corporateAccounts[0];
+    if (!corpAcc) return;
+
+    // Currency FX rate computation
+    const empCurrency = emp.bankDetails?.payoutCurrency || 'USD';
+    const corpCurrency = corpAcc.currency || 'USD';
+    const empRate = FX_RATES[empCurrency]?.rateToUSD || 1.0;
+    const corpRate = FX_RATES[corpCurrency]?.rateToUSD || 1.0;
+    const debitAmountInCorpCurr = (emp.salary.netMonthly / empRate) * corpRate;
+
+    if (corpAcc.balance < debitAmountInCorpCurr) {
+      setDisburseFeedback(
+        `⚠️ Insufficient treasury balance in ${corpAcc.name}. Available: ${corpAcc.currency} ${corpAcc.balance.toLocaleString()}, Needed: ${corpAcc.currency} ${Math.round(debitAmountInCorpCurr).toLocaleString()}`
+      );
+      return;
+    }
+
+    // 1. Debit corporate account in enterprise_financial_accounts
+    const updatedAccounts = corporateAccounts.map((acc) => {
+      if (acc.id === corpAcc.id) {
+        return {
+          ...acc,
+          balance: Math.max(0, acc.balance - debitAmountInCorpCurr),
+          lastSynced: 'Just now (Salary Disbursed)',
+        };
+      }
+      return acc;
+    });
+    setCorporateAccounts(updatedAccounts);
+    try {
+      localStorage.setItem('enterprise_financial_accounts', JSON.stringify(updatedAccounts));
+    } catch (e) {}
+
+    // 2. Append DEBIT transaction to enterprise_bank_transactions
+    const txId = `tx_sal_${Date.now()}`;
+    const newTx: BankTransaction = {
+      id: txId,
+      date: 'Just now (Automated Payout)',
+      description: `Salary Disbursement: ${emp.firstName} ${emp.lastName} (${emp.jobTitle})`,
+      accountId: corpAcc.id,
+      accountName: corpAcc.name,
+      amount: Math.round(debitAmountInCorpCurr * 100) / 100,
+      currency: corpAcc.currency,
+      type: 'DEBIT',
+      status: 'RECONCILED',
+      matchedRecord: `Dual Khata Payroll · Emp #${emp.id} (${emp.department})`,
+    };
+
+    try {
+      const storedTx = localStorage.getItem('enterprise_bank_transactions');
+      const parsedTx = storedTx ? JSON.parse(storedTx) : [];
+      const updatedTx = [newTx, ...(Array.isArray(parsedTx) ? parsedTx : [])];
+      localStorage.setItem('enterprise_bank_transactions', JSON.stringify(updatedTx));
+    } catch (e) {}
+
+    // 3. Dispatch cross-module event
+    window.dispatchEvent(new Event('enterprise_finance_updated'));
+
+    // 4. Update employee node
+    const updatedEmployee: EmployeeNode = {
+      ...emp,
+      salary: {
+        ...emp.salary,
+        paymentStatus: 'PAID',
+        lastPayDate: new Date().toISOString().split('T')[0],
+      },
+      bankDetails: {
+        ...(emp.bankDetails || {
+          bankName: 'JPMorgan Chase Private Bank',
+          accountNumberMasked: '•••• 8421',
+          routingNumber: '021000021',
+          payoutCurrency: 'USD',
+          payoutMethod: 'DIRECT_DEPOSIT',
+        }),
+        disbursementHistory: [
+          {
+            id: `disb_${Date.now()}`,
+            date: new Date().toISOString().split('T')[0],
+            amount: emp.salary.netMonthly,
+            currency: empCurrency,
+            corporateAccountId: corpAcc.id,
+            corporateAccountName: corpAcc.name,
+            payoutMethod: emp.bankDetails?.payoutMethod || 'DIRECT_DEPOSIT',
+            txHashOrRef: `TX-WIRE-${Math.floor(100000 + Math.random() * 900000)}`,
+            status: 'COMPLETED',
+          },
+          ...(emp.bankDetails?.disbursementHistory || []),
+        ],
+      },
+    };
+
+    if (onUpdateEmployee) {
+      onUpdateEmployee(updatedEmployee);
+    }
+
+    setDisburseFeedback(
+      `🎉 Wire transfer of ${FX_RATES[empCurrency]?.symbol || '$'}${emp.salary.netMonthly.toLocaleString()} successfully executed from ${corpAcc.name}! Status: PAID.`
+    );
+    setTimeout(() => {
+      setDisburseFeedback(null);
+      setDisburseEmployeeTarget(null);
+    }, 2000);
+  };
+
+  const handleSimulateQrPayment = (emp: EmployeeNode) => {
+    const tip = simulatedTipAmount || 50;
+    const empCurrency = emp.bankDetails?.payoutCurrency || 'USD';
+    const symbol = FX_RATES[empCurrency]?.symbol || '$';
+
+    const currentTips = emp.paymentQr?.totalTipsOrCommissions || 0;
+    const updatedQr = {
+      qrId: emp.paymentQr?.qrId || `qr_${emp.id}`,
+      purpose: emp.paymentQr?.purpose || 'TIPS_GRATUITY',
+      totalTipsOrCommissions: currentTips + tip,
+      lastPaymentReceived: `Just now (${symbol}${tip})`,
+    };
+
+    const updatedEmployee: EmployeeNode = {
+      ...emp,
+      paymentQr: updatedQr,
+    };
+
+    const corpAcc = corporateAccounts[0];
+    if (corpAcc) {
+      const newTx: BankTransaction = {
+        id: `tx_tip_${Date.now()}`,
+        date: 'Just now (QR Scan)',
+        description: `Employee QR Inflow (${emp.firstName} ${emp.lastName} - ${updatedQr.purpose})`,
+        accountId: corpAcc.id,
+        accountName: corpAcc.name,
+        amount: tip,
+        currency: empCurrency,
+        type: 'CREDIT',
+        status: 'RECONCILED',
+        matchedRecord: `Dual Khata Employee QR #${emp.id}`,
+      };
+      try {
+        const storedTx = localStorage.getItem('enterprise_bank_transactions');
+        const parsedTx = storedTx ? JSON.parse(storedTx) : [];
+        const updatedTx = [newTx, ...(Array.isArray(parsedTx) ? parsedTx : [])];
+        localStorage.setItem('enterprise_bank_transactions', JSON.stringify(updatedTx));
+        window.dispatchEvent(new Event('enterprise_finance_updated'));
+      } catch (e) {}
+    }
+
+    if (onUpdateEmployee) {
+      onUpdateEmployee(updatedEmployee);
+    }
+
+    setQrFeedback(`🎉 Received ${symbol}${tip} via Employee QR! Recorded in Khata ledger.`);
+    setTimeout(() => setQrFeedback(null), 3000);
+  };
+
   const renderEmployeeCard = (emp: EmployeeNode, isCompact = false) => {
     const directReports = getDirectReports(emp.id);
     const isCollapsed = collapsedNodes[emp.id];
@@ -88,14 +334,14 @@ export function OrgHierarchyTree({
         } ${isCompact ? 'w-64 sm:w-72' : 'w-72 sm:w-80'}`}
       >
         {/* Tier Badge Pill & Salary + Quick Remove Action */}
-        <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center justify-between mb-2">
           <span
             className={`px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider border font-mono ${tierMeta.badgeBg} ${tierMeta.badgeText} ${tierMeta.badgeBorder}`}
           >
             {tierMeta.code}: {tierMeta.title}
           </span>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <span className="text-[11px] font-mono font-bold text-emerald-400">
               ${emp.salary.netMonthly.toLocaleString()}/mo
             </span>
@@ -114,7 +360,7 @@ export function OrgHierarchyTree({
               className="p-1 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer"
               title={`Remove ${emp.firstName} ${emp.lastName}`}
             >
-              <Trash2 size={13} />
+              <Trash2 size={12} />
             </button>
           </div>
         </div>
@@ -124,7 +370,7 @@ export function OrgHierarchyTree({
           <img
             src={emp.avatar}
             alt={emp.firstName}
-            className="w-12 h-12 rounded-2xl object-cover border border-white/10 shadow-md"
+            className="w-11 h-11 rounded-2xl object-cover border border-white/10 shadow-md flex-shrink-0"
           />
           <div className="flex-1 min-w-0">
             <h4 className="font-bold text-sm text-white truncate group-hover:text-emerald-300 transition-colors">
@@ -135,14 +381,68 @@ export function OrgHierarchyTree({
           </div>
         </div>
 
+        {/* Bank Details & Payout Rail Badge */}
+        <div className="mt-2.5 px-2.5 py-1.5 rounded-xl bg-black/40 border border-white/[0.08] flex items-center justify-between text-[10px]">
+          <div className="flex items-center gap-1.5 truncate text-slate-300">
+            <Landmark size={11} className="text-emerald-400 flex-shrink-0" />
+            <span className="truncate font-semibold">
+              {emp.bankDetails?.bankName || 'Direct Deposit'}
+            </span>
+          </div>
+          <span className="font-mono text-emerald-300 font-bold ml-1.5 flex-shrink-0">
+            {emp.bankDetails?.accountNumberMasked || '•••• 8421'}
+          </span>
+        </div>
+
+        {/* Salary Payment Status Strip & 1-Click Pay */}
+        <div className="mt-2 pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px]">
+          {emp.salary.paymentStatus === 'PAID' ? (
+            <span className="flex items-center gap-1 text-emerald-400 font-bold">
+              <CheckCircle2 size={11} className="text-emerald-400" />
+              <span>Paid ({emp.salary.lastPayDate || 'Aug 2026'})</span>
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-amber-400 font-bold animate-pulse">
+              <AlertCircle size={11} />
+              <span>Pending Disbursal</span>
+            </span>
+          )}
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setQrEmployeeTarget(emp);
+              }}
+              className="p-1 text-slate-300 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-md border border-white/10 transition-colors cursor-pointer"
+              title="Employee Payment QR Standee"
+            >
+              <QrCode size={11} />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDisburseEmployeeTarget(emp);
+              }}
+              className="px-2 py-0.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-md text-[10px] shadow-sm transition-all cursor-pointer flex items-center gap-1 active:scale-95"
+              title="Disburse Monthly Salary from Corporate Treasury"
+            >
+              <Zap size={10} />
+              <span>{emp.salary.paymentStatus === 'PAID' ? 'Re-Pay' : 'Disburse'}</span>
+            </button>
+          </div>
+        </div>
+
         {/* Quick Actions & Reporting Line Editor */}
-        <div className="mt-3 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs">
+        <div className="mt-2 pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs">
           <button
             type="button"
             onClick={() => onSelectEmployee(emp)}
             className="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer"
           >
-            <span>View Payslip</span>
+            <span>Payslip</span>
             <ArrowRight size={11} />
           </button>
 
@@ -467,6 +767,299 @@ export function OrgHierarchyTree({
             {rootEmployees.map((root) => renderTreeNode(root))}
           </div>
         </div>
+      )}
+
+      {/* =========================================================================
+          MODAL 1: 1-CLICK SALARY DISBURSEMENT FROM CORPORATE TREASURY
+          ========================================================================= */}
+      {disburseEmployeeTarget && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-2xl flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-lg bg-slate-950 border border-white/15 rounded-3xl p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_0_1px_rgba(16,185,129,0.2)] text-white space-y-5 overflow-hidden">
+            {/* Top Glow Accent */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/25">
+                  <Zap size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-black text-white">Disburse Salary Wire</h3>
+                  <p className="text-xs text-slate-400">Direct corporate treasury debit with automated Khata reconciliation</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setDisburseEmployeeTarget(null);
+                  setDisburseFeedback(null);
+                }}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Feedback Alert Banner */}
+            {disburseFeedback && (
+              <div className={`p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                disburseFeedback.includes('⚠️')
+                  ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300'
+                  : 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
+              }`}>
+                <span>{disburseFeedback}</span>
+              </div>
+            )}
+
+            {/* Employee Payout Destination Profile */}
+            <div className="p-3.5 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center gap-3">
+              <img
+                src={disburseEmployeeTarget.avatar}
+                alt={disburseEmployeeTarget.firstName}
+                className="w-12 h-12 rounded-xl object-cover border border-white/10"
+              />
+              <div className="flex-1 min-w-0 text-xs">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-white text-sm truncate">
+                    {disburseEmployeeTarget.firstName} {disburseEmployeeTarget.lastName}
+                  </h4>
+                  <span className="font-mono font-bold text-emerald-400 text-sm">
+                    ${disburseEmployeeTarget.salary.netMonthly.toLocaleString()}
+                  </span>
+                </div>
+                <p className="text-slate-400 truncate">{disburseEmployeeTarget.jobTitle} · {disburseEmployeeTarget.department}</p>
+                <div className="flex items-center gap-2 mt-1 text-[11px] text-emerald-300 font-mono">
+                  <span>{disburseEmployeeTarget.bankDetails?.bankName || 'JPMorgan Chase'}</span>
+                  <span>({disburseEmployeeTarget.bankDetails?.accountNumberMasked || '•••• 8421'})</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Corporate Disbursing Treasury Selector */}
+            <div className="space-y-1.5 text-xs">
+              <label className="block text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1.5">
+                <Landmark size={12} className="text-emerald-400" />
+                <span>Disbursing Corporate Treasury Account</span>
+              </label>
+              <select
+                value={selectedCorpAccountId}
+                onChange={(e) => setSelectedCorpAccountId(e.target.value)}
+                className="w-full px-3 py-2.5 bg-slate-900 border border-white/15 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-400 font-medium cursor-pointer"
+              >
+                {corporateAccounts.map((acc) => (
+                  <option key={acc.id} value={acc.id}>
+                    {acc.name} — Balance: {FX_RATES[acc.currency]?.symbol || '$'}{acc.balance.toLocaleString()} {acc.currency}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Settlement Summary Strip */}
+            <div className="p-3 bg-black/40 border border-white/[0.08] rounded-xl space-y-1.5 text-[11px]">
+              <div className="flex justify-between text-slate-400">
+                <span>Gross Compensation</span>
+                <span className="font-mono text-slate-200">
+                  ${(disburseEmployeeTarget.salary.baseMonthly + disburseEmployeeTarget.salary.allowances + disburseEmployeeTarget.salary.bonus).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-slate-400">
+                <span>Statutory Deductions (PAYE/PF)</span>
+                <span className="font-mono text-rose-400">-${disburseEmployeeTarget.salary.taxDeductions.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-white font-bold pt-1 border-t border-white/10">
+                <span>Net Outflow Wire</span>
+                <span className="font-mono text-emerald-400 text-xs">
+                  ${disburseEmployeeTarget.salary.netMonthly.toLocaleString(undefined, { minimumFractionDigits: 2 })} USD
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => {
+                  setDisburseEmployeeTarget(null);
+                  setDisburseFeedback(null);
+                }}
+                className="px-4 py-2 bg-white/[0.05] hover:bg-white/10 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExecuteDisbursement(disburseEmployeeTarget)}
+                className="px-5 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer active:scale-95 transition-all"
+              >
+                <Zap size={14} />
+                <span>Confirm &amp; Disburse Wire</span>
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* =========================================================================
+          MODAL 2: PERSONAL EMPLOYEE PAYMENT QR STANDEE & SIMULATOR
+          ========================================================================= */}
+      {qrEmployeeTarget && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-2xl flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md bg-slate-950 border border-white/15 rounded-3xl p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_0_1px_rgba(16,185,129,0.2)] text-white space-y-4 text-center overflow-hidden">
+            {/* Top Glow Accent */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
+
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2 text-left">
+                <QrCode size={18} className="text-emerald-400" />
+                <div>
+                  <h3 className="text-sm font-black text-white">Employee Payment QR Standee</h3>
+                  <p className="text-[11px] text-slate-400">Direct client tips, retainer &amp; commission terminal</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setQrEmployeeTarget(null);
+                  setQrFeedback(null);
+                }}
+                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Feedback Banner */}
+            {qrFeedback && (
+              <div className="p-2.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5">
+                <CheckCircle2 size={14} />
+                <span>{qrFeedback}</span>
+              </div>
+            )}
+
+            {/* Acrylic Countertop Standee Mockup */}
+            <div className="p-5 bg-gradient-to-b from-white to-slate-100 rounded-3xl text-slate-950 shadow-2xl border-4 border-slate-900 space-y-3">
+              {/* Standee Header */}
+              <div className="flex flex-col items-center">
+                <img
+                  src={qrEmployeeTarget.avatar}
+                  alt={qrEmployeeTarget.firstName}
+                  className="w-14 h-14 rounded-2xl object-cover border-2 border-slate-900 shadow-md mb-1.5"
+                />
+                <h4 className="font-extrabold text-sm tracking-tight">
+                  {qrEmployeeTarget.firstName} {qrEmployeeTarget.lastName}
+                </h4>
+                <p className="text-[11px] font-semibold text-emerald-700">{qrEmployeeTarget.jobTitle}</p>
+                <span className="text-[9px] text-slate-500 uppercase font-mono font-bold tracking-wider">
+                  {nicheConfig.name} Staff Member
+                </span>
+              </div>
+
+              {/* High-Contrast SVG QR Matrix */}
+              <div className="w-44 h-44 mx-auto p-3 bg-white rounded-2xl border-2 border-slate-900 shadow-inner flex items-center justify-center">
+                <svg viewBox="0 0 100 100" className="w-full h-full">
+                  <rect width="100" height="100" fill="#ffffff" />
+                  {/* Outer Position Finders */}
+                  <rect x="8" y="8" width="28" height="28" fill="#0f172a" />
+                  <rect x="12" y="12" width="20" height="20" fill="#ffffff" />
+                  <rect x="16" y="16" width="12" height="12" fill="#0f172a" />
+                  <rect x="64" y="8" width="28" height="28" fill="#0f172a" />
+                  <rect x="68" y="12" width="20" height="20" fill="#ffffff" />
+                  <rect x="72" y="16" width="12" height="12" fill="#0f172a" />
+                  <rect x="8" y="64" width="28" height="28" fill="#0f172a" />
+                  <rect x="12" y="68" width="20" height="20" fill="#ffffff" />
+                  <rect x="16" y="72" width="12" height="12" fill="#0f172a" />
+                  {/* Pattern Elements */}
+                  <rect x="42" y="12" width="8" height="8" fill="#0f172a" />
+                  <rect x="54" y="12" width="6" height="6" fill="#0f172a" />
+                  <rect x="42" y="24" width="8" height="8" fill="#0f172a" />
+                  <rect x="12" y="44" width="8" height="8" fill="#0f172a" />
+                  <rect x="44" y="44" width="12" height="12" fill="#10b981" rx="2" />
+                  <rect x="64" y="44" width="8" height="8" fill="#0f172a" />
+                  <rect x="80" y="44" width="8" height="8" fill="#0f172a" />
+                  <rect x="44" y="64" width="8" height="8" fill="#0f172a" />
+                  <rect x="64" y="64" width="8" height="8" fill="#0f172a" />
+                  <rect x="74" y="78" width="8" height="8" fill="#0f172a" />
+                </svg>
+              </div>
+
+              {/* QR Purpose & Receiving Bank Notice */}
+              <div className="text-[11px] space-y-0.5">
+                <span className="inline-block px-2.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  {qrEmployeeTarget.paymentQr?.purpose || 'TIPS & GRATUITY'}
+                </span>
+                <p className="text-[10px] text-slate-500 font-medium">
+                  Direct settlement to {qrEmployeeTarget.bankDetails?.bankName || 'JPMorgan Chase'} ({qrEmployeeTarget.bankDetails?.accountNumberMasked || '•••• 8421'})
+                </p>
+              </div>
+
+              {/* Total Tips Collected Badge */}
+              <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-xs font-bold text-slate-700 px-2">
+                <span>Total Received:</span>
+                <span className="font-mono text-emerald-600 font-black">
+                  ${(qrEmployeeTarget.paymentQr?.totalTipsOrCommissions || 0).toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            {/* Interactive Simulation: Pay Tip / Commission */}
+            <div className="p-3 bg-white/[0.04] border border-white/10 rounded-2xl space-y-2 text-left">
+              <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                Simulate Client Camera Scan &amp; Direct Pay
+              </span>
+              <div className="flex items-center gap-2">
+                {[20, 50, 100, 200].map((amt) => (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setSimulatedTipAmount(amt)}
+                    className={`flex-1 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                      simulatedTipAmount === amt
+                        ? 'bg-emerald-500 text-slate-950 shadow-md font-black'
+                        : 'bg-black/40 text-slate-300 hover:text-white border border-white/10'
+                    }`}
+                  >
+                    ${amt}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => handleSimulateQrPayment(qrEmployeeTarget)}
+                className="w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/20 active:scale-95 transition-all cursor-pointer"
+              >
+                <Smartphone size={13} />
+                <span>Process ${simulatedTipAmount} Payment to Employee</span>
+              </button>
+            </div>
+
+            {/* Footer Actions */}
+            <div className="flex items-center gap-2 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="flex-1 py-2 bg-white/[0.06] hover:bg-white/10 text-white rounded-xl text-xs font-bold border border-white/10 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Printer size={13} />
+                <span>Print Standee</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setQrEmployeeTarget(null);
+                  setQrFeedback(null);
+                }}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );

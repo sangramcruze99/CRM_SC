@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useIndustry } from '@/components/industry/IndustryContext';
 import { EmployeeNode, INITIAL_NICHE_EMPLOYEES } from '@/lib/hrData';
+import { FinancialAccount, BankTransaction, FX_RATES } from '@/app/banking/BankingClient';
 import { OrgHierarchyTree } from '@/components/hr/OrgHierarchyTree';
 import { SalaryPayrollHub } from '@/components/hr/SalaryPayrollHub';
 import { EmployeeRoster } from '@/components/hr/EmployeeRoster';
@@ -60,6 +61,11 @@ export function DirectoryClient() {
     }
   };
 
+  const handleUpdateEmployee = (updatedEmp: EmployeeNode) => {
+    const updated = employees.map((e) => (e.id === updatedEmp.id ? updatedEmp : e));
+    saveEmployees(updated);
+  };
+
   const handleClearRoster = () => {
     if (confirm(`Are you sure you want to clear all team members for ${nicheConfig.name}?`)) {
       saveEmployees([]);
@@ -71,7 +77,7 @@ export function DirectoryClient() {
   const handleAddEmployee = (newEmp: EmployeeNode) => {
     const updated = [...employees, newEmp];
     saveEmployees(updated);
-    setAlert(`🎉 Successfully added ${newEmp.firstName} ${newEmp.lastName} (${newEmp.jobTitle}) to ${nicheConfig.shortName} team!`);
+    setAlert(`🎉 Successfully added ${newEmp.firstName} ${newEmp.lastName} (${newEmp.jobTitle}) to ${nicheConfig.shortName} team with connected ${newEmp.bankDetails?.bankName || 'bank account'}!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -90,22 +96,145 @@ export function DirectoryClient() {
     setTimeout(() => setAlert(null), 4000);
   };
 
-  const handleRunPayrollBatch = () => {
+  const handleRunPayrollBatch = (treasuryAccountId?: string) => {
     if (employees.length === 0) {
       setAlert('No employees in roster to disburse payroll for. Please add team members first.');
       setTimeout(() => setAlert(null), 4000);
       return;
     }
+
+    const totalNet = employees.reduce((acc, curr) => acc + curr.salary.netMonthly, 0);
+
+    // 1. Debit from Corporate Treasury Account in localStorage
+    try {
+      const storedAccs = localStorage.getItem('enterprise_financial_accounts');
+      if (storedAccs) {
+        const parsedAccs: FinancialAccount[] = JSON.parse(storedAccs);
+        if (Array.isArray(parsedAccs) && parsedAccs.length > 0) {
+          const targetAcc =
+            (treasuryAccountId ? parsedAccs.find((a) => a.id === treasuryAccountId) : null) ||
+            parsedAccs[0];
+
+          if (targetAcc) {
+            if (targetAcc.balance < totalNet) {
+              setAlert(`⚠️ Insufficient funds in ${targetAcc.name}. Available: $${targetAcc.balance.toLocaleString()}, Required: $${totalNet.toLocaleString()}`);
+              setTimeout(() => setAlert(null), 5000);
+              return;
+            }
+
+            // Deduct balance
+            const updatedAccs = parsedAccs.map((a) =>
+              a.id === targetAcc.id
+                ? { ...a, balance: Math.max(0, a.balance - totalNet), lastSynced: 'Just now (Payroll Run)' }
+                : a
+            );
+            localStorage.setItem('enterprise_financial_accounts', JSON.stringify(updatedAccs));
+
+            // Log Batch Debit Transaction
+            const storedFeed = localStorage.getItem('enterprise_bank_transactions');
+            const parsedFeed: BankTransaction[] = storedFeed ? JSON.parse(storedFeed) : [];
+            const newTx: BankTransaction = {
+              id: `tx_batch_payroll_${Date.now()}`,
+              date: 'Just now (Automated Batch Wire)',
+              description: `Batch Payroll Run: Disbursed to ${employees.length} Staff (${nicheConfig.name})`,
+              accountId: targetAcc.id,
+              accountName: targetAcc.name,
+              amount: totalNet,
+              currency: targetAcc.currency,
+              type: 'DEBIT',
+              status: 'RECONCILED',
+              matchedRecord: `Dual Khata Payroll Batch · ${employees.length} ACH/Wires Settled`,
+            };
+            localStorage.setItem('enterprise_bank_transactions', JSON.stringify([newTx, ...(Array.isArray(parsedFeed) ? parsedFeed : [])]));
+
+            // Dispatch global event for banking & dashboard
+            window.dispatchEvent(new Event('enterprise_finance_updated'));
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Error debiting corporate payroll treasury', e);
+    }
+
     const updated = employees.map((emp) => ({
       ...emp,
       salary: { ...emp.salary, paymentStatus: 'PAID' as const, lastPayDate: new Date().toISOString().split('T')[0] },
+      bankDetails: emp.bankDetails ? {
+        ...emp.bankDetails,
+        disbursementHistory: [
+          {
+            id: `disb_batch_${Date.now()}_${emp.id}`,
+            date: new Date().toISOString().split('T')[0],
+            amount: emp.salary.netMonthly,
+            currency: emp.bankDetails.payoutCurrency || 'USD',
+            corporateAccountId: treasuryAccountId || 'corp_primary',
+            corporateAccountName: 'Corporate Operating Treasury',
+            payoutMethod: emp.bankDetails.payoutMethod,
+            txHashOrRef: `TX-BATCH-${Math.floor(100000 + Math.random() * 900000)}`,
+            status: 'COMPLETED' as const,
+          },
+          ...(emp.bankDetails.disbursementHistory || []),
+        ],
+      } : undefined,
     }));
+
     saveEmployees(updated);
-    const totalNet = employees.reduce((acc, curr) => acc + curr.salary.netMonthly, 0);
     setAlert(
-      `🎉 Monthly payroll batch of $${totalNet.toLocaleString()} processed! Disbursed to all ${employees.length} employees & recorded in Khata Ledger.`
+      `🎉 Monthly payroll batch of $${totalNet.toLocaleString()} successfully wired from Corporate Treasury! Disbursed to all ${employees.length} employees & recorded in Khata Ledger.`
     );
     setTimeout(() => setAlert(null), 5000);
+  };
+
+  const handleDisburseSingle = (emp: EmployeeNode, treasuryAccountId: string) => {
+    try {
+      const storedAccs = localStorage.getItem('enterprise_financial_accounts');
+      if (storedAccs) {
+        const parsedAccs: FinancialAccount[] = JSON.parse(storedAccs);
+        const targetAcc = parsedAccs.find((a) => a.id === treasuryAccountId) || parsedAccs[0];
+        if (targetAcc) {
+          if (targetAcc.balance < emp.salary.netMonthly) {
+            setAlert(`⚠️ Insufficient balance in ${targetAcc.name} to disburse $${emp.salary.netMonthly.toLocaleString()}`);
+            setTimeout(() => setAlert(null), 4000);
+            return;
+          }
+          const updatedAccs = parsedAccs.map((a) =>
+            a.id === targetAcc.id
+              ? { ...a, balance: a.balance - emp.salary.netMonthly, lastSynced: 'Just now (Wire Executed)' }
+              : a
+          );
+          localStorage.setItem('enterprise_financial_accounts', JSON.stringify(updatedAccs));
+
+          const storedFeed = localStorage.getItem('enterprise_bank_transactions');
+          const parsedFeed = storedFeed ? JSON.parse(storedFeed) : [];
+          const newTx: BankTransaction = {
+            id: `tx_single_${Date.now()}`,
+            date: 'Just now (Wire Executed)',
+            description: `Salary Payout: ${emp.firstName} ${emp.lastName} (${emp.jobTitle})`,
+            accountId: targetAcc.id,
+            accountName: targetAcc.name,
+            amount: emp.salary.netMonthly,
+            currency: targetAcc.currency,
+            type: 'DEBIT',
+            status: 'RECONCILED',
+            matchedRecord: `Dual Khata Wire #${emp.id}`,
+          };
+          localStorage.setItem('enterprise_bank_transactions', JSON.stringify([newTx, ...(Array.isArray(parsedFeed) ? parsedFeed : [])]));
+          window.dispatchEvent(new Event('enterprise_finance_updated'));
+        }
+      }
+    } catch (e) {}
+
+    const updatedEmp: EmployeeNode = {
+      ...emp,
+      salary: {
+        ...emp.salary,
+        paymentStatus: 'PAID',
+        lastPayDate: new Date().toISOString().split('T')[0],
+      },
+    };
+    handleUpdateEmployee(updatedEmp);
+    setAlert(`🎉 Direct wire of $${emp.salary.netMonthly.toLocaleString()} executed for ${emp.firstName} ${emp.lastName}! Disbursed to ${emp.bankDetails?.bankName || 'bank account'}.`);
+    setTimeout(() => setAlert(null), 4000);
   };
 
   const handleOpenPayslip = (emp: EmployeeNode) => {
@@ -219,6 +348,7 @@ export function DirectoryClient() {
           onReassignManager={handleReassignManager}
           onRemoveEmployee={handleRemoveEmployee}
           onOpenAddModal={() => setIsAddModalOpen(true)}
+          onUpdateEmployee={handleUpdateEmployee}
         />
       )}
 
@@ -229,6 +359,7 @@ export function DirectoryClient() {
           onRunPayrollBatch={handleRunPayrollBatch}
           onRemoveEmployee={handleRemoveEmployee}
           onOpenAddModal={() => setIsAddModalOpen(true)}
+          onDisburseSingle={handleDisburseSingle}
         />
       )}
 

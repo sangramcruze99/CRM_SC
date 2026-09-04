@@ -10,6 +10,7 @@ import { AppService } from './app.service';
 import { ExecutorModule } from './executor/executor.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { WorkflowsModule } from './workflows/workflows.module';
+import { EventBusModule } from './event-bus/event-bus.module';
 
 const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HOST !== '127.0.0.1' && process.env.REDIS_HOST !== 'localhost');
 
@@ -17,6 +18,7 @@ const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HO
   imports: [
     JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
     ScheduleModule.forRoot(),
+    EventBusModule,
     ...(isRedisConfigured ? [
       BullModule.forRoot({
         connection: {
