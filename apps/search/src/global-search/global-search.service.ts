@@ -25,9 +25,9 @@ export class GlobalSearchService {
             where: {
               tenantId,
               OR: [
-                { firstName: { contains: query, mode: 'insensitive' } },
-                { lastName: { contains: query, mode: 'insensitive' } },
-                { email: { contains: query, mode: 'insensitive' } },
+                { firstName: { contains: query } },
+                { lastName: { contains: query } },
+                { email: { contains: query } },
               ]
             },
             take: 5
@@ -35,14 +35,14 @@ export class GlobalSearchService {
           this.prisma.deal.findMany({
             where: {
               tenantId,
-              title: { contains: query, mode: 'insensitive' }
+              title: { contains: query }
             },
             take: 5
           }),
           this.prisma.ticket.findMany({
             where: {
               tenantId,
-              title: { contains: query, mode: 'insensitive' }
+              title: { contains: query }
             },
             take: 5
           })

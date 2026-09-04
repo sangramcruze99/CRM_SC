@@ -31,7 +31,7 @@ export class KnowledgeService {
             tenantId,
             title: data.title,
             content: data.content,
-            vectorEmbeddings: vector
+            vectorEmbeddings: JSON.stringify(vector)
           },
         });
       } catch {
@@ -68,10 +68,10 @@ export class KnowledgeService {
   async findOne(tenantId: string, id: string) {
     if (this.prisma.isConnected) {
       try {
-        const doc = await this.prisma.knowledgeBaseDocument.findFirst({
+        const record = await this.prisma.knowledgeBaseDocument.findFirst({
           where: { id, tenantId }
         });
-        if (doc) return doc;
+        if (record) return record;
       } catch {
         // fallback
       }
@@ -86,7 +86,8 @@ export class KnowledgeService {
     let updateData: any = { title: data.title, content: data.content };
     
     if (data.content) {
-      updateData.vectorEmbeddings = await this.generateEmbeddings(data.content);
+      const vec = await this.generateEmbeddings(data.content);
+      updateData.vectorEmbeddings = JSON.stringify(vec);
     }
 
     if (this.prisma.isConnected) {

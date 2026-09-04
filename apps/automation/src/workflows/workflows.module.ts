@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { WorkflowsController } from './workflows.controller';
 import { WorkflowsService } from './workflows.service';
+import { WorkflowExecutionService } from '../executor/workflow-execution.service';
+import { ExecutionPersistenceService } from '../executor/execution-persistence.service';
 import { PrismaModule } from '../prisma/prisma.module';
 
 const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HOST !== '127.0.0.1' && process.env.REDIS_HOST !== 'localhost');
@@ -16,6 +18,7 @@ const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HO
     ] : [])
   ],
   controllers: [WorkflowsController],
-  providers: [WorkflowsService]
+  providers: [WorkflowsService, WorkflowExecutionService, ExecutionPersistenceService],
+  exports: [WorkflowsService, WorkflowExecutionService, ExecutionPersistenceService],
 })
 export class WorkflowsModule {}

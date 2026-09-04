@@ -16,7 +16,7 @@ export class WebhooksService {
     return this.prisma.webhook.create({
       data: {
         url: data.url,
-        events: data.events,
+        events: JSON.stringify(data.events),
         isActive: true,
         tenantId,
       },

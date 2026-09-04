@@ -7,8 +7,16 @@ export class OcrService {
   private openai: OpenAI;
 
   constructor() {
+    const apiKey = process.env.OPENROUTER_API_KEY || process.env.OPENAI_API_KEY || 'dummy_key';
+    const baseURL = process.env.OPENROUTER_API_KEY ? 'https://openrouter.ai/api/v1' : undefined;
+    const defaultHeaders = process.env.OPENROUTER_API_KEY
+      ? { 'HTTP-Referer': 'http://localhost:4000', 'X-Title': 'Business OS CRM' }
+      : undefined;
+
     this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY || 'dummy_key',
+      apiKey,
+      baseURL,
+      defaultHeaders,
     });
   }
 
@@ -16,17 +24,17 @@ export class OcrService {
    * Processes a base64 image or image URL and returns parsed data + inferred schema.
    */
   async parseInvoiceAndInferSchema(imageUrlOrBase64: string) {
-    this.logger.log('Processing document for OCR and schema inference...');
+    this.logger.log('Processing document for OCR and schema inference via OpenRouter / OpenAI...');
     
-    if (!process.env.OPENAI_API_KEY) {
-      this.logger.warn('No OPENAI_API_KEY found, returning mock data.');
+    if (!process.env.OPENROUTER_API_KEY && !process.env.OPENAI_API_KEY) {
+      this.logger.warn('No OPENROUTER_API_KEY or OPENAI_API_KEY found, returning mock data.');
       return this.getMockResponse();
     }
 
     try {
-      // In production, we'd use gpt-4o for vision
+      const model = process.env.OPENROUTER_API_KEY ? 'openai/gpt-4o' : 'gpt-4o';
       const response = await this.openai.chat.completions.create({
-        model: 'gpt-4o',
+        model,
         messages: [
           {
             role: 'system',

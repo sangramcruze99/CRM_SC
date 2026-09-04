@@ -88,7 +88,9 @@ export class CustomRecordsService {
     const record = await this.findOne(tenantId, customObjectId, id);
     
     // Merge new data with existing JSON data
-    const mergedData = { data: { ...(record.data as object), ...(data.data || {}) } };
+    const existingData = typeof record.data === 'string' ? JSON.parse(record.data) : ((record.data as unknown as object) || {});
+    const incomingData = typeof data.data === 'object' && data.data !== null ? data.data : {};
+    const mergedData = { data: { ...existingData, ...incomingData } };
     const validatedData = await this.validateData(tenantId, customObjectId, mergedData);
 
     return this.prisma.customRecord.update({

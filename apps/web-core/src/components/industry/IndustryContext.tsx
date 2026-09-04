@@ -86,6 +86,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Unified Inbox', href: '/inbox', iconName: 'MessageSquare', badge: '6-in-1' },
           { label: 'Social Studio', href: '/social', iconName: 'Share2', badge: 'AI' },
           { label: 'Email Marketing', href: '/email-marketing', iconName: 'Mail', badge: 'New' },
+          { label: 'Visual Email Builder', href: '/platform/templates/email', iconName: 'Palette', badge: 'Studio' },
           { label: 'Website Builder', href: '/site-builder', iconName: 'Layout', badge: 'No-Code' },
           { label: 'Enterprise AI', href: '/ai-studio', iconName: 'Brain', badge: 'v4.8' },
         ],

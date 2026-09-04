@@ -1,0 +1,10 @@
+[
+  {
+    "hash": "796d2027d4444360ccf878e78c9f51fdca4f0ae84528203e7bad46f13ae862e1",
+    "tenantId": "default-tenant",
+    "workflowId": "wf_flagship_enterprise",
+    "nodeId": "act_email_1",
+    "recipientEmail": "elena.rostova@hyperion.io",
+    "timestamp": "2026-09-04T15:39:31.104Z"
+  }
+]

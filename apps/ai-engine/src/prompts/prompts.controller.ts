@@ -50,8 +50,14 @@ export class PromptsController {
   @Post('ask')
   askAI(
     @Headers('x-tenant-id') tenantIdHeader: string,
-    @Body() body: { query: string; templateId?: string }
+    @Body() body: { query: string; templateId?: string; provider?: 'groq' | 'openrouter' | 'auto'; model?: string }
   ) {
-    return this.promptsService.askAI(this.getTenant(tenantIdHeader), body.query, body.templateId);
+    return this.promptsService.askAI(
+      this.getTenant(tenantIdHeader),
+      body.query,
+      body.templateId,
+      body.provider,
+      body.model,
+    );
   }
 }

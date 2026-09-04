@@ -35,7 +35,7 @@ export class ApiKeysService {
           data: {
             name: data.name,
             key: hashedKey,
-            permissions: data.permissions || ['read', 'write'],
+            permissions: JSON.stringify(data.permissions || ['read', 'write']),
             tenantId,
           },
         });

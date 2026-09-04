@@ -44,6 +44,8 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
     backendPath = `${servicePrefix}/${remainingPath}`;
   } else if (servicePrefix === 'auth' && ['login', 'register'].includes(remainingPath)) {
     backendPath = `auth/${remainingPath}`;
+  } else if (servicePrefix === 'ai' && remainingPath === 'ask') {
+    backendPath = 'prompts/ask';
   }
   
   const targetUrl = `${targetBase}/${backendPath}${req.nextUrl.search}`;

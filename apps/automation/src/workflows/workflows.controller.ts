@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, Query } from '@nestjs/common';
 import { WorkflowsService } from './workflows.service';
 
 @Controller('workflows')
@@ -22,6 +22,18 @@ export class WorkflowsController {
     return this.workflowsService.findAll(this.getTenant(tenantIdHeader));
   }
 
+  /**
+   * Behavioral website event ingestion trigger
+   * Ingests PAGE_VISITED, FORM_SUBMITTED, CART_ABANDONED, etc.
+   */
+  @Post('events')
+  ingestEvent(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Body() body: any
+  ) {
+    return this.workflowsService.ingestEvent(this.getTenant(tenantIdHeader), body);
+  }
+
   @Get(':id')
   findOne(
     @Headers('x-tenant-id') tenantIdHeader: string,
@@ -37,6 +49,73 @@ export class WorkflowsController {
   ) {
     const workflowId = body.workflowId || body.id || 'default_workflow';
     return this.workflowsService.trigger(this.getTenant(tenantIdHeader), workflowId, body.triggerData || body);
+  }
+
+  @Post('simulate')
+  simulate(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Body() body: any
+  ) {
+    return this.workflowsService.simulate(this.getTenant(tenantIdHeader), body);
+  }
+
+  @Get(':id/analytics')
+  getAnalytics(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string
+  ) {
+    return this.workflowsService.getAnalytics(this.getTenant(tenantIdHeader), id);
+  }
+
+  /**
+   * Pause a workflow
+   */
+  @Post(':id/pause')
+  pause(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string
+  ) {
+    return this.workflowsService.pauseWorkflow(this.getTenant(tenantIdHeader), id);
+  }
+
+  /**
+   * Resume a workflow
+   */
+  @Post(':id/resume')
+  resume(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string
+  ) {
+    return this.workflowsService.resumeWorkflow(this.getTenant(tenantIdHeader), id);
+  }
+
+  /**
+   * Query past executions for audit logs
+   */
+  @Get(':id/executions')
+  getExecutions(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+    @Query('limit') limit?: string,
+    @Query('status') status?: string
+  ) {
+    return this.workflowsService.getExecutions(
+      this.getTenant(tenantIdHeader),
+      id,
+      limit ? parseInt(limit, 10) : 50,
+      status
+    );
+  }
+
+  /**
+   * Query single execution audit trail
+   */
+  @Get(':id/executions/:executionId')
+  getExecutionById(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('executionId') executionId: string
+  ) {
+    return this.workflowsService.getExecutionById(this.getTenant(tenantIdHeader), executionId);
   }
 
   @Post(':id/trigger')
