@@ -508,7 +508,9 @@ Rules:
               <Terminal className="w-4 h-4 text-emerald-400" />
               <span className="text-xs font-bold text-white">Live ReAct Execution Playground</span>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">Model: {model.split('/')[1] || model}</span>
+            <span className="text-[11px] font-mono text-slate-400">
+              Model: {((model || 'groq/llama-3.3').split('/')[1] || model || 'llama-3.3')}
+            </span>
           </div>
 
           {/* Chat Messages */}

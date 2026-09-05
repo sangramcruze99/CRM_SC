@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "hash": "a49b4114736ad35555fbfba4c1daf5d63aad339b8c8ef5219558dbdb28cb2fbe",
+    "tenantId": "default-tenant",
+    "workflowId": "rec_01",
+    "nodeId": "act_email_1",
+    "recipientEmail": "elena.rostova@hyperion.io",
+    "timestamp": "2026-09-05T17:09:15.159Z"
+  }
+]

@@ -198,9 +198,45 @@ export class WorkflowTemplatesService implements OnModuleInit {
         requiredCredentials: [],
         variables: { repDirectNumber: '+15550192834' },
         nodes: [
-          { id: '1', type: 'trigger:call_received', position: { x: 100, y: 150 }, data: { title: 'Inbound Customer Call' } },
-          { id: '2', type: 'comm:voice_call', position: { x: 350, y: 150 }, data: { title: 'Voice Receptionist Agent' } },
-          { id: '3', type: 'crm:add_activity', position: { x: 600, y: 150 }, data: { title: 'Log Call Audio & Transcript' } },
+          {
+            id: '1',
+            type: 'trigger:call_received',
+            position: { x: 80, y: 140 },
+            data: {
+              type: 'trigger:call_received',
+              title: 'Inbound Customer Call',
+              subtitle: 'Listens for telephone calls on Twilio SIP trunk',
+              category: 'TRIGGER',
+              iconName: 'PhoneIncoming',
+              badge: 'Voice Trigger',
+            },
+          },
+          {
+            id: '2',
+            type: 'comm:voice_call',
+            position: { x: 440, y: 140 },
+            data: {
+              type: 'comm:voice_call',
+              title: 'Voice Receptionist Agent',
+              subtitle: 'Engages caller with AI voice, answers FAQs, and books meetings',
+              category: 'COMMUNICATION',
+              iconName: 'Bot',
+              badge: 'AI Telephony',
+            },
+          },
+          {
+            id: '3',
+            type: 'crm:add_activity',
+            position: { x: 800, y: 140 },
+            data: {
+              type: 'crm:add_activity',
+              title: 'Log Call Audio & Transcript',
+              subtitle: 'Records call audio and saves conversation transcript to CRM timeline',
+              category: 'CRM',
+              iconName: 'Clock',
+              badge: 'CRM Log',
+            },
+          },
         ],
         edges: [
           { id: 'e1-2', source: '1', target: '2' },

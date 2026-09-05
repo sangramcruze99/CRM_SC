@@ -1,5 +1,5 @@
 import { WorkflowGraphExecutorService } from './workflow-graph-executor.service';
-import { ApprovalService } from '../approvals/approvals.service';
+import { ApprovalService } from '../approvals/approval.service';
 
 describe('WorkflowGraphExecutorService', () => {
   let executor: WorkflowGraphExecutorService;
@@ -44,6 +44,7 @@ describe('WorkflowGraphExecutorService', () => {
     const nodes = [
       {
         id: 'trigger-1',
+        type: 'crm:new_lead',
         data: {
           type: 'crm:new_lead',
           title: 'New Lead Ingested',
@@ -52,6 +53,7 @@ describe('WorkflowGraphExecutorService', () => {
       },
       {
         id: 'crm-update-1',
+        type: 'crm:update_lead_score',
         data: {
           type: 'crm:update_lead_score',
           title: 'Update CRM Score',
@@ -81,6 +83,7 @@ describe('WorkflowGraphExecutorService', () => {
     const nodes = [
       {
         id: 'trigger-1',
+        type: 'crm:new_lead',
         data: {
           type: 'crm:new_lead',
           title: 'New Lead Ingested',
@@ -88,6 +91,7 @@ describe('WorkflowGraphExecutorService', () => {
       },
       {
         id: 'branch-1',
+        type: 'logic:if_else',
         data: {
           type: 'logic:if_else',
           title: 'High Value Lead Check',
@@ -96,6 +100,7 @@ describe('WorkflowGraphExecutorService', () => {
       },
       {
         id: 'action-vip',
+        type: 'comm:whatsapp',
         data: {
           type: 'comm:whatsapp',
           title: 'VIP Instant Concierge',
@@ -103,6 +108,7 @@ describe('WorkflowGraphExecutorService', () => {
       },
       {
         id: 'action-standard',
+        type: 'comm:email',
         data: {
           type: 'comm:email',
           title: 'Standard Email Nurture',
@@ -150,6 +156,7 @@ describe('WorkflowGraphExecutorService', () => {
     const nodes = [
       {
         id: 'trigger-1',
+        type: 'crm:deal_stage_changed',
         data: {
           type: 'crm:deal_stage_changed',
           title: 'Deal Moved to Proposal',
@@ -157,6 +164,7 @@ describe('WorkflowGraphExecutorService', () => {
       },
       {
         id: 'approval-1',
+        type: 'hitl:approval',
         data: {
           type: 'hitl:approval',
           title: 'VP Sales Deal Approval',
@@ -166,6 +174,7 @@ describe('WorkflowGraphExecutorService', () => {
       },
       {
         id: 'send-contract',
+        type: 'doc:generate_contract',
         data: {
           type: 'doc:generate_contract',
           title: 'Generate PDF Contract',

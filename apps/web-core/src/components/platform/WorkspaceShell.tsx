@@ -81,7 +81,14 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Main View Container */}
-          <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8">{children}</div>
+          {(() => {
+            const isAutomationRoute = pathname?.startsWith('/automation');
+            return (
+              <div className={`flex-1 ${isAutomationRoute ? 'overflow-hidden p-0' : 'overflow-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8'}`}>
+                {children}
+              </div>
+            );
+          })()}
 
           <AskAICopilot />
           <CreditUsageDrawer />

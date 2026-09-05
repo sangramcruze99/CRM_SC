@@ -153,7 +153,37 @@ export default function AgentsPage() {
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {
-            setAgents((prev) => [...data, ...prev]);
+            const mapped: AgentCard[] = data.map((d: any) => {
+              let parsedToolsCount = 4;
+              if (Array.isArray(d.tools)) {
+                parsedToolsCount = d.tools.length;
+              } else if (typeof d.tools === 'string') {
+                try {
+                  const p = JSON.parse(d.tools);
+                  if (Array.isArray(p)) parsedToolsCount = p.length;
+                } catch {}
+              }
+
+              return {
+                id: d.id,
+                name: d.name || 'Autonomous Agent',
+                role: d.role || 'Specialized Agent',
+                description: d.description || d.systemPrompt || 'Autonomous business agent with enterprise tools and ReAct reasoning.',
+                model: d.model || (d.modelProvider && d.modelName ? `${d.modelProvider}/${d.modelName}` : 'groq/llama-3.3-70b-versatile'),
+                autonomyLevel: d.autonomyLevel || 'HITL_SUPERVISED',
+                activeToolsCount: parsedToolsCount,
+                channels: Array.isArray(d.channels) && d.channels.length > 0 ? d.channels : ['Email', 'CRM'],
+                executionCount: d.executionCount || 0,
+                successRate: d.successRate || 100.0,
+                isActive: d.isActive ?? true,
+                category: (d.category as any) || 'SALES',
+              };
+            });
+            setAgents((prev) => {
+              const existingIds = new Set(mapped.map((m) => m.id));
+              const nonDuplicatePrev = prev.filter((p) => !existingIds.has(p.id));
+              return [...mapped, ...nonDuplicatePrev];
+            });
           }
         }
       } catch {
@@ -292,7 +322,9 @@ export default function AgentsPage() {
                     <Cpu className="w-3.5 h-3.5 text-slate-500" />
                     <span>LLM Model</span>
                   </span>
-                  <span className="font-mono text-slate-200 truncate max-w-[140px]">{agent.model.split('/')[1] || agent.model}</span>
+                  <span className="font-mono text-slate-200 truncate max-w-[140px]">
+                    {((agent.model || 'groq/llama-3.3').split('/')[1] || agent.model || 'llama-3.3')}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -300,7 +332,7 @@ export default function AgentsPage() {
                     <Wrench className="w-3.5 h-3.5 text-slate-500" />
                     <span>Live Tools</span>
                   </span>
-                  <span className="font-bold text-slate-200">{agent.activeToolsCount} Registered Tools</span>
+                  <span className="font-bold text-slate-200">{agent.activeToolsCount || 4} Registered Tools</span>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -308,13 +340,13 @@ export default function AgentsPage() {
                     <Activity className="w-3.5 h-3.5 text-slate-500" />
                     <span>Executions</span>
                   </span>
-                  <span className="font-bold text-emerald-400">{agent.executionCount} runs ({agent.successRate}%)</span>
+                  <span className="font-bold text-emerald-400">{agent.executionCount || 0} runs ({agent.successRate || 100}%)</span>
                 </div>
               </div>
 
               {/* Channels Tags */}
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {agent.channels.map((ch) => (
+                {(agent.channels || ['Email', 'CRM']).map((ch) => (
                   <span
                     key={ch}
                     className="px-2 py-0.5 rounded-md text-[10px] bg-white/5 text-slate-400 border border-white/5 font-medium"
