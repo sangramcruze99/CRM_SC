@@ -11,11 +11,7 @@ type Activity = {
   createdAt: string;
 };
 
-const initialDemoActivities: Activity[] = [
-  { id: 'act_1', type: 'MEETING', content: 'Enterprise discovery workshop conducted with senior engineering leadership.', createdAt: new Date(Date.now() - 3600000 * 4).toISOString() },
-  { id: 'act_2', type: 'CALL', content: 'Discussed annual seat licensing tiers and security compliance questionnaire.', createdAt: new Date(Date.now() - 3600000 * 24).toISOString() },
-  { id: 'act_3', type: 'EMAIL', content: 'Sent formalized MSA contract and SOC2 type II audit attestation package.', createdAt: new Date(Date.now() - 3600000 * 48).toISOString() },
-];
+const initialDemoActivities: Activity[] = [];
 
 export function ActivityTimeline({ entityType, entityId }: { entityType: 'contact' | 'deal' | 'company', entityId: string }) {
   const [activities, setActivities] = useState<Activity[]>(initialDemoActivities);

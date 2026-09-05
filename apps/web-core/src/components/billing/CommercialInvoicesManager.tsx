@@ -26,7 +26,7 @@ import {
   DollarSign
 } from 'lucide-react';
 import { InvoiceDispatchModal } from './InvoiceDispatchModal';
-import { createInvoice, updateInvoiceStatus, deleteInvoice, seedDemoInvoices } from '../../app/actions';
+import { createInvoice, updateInvoiceStatus, deleteInvoice } from '../../app/actions';
 import { useRouter } from 'next/navigation';
 
 export interface InvoiceItem {
@@ -149,24 +149,6 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
     });
   };
 
-  // Seed sample invoices
-  const handleSeedInvoices = () => {
-    startTransition(async () => {
-      setAlert({
-        message: '⚡ Seeding enterprise invoices into Finance microservice...',
-        type: 'info',
-      });
-      await seedDemoInvoices();
-      router.refresh();
-      setTimeout(() => {
-        setAlert({
-          message: '✅ Populated live commercial billing ledger!',
-          type: 'success',
-        });
-        setTimeout(() => setAlert(null), 3000);
-      }, 800);
-    });
-  };
 
   const handleDelete = (id: string, num?: string) => {
     if (!confirm(`Are you sure you want to delete invoice ${num || id}?`)) return;
@@ -260,16 +242,6 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
             <span>AI OCR Scanner</span>
           </Link>
 
-          {invoices.length === 0 && (
-            <button
-              onClick={handleSeedInvoices}
-              disabled={isPending}
-              className="px-3.5 py-2 botanical-pill hover:border-emerald-500/50 text-xs font-bold text-emerald-300 flex items-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
-            >
-              <Sparkles size={14} className="text-emerald-400" />
-              <span>Seed Demo Invoices</span>
-            </button>
-          )}
 
           <button
             onClick={() => setIsCreateModalOpen(true)}
@@ -518,12 +490,6 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
                           className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold text-xs rounded-xl shadow-md shadow-emerald-500/20 cursor-pointer"
                         >
                           + New Commercial Invoice
-                        </button>
-                        <button
-                          onClick={handleSeedInvoices}
-                          className="px-4 py-2 botanical-pill text-xs font-semibold text-emerald-300 cursor-pointer"
-                        >
-                          Seed Demo Records
                         </button>
                       </div>
                     </div>

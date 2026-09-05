@@ -17,6 +17,54 @@ export class WorkflowsController {
     return this.workflowsService.create(this.getTenant(tenantIdHeader), createWorkflowDto);
   }
 
+  @Get('nodes/catalog')
+  getNodeCatalog() {
+    return this.workflowsService.getNodeCatalog();
+  }
+
+  @Get('executions/all')
+  getAllExecutions(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Query('limit') limit?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.workflowsService.getAllExecutions(
+      this.getTenant(tenantIdHeader),
+      limit ? parseInt(limit, 10) : 50,
+      status,
+    );
+  }
+
+  @Get('executions/:executionId/steps')
+  getExecutionSteps(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('executionId') executionId: string,
+  ) {
+    return this.workflowsService.getExecutionSteps(this.getTenant(tenantIdHeader), executionId);
+  }
+
+  @Post('executions/:executionId/retry')
+  retryExecution(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('executionId') executionId: string,
+  ) {
+    return this.workflowsService.retryExecution(this.getTenant(tenantIdHeader), executionId);
+  }
+
+  @Post(':id/execute-graph')
+  executeGraph(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+    @Body() body: { nodes?: any[]; edges?: any[]; triggerPayload?: any },
+  ) {
+    return this.workflowsService.executeGraph(
+      this.getTenant(tenantIdHeader),
+      id,
+      body,
+      body?.triggerPayload || {},
+    );
+  }
+
   @Get()
   findAll(@Headers('x-tenant-id') tenantIdHeader: string) {
     return this.workflowsService.findAll(this.getTenant(tenantIdHeader));

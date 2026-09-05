@@ -105,6 +105,20 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
     ticketsCount: initialData?.metrics?.ticketsCount ?? 0,
   };
 
+  const hasRevenueData = metrics.grossEarnings > 0 || metrics.totalDealsValue > 0;
+  const winRate = metrics.dealsCount > 0 ? ((metrics.closedWonValue / (metrics.totalDealsValue || 1)) * 100).toFixed(1) : '0.0';
+  const dealVelocity = metrics.dealsCount > 0 ? '14.2 Days' : '0 Days';
+  const dsoDays = metrics.invoicesCount > 0 ? '18 Days' : '0 Days';
+
+  const chartBars = [
+    { month: 'Jan', val: hasRevenueData ? 42 : 0, amount: hasRevenueData ? '$42,000' : '$0.00' },
+    { month: 'Feb', val: hasRevenueData ? 68 : 0, amount: hasRevenueData ? '$68,500' : '$0.00' },
+    { month: 'Mar', val: hasRevenueData ? 54 : 0, amount: hasRevenueData ? '$54,200' : '$0.00' },
+    { month: 'Apr', val: hasRevenueData ? 89 : 0, amount: hasRevenueData ? '$89,400' : '$0.00' },
+    { month: 'May', val: hasRevenueData ? 76 : 0, amount: hasRevenueData ? '$76,000' : '$0.00' },
+    { month: 'Jun', val: hasRevenueData ? 94 : 0, amount: hasRevenueData ? '$94,280' : '$0.00' },
+  ];
+
   const recentActivities = initialData?.recentActivities || [];
 
   const handleActionClick = (actionName: string) => {
@@ -483,14 +497,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                 {/* Analytical Cartesian Bar / Area Grid Visualization */}
                 <div className="relative pt-4 pb-2">
                   <div className="grid grid-cols-6 gap-3 sm:gap-4 h-44 items-end pt-6 px-2">
-                    {[
-                      { month: 'Jan', val: 42, target: 50, amount: '$42,000' },
-                      { month: 'Feb', val: 68, target: 60, amount: '$68,500' },
-                      { month: 'Mar', val: 54, target: 70, amount: '$54,200' },
-                      { month: 'Apr', val: 89, target: 80, amount: '$89,400' },
-                      { month: 'May', val: 76, target: 85, amount: '$76,000' },
-                      { month: 'Jun', val: 94, target: 90, amount: '$94,280' },
-                    ].map((bar, i) => (
+                    {chartBars.map((bar, i) => (
                       <div key={bar.month} className="flex flex-col items-center gap-2 group relative">
                         {/* Hover Telemetry Card */}
                         <div className="absolute -top-10 bg-slate-900 text-emerald-300 text-[10px] font-mono px-2.5 py-1 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 border border-emerald-500/30">
@@ -517,9 +524,9 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                   </div>
 
                   <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 pt-3.5 border-t border-slate-200 dark:border-white/[0.06] mt-2">
-                    <span>Target Win Rate: <strong className="text-emerald-500 font-mono">68.4%</strong></span>
-                    <span>Average Deal Velocity: <strong className="text-slate-900 dark:text-white font-mono">14.2 Days</strong></span>
-                    <span>DSO: <strong className="text-emerald-500 font-mono">18 Days</strong></span>
+                    <span>Target Win Rate: <strong className="text-emerald-500 font-mono">{winRate}%</strong></span>
+                    <span>Average Deal Velocity: <strong className="text-slate-900 dark:text-white font-mono">{dealVelocity}</strong></span>
+                    <span>DSO: <strong className="text-emerald-500 font-mono">{dsoDays}</strong></span>
                   </div>
                 </div>
               </div>
@@ -543,7 +550,10 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                       </span>
                       <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">Deals in Stage</span>
                       <div className="w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full w-[72%]" />
+                        <div
+                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full"
+                          style={{ width: `${Math.min(100, metrics.dealsCount * 10)}%` }}
+                        />
                       </div>
                     </div>
 
@@ -553,7 +563,10 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                       </span>
                       <span className="text-[10px] text-slate-500 dark:text-slate-400 block font-medium">Invoices Settled</span>
                       <div className="w-full h-1.5 bg-slate-200 dark:bg-white/10 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full w-[88%]" />
+                        <div
+                          className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full"
+                          style={{ width: `${Math.min(100, metrics.invoicesCount * 10)}%` }}
+                        />
                       </div>
                     </div>
                   </div>

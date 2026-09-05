@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import {
   Workflow,
   Play,
@@ -129,6 +130,34 @@ export function AutomationsClient() {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
+      {/* Promotion to Next-Gen Visual Automation Studio */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-cyan-500/15 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 backdrop-blur-xl">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-slate-950 font-black shrink-0 shadow-lg shadow-emerald-500/25">
+            <Sparkles className="w-5 h-5 text-slate-950" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="font-bold text-sm text-white">Next-Gen Upgrade: AI Automation OS v2.5</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                XYFlow Studio + AI Swarms
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Access the unified Visual Automation Studio, ReAct Agent Swarms, WhatsApp Cloud API, and Human-in-the-Loop Approval Center.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          href="/automation"
+          className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition shadow-lg shadow-emerald-500/20 whitespace-nowrap shrink-0"
+        >
+          <span>Launch Studio v2.5</span>
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+
       {/* Alert Banner */}
       {alert && (
         <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">

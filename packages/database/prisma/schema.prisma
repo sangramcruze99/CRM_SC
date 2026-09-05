@@ -810,3 +810,312 @@ model NavigationItem {
 
   menu        NavigationMenu @relation(fields: [menuId], references: [id], onDelete: Cascade)
 }
+
+// ============================================================================
+// AI AUTOMATION OS & AGENT RUNTIME MODELS
+// ============================================================================
+
+model WorkflowExecution {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  workflowId          String
+  workflowName        String?
+  status              String   @default("QUEUED") // QUEUED, RUNNING, WAITING, APPROVAL_REQUIRED, SUCCESS, FAILED, CANCELLED, TIMED_OUT
+  triggerType         String?
+  triggerData         String?  @default("{}")
+  contextData         String?  @default("{}")
+  outputData          String?  @default("{}")
+  startedAt           DateTime @default(now())
+  completedAt         DateTime?
+  durationMs          Int?
+  currentStepIndex    Int      @default(0)
+  error               String?
+  tokensUsed          Int      @default(0)
+  
+  steps               WorkflowExecutionStep[]
+  approvals           ApprovalRequest[]
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([tenantId, workflowId])
+  @@index([tenantId, status])
+}
+
+model WorkflowExecutionStep {
+  id                  String   @id @default(cuid())
+  executionId         String
+  nodeId              String
+  nodeType            String
+  nodeTitle           String
+  stepIndex           Int
+  status              String   @default("SUCCESS") // SUCCESS, FAILED, SKIPPED, WAITING, APPROVAL_REQUIRED
+  inputData           String?  @default("{}")
+  outputData          String?  @default("{}")
+  error               String?
+  durationMs          Int      @default(0)
+  tokensUsed          Int      @default(0)
+  retryCount          Int      @default(0)
+  startedAt           DateTime @default(now())
+  completedAt         DateTime?
+
+  execution           WorkflowExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@index([executionId, stepIndex])
+}
+
+model WorkflowTrigger {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  workflowId          String
+  type                String   // EVENT, SCHEDULE, WEBHOOK, API, CRM, WHATSAPP, etc.
+  config              String   @default("{}")
+  webhookSecret       String?
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([tenantId, workflowId])
+}
+
+model WorkflowVariable {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  key                 String
+  value               String
+  isSecret            Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([tenantId, key])
+}
+
+model WorkflowTemplate {
+  id                  String   @id @default(cuid())
+  name                String
+  description         String
+  category            String   // Sales, Support, Voice, WhatsApp, Finance, HR, Content, Ecommerce, Browser
+  nodes               String   @default("[]")
+  edges               String   @default("[]")
+  requiredIntegrations String  @default("[]")
+  requiredCredentials String  @default("[]")
+  variables           String   @default("{}")
+  systemPrompts       String?  @default("{}")
+  version             String   @default("1.0.0")
+  author              String   @default("System")
+  isPublished         Boolean  @default(true)
+  usageCount          Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Agent {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  name                String
+  role                String
+  domain              String
+  model               String   @default("groq/compound")
+  systemPrompt        String
+  temperature         Float    @default(0.7)
+  maxIterations       Int      @default(10)
+  tokenBudget         Int      @default(100000)
+  autonomyMode        String   @default("HYBRID") // AUTONOMOUS, HYBRID, MONITOR_ONLY
+  status              String   @default("ACTIVE") // ACTIVE, PAUSED, EVALUATING
+  allowedTools        String   @default("[]")
+  escalationPolicy    String?  @default("{}")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  memories            AgentMemory[]
+  executions          AgentExecution[]
+  approvals           ApprovalRequest[]
+
+  @@index([tenantId, domain])
+}
+
+model AgentMemory {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  agentId             String
+  memoryType          String   // SHORT_TERM, LONG_TERM, WORKFLOW, CUSTOMER
+  entityType          String?  // Contact, Deal, Ticket, Customer
+  entityId            String?
+  key                 String
+  value               String
+  confidence          Float    @default(1.0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  agent               Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, agentId, memoryType])
+  @@index([tenantId, entityId])
+}
+
+model AgentExecution {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  agentId             String
+  workflowExecutionId String?
+  triggerEvent        String
+  status              String   @default("SUCCESS")
+  inputPrompt         String
+  reasoningLog        String   @default("[]")
+  toolCalls           String   @default("[]")
+  finalResponse       String?
+  tokensUsed          Int      @default(0)
+  latencyMs           Int      @default(0)
+  createdAt           DateTime @default(now())
+
+  agent               Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, agentId])
+}
+
+model ApprovalRequest {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  workflowExecutionId String?
+  workflowId          String?
+  agentId             String?
+  actionType          String
+  targetEntity        String?
+  targetId            String?
+  riskLevel           String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  payload             String   @default("{}")
+  reason              String
+  status              String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  requestedAt         DateTime @default(now())
+  expiresAt           DateTime?
+  reviewedBy          String?
+  reviewedAt          DateTime?
+  comments            String?
+  executionResult     String?
+
+  workflowExecution   WorkflowExecution? @relation(fields: [workflowExecutionId], references: [id], onDelete: SetNull)
+  agent               Agent?             @relation(fields: [agentId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status])
+  @@index([tenantId, riskLevel])
+}
+
+model ToolDefinition {
+  id                  String   @id @default(cuid())
+  name                String   @unique
+  displayName         String
+  description         String
+  category            String   // CRM, COMMUNICATION, AI, DOCUMENTS, BROWSER, EXTERNAL
+  riskLevel           String   @default("LOW") // LOW, MEDIUM, HIGH, CRITICAL
+  inputSchema         String   @default("{}")
+  outputSchema        String   @default("{}")
+  requiresApproval    Boolean  @default(false)
+  timeoutMs           Int      @default(10000)
+  retryCount          Int      @default(3)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ToolExecution {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  toolName            String
+  agentId             String?
+  workflowExecutionId String?
+  inputData           String   @default("{}")
+  outputData          String?  @default("{}")
+  status              String   @default("SUCCESS") // SUCCESS, FAILED, BLOCKED_APPROVAL
+  durationMs          Int      @default(0)
+  error               String?
+  createdAt           DateTime @default(now())
+
+  @@index([tenantId, toolName])
+}
+
+model Connector {
+  id                  String   @id @default(cuid())
+  key                 String   @unique
+  name                String
+  category            String   // COMMUNICATION, CALENDAR, AI, CRM, DATA, ECOMMERCE, PAYMENTS, PRODUCTIVITY
+  description         String
+  icon                String?
+  authType            String   // OAUTH2, API_KEY, BASIC, NONE
+  status              String   @default("ACTIVE")
+  actions             String   @default("[]")
+  triggers            String   @default("[]")
+  createdAt           DateTime @default(now())
+
+  accounts            ConnectorAccount[]
+}
+
+model ConnectorAccount {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  connectorKey        String
+  name                String
+  credentials         String   @default("{}") // Encrypted
+  status              String   @default("CONNECTED") // CONNECTED, ERROR, EXPIRED
+  lastSyncAt          DateTime?
+  lastHealthCheck     DateTime?
+  errorMessage        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  connector           Connector @relation(fields: [connectorKey], references: [key], onDelete: Cascade)
+
+  @@index([tenantId, connectorKey])
+}
+
+model Conversation {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  channel             String   // WHATSAPP, SMS, WEBCHAT, VOICE, EMAIL
+  contactId           String?
+  externalChatId      String?
+  title               String?
+  status              String   @default("OPEN") // OPEN, WAITING_REPRESENTATIVE, RESOLVED, BOT_ACTIVE
+  assignedAgentId     String?
+  assignedUserId      String?
+  lastMessageAt       DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  messages            ConversationMessage[]
+
+  @@index([tenantId, channel])
+  @@index([tenantId, contactId])
+}
+
+model ConversationMessage {
+  id                  String   @id @default(cuid())
+  conversationId      String
+  senderType          String   // USER, CONTACT, AI_AGENT, SYSTEM
+  senderId            String?
+  content             String
+  contentType         String   @default("TEXT") // TEXT, IMAGE, AUDIO, DOCUMENT, TEMPLATE
+  mediaUrl            String?
+  deliveryStatus      String   @default("SENT") // SENT, DELIVERED, READ, FAILED
+  externalMessageId   String?
+  rawMetadata         String?  @default("{}")
+  createdAt           DateTime @default(now())
+
+  conversation        Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+model BrowserSession {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  workflowExecutionId String?
+  targetUrl           String
+  status              String   @default("COMPLETED") // RUNNING, COMPLETED, FAILED, TIMED_OUT
+  actionsLog          String   @default("[]")
+  extractedData       String?  @default("{}")
+  screenshotUrl       String?
+  durationMs          Int      @default(0)
+  error               String?
+  createdAt           DateTime @default(now())
+
+  @@index([tenantId, status])
+}

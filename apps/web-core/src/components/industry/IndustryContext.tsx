@@ -123,6 +123,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'AI Support Sentinel', href: '/ai-support', iconName: 'Bot', badge: 'Auto' },
           { label: 'Content Repurpose', href: '/content-repurpose', iconName: 'Share2', badge: '5-in-1' },
           { label: 'Data Sync & Stacks', href: '/data-sync', iconName: 'ArrowRightLeft', badge: 'Mesh' },
+          { label: 'AI Automation OS', href: '/automation', iconName: 'Sparkles', badge: 'v2.5' },
           { label: 'Automations Engine', href: '/automations', iconName: 'Workflow', badge: 'Zapier' },
           { label: 'Governed AI Agents', href: '/ai-agents', iconName: 'Bot', badge: 'Fleet' },
           { label: 'Platform Observability', href: '/observability', iconName: 'Activity', badge: 'Mesh' },

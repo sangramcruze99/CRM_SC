@@ -36,82 +36,11 @@ interface AccountOverview {
   lastTouchpoint: string;
 }
 
-// High-fidelity fallback sample accounts for development/seed
-const SAMPLE_ACCOUNTS: AccountOverview[] = [
-  {
-    id: 'cnt_elena_rostova',
-    name: 'Elena Rostova',
-    companyName: 'Hyperion Technologies Inc.',
-    email: 'elena.rostova@hyperion.io',
-    phone: '+1 (555) 382-9912',
-    healthScore: 92,
-    churnRisk: 'LOW',
-    expansionOpportunity: 'HIGH',
-    dealValue: 185000,
-    openTickets: 0,
-    unpaidInvoices: 0,
-    lastTouchpoint: '2 hours ago via Email',
-  },
-  {
-    id: 'cnt_marcus_vance',
-    name: 'Marcus Vance',
-    companyName: 'Vertex Autonomous AI',
-    email: 'm.vance@vertexai.tech',
-    phone: '+1 (555) 491-0023',
-    healthScore: 68,
-    churnRisk: 'MEDIUM',
-    expansionOpportunity: 'MEDIUM',
-    dealValue: 74000,
-    openTickets: 2,
-    unpaidInvoices: 1,
-    lastTouchpoint: 'Yesterday via Voice Call',
-  },
-  {
-    id: 'cnt_sarah_lin',
-    name: 'Sarah Lin',
-    companyName: 'Nova Global FinTech',
-    email: 'sarah.lin@novaglobal.com',
-    phone: '+1 (555) 723-1188',
-    healthScore: 42,
-    churnRisk: 'HIGH',
-    expansionOpportunity: 'LOW',
-    dealValue: 120000,
-    openTickets: 3,
-    unpaidInvoices: 2,
-    lastTouchpoint: '5 days ago (Overdue check-in)',
-  },
-  {
-    id: 'cnt_david_choi',
-    name: 'David Choi',
-    companyName: 'Aetheria Cloud Infrastructure',
-    email: 'dchoi@aetheria.net',
-    phone: '+1 (555) 839-4401',
-    healthScore: 88,
-    churnRisk: 'LOW',
-    expansionOpportunity: 'HIGH',
-    dealValue: 95000,
-    openTickets: 0,
-    unpaidInvoices: 0,
-    lastTouchpoint: '1 day ago via Slack Connect',
-  },
-  {
-    id: 'cnt_amara_okoro',
-    name: 'Amara Okoro',
-    companyName: 'BioHealth Diagnostic Networks',
-    email: 'a.okoro@biohealth.org',
-    phone: '+1 (555) 912-7734',
-    healthScore: 74,
-    churnRisk: 'LOW',
-    expansionOpportunity: 'MEDIUM',
-    dealValue: 53000,
-    openTickets: 1,
-    unpaidInvoices: 0,
-    lastTouchpoint: '3 hours ago via Portal',
-  },
-];
+// Fallback sample accounts - purged to empty production state
+const SAMPLE_ACCOUNTS: AccountOverview[] = [];
 
 export default function Customer360DirectoryPage() {
-  const [accounts, setAccounts] = useState<AccountOverview[]>(SAMPLE_ACCOUNTS);
+  const [accounts, setAccounts] = useState<AccountOverview[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [riskFilter, setRiskFilter] = useState<'ALL' | 'LOW' | 'MEDIUM' | 'HIGH'>('ALL');
   const [loading, setLoading] = useState(false);
@@ -142,7 +71,7 @@ export default function Customer360DirectoryPage() {
                 lastTouchpoint: 'Recently Active',
               };
             });
-            setAccounts([...mapped, ...SAMPLE_ACCOUNTS]);
+            setAccounts(mapped);
           }
         }
       } catch (err) {
@@ -431,6 +360,16 @@ export default function Customer360DirectoryPage() {
                   </td>
                 </tr>
               ))}
+
+              {filteredAccounts.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12 text-center text-slate-400 space-y-2">
+                    <Users size={28} className="mx-auto text-emerald-400 opacity-60" />
+                    <p className="font-bold text-sm text-white">No Customer Accounts Found</p>
+                    <p className="text-xs text-slate-400">Add or sync contacts in the CRM to populate Customer 360 health diagnostics.</p>
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

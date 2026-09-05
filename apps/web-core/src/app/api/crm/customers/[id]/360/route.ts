@@ -19,26 +19,7 @@ export async function GET(
 
     let contact = contacts.find((c: any) => c.id === id);
     if (!contact) {
-      // Fallback sample for demonstration/dev if not yet seeded
-      contact = {
-        id,
-        firstName: 'Elena',
-        lastName: 'Rostova',
-        email: 'elena.rostova@hyperion.io',
-        phone: '+1 (555) 382-9912',
-        company: {
-          id: 'comp_hyperion',
-          name: 'Hyperion Technologies Inc.',
-          domain: 'hyperion.io',
-          industry: 'Enterprise SaaS',
-        },
-        customData: JSON.stringify({
-          leadScore: 84,
-          tags: ['Enterprise Stakeholder', 'Champion', 'SOC2 Compliant'],
-          buyingRole: 'Economic Decision Maker',
-          location: 'San Francisco, CA',
-        }),
-      };
+      return NextResponse.json({ error: 'Customer record not found' }, { status: 404 });
     }
 
     let customData: any = {};

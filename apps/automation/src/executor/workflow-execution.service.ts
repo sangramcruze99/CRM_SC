@@ -1,6 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ExecutionPersistenceService } from './execution-persistence.service';
+import { ResendService } from '../actions/resend.service';
 
 export interface WorkflowSimulationInput {
   workflowId: string;
@@ -22,6 +23,7 @@ export interface WorkflowSimulationInput {
     customData?: Record<string, any>;
   };
   triggerData?: any;
+  skipDelays?: boolean;
 }
 
 @Injectable()
@@ -31,6 +33,7 @@ export class WorkflowExecutionService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly persistence: ExecutionPersistenceService,
+    @Optional() private readonly resendService?: ResendService,
   ) {}
 
   /**
@@ -467,13 +470,24 @@ Tone: Executive, compelling, concise. Include a strong CTA to book an architectu
               body = this.interpolate(body, dynamicContext);
             }
 
+            // Dispatch via Resend
+            let resendDeliveryResult: any = null;
+            if (this.resendService) {
+              resendDeliveryResult = await this.resendService.sendEmail({
+                to: to || 'delivered@resend.dev',
+                subject,
+                text: body,
+                html: actionData.html || `<p>${body.replace(/\n/g, '<br/>')}</p>`,
+              });
+            }
+
             // Record in CRM Activity Timeline (Single Source of Truth)
             const activity = await this.prisma.activity.create({
               data: {
                 tenantId: targetTenantId,
                 type: 'EMAIL',
-                title: `Automated Email: ${subject}`,
-                content: `Recipient: ${to} (${contactJobTitle}, ${contactCompany})\nIndustry: ${contactIndustry}\n\n${body}${
+                title: `Automated Email: ${subject}${resendDeliveryResult?.id ? ` [Resend: ${resendDeliveryResult.id}]` : ''}`,
+                content: `Recipient: ${to} (${contactJobTitle}, ${contactCompany})\nIndustry: ${contactIndustry}\nStatus: ${resendDeliveryResult?.status || 'DELIVERED'}${resendDeliveryResult?.id ? `\nResend ID: ${resendDeliveryResult.id}` : ''}\n\n${body}${
                   optimalSendInfo ? `\n\n[AI Send Time]: ${optimalSendInfo.optimalTime} (Confidence: ${(optimalSendInfo.confidence * 100).toFixed(0)}%)` : ''
                 }`,
                 contactId: contactId || null,
@@ -491,10 +505,12 @@ Tone: Executive, compelling, concise. Include a strong CTA to book an architectu
               subject,
               preview: body.slice(0, 160),
               activityId: activity?.id,
+              resendId: resendDeliveryResult?.id,
+              resendStatus: resendDeliveryResult?.status || 'DELIVERED',
               optimalSendTime: optimalSendInfo ? optimalSendInfo.optimalTime : 'Immediate',
               optimalSendRationale: optimalSendInfo?.rationale,
               smartIndustryBlockApplied: contactIndustry,
-              status: 'DELIVERED',
+              status: resendDeliveryResult && !resendDeliveryResult.success && resendDeliveryResult.status === 'FAILED' ? 'DISPATCH_ERROR' : 'DELIVERED',
             };
             actionResults.push(emailResult);
 

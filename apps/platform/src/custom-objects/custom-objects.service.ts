@@ -3,28 +3,12 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class CustomObjectsService {
-  private static inMemoryCustomObjects: any[] = [
-    {
-      id: 'cobj_properties',
-      tenantId: 'default-tenant',
-      name: 'Property',
-      pluralName: 'Properties',
-      apiName: 'property',
-      description: 'Real Estate Listings & Assets',
-      icon: 'Building2',
-      fields: [
-        { id: 'fld_1', name: 'Price', apiName: 'price', fieldType: 'NUMBER', isRequired: true },
-        { id: 'fld_2', name: 'Location', apiName: 'location', fieldType: 'TEXT', isRequired: false },
-      ],
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-  ];
+  private static inMemoryCustomObjects: any[] = [];
 
   constructor(private readonly prisma: PrismaService) {}
 
   async seedDemoData(tenantId: string) {
-    return CustomObjectsService.inMemoryCustomObjects;
+    return [];
   }
 
   async create(tenantId: string, data: any) {

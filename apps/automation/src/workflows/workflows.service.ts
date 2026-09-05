@@ -6,6 +6,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { WorkflowExecutionService } from '../executor/workflow-execution.service';
 import { ExecutionPersistenceService } from '../executor/execution-persistence.service';
 import { BusinessEventBusService } from '../event-bus/business-event-bus.service';
+import { WorkflowGraphExecutorService } from '../executor/workflow-graph-executor.service';
+import { NODE_CATALOG } from '../executor/node-catalog';
 
 @Injectable()
 export class WorkflowsService {
@@ -16,6 +18,7 @@ export class WorkflowsService {
     private readonly executionService: WorkflowExecutionService,
     private readonly persistence: ExecutionPersistenceService,
     private readonly eventBus: BusinessEventBusService,
+    private readonly graphExecutor: WorkflowGraphExecutorService,
     @Optional() @InjectQueue('workflows') private readonly workflowQueue?: Queue
   ) {
     this.eventBus.setWorkflowExecutor(this.executionService);
@@ -246,33 +249,7 @@ export class WorkflowsService {
     return this.persistence.getAnalytics(tenantId, workflowId);
   }
 
-  private static inMemoryWorkflows: any[] = [
-    {
-      id: 'wf_flagship_enterprise',
-      name: '👑 Enterprise Omnichannel Nurture & Decision Tree',
-      description: 'Behavioral decision tree matching industry best practice: Anonymous Tracking → Trigger → Email 1 with AI Send Time → 24h Wait → Branch on Click → Score >= 50 Qualification Gate',
-      isActive: true,
-      status: 'ACTIVE',
-      version: 1,
-      triggerType: 'FORM_SUBMITTED',
-      triggerData: JSON.stringify({ formName: 'Demo Request' }),
-      actions: [],
-      tenantId: 'default-tenant',
-      createdAt: new Date(),
-    },
-    {
-      id: 'wf_1',
-      name: 'Auto-Welcome Email Onboarding',
-      description: 'Triggers personalized welcome sequence on new contact creation',
-      isActive: true,
-      status: 'ACTIVE',
-      version: 1,
-      triggerType: 'CONTACT_CREATED',
-      actions: [],
-      tenantId: 'default-tenant',
-      createdAt: new Date(),
-    },
-  ];
+  private static inMemoryWorkflows: any[] = [];
 
   async create(tenantId: string, data: any) {
     if (this.prisma.isConnected) {
@@ -412,6 +389,96 @@ export class WorkflowsService {
 
   checkCollisions(tenantId: string, contacts: string[], targetWorkflowId: string) {
     return this.executionService.checkCollisions(tenantId, contacts, targetWorkflowId);
+  }
+
+  // --- Visual Studio Graph Execution & Telemetry ---
+  getNodeCatalog() {
+    return NODE_CATALOG;
+  }
+
+  async executeGraph(
+    tenantId: string,
+    workflowId: string,
+    graphData?: { nodes?: any[]; edges?: any[] },
+    triggerPayload: Record<string, any> = {},
+  ) {
+    let nodes = graphData?.nodes;
+    let edges = graphData?.edges;
+
+    if (!nodes || nodes.length === 0) {
+      const wf = await this.findOne(tenantId, workflowId).catch(() => null);
+      if (wf && wf.triggerData) {
+        try {
+          const parsed = JSON.parse(wf.triggerData);
+          nodes = parsed.nodes;
+          edges = parsed.edges;
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    if (!nodes || nodes.length === 0) {
+      // Fallback: Generate demo visual nodes for execution
+      nodes = [
+        { id: 'n1', type: 'trigger:new_lead', data: { title: 'New Lead Ingestion' } },
+        { id: 'n2', type: 'ai:score', data: { title: 'AI Score Evaluation' } },
+        { id: 'n3', type: 'logic:if_else', data: { title: 'High Intent Lead Gate', field: 'leadScore', operator: 'GREATER_THAN', value: 60 } },
+        { id: 'n4', type: 'comm:whatsapp', data: { title: 'Send WhatsApp VIP Welcome' } },
+      ];
+      edges = [
+        { id: 'e1-2', source: 'n1', target: 'n2' },
+        { id: 'e2-3', source: 'n2', target: 'n3' },
+        { id: 'e3-4', source: 'n3', target: 'n4', sourceHandle: 'true' },
+      ];
+    }
+
+    return this.graphExecutor.executeGraph({
+      workflowId,
+      tenantId,
+      nodes,
+      edges: edges || [],
+      triggerPayload,
+    });
+  }
+
+  async getAllExecutions(tenantId: string, limit: number = 50, status?: string) {
+    const where: any = { tenantId };
+    if (status && status !== 'ALL') {
+      where.status = status;
+    }
+
+    return this.prisma.workflowExecution.findMany({
+      where,
+      orderBy: { startedAt: 'desc' },
+      take: limit,
+      include: {
+        steps: {
+          orderBy: { stepIndex: 'asc' },
+        },
+      },
+    });
+  }
+
+  async getExecutionSteps(tenantId: string, executionId: string) {
+    const execution = await this.prisma.workflowExecution.findFirst({
+      where: { id: executionId, tenantId },
+      include: {
+        steps: { orderBy: { stepIndex: 'asc' } },
+      },
+    });
+    if (!execution) throw new NotFoundException('Execution not found');
+    return execution;
+  }
+
+  async retryExecution(tenantId: string, executionId: string) {
+    const prev = await this.prisma.workflowExecution.findFirst({
+      where: { id: executionId, tenantId },
+    });
+    if (!prev) throw new NotFoundException('Execution not found');
+
+    const triggerData = prev.triggerData ? JSON.parse(prev.triggerData) : {};
+    return this.executeGraph(tenantId, prev.workflowId, undefined, triggerData);
   }
 }
 

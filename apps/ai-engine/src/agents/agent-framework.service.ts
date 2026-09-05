@@ -110,7 +110,7 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
   private sweepIntervalSeconds = 120;
   private daemonTimer: NodeJS.Timeout | null = null;
   private lastSweepTimestamp: string = new Date().toISOString();
-  private totalSwarmSweeps = 42;
+  private totalSwarmSweeps = 0;
 
   // Policy Guardrails
   private safetyPolicy: SafetyPolicy = {
@@ -122,7 +122,7 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
 
   constructor(private prisma: PrismaService) {
     this.initializeDefaultAgents();
-    this.seedSampleApprovals();
+    this.pendingApprovals = [];
   }
 
   onModuleInit() {
@@ -143,8 +143,8 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
         autonomyMode: 'HYBRID',
         status: 'ACTIVE',
         allowedTools: ['ANALYZE_PIPELINE', 'DRAFT_PROPOSAL', 'ENROLL_SALES_SEQUENCE', 'CALCULATE_WIN_PROBABILITY'],
-        totalDecisions: 1428,
-        accuracyRate: 94.8,
+        totalDecisions: 0,
+        accuracyRate: 100,
         lastActive: new Date().toISOString(),
       },
       {
@@ -155,8 +155,8 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
         autonomyMode: 'AUTONOMOUS',
         status: 'ACTIVE',
         allowedTools: ['EVALUATE_HEALTH', 'SCHEDULE_RETENTION_CALL', 'ESCALATE_TICKET', 'SURVEY_NPS'],
-        totalDecisions: 2896,
-        accuracyRate: 97.2,
+        totalDecisions: 0,
+        accuracyRate: 100,
         lastActive: new Date().toISOString(),
       },
       {
@@ -167,8 +167,8 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
         autonomyMode: 'HYBRID',
         status: 'ACTIVE',
         allowedTools: ['AUDIT_INVOICES', 'SEND_PAYMENT_REMINDER', 'CALCULATE_AR_AGING', 'FLAG_DISCREPANCY'],
-        totalDecisions: 874,
-        accuracyRate: 99.1,
+        totalDecisions: 0,
+        accuracyRate: 100,
         lastActive: new Date().toISOString(),
       },
       {
@@ -179,8 +179,8 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
         autonomyMode: 'AUTONOMOUS',
         status: 'ACTIVE',
         allowedTools: ['MONITOR_SPRINT_SLA', 'PROVISION_ONBOARDING', 'AUDIT_COMPLIANCE'],
-        totalDecisions: 642,
-        accuracyRate: 96.5,
+        totalDecisions: 0,
+        accuracyRate: 100,
         lastActive: new Date().toISOString(),
       },
       {
@@ -197,8 +197,8 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
           'VERIFY_DISCLOSURES',
           'ANALYZE_MLS_VALUATION',
         ],
-        totalDecisions: 486,
-        accuracyRate: 98.4,
+        totalDecisions: 0,
+        accuracyRate: 100,
         lastActive: new Date().toISOString(),
       },
     ];
@@ -206,71 +206,6 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
     for (const ag of defaultAgents) {
       this.agents.set(ag.id, ag);
     }
-  }
-
-  private seedSampleApprovals() {
-    this.pendingApprovals = [
-      {
-        id: 'appr_001',
-        agentId: 'agent_sales',
-        agentName: 'Ares Sales Intelligence Sentinel',
-        actionType: 'APPLY_COMMERCIAL_DISCOUNT',
-        targetEntity: 'Deal',
-        targetId: 'deal_hyperion_q3',
-        targetName: 'Hyperion Enterprise Cloud Expansion',
-        confidence: 0.93,
-        riskLevel: 'HIGH',
-        rationale: 'Elena Rostova viewed proposal 4 times in 24 hours. A 10% commercial concession ($18,500) will accelerate contract closing before quarter-end.',
-        parameters: { originalAmount: 185000, discountPercent: 10, proposedAmount: 166500 },
-        status: 'PENDING_APPROVAL',
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-      },
-      {
-        id: 'appr_002',
-        agentId: 'agent_csm',
-        agentName: 'Athena Customer Success Sentinel',
-        actionType: 'EXECUTIVE_ESCALATION',
-        targetEntity: 'Contact',
-        targetId: 'cnt_sarah_lin',
-        targetName: 'Sarah Lin (Nova Global FinTech)',
-        confidence: 0.89,
-        riskLevel: 'HIGH',
-        rationale: 'Customer health score declined to 42/100 following 2 overdue invoices and 3 open API latency tickets. Recommend scheduling an immediate VP Engineering check-in.',
-        parameters: { meetingType: 'RETENTION_SYNC', priority: 'URGENT' },
-        status: 'PENDING_APPROVAL',
-        createdAt: new Date(Date.now() - 7200000).toISOString(),
-      },
-      {
-        id: 'appr_003',
-        agentId: 'agent_finance',
-        agentName: 'Midas Treasury & Billing Sentinel',
-        actionType: 'CREDIT_HOLD_ENFORCEMENT',
-        targetEntity: 'Company',
-        targetId: 'comp_vertex',
-        targetName: 'Vertex Autonomous AI',
-        confidence: 0.95,
-        riskLevel: 'MEDIUM',
-        rationale: 'Invoice #INV-3981 is 45 days past due. Recommend pausing non-critical compute credits until outstanding balance ($14,200) is settled.',
-        parameters: { invoiceId: 'inv_3981', balanceDue: 14200 },
-        status: 'PENDING_APPROVAL',
-        createdAt: new Date(Date.now() - 14400000).toISOString(),
-      },
-      {
-        id: 'appr_004',
-        agentId: 'agent_vesta',
-        agentName: 'Vesta Property & Escrow Sentinel',
-        actionType: 'ESCROW_CONTINGENCY_RELEASE',
-        targetEntity: 'PropertyTransaction',
-        targetId: 'escrow_ocean_blvd_702',
-        targetName: '702 Ocean Blvd Penthouse ($2.45M)',
-        confidence: 0.96,
-        riskLevel: 'HIGH',
-        rationale: 'Buyer loan commitment received & title search clear. Escrow contingency deadline in 48 hours. Require managing broker sign-off to proceed to closing.',
-        parameters: { contractAmount: 2450000, earnestMoney: 120000, escrowStage: 'TITLE_CLEARED' },
-        status: 'PENDING_APPROVAL',
-        createdAt: new Date(Date.now() - 1800000).toISOString(),
-      },
-    ];
   }
 
   private startDaemon() {
@@ -351,56 +286,34 @@ export class AgentFrameworkService implements OnModuleInit, OnModuleDestroy {
     this.lastSweepTimestamp = new Date().toISOString();
     this.totalSwarmSweeps += 1;
 
-    // Simulated multi-entity audit telemetry across Prisma
+    let contactsCount = 0;
+    let dealsCount = 0;
+    let invoicesCount = 0;
+    let ticketsCount = 0;
+
+    try {
+      [contactsCount, dealsCount, invoicesCount, ticketsCount] = await Promise.all([
+        this.prisma.contact.count({ where: { tenantId } }).catch(() => 0),
+        this.prisma.deal.count({ where: { tenantId } }).catch(() => 0),
+        this.prisma.invoice.count({ where: { tenantId } }).catch(() => 0),
+        this.prisma.ticket.count({ where: { tenantId } }).catch(() => 0),
+      ]);
+    } catch {
+      // ignore
+    }
+
     const entitiesScanned = {
-      contacts: 14,
-      deals: 8,
-      invoices: 12,
-      tickets: 6,
-      properties: 5,
+      contacts: contactsCount,
+      deals: dealsCount,
+      invoices: invoicesCount,
+      tickets: ticketsCount,
+      properties: 0,
     };
 
     const newActions: ProposedAction[] = [];
 
-    // 1. Athena CSM Sentinel check
-    const csmAction: ProposedAction = {
-      id: `act_csm_${Date.now()}`,
-      agentId: 'agent_csm',
-      agentName: 'Athena Customer Success Sentinel',
-      actionType: 'PROACTIVE_HEALTH_INTERVENTION',
-      targetEntity: 'Contact',
-      targetId: 'cnt_sarah_lin',
-      targetName: 'Sarah Lin (Nova Global FinTech)',
-      confidence: 0.94,
-      riskLevel: 'LOW',
-      rationale: 'Health score audit: Sent automatic survey & scheduled CSM touchpoint.',
-      parameters: { action: 'EMAIL_SENT', template: 'HEALTH_CHECKIN' },
-      status: 'EXECUTED_AUTONOMOUSLY',
-      createdAt: new Date().toISOString(),
-    };
-    newActions.push(csmAction);
-
-    // 2. Vesta Real Estate Sentinel check
-    const vestaAction: ProposedAction = {
-      id: `act_vst_${Date.now()}`,
-      agentId: 'agent_vesta',
-      agentName: 'Vesta Property & Escrow Sentinel',
-      actionType: 'AUDIT_ESCROW_CONTINGENCY',
-      targetEntity: 'PropertyListing',
-      targetId: 'listing_sunset_402',
-      targetName: 'Sunset Ridge Commercial Villa',
-      confidence: 0.96,
-      riskLevel: 'LOW',
-      rationale: 'Inspection period expired with zero buyer objections. Escrow milestone marked Cleared.',
-      parameters: { milestone: 'INSPECTION_CLEARED' },
-      status: 'EXECUTED_AUTONOMOUSLY',
-      createdAt: new Date().toISOString(),
-    };
-    newActions.push(vestaAction);
-
-    // Increment agent counters
+    // Increment agent active timestamps
     for (const ag of this.agents.values()) {
-      ag.totalDecisions += 2;
       ag.lastActive = new Date().toISOString();
     }
 

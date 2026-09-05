@@ -91,178 +91,13 @@ export interface ChurnAlert {
 }
 
 // Seeded Enterprise Contacts
-const INITIAL_CONTACTS: EnrichedContact[] = [
-  {
-    id: 'cnt_elena_rostova',
-    name: 'Elena Rostova',
-    email: 'elena.rostova@hyperion.io',
-    role: 'Chief Operating Officer',
-    company: 'Hyperion Technologies Inc.',
-    companySize: '1,450+ employees (Verified Crunchbase)',
-    industry: 'Enterprise Cloud & AI Infra',
-    techStack: ['Next.js', 'PostgreSQL', 'Docker', 'Kubernetes', 'FastAPI'],
-    sentimentScore: 94,
-    sentimentLabel: 'POSITIVE',
-    summaryBullets: [
-      'Strongly in favor of unified Khata multi-branch ledgers to replace 3 disparate billing systems.',
-      'Requested SOC2 Type II certification and HIPAA data isolation documentation for board review.',
-      'Opened proposal 4 times in the past 24 hours with intent to close before fiscal quarter-end.',
-    ],
-    isEnriched: true,
-    optimalSendTime: 'Tuesday 9:45 AM EST (92% Open Propensity)',
-    avatarInitials: 'ER',
-  },
-  {
-    id: 'cnt_marcus_vance',
-    name: 'Marcus Vance',
-    email: 'm.vance@vertexai.tech',
-    role: 'VP of Platform Engineering',
-    company: 'Vertex Autonomous AI',
-    companySize: '320 employees (Series B Funded)',
-    industry: 'Autonomous Robotics & LLMs',
-    techStack: ['Python', 'PyTorch', 'Redis', 'Kafka', 'AWS Graviton'],
-    sentimentScore: 78,
-    sentimentLabel: 'POSITIVE',
-    summaryBullets: [
-      'Evaluating SIM Gateway and WebRTC softphone for distributed fleet telemetry dispatch.',
-      'Concerns regarding sub-5ms webhook latency during burst traffic windows.',
-      'Scheduled technical architecture deep-dive for next Wednesday.',
-    ],
-    isEnriched: true,
-    optimalSendTime: 'Thursday 2:15 PM EST (84% Open Propensity)',
-    avatarInitials: 'MV',
-  },
-  {
-    id: 'cnt_sarah_lin',
-    name: 'Sarah Lin',
-    email: 'sarah.lin@novaglobal.com',
-    role: 'Head of Global Payments & Treasury',
-    company: 'Nova Global FinTech',
-    companySize: '2,800+ employees (Public NASDAQ)',
-    industry: 'Financial Technology & Banking',
-    techStack: ['Java Spring', 'Snowflake', 'Stripe Connect', 'Oracle GL'],
-    sentimentScore: 42,
-    sentimentLabel: 'AT_RISK',
-    summaryBullets: [
-      'Customer health declined after 2 overdue commercial invoices (#INV-3981) and 3 open API tickets.',
-      'Requires managing director intervention to review custom volume-tier pricing schedule.',
-      'Sentinel Athena CSM flagged high probability of contract churn in next 30 days.',
-    ],
-    isEnriched: false,
-    optimalSendTime: 'Monday 8:30 AM EST (71% Open Propensity)',
-    avatarInitials: 'SL',
-  },
-  {
-    id: 'cnt_alex_chen',
-    name: 'Dr. Alex Chen',
-    email: 'alex.chen@apexhospital.org',
-    role: 'Chief Medical Information Officer',
-    company: 'Apex Memorial Healthcare Network',
-    companySize: '4,200 clinical staff across 8 facilities',
-    industry: 'Hospital & Healthcare Systems',
-    techStack: ['Epic EHR', 'HL7/FHIR', 'Azure Health', 'DICOM PACS'],
-    sentimentScore: 88,
-    sentimentLabel: 'POSITIVE',
-    summaryBullets: [
-      'Spearheading digital patient triage intake and automated clinical appointment scheduling.',
-      'Requires HIPAA BAA executed prior to production rollout of AI Support Sentinel.',
-      'Champion user with high platform engagement across executive dashboard.',
-    ],
-    isEnriched: true,
-    optimalSendTime: 'Wednesday 7:15 AM EST (89% Open Propensity)',
-    avatarInitials: 'AC',
-  },
-];
+const INITIAL_CONTACTS: EnrichedContact[] = [];
 
 // Seeded Intelligent Deals
-const INITIAL_DEALS: IntelligentDeal[] = [
-  {
-    id: 'deal_hyperion_q3',
-    title: 'Hyperion Enterprise Cloud Expansion',
-    company: 'Hyperion Technologies Inc.',
-    amount: 185000,
-    stage: 'Contract & Signatures',
-    predictiveScore: 94,
-    winProbability: 92,
-    healthStatus: 'HEALTHY',
-    healthReason: 'Elena viewed commercial proposal 4 times in 24 hours. Executive decision-maker champion aligned.',
-    nextBestAction: 'Deploy 10% Commercial Concession ($18,500) to lock signature before quarter-end.',
-    daysInStage: 4,
-  },
-  {
-    id: 'deal_vertex_platform',
-    title: 'Vertex Autonomous Telephony & SIM Mesh',
-    company: 'Vertex Autonomous AI',
-    amount: 142000,
-    stage: 'Technical Due Diligence',
-    predictiveScore: 82,
-    winProbability: 79,
-    healthStatus: 'HEALTHY',
-    healthReason: 'Engineering latency benchmark report dispatched. Technical committee reviewing architecture.',
-    nextBestAction: 'Schedule VP Engineering follow-up to resolve Redis caching question.',
-    daysInStage: 9,
-  },
-  {
-    id: 'deal_nova_renewal',
-    title: 'Nova FinTech Multi-Branch Khata Renewal',
-    company: 'Nova Global FinTech',
-    amount: 240000,
-    stage: 'Renewal / Evaluation',
-    predictiveScore: 38,
-    winProbability: 35,
-    healthStatus: 'GHOSTING_RISK',
-    healthReason: 'Zero stakeholder touchpoints in 14 days following invoice discrepancy notification.',
-    nextBestAction: 'Trigger Executive CSM Intervention & schedule VP Treasury meeting.',
-    daysInStage: 22,
-  },
-  {
-    id: 'deal_apex_clinical',
-    title: 'Apex Health Digital EHR & Triage Suite',
-    company: 'Apex Memorial Healthcare Network',
-    amount: 98000,
-    stage: 'Proposal Shared',
-    predictiveScore: 71,
-    winProbability: 68,
-    healthStatus: 'VELOCITY_DROP',
-    healthReason: 'Average stage progression slowed by 6 days awaiting legal HIPAA compliance rider review.',
-    nextBestAction: 'Deliver pre-signed BAA compliance bundle with automated audit trail verification.',
-    daysInStage: 16,
-  },
-];
+const INITIAL_DEALS: IntelligentDeal[] = [];
 
 // Seeded Churn Alerts
-const INITIAL_CHURN_ALERTS: ChurnAlert[] = [
-  {
-    id: 'churn_01',
-    company: 'Nova Global FinTech',
-    mrr: 14200,
-    healthIndex: 42,
-    churnRisk: 'HIGH',
-    riskFactor: 'Invoice #INV-3981 overdue by 45 days & 3 open support tickets on API rate limits.',
-    recommendedAction: 'Engage Sentinel Athena for VIP Concierge Call & waive late fee penalty.',
-    lastContact: '14 days ago',
-  },
-  {
-    id: 'churn_02',
-    company: 'Cyberdyne Scale Labs',
-    mrr: 6800,
-    healthIndex: 58,
-    churnRisk: 'MEDIUM',
-    riskFactor: 'Weekly active user count dropped 32% following recent internal team reorganization.',
-    recommendedAction: 'Enroll operations team in automated re-onboarding webinar series.',
-    lastContact: '5 days ago',
-  },
-  {
-    id: 'churn_03',
-    company: 'Horizon Logistics Global',
-    mrr: 9400,
-    healthIndex: 65,
-    churnRisk: 'MEDIUM',
-    riskFactor: 'SIM Gateway data usage approaching 95% cap with zero top-up configured.',
-    recommendedAction: 'Send automated upgrade notification for enterprise unlimited data pool.',
-    lastContact: '2 days ago',
-  },
-];
+const INITIAL_CHURN_ALERTS: ChurnAlert[] = [];
 
 export function AiStudioClient() {
   const [activeTab, setActiveTab] = useState<
@@ -271,7 +106,7 @@ export function AiStudioClient() {
 
   // Contact States
   const [contacts, setContacts] = useState<EnrichedContact[]>(INITIAL_CONTACTS);
-  const [selectedContact, setSelectedContact] = useState<EnrichedContact>(INITIAL_CONTACTS[0]);
+  const [selectedContact, setSelectedContact] = useState<EnrichedContact | null>(INITIAL_CONTACTS[0] || null);
   const [isEnriching, setIsEnriching] = useState(false);
 
   // Deals States
@@ -279,7 +114,8 @@ export function AiStudioClient() {
   const [actionAlert, setActionAlert] = useState<string | null>(null);
 
   // Pre-Call Digest State
-  const [selectedDigestDeal, setSelectedDigestDeal] = useState<IntelligentDeal>(INITIAL_DEALS[0]);
+  const [selectedDigestDeal, setSelectedDigestDeal] = useState<IntelligentDeal | null>(INITIAL_DEALS[0] || null);
+  const [churnAlerts, setChurnAlerts] = useState<ChurnAlert[]>(INITIAL_CHURN_ALERTS);
   const [isGeneratingDigest, setIsGeneratingDigest] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcriptResult, setTranscriptResult] = useState<{
@@ -347,6 +183,7 @@ export function AiStudioClient() {
 
   // Handle Contact Neural AI Enrichment
   const handleEnrichContact = (contactId: string) => {
+    if (!selectedContact) return;
     setIsEnriching(true);
     setTimeout(() => {
       setContacts((prev) =>
@@ -364,7 +201,7 @@ export function AiStudioClient() {
         })
       );
       setIsEnriching(false);
-      setActionAlert(`✨ Neural enrichment completed for ${selectedContact.name}! Tech stack and firmographics updated.`);
+      setActionAlert(`✨ Neural enrichment completed for ${selectedContact?.name || 'contact'}! Tech stack and firmographics updated.`);
       setTimeout(() => setActionAlert(null), 4000);
     }, 900);
   };
@@ -393,6 +230,7 @@ export function AiStudioClient() {
 
   // Handle Call Transcription Simulator
   const handleSimulateCallTranscript = () => {
+    if (!selectedDigestDeal) return;
     setIsTranscribing(true);
     setTimeout(() => {
       setTranscriptResult({
@@ -632,6 +470,14 @@ export function AiStudioClient() {
                   </div>
                 );
               })}
+
+              {contacts.length === 0 && (
+                <div className="p-8 text-center space-y-2 border border-dashed border-white/10 rounded-2xl">
+                  <UserCheck size={20} className="mx-auto text-slate-500 opacity-60" />
+                  <p className="text-xs font-semibold text-slate-400">No contacts available</p>
+                  <p className="text-[10px] text-slate-500">Synchronize contacts from Customer 360 to activate AI enrichment.</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -744,7 +590,17 @@ export function AiStudioClient() {
                   </div>
                 </div>
               </div>
-            ) : null}
+            ) : (
+              <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-dashed border-slate-200 dark:border-white/[0.08] rounded-3xl p-12 text-center space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 mx-auto flex items-center justify-center border border-violet-500/20">
+                  <UserCheck size={24} />
+                </div>
+                <h3 className="text-sm font-bold text-white">No Contact Selected</h3>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                  Select a contact from the list or synchronize CRM records to inspect AI firmographic enrichment and sentiment metrics.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -830,6 +686,18 @@ export function AiStudioClient() {
               </div>
             ))}
           </div>
+
+          {deals.length === 0 && (
+            <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-dashed border-slate-200 dark:border-white/[0.08] rounded-3xl p-12 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 mx-auto flex items-center justify-center border border-violet-500/20">
+                <Target size={24} />
+              </div>
+              <h3 className="text-sm font-bold text-white">No Pipeline Deals Found</h3>
+              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                Commercial deals created in the Deals pipeline will be analyzed here for machine learning win probability and anomaly diagnostics.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -847,7 +715,7 @@ export function AiStudioClient() {
                     key={deal.id}
                     onClick={() => setSelectedDigestDeal(deal)}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                      selectedDigestDeal.id === deal.id
+                      selectedDigestDeal?.id === deal.id
                         ? 'border-violet-500 bg-white/[0.06]'
                         : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
                     }`}
@@ -859,13 +727,18 @@ export function AiStudioClient() {
                     <span className="text-[10px] text-slate-400 block mt-0.5">{deal.company} · {deal.stage}</span>
                   </div>
                 ))}
+                {deals.length === 0 && (
+                  <div className="p-6 text-center text-xs text-slate-400 border border-dashed border-white/10 rounded-xl">
+                    No active deals in pipeline to target.
+                  </div>
+                )}
               </div>
 
               <div className="pt-2 border-t border-white/[0.06]">
                 <button
                   type="button"
                   onClick={handleSimulateCallTranscript}
-                  disabled={isTranscribing}
+                  disabled={isTranscribing || !selectedDigestDeal}
                   className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <PhoneCall size={14} className={isTranscribing ? 'animate-bounce' : ''} />
@@ -876,60 +749,72 @@ export function AiStudioClient() {
           </div>
 
           <div className="lg:col-span-7 space-y-4">
-            <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-xl space-y-5">
-              <div className="border-b border-white/[0.08] pb-4">
-                <span className="text-[10px] font-black uppercase tracking-wider text-violet-400 bg-violet-500/10 px-2.5 py-0.5 rounded border border-violet-500/20">
-                  Pre-Call Battlecard
-                </span>
-                <h3 className="text-base font-black text-white mt-2">{selectedDigestDeal.title}</h3>
-                <p className="text-xs text-slate-400">Target Account: {selectedDigestDeal.company}</p>
-              </div>
+            {selectedDigestDeal ? (
+              <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-xl space-y-5">
+                <div className="border-b border-white/[0.08] pb-4">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-violet-400 bg-violet-500/10 px-2.5 py-0.5 rounded border border-violet-500/20">
+                    Pre-Call Battlecard
+                  </span>
+                  <h3 className="text-base font-black text-white mt-2">{selectedDigestDeal.title}</h3>
+                  <p className="text-xs text-slate-400">Target Account: {selectedDigestDeal.company}</p>
+                </div>
 
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">Top 3 Executive Talking Points:</h4>
-                <div className="space-y-2 text-xs text-slate-300">
-                  <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">1</span>
-                    <span>Highlight our unified Khata multi-branch ledger which eliminates manual CSV reconciliations.</span>
-                  </div>
-                  <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">2</span>
-                    <span>Reinforce our SOC2 Type II cryptographic event stream and sub-5ms WebRTC softphone latency.</span>
-                  </div>
-                  <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
-                    <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">3</span>
-                    <span>Counter competitor HubSpot / Salesforce pricing: Zero per-seat add-on charges for AI OCR or SIM gateway.</span>
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">Top 3 Executive Talking Points:</h4>
+                  <div className="space-y-2 text-xs text-slate-300">
+                    <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">1</span>
+                      <span>Highlight our unified Khata multi-branch ledger which eliminates manual CSV reconciliations.</span>
+                    </div>
+                    <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">2</span>
+                      <span>Reinforce our SOC2 Type II cryptographic event stream and sub-5ms WebRTC softphone latency.</span>
+                    </div>
+                    <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">3</span>
+                      <span>Counter competitor HubSpot / Salesforce pricing: Zero per-seat add-on charges for AI OCR or SIM gateway.</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Transcription result if run */}
-              {transcriptResult && (
-                <div className="p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-2xl space-y-2.5 animate-fadeIn">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                      <CheckCircle2 size={14} />
-                      Call Audio Transcribed Successfully
-                    </span>
-                    <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded">
-                      {transcriptResult.sentiment}
-                    </span>
+                {/* Transcription result if run */}
+                {transcriptResult && (
+                  <div className="p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-2xl space-y-2.5 animate-fadeIn">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                        <CheckCircle2 size={14} />
+                        Call Audio Transcribed Successfully
+                      </span>
+                      <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded">
+                        {transcriptResult.sentiment}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">{transcriptResult.summary}</p>
+                    <div className="pt-2 border-t border-emerald-500/20">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Extracted Action Items:</span>
+                      <ul className="space-y-1 text-xs text-slate-300">
+                        {transcriptResult.actionItems.map((act, i) => (
+                          <li key={i} className="flex items-center gap-1.5">
+                            <Check size={12} className="text-emerald-400" />
+                            <span>{act}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">{transcriptResult.summary}</p>
-                  <div className="pt-2 border-t border-emerald-500/20">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Extracted Action Items:</span>
-                    <ul className="space-y-1 text-xs text-slate-300">
-                      {transcriptResult.actionItems.map((act, i) => (
-                        <li key={i} className="flex items-center gap-1.5">
-                          <Check size={12} className="text-emerald-400" />
-                          <span>{act}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-dashed border-slate-200 dark:border-white/[0.08] rounded-3xl p-12 text-center space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 mx-auto flex items-center justify-center border border-violet-500/20">
+                  <PhoneCall size={24} />
                 </div>
-              )}
-            </div>
+                <h3 className="text-sm font-bold text-white">No Deal Target Selected</h3>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                  Select a commercial deal on the left to review AI-generated battlecards and simulate call transcription.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1164,12 +1049,12 @@ export function AiStudioClient() {
                 </p>
               </div>
               <span className="text-xs font-mono text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded-xl border border-rose-500/20">
-                3 Accounts Monitored
+                {churnAlerts.length} Accounts Monitored
               </span>
             </div>
 
             <div className="space-y-3">
-              {INITIAL_CHURN_ALERTS.map((alert) => (
+              {churnAlerts.map((alert) => (
                 <div
                   key={alert.id}
                   className="p-4 bg-white/[0.02] border border-white/[0.06] rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
@@ -1200,6 +1085,16 @@ export function AiStudioClient() {
                   </button>
                 </div>
               ))}
+
+              {churnAlerts.length === 0 && (
+                <div className="p-8 text-center space-y-2 border border-dashed border-white/10 rounded-2xl">
+                  <CheckCircle2 size={24} className="mx-auto text-emerald-400 opacity-80" />
+                  <p className="text-xs font-bold text-white">No At-Risk Accounts Flagged</p>
+                  <p className="text-[11px] text-slate-400 max-w-sm mx-auto">
+                    All enterprise accounts have healthy engagement metrics and up-to-date invoicing ledgers.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

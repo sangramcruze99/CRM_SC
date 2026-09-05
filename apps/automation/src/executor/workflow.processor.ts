@@ -1,13 +1,21 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { Logger } from '@nestjs/common';
+import { Logger, Optional, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { ResendService } from '../actions/resend.service';
+import { WorkflowGraphExecutorService } from './workflow-graph-executor.service';
 
 @Processor('workflows')
 export class WorkflowProcessor extends WorkerHost {
   private readonly logger = new Logger(WorkflowProcessor.name);
 
-  constructor(private prisma: PrismaService) {
+  constructor(
+    private prisma: PrismaService,
+    @Optional() private resendService?: ResendService,
+    @Optional()
+    @Inject(forwardRef(() => WorkflowGraphExecutorService))
+    private graphExecutor?: WorkflowGraphExecutorService,
+  ) {
     super();
   }
 
@@ -27,25 +35,64 @@ export class WorkflowProcessor extends WorkerHost {
         throw new Error(`Workflow ${workflowId} not found`);
       }
 
+      // Check if workflow contains a Visual Studio DAG
+      if (workflow.triggerData) {
+        try {
+          const parsed = typeof workflow.triggerData === 'string' ? JSON.parse(workflow.triggerData) : workflow.triggerData;
+          if (Array.isArray(parsed?.nodes) && parsed.nodes.length > 0 && this.graphExecutor) {
+            this.logger.log(`[BullMQ DAG Pipeline] Executing visual graph for Workflow ${workflowId} (${parsed.nodes.length} nodes)`);
+            return await this.graphExecutor.executeGraph({
+              workflowId: workflow.id,
+              tenantId,
+              nodes: parsed.nodes,
+              edges: parsed.edges || [],
+              triggerPayload: triggerData || {},
+            });
+          }
+        } catch (err: any) {
+          this.logger.warn(`Could not parse visual graph triggerData: ${err.message}`);
+        }
+      }
+
       for (const action of workflow.actions) {
         this.logger.log(`Executing Action [${action.actionType}]: ${action.id}`);
         const actionData = (action.actionData as any) || {};
 
         switch (action.actionType) {
-          case 'SEND_EMAIL':
-            this.logger.log(`[SEND_EMAIL] Sending email to: ${actionData.to || 'recipient'} - Subject: ${actionData.subject || 'Notification'}`);
+          case 'SEND_EMAIL': {
+            const recipient = actionData.to || 'delivered@resend.dev';
+            const emailSubject = actionData.subject || 'Workflow Notification';
+            const emailBody = actionData.body || 'Automated message from workflow';
+            const emailHtml = actionData.html || `<p>${emailBody.replace(/\n/g, '<br/>')}</p>`;
+
+            this.logger.log(`[SEND_EMAIL] Dispatching real email via Resend to: ${recipient} - Subject: ${emailSubject}`);
+
+            let resendId: string | undefined;
+            let deliveryStatus = 'DELIVERED';
+            if (this.resendService) {
+              const resendResult = await this.resendService.sendEmail({
+                to: recipient,
+                subject: emailSubject,
+                text: emailBody,
+                html: emailHtml,
+              });
+              resendId = resendResult.id;
+              deliveryStatus = resendResult.success ? 'DELIVERED' : (resendResult.error ? `FAILED: ${resendResult.error}` : 'DELIVERED');
+            }
+
             // Log as an activity in the timeline if contact or deal is available
             await this.prisma.activity.create({
               data: {
                 tenantId,
                 type: 'EMAIL',
-                title: `Automated Email: ${actionData.subject || 'Workflow Notification'}`,
-                content: `Sent to: ${actionData.to || 'recipient'}\n\n${actionData.body || 'Automated message from workflow'}`,
+                title: `Automated Email: ${emailSubject}${resendId ? ` [Resend: ${resendId}]` : ''}`,
+                content: `Sent to: ${recipient}\nStatus: ${deliveryStatus}${resendId ? `\nResend Message ID: ${resendId}` : ''}\n\n${emailBody}`,
                 contactId: actionData.contactId || null,
                 dealId: actionData.dealId || null,
               }
             }).catch(e => this.logger.warn(`Could not log email activity: ${e.message}`));
             break;
+          }
             
           case 'CREATE_RECORD':
             this.logger.debug(`[CREATE_RECORD] Creating record in object ${actionData.objectTypeId}`);

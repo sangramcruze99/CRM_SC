@@ -12,6 +12,13 @@ import { PrismaModule } from './prisma/prisma.module';
 import { WorkflowsModule } from './workflows/workflows.module';
 import { EventBusModule } from './event-bus/event-bus.module';
 
+import { ApprovalsModule } from './approvals/approvals.module';
+import { WhatsAppModule } from './whatsapp/whatsapp.module';
+import { ConnectorsModule } from './connectors/connectors.module';
+import { BrowserModule } from './browser/browser.module';
+import { VoiceModule } from './voice/voice.module';
+import { TemplatesModule } from './templates/templates.module';
+
 const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HOST !== '127.0.0.1' && process.env.REDIS_HOST !== 'localhost');
 
 @Module({
@@ -31,6 +38,12 @@ const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HO
     ] : []),
     WorkflowsModule,
     ActionsModule,
+    ApprovalsModule,
+    WhatsAppModule,
+    ConnectorsModule,
+    BrowserModule,
+    VoiceModule,
+    TemplatesModule,
     PrismaModule,
   ],
   controllers: [AppController],

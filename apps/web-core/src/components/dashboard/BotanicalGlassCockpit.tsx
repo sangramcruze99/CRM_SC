@@ -66,15 +66,15 @@ export function BotanicalGlassCockpit({ metrics }: BotanicalGlassCockpitProps) {
 
   const displayBalance = metrics?.totalBalance !== undefined
     ? metrics.totalBalance.toLocaleString()
-    : '990,815';
+    : '0';
 
   const displayProfits = metrics?.closedWonValue !== undefined
     ? metrics.closedWonValue.toLocaleString()
-    : '170,520';
+    : '0';
 
   const displayPayments = metrics?.totalInvoicedValue !== undefined
     ? metrics.totalInvoicedValue.toLocaleString()
-    : '64,520';
+    : '0';
 
   return (
     <div className="w-full space-y-6 animate-in fade-in zoom-in-95 duration-500">

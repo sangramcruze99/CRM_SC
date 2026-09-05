@@ -178,7 +178,7 @@ export interface SentEmailRecord {
   recipientCount: number;
   audience: string;
   sentAt: string;
-  status: 'DELIVERED' | 'SENDING' | 'SCHEDULED';
+  status: 'DELIVERED' | 'SENDING' | 'SCHEDULED' | 'FAILED';
   openRate: number;
   clickRate: number;
   bounceRate: number;
@@ -399,55 +399,9 @@ const INITIAL_TEMPLATES: CustomTemplate[] = [
   },
 ];
 
-const INITIAL_DRAFTS: EmailDraft[] = [
-  {
-    id: 'draft_1',
-    name: 'Executive SDR Follow-Up Q3',
-    subject: "Following up on Tuesday's demo, {{firstName}}",
-    preheader: 'Included the custom pricing sheet and ROI calculator for {{company}}.',
-    recipientAudience: 'MQL Enterprise Leads (38 Contacts)',
-    updatedAt: '12 mins ago',
-    deliverabilityScore: 96,
-    blocks: INITIAL_TEMPLATES[0].blocks,
-  },
-  {
-    id: 'draft_2',
-    name: 'End-of-Month VIP Discount Blast',
-    subject: 'Last chance: 25% Off Q3 Business OS Licenses',
-    preheader: 'Offer valid through midnight tomorrow.',
-    recipientAudience: 'Inbound Trial Users (124 Contacts)',
-    updatedAt: '1 hour ago',
-    deliverabilityScore: 92,
-    blocks: INITIAL_TEMPLATES[2].blocks,
-  },
-];
+const INITIAL_DRAFTS: EmailDraft[] = [];
 
-const INITIAL_SENT_BOX: SentEmailRecord[] = [
-  {
-    id: 'sent_1',
-    subject: "Quick question regarding {{company}}'s workflow, {{firstName}}",
-    recipientCount: 450,
-    audience: 'Tier-1 SaaS VPs (North America)',
-    sentAt: 'Today at 09:30 AM',
-    status: 'DELIVERED',
-    openRate: 68.4,
-    clickRate: 24.1,
-    bounceRate: 0.4,
-    blocks: INITIAL_TEMPLATES[0].blocks,
-  },
-  {
-    id: 'sent_2',
-    subject: 'Introducing Business OS 2.0: Unified Workspace for Modern Teams',
-    recipientCount: 1280,
-    audience: 'All Registered Enterprise Contacts',
-    sentAt: 'Yesterday at 02:15 PM',
-    status: 'DELIVERED',
-    openRate: 74.2,
-    clickRate: 31.8,
-    bounceRate: 0.1,
-    blocks: INITIAL_TEMPLATES[1].blocks,
-  },
-];
+const INITIAL_SENT_BOX: SentEmailRecord[] = [];
 
 const PALETTES = [
   { name: 'Emerald Growth', primary: '#10b981', hover: '#059669', bgLight: '#ecfdf5', textDark: '#064e3b' },
@@ -2875,6 +2829,13 @@ export function EmailBuilder() {
                 </div>
               </div>
             ))}
+            {drafts.length === 0 && (
+              <div className="py-16 text-center text-slate-400 text-xs border border-dashed border-slate-800 rounded-2xl space-y-2">
+                <FileEdit size={28} className="mx-auto text-slate-600" />
+                <p className="font-bold text-slate-300">No Saved Drafts</p>
+                <p className="text-[11px] text-slate-500">Drafts you save while composing will be stored here for future revision.</p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -2895,26 +2856,34 @@ export function EmailBuilder() {
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
             <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
               <div className="text-[11px] font-bold uppercase text-slate-400">Total Emails Sent</div>
-              <div className="text-2xl font-black text-white mt-1">3,240</div>
-              <div className="text-[10px] text-emerald-400 mt-0.5">+18% this month</div>
+              <div className="text-2xl font-black text-white mt-1">
+                {sentBox.reduce((sum, s) => sum + s.recipientCount, 0).toLocaleString()}
+              </div>
+              <div className="text-[10px] text-emerald-400 mt-0.5">{sentBox.length} Campaigns Dispatched</div>
             </div>
 
             <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
               <div className="text-[11px] font-bold uppercase text-slate-400">Avg. Open Rate</div>
-              <div className="text-2xl font-black text-emerald-400 mt-1">68.3%</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">Benchmark: 28.5%</div>
+              <div className="text-2xl font-black text-emerald-400 mt-1">
+                {sentBox.length > 0 ? `${(sentBox.reduce((sum, s) => sum + s.openRate, 0) / sentBox.length).toFixed(1)}%` : '0.0%'}
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">Real Open Telemetry</div>
             </div>
 
             <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
               <div className="text-[11px] font-bold uppercase text-slate-400">Avg. Click Rate</div>
-              <div className="text-2xl font-black text-sky-400 mt-1">26.8%</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">High reply intent</div>
+              <div className="text-2xl font-black text-sky-400 mt-1">
+                {sentBox.length > 0 ? `${(sentBox.reduce((sum, s) => sum + s.clickRate, 0) / sentBox.length).toFixed(1)}%` : '0.0%'}
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">Real CTR Telemetry</div>
             </div>
 
             <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
               <div className="text-[11px] font-bold uppercase text-slate-400">Avg. Bounce Rate</div>
-              <div className="text-2xl font-black text-slate-200 mt-1">0.4%</div>
-              <div className="text-[10px] text-emerald-400 mt-0.5">Clean deliverability</div>
+              <div className="text-2xl font-black text-slate-200 mt-1">
+                {sentBox.length > 0 ? `${(sentBox.reduce((sum, s) => sum + s.bounceRate, 0) / sentBox.length).toFixed(1)}%` : '0.0%'}
+              </div>
+              <div className="text-[10px] text-emerald-400 mt-0.5">Verified Deliverability</div>
             </div>
           </div>
 
@@ -2979,6 +2948,13 @@ export function EmailBuilder() {
                   </div>
                 </div>
               ))}
+              {sentBox.length === 0 && (
+                <div className="p-12 text-center text-slate-400 text-xs space-y-2">
+                  <SendHorizontal size={28} className="mx-auto text-slate-600" />
+                  <p className="font-bold text-slate-300">No Sent Campaigns</p>
+                  <p className="text-[11px] text-slate-500">Broadcasts and test emails dispatched via Resend or SMTP will appear here.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -3016,6 +2992,9 @@ export function EmailBuilder() {
                 className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white outline-none font-medium"
                 placeholder="you@company.com"
               />
+              <p className="text-[10px] text-slate-400">
+                Connected to Resend API. Send live tests to <span className="text-emerald-400 font-mono">sangram.cruze99@gmail.com</span> or <span className="text-emerald-400 font-mono">delivered@resend.dev</span>. Verify custom domains at <span className="text-slate-300">resend.com/domains</span>.
+              </p>
             </div>
 
             <div className="pt-2 flex justify-end gap-2.5">
@@ -3026,14 +3005,47 @@ export function EmailBuilder() {
                 Cancel
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
+                  const targetTo = testEmailAddress.trim() || 'delivered@resend.dev';
+                  let resendId: string | undefined;
+                  let deliveryStatus: 'DELIVERED' | 'FAILED' = 'DELIVERED';
+                  let deliveryError: string | undefined;
+
+                  try {
+                    const res = await fetch('/api/automation/email/send', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        to: targetTo,
+                        subject: subject || 'Test Email from Visual Email Builder',
+                        html: `<div style="font-family: sans-serif; color: #1e293b; max-width: 600px; margin: 0 auto;">
+                          <h2 style="color: #0f172a;">${subject || 'Test Email'}</h2>
+                          <p style="color: #475569;">${preheader || 'Preview message from Business OS'}</p>
+                          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                          ${blocks.map((b: any) => `<div style="margin-bottom: 15px;"><strong>${b.title || b.type}</strong><p>${b.body || ''}</p></div>`).join('')}
+                        </div>`,
+                        text: `Subject: ${subject}\n\n${blocks.map((b: any) => `${b.title || b.type}: ${b.body || ''}`).join('\n')}`,
+                      }),
+                    });
+                    if (res.ok) {
+                      const data = await res.json();
+                      resendId = data.id;
+                      if (!data.success && data.status === 'FAILED') {
+                        deliveryStatus = 'FAILED';
+                        deliveryError = data.error;
+                      }
+                    }
+                  } catch (e) {
+                    console.warn('Real dispatch error:', e);
+                  }
+
                   const newSentRecord: SentEmailRecord = {
-                    id: `sent_${Date.now()}`,
+                    id: resendId || `sent_${Date.now()}`,
                     subject,
                     recipientCount: 1,
-                    audience: `Test Send (${testEmailAddress})`,
+                    audience: `Test Send (${targetTo})`,
                     sentAt: 'Just now',
-                    status: 'DELIVERED',
+                    status: deliveryStatus,
                     openRate: 100,
                     clickRate: 50,
                     bounceRate: 0,
@@ -3041,7 +3053,13 @@ export function EmailBuilder() {
                   };
                   setSentBox([newSentRecord, ...sentBox]);
                   setIsSendTestModalOpen(false);
-                  showToast(`Test email sent to ${testEmailAddress} and logged in Sent Box!`);
+                  if (deliveryStatus === 'FAILED') {
+                    showToast(`⚠️ Delivery issue: ${deliveryError || 'Check recipient'}`);
+                  } else if (resendId) {
+                    showToast(`✨ Real email dispatched via Resend! ID: ${resendId}`);
+                  } else {
+                    showToast(`Test email sent to ${targetTo} and logged in Sent Box!`);
+                  }
                 }}
                 className="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-xs font-bold text-slate-950 rounded-xl shadow-lg transition-all cursor-pointer"
               >

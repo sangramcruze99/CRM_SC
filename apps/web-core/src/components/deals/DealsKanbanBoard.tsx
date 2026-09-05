@@ -21,7 +21,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { CreateDealModal } from '../CreateDealModal';
-import { updateDealStage, deleteDeal, seedDemoDeals } from '../../app/actions';
+import { updateDealStage, deleteDeal } from '../../app/actions';
 import { useRouter } from 'next/navigation';
 
 export interface DealItem {
@@ -154,25 +154,6 @@ export function DealsKanbanBoard({ initialDeals }: DealsKanbanBoardProps) {
     });
   };
 
-  // Seed sample enterprise deals for instant interactive demo
-  const handleSeedDeals = () => {
-    startTransition(async () => {
-      setAlert({
-        message: '⚡ Seeding enterprise opportunities into Sales microservice...',
-        type: 'info',
-      });
-      await seedDemoDeals();
-      router.refresh();
-      setTimeout(() => {
-        setAlert({
-          message: '✅ Populated live enterprise pipeline!',
-          type: 'success',
-        });
-        setTimeout(() => setAlert(null), 3000);
-      }, 800);
-    });
-  };
-
   const handleDelete = (id: string, title: string) => {
     if (!confirm(`Delete opportunity "${title}"?`)) return;
     setDeals((prev) => prev.filter((d) => d.id !== id));
@@ -252,18 +233,6 @@ export function DealsKanbanBoard({ initialDeals }: DealsKanbanBoardProps) {
               className="w-full bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 rounded-full pl-8 pr-3 py-1 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500/50"
             />
           </div>
-
-          {deals.length === 0 && (
-            <button
-              onClick={handleSeedDeals}
-              disabled={isPending}
-              className="px-3 py-1.5 botanical-pill hover:border-emerald-500/50 text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1 cursor-pointer disabled:opacity-50"
-              title="Seed 8 Demo Opportunities"
-            >
-              <Sparkles size={13} className="text-emerald-600 dark:text-emerald-400" />
-              <span>Seed Deals</span>
-            </button>
-          )}
 
           {/* Kanban / List Toggle */}
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/[0.06] p-0.5 rounded-full border border-slate-200 dark:border-white/10">
@@ -518,6 +487,17 @@ export function DealsKanbanBoard({ initialDeals }: DealsKanbanBoardProps) {
                     </td>
                   </tr>
                 ))}
+                {filteredDeals.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="py-12 text-center text-slate-500 dark:text-slate-400">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Briefcase size={24} className="text-slate-400 opacity-60" />
+                        <span className="font-semibold text-xs">No opportunities found</span>
+                        <span className="text-[11px] text-slate-400">Create a deal to start tracking pipeline value.</span>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

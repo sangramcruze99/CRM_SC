@@ -18,7 +18,7 @@ import {
   Calendar,
   AlertCircle
 } from 'lucide-react';
-import { createSprintTask, updateSprintTaskStatus, deleteSprintTask, seedDemoSprintTasks } from '../../app/actions';
+import { createSprintTask, updateSprintTaskStatus, deleteSprintTask } from '../../app/actions';
 import { useRouter } from 'next/navigation';
 
 export interface TaskItem {
@@ -167,24 +167,6 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
     });
   };
 
-  // Seed sample sprint tasks
-  const handleSeedTasks = () => {
-    startTransition(async () => {
-      setAlert({
-        message: '⚡ Seeding sprint engineering tasks into Projects microservice...',
-        type: 'info',
-      });
-      await seedDemoSprintTasks(currentProject.id);
-      router.refresh();
-      setTimeout(() => {
-        setAlert({
-          message: '✅ Populated sprint pipeline with live engineering milestones!',
-          type: 'success',
-        });
-        setTimeout(() => setAlert(null), 3000);
-      }, 800);
-    });
-  };
 
   const handleDeleteTask = (id: string, title: string) => {
     if (!confirm(`Delete sprint task "${title}"?`)) return;
@@ -294,17 +276,6 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
             </button>
           </form>
 
-          {tasks.length === 0 && (
-            <button
-              onClick={handleSeedTasks}
-              disabled={isPending}
-              className="px-3 py-1 botanical-pill hover:border-emerald-500/50 text-xs font-bold text-emerald-300 flex items-center gap-1 cursor-pointer disabled:opacity-50"
-              title="Seed 8 Sprint Tasks"
-            >
-              <Sparkles size={13} className="text-emerald-400" />
-              <span>Seed</span>
-            </button>
-          )}
 
           {/* Kanban / List Toggle */}
           <div className="flex items-center gap-1 bg-white/[0.06] p-0.5 rounded-full border border-white/10">
@@ -557,6 +528,14 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
                     </td>
                   </tr>
                 ))}
+
+                {filteredTasks.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-slate-400 dark:text-slate-500 font-medium">
+                      No sprint tasks found. Add a task using the input above to begin tracking milestones.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
