@@ -28,7 +28,7 @@ describe('AgentToolRegistryService', () => {
       },
     };
 
-    registry = new AgentToolRegistryService(mockPrisma);
+    registry = new AgentToolRegistryService(mockPrisma as any, {} as any);
     await registry.onModuleInit();
   });
 

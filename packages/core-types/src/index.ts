@@ -20,3 +20,4 @@ export interface Company {
 }
 
 export * from './events';
+export * from './event-publisher';

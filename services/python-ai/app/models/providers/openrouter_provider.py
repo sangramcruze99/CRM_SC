@@ -1,0 +1,120 @@
+"""
+OpenRouter Frontier Multi-Model Gateway Provider.
+Supports GPT-4o, Claude 3.5 Sonnet, DeepSeek, and Llama 3 models.
+"""
+
+import time
+import json
+import uuid
+from typing import Dict, Any
+import httpx
+from .base import BaseModelProvider, GenerateRequest, GenerateResponse, ToolCallItem, UsageMetrics
+from ...config import settings
+
+
+class OpenRouterProvider(BaseModelProvider):
+    def __init__(self, api_key: str = None):
+        self.api_key = api_key or settings.openrouter_api_key
+        self.base_url = "https://openrouter.ai/api/v1"
+
+    @property
+    def provider_name(self) -> str:
+        return "openrouter"
+
+    def is_configured(self) -> bool:
+        return bool(self.api_key and len(self.api_key.strip()) > 5)
+
+    async def generate(self, request: GenerateRequest) -> GenerateResponse:
+        if not self.is_configured():
+            raise RuntimeError("OPENROUTER_API_KEY is not configured.")
+
+        start_time = time.time()
+        req_id = request.request_id or f"req_{uuid.uuid4().hex[:12]}"
+
+        messages_payload = []
+        for m in request.messages:
+            msg: Dict[str, Any] = {"role": m.role, "content": m.content}
+            if m.name:
+                msg["name"] = m.name
+            messages_payload.append(msg)
+
+        model_name = request.model
+        if model_name.startswith("openrouter/"):
+            model_name = model_name.replace("openrouter/", "")
+
+        payload: Dict[str, Any] = {
+            "model": model_name,
+            "messages": messages_payload,
+            "temperature": request.temperature,
+            "max_tokens": request.max_tokens,
+        }
+
+        if request.tools and len(request.tools) > 0:
+            payload["tools"] = [
+                {
+                    "type": "function",
+                    "function": {
+                        "name": t.name,
+                        "description": t.description,
+                        "parameters": t.parameters,
+                    },
+                }
+                for t in request.tools
+            ]
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "HTTP-Referer": "http://localhost:4000",
+            "X-Title": "Business OS CRM",
+            "Content-Type": "application/json",
+        }
+
+        timeout = httpx.Timeout(settings.normal_inference_timeout_sec)
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.post(f"{self.base_url}/chat/completions", json=payload, headers=headers)
+
+            if resp.status_code != 200:
+                raise RuntimeError(f"OpenRouter API returned error {resp.status_code}: {resp.text}")
+
+            data = resp.json()
+            choice = data["choices"][0]
+            message_obj = choice.get("message", {})
+            content = message_obj.get("content") or ""
+
+            tool_calls = []
+            if "tool_calls" in message_obj and message_obj["tool_calls"]:
+                for tc in message_obj["tool_calls"]:
+                    fn = tc.get("function", {})
+                    fn_name = fn.get("name", "")
+                    fn_args_str = fn.get("arguments", "{}")
+                    try:
+                        parsed_args = json.loads(fn_args_str) if isinstance(fn_args_str, str) else fn_args_str
+                    except Exception:
+                        parsed_args = {"raw_arguments": fn_args_str}
+
+                    tool_calls.append(
+                        ToolCallItem(
+                            id=tc.get("id", f"call_{uuid.uuid4().hex[:8]}"),
+                            name=fn_name,
+                            arguments=parsed_args,
+                        )
+                    )
+
+            usage_raw = data.get("usage", {})
+            usage = UsageMetrics(
+                input_tokens=usage_raw.get("prompt_tokens", 0),
+                output_tokens=usage_raw.get("completion_tokens", 0),
+                total_tokens=usage_raw.get("total_tokens", 0),
+            )
+
+            latency_ms = int((time.time() - start_time) * 1000)
+
+            return GenerateResponse(
+                request_id=req_id,
+                model=data.get("model", request.model),
+                provider=self.provider_name,
+                content=content,
+                tool_calls=tool_calls,
+                usage=usage,
+                latency_ms=latency_ms,
+            )

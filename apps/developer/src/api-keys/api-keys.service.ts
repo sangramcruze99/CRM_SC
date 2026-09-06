@@ -22,7 +22,7 @@ export class ApiKeysService {
         // fallback
       }
     }
-    return ApiKeysService.inMemoryKeys.filter(k => k.tenantId === tenantId || k.tenantId === 'default-tenant');
+    return ApiKeysService.inMemoryKeys.filter(k => k.tenantId === tenantId);
   }
 
   async create(data: { name: string; permissions?: string[] }, tenantId: string) {

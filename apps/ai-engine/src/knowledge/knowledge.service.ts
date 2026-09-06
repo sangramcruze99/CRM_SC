@@ -10,7 +10,37 @@ export class KnowledgeService {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  private async generateEmbeddings(text: string): Promise<number[]> {
+  private async generateEmbeddings(text: string, tenantId?: string): Promise<number[]> {
+    const pythonAiUrl = process.env.PYTHON_AI_URL || 'http://localhost:3030';
+    const pythonAiKey = process.env.PYTHON_AI_API_KEY || 'business-os-internal-ai-key-secret';
+
+    // 1. Primary: Call Python AI local embedding service (:3030)
+    try {
+      const res = await fetch(`${pythonAiUrl}/v1/embeddings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Tenant-ID': tenantId || 'system',
+          'X-Service-Key': pythonAiKey,
+        },
+        body: JSON.stringify({
+          input: text,
+          model: 'all-MiniLM-L6-v2',
+        }),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.embeddings && data.embeddings.length > 0) {
+          return data.embeddings[0];
+        }
+      }
+    } catch {
+      // Graceful fallback to Xenova transformers
+    }
+
+    // 2. Secondary: Fallback to Xenova Transformers in Node.js
     try {
       const { pipeline } = await import('@xenova/transformers');
       const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
@@ -22,7 +52,7 @@ export class KnowledgeService {
   }
 
   async create(tenantId: string, data: any) {
-    const vector = await this.generateEmbeddings(data.content || '');
+    const vector = await this.generateEmbeddings(data.content || '', tenantId);
 
     if (this.prisma.isConnected) {
       try {
@@ -118,5 +148,60 @@ export class KnowledgeService {
     const idx = KnowledgeService.inMemoryDocs.findIndex(d => d.id === doc.id);
     if (idx !== -1) KnowledgeService.inMemoryDocs.splice(idx, 1);
     return doc;
+  }
+
+  /**
+   * Search knowledge base documents using vector embeddings and cosine similarity
+   */
+  async search(tenantId: string, query: string, limit: number = 3) {
+    const queryVec = await this.generateEmbeddings(query);
+    const docs = await this.findAll(tenantId);
+
+    const scored = docs.map((doc: any) => {
+      let docVec: number[] = [];
+      try {
+        if (typeof doc.vectorEmbeddings === 'string') {
+          docVec = JSON.parse(doc.vectorEmbeddings);
+        } else if (Array.isArray(doc.vectorEmbeddings)) {
+          docVec = doc.vectorEmbeddings;
+        }
+      } catch {
+        docVec = [];
+      }
+
+      // Keyword boost
+      const lowerQuery = query.toLowerCase();
+      const titleMatch = (doc.title || '').toLowerCase().includes(lowerQuery) ? 0.3 : 0;
+      const contentMatch = (doc.content || '').toLowerCase().includes(lowerQuery) ? 0.2 : 0;
+
+      let cosineSim = 0;
+      if (docVec.length > 0 && queryVec.length > 0) {
+        let dot = 0;
+        let normA = 0;
+        let normB = 0;
+        const len = Math.min(docVec.length, queryVec.length);
+        for (let i = 0; i < len; i++) {
+          dot += docVec[i] * queryVec[i];
+          normA += docVec[i] * docVec[i];
+          normB += queryVec[i] * queryVec[i];
+        }
+        if (normA > 0 && normB > 0) {
+          cosineSim = dot / (Math.sqrt(normA) * Math.sqrt(normB));
+        }
+      }
+
+      const totalScore = cosineSim + titleMatch + contentMatch;
+
+      return {
+        id: doc.id,
+        title: doc.title,
+        content: doc.content,
+        snippet: (doc.content || '').substring(0, 300),
+        similarity: Math.round(totalScore * 100) / 100,
+      };
+    });
+
+    scored.sort((a, b) => b.similarity - a.similarity);
+    return scored.slice(0, limit);
   }
 }

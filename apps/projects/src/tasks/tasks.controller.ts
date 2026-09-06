@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Headers, BadRequestException, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Headers, Param, Patch, Delete } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 
 @Controller('projects')
@@ -19,24 +19,42 @@ export class TasksController {
     return projects;
   }
 
+  @Post('tasks')
+  async createDefaultTask(
+    @Headers('x-tenant-id') tenantId: string,
+    @Body() data: { title: string, description?: string, status?: string }
+  ) {
+    const effectiveTenantId = tenantId || 'default-tenant';
+    const project = await this.tasksService.getOrCreateProject(effectiveTenantId, "Main Workspace Sprint");
+    return this.tasksService.createTask(effectiveTenantId, project.id, data);
+  }
+
   @Post(':projectId/tasks')
   async createTask(
+    @Headers('x-tenant-id') tenantId: string,
     @Param('projectId') projectId: string,
     @Body() data: { title: string, description?: string, status?: string }
   ) {
-    return this.tasksService.createTask(projectId, data);
+    const effectiveTenantId = tenantId || 'default-tenant';
+    return this.tasksService.createTask(effectiveTenantId, projectId, data);
   }
 
   @Patch('tasks/:id/status')
   async updateTaskStatus(
+    @Headers('x-tenant-id') tenantId: string,
     @Param('id') id: string,
     @Body() data: { status: string }
   ) {
-    return this.tasksService.updateTaskStatus(id, data.status);
+    const effectiveTenantId = tenantId || 'default-tenant';
+    return this.tasksService.updateTaskStatus(effectiveTenantId, id, data.status);
   }
 
   @Delete('tasks/:id')
-  async deleteTask(@Param('id') id: string) {
-    return this.tasksService.deleteTask(id);
+  async deleteTask(
+    @Headers('x-tenant-id') tenantId: string,
+    @Param('id') id: string
+  ) {
+    const effectiveTenantId = tenantId || 'default-tenant';
+    return this.tasksService.deleteTask(effectiveTenantId, id);
   }
 }

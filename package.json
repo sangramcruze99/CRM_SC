@@ -4,6 +4,12 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev --concurrency=100 --continue",
+    "dev:services": "node scripts/dev-services.mjs --mode=watch",
+    "dev:services:fast": "node scripts/dev-services.mjs --mode=fast",
+    "dev:services:core": "node scripts/dev-services.mjs --mode=core",
+    "dev:ai": "node scripts/dev-services.mjs --filter=python-ai",
+    "test:ai": "pytest services/python-ai",
+    "services:status": "node scripts/dev-services.mjs --status",
     "lint": "turbo lint",
     "test": "turbo test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""

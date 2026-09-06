@@ -33,17 +33,6 @@ export class JwtAuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
-      if (request.headers['x-tenant-id'] || process.env.NODE_ENV !== 'production') {
-        const tenantId = (request.headers['x-tenant-id'] as string) || 'default-tenant';
-        (request as any)['user'] = {
-          tenantId,
-          role: 'SUPERADMIN',
-          email: 'admin@gmail.com',
-          sub: 'usr_default_admin'
-        };
-        request.headers['x-tenant-id'] = tenantId;
-        return true;
-      }
       throw new UnauthorizedException('Access token missing');
     }
 
@@ -52,23 +41,15 @@ export class JwtAuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret,
       });
-      // Attach the user payload to the request object
+      // Attach the verified user payload to the request object
       (request as any)['user'] = payload;
 
-      // Override or set x-tenant-id from the JWT token for multi-tenancy context
+      // Extract trusted tenant ID strictly from verified JWT token payload
       if (payload.tenantId) {
         request.headers['x-tenant-id'] = payload.tenantId;
       }
     } catch {
-      const tenantId = (request.headers['x-tenant-id'] as string) || 'default-tenant';
-      (request as any)['user'] = {
-        tenantId,
-        role: 'SUPERADMIN',
-        email: 'admin@gmail.com',
-        sub: 'usr_default_admin'
-      };
-      request.headers['x-tenant-id'] = tenantId;
-      return true;
+      throw new UnauthorizedException('Invalid or expired access token');
     }
 
     return true;

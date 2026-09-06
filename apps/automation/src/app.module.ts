@@ -19,7 +19,14 @@ import { BrowserModule } from './browser/browser.module';
 import { VoiceModule } from './voice/voice.module';
 import { TemplatesModule } from './templates/templates.module';
 
-const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HOST !== '127.0.0.1' && process.env.REDIS_HOST !== 'localhost');
+const isRedisConfigured = Boolean(
+  process.env.ENABLE_BULLMQ !== 'false' && (
+    process.env.REDIS_HOST || 
+    process.env.REDIS_URL || 
+    process.env.ENABLE_BULLMQ === 'true' || 
+    process.env.NODE_ENV === 'production'
+  )
+);
 
 @Module({
   imports: [
@@ -31,7 +38,15 @@ const isRedisConfigured = Boolean(process.env.REDIS_HOST && process.env.REDIS_HO
         connection: {
           host: process.env.REDIS_HOST || '127.0.0.1',
           port: parseInt(process.env.REDIS_PORT || '6379', 10),
+          password: process.env.REDIS_PASSWORD || undefined,
           maxRetriesPerRequest: null,
+          enableOfflineQueue: false,
+          retryStrategy(times) {
+            if (times > 5) {
+              return null;
+            }
+            return Math.min(times * 500, 2000);
+          },
         },
       }),
       ExecutorModule,

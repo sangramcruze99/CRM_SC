@@ -42,6 +42,7 @@ model Tenant {
   departments           Department[]
   activities            Activity[]
   landingPages          LandingPage[]
+  installedMarketplaceItems InstalledMarketplaceItem[]
 }
 
 model User {
@@ -155,19 +156,47 @@ model Activity {
 // ----------------------------------------------------------------------------
 
 model Workflow {
+  id                String   @id @default(cuid())
+  tenantId          String
+  name              String
+  description       String?
+  isActive          Boolean  @default(false)
+  version           Int      @default(1)
+  status            String   @default("ACTIVE") // DRAFT, ACTIVE, PAUSED, ARCHIVED
+  triggerType       String   // e.g., 'ON_RECORD_CREATE', 'SCHEDULED', 'WEBHOOK'
+  triggerData       String?  @default("{}") // Specific configuration for the trigger
+  nodes             String?  @default("[]") // JSON array of WorkflowNode
+  edges             String?  @default("[]") // JSON array of WorkflowEdge
+  variables         String?  @default("[]") // JSON array of WorkflowVariable
+  errorPolicy       String?  @default("{}")
+  concurrencyPolicy String?  @default("{}")
+  approvalPolicy    String?  @default("{}")
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actions           WorkflowAction[]
+  versions          WorkflowVersion[]
+}
+
+model WorkflowVersion {
   id          String   @id @default(cuid())
   tenantId    String
+  workflowId  String
+  version     Int
   name        String
-  description String?
-  isActive    Boolean  @default(false)
-  triggerType String   // e.g., 'ON_RECORD_CREATE', 'SCHEDULED', 'WEBHOOK'
-  triggerData String?  @default("{}") // Specific configuration for the trigger
-  
+  status      String   @default("ACTIVE")
+  nodes       String   @default("[]")
+  edges       String   @default("[]")
+  variables   String?  @default("[]")
+  publishedBy String?
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  actions     WorkflowAction[]
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@unique([workflowId, version])
+  @@index([tenantId, workflowId])
 }
 
 model WorkflowAction {
@@ -341,6 +370,46 @@ model InstalledPlugin {
 
   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   plugin      Plugin   @relation(fields: [pluginId], references: [id], onDelete: Cascade)
+}
+
+model MarketplaceItem {
+  id                    String   @id @default(cuid())
+  type                  String   // 'AGENT', 'WORKFLOW', 'INTEGRATION', 'TEMPLATE', 'AUTOMATION_PACK'
+  name                  String
+  description           String
+  version               String   @default("1.0.0")
+  publisherId           String   @default("system")
+  category              String   @default("General")
+  icon                  String?
+  permissions           String   @default("[]") // JSON array of required permissions
+  requiredIntegrations  String   @default("[]") // JSON array
+  configurationSchema   String?  @default("{}")
+  pricing               String?  @default("{}")
+  packageData           String?  @default("{}") // Workflow nodes/edges or agent config
+  status                String   @default("PUBLISHED") // 'DRAFT', 'PUBLISHED', 'SUSPENDED'
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  installations         InstalledMarketplaceItem[]
+}
+
+model InstalledMarketplaceItem {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  itemId              String
+  version             String
+  configuration       String?  @default("{}")
+  grantedPermissions  String   @default("[]")
+  isActive            Boolean  @default(true)
+  installedAt         DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  tenant              Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  item                MarketplaceItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, itemId])
+  @@index([tenantId, isActive])
 }
 
 // --- Phase 9: Real-time Collaboration Engine ---

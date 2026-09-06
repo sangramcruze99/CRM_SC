@@ -66,7 +66,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         sectionTitle: 'Core CRM & Sales Hub',
         items: [
           { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
-          { label: 'Contacts & Accounts', href: '/', iconName: 'Users' },
+          { label: 'Contacts & Accounts', href: '/contacts', iconName: 'Users' },
           { label: 'Customer 360 Graph', href: '/customer-360', iconName: 'Users', badge: '360°' },
           { label: 'Deals Pipeline', href: '/deals', iconName: 'Briefcase' },
           { label: 'Sprint Projects', href: '/projects', iconName: 'ClipboardList' },
@@ -161,7 +161,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         sectionTitle: 'Clinical Operations',
         items: [
           { label: 'Clinical Command Hub', href: '/industry/hospital', iconName: 'Stethoscope', badge: 'Live' },
-          { label: 'Patients Directory (EHR)', href: '/', iconName: 'Users' },
+          { label: 'Patients Directory (EHR)', href: '/contacts', iconName: 'Users' },
           { label: 'Doctor Appointment Queue', href: '/industry/hospital#appointments', iconName: 'Calendar' },
           { label: 'Patient Inquiries & Triage', href: '/tickets', iconName: 'Ticket' },
         ],
@@ -208,7 +208,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         sectionTitle: 'Real Estate CRM',
         items: [
           { label: 'Property Command Center', href: '/industry/realestate', iconName: 'Home', badge: 'MLS' },
-          { label: 'Buyer & Seller Directory', href: '/', iconName: 'Users' },
+          { label: 'Buyer & Seller Directory', href: '/contacts', iconName: 'Users' },
           { label: 'Sales & Escrow Pipeline', href: '/deals', iconName: 'Briefcase' },
           { label: 'Property Showings & Tasks', href: '/projects', iconName: 'ClipboardList' },
         ],
@@ -258,7 +258,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         items: [
           { label: 'Table Floor Plan & Host Desk', href: '/industry/restaurant', iconName: 'UtensilsCrossed', badge: 'Live' },
           { label: 'Kitchen Orders Queue (KOT)', href: '/projects', iconName: 'ClipboardList' },
-          { label: 'VIP Guests & Regulars', href: '/', iconName: 'Users' },
+          { label: 'VIP Guests & Regulars', href: '/contacts', iconName: 'Users' },
           { label: 'Guest Feedback & Support', href: '/tickets', iconName: 'Ticket' },
         ],
       },
@@ -304,7 +304,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         sectionTitle: 'Point of Sale & Shop Counter',
         items: [
           { label: 'Cashier POS & Register', href: '/industry/retail', iconName: 'ShoppingBag', badge: 'POS' },
-          { label: 'Customer Khata Credit Book', href: '/', iconName: 'Users' },
+          { label: 'Customer Khata Credit Book', href: '/contacts', iconName: 'Users' },
           { label: 'Retail Sales Ledger', href: '/invoices', iconName: 'Receipt' },
           { label: 'Product Stock & Barcodes', href: '/price-books', iconName: 'Layers' },
         ],
@@ -351,7 +351,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         sectionTitle: 'Revenue & Sales CRM',
         items: [
           { label: 'Executive Revenue Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
-          { label: 'Accounts & Key Contacts', href: '/', iconName: 'Users' },
+          { label: 'Accounts & Key Contacts', href: '/contacts', iconName: 'Users' },
           { label: 'Multi-Stage Deals Pipeline', href: '/deals', iconName: 'Briefcase' },
           { label: 'Sprint Projects & Tasks', href: '/projects', iconName: 'ClipboardList' },
         ],
@@ -398,7 +398,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
       {
         sectionTitle: 'Client Operations',
         items: [
-          { label: 'Client Accounts & Stakeholders', href: '/', iconName: 'Users' },
+          { label: 'Client Accounts & Stakeholders', href: '/contacts', iconName: 'Users' },
           { label: 'Pitch & Retainer Proposals', href: '/deals', iconName: 'Briefcase' },
           { label: 'Client Sprints & Deliverables', href: '/projects', iconName: 'ClipboardList' },
           { label: 'Client Requests & Revisions', href: '/tickets', iconName: 'Ticket' },
@@ -447,7 +447,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         sectionTitle: 'My Selected Features',
         items: [
           { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
-          { label: 'Contacts & Accounts', href: '/', iconName: 'Users' },
+          { label: 'Contacts & Accounts', href: '/contacts', iconName: 'Users' },
           { label: 'AI OCR Invoice Maker', href: '/ocr-invoice', iconName: 'Scan' },
           { label: 'Lead Prospector', href: '/lead-prospector', iconName: 'Database' },
           { label: 'Social Media Studio', href: '/social', iconName: 'Share2' },

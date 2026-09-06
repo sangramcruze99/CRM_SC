@@ -32,11 +32,11 @@ export default function AutomationLayout({ children }: { children: React.ReactNo
 
   // When inside visual workflow studio canvas, render full-screen workspace without duplicate marketing header
   if (isWorkflowCanvas) {
-    return <div className="h-full w-full bg-slate-950 text-slate-100 overflow-hidden flex flex-col">{children}</div>;
+    return <div className="h-full w-full bg-slate-950 text-slate-100 overflow-hidden flex flex-col flex-1 min-h-0">{children}</div>;
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-slate-950 text-slate-100 overflow-hidden">
+    <div className="flex flex-col h-full w-full bg-slate-950 text-slate-100 overflow-hidden flex-1 min-h-0">
       {/* Top Header: Cleanly anchored, not floating or collapsing */}
       <header className="border-b border-white/10 bg-slate-900/95 backdrop-blur-xl shrink-0 px-6 py-3 shadow-md z-20">
         <div className="flex items-center justify-between">
@@ -91,7 +91,7 @@ export default function AutomationLayout({ children }: { children: React.ReactNo
       </header>
 
       {/* Main Body Content: Dedicated single scrollable viewport */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden">{children}</main>
+      <main className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">{children}</main>
     </div>
   );
 }

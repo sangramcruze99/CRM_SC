@@ -72,8 +72,14 @@ export default function ObservabilityDashboardPage() {
         fetch('/api/automation/workflows/events/history'),
         fetch('/api/automation/workflows/events/dead-letter'),
       ]);
-      if (resHistory.ok) setEvents(await resHistory.json());
-      if (resDlq.ok) setDeadLetters(await resDlq.json());
+      if (resHistory.ok) {
+        const data = await resHistory.json();
+        setEvents(Array.isArray(data) ? data : []);
+      }
+      if (resDlq.ok) {
+        const data = await resDlq.json();
+        setDeadLetters(Array.isArray(data) ? data : []);
+      }
     } catch (err) {
       console.error('Failed to load telemetry', err);
     } finally {
@@ -184,7 +190,7 @@ export default function ObservabilityDashboardPage() {
             <Radio size={16} className="text-emerald-400 animate-pulse" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{events.length}</span>
+            <span className="text-3xl font-black text-white">{Array.isArray(events) ? events.length : 0}</span>
             <span className="text-xs text-slate-400 font-semibold">Events Processed</span>
           </div>
           <p className="text-[11px] text-emerald-400 font-medium mt-1">SHA-256 Idempotency Active</p>
@@ -193,11 +199,11 @@ export default function ObservabilityDashboardPage() {
         <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5">
           <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
             <span>Dead-Letter Queue</span>
-            <RotateCcw size={16} className={deadLetters.length > 0 ? 'text-rose-400' : 'text-slate-500'} />
+            <RotateCcw size={16} className={Array.isArray(deadLetters) && deadLetters.length > 0 ? 'text-rose-400' : 'text-slate-500'} />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className={`text-3xl font-black ${deadLetters.length > 0 ? 'text-rose-400' : 'text-white'}`}>
-              {deadLetters.length}
+            <span className={`text-3xl font-black ${Array.isArray(deadLetters) && deadLetters.length > 0 ? 'text-rose-400' : 'text-white'}`}>
+              {Array.isArray(deadLetters) ? deadLetters.length : 0}
             </span>
             <span className="text-xs text-slate-400 font-semibold">Failed Dispatches</span>
           </div>
@@ -230,7 +236,7 @@ export default function ObservabilityDashboardPage() {
       </div>
 
       {/* Dead-Letter Queue Management (If any exist) */}
-      {deadLetters.length > 0 && (
+      {Array.isArray(deadLetters) && deadLetters.length > 0 && (
         <div className="bg-rose-950/20 border border-rose-500/30 rounded-3xl p-6 backdrop-blur-xl">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2 text-rose-400">
@@ -330,7 +336,7 @@ export default function ObservabilityDashboardPage() {
             </div>
 
             <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-              {events.map((evt) => (
+              {Array.isArray(events) && events.map((evt) => (
                 <div
                   key={evt.id}
                   className="p-3.5 bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.06] rounded-2xl transition-all"
@@ -354,7 +360,7 @@ export default function ObservabilityDashboardPage() {
                 </div>
               ))}
 
-              {events.length === 0 && (
+              {(!Array.isArray(events) || events.length === 0) && (
                 <div className="py-12 text-center text-slate-500 text-xs">
                   <Radio size={24} className="mx-auto mb-2 text-slate-600 animate-pulse" />
                   <p>Event Bus is idle and listening for business triggers.</p>

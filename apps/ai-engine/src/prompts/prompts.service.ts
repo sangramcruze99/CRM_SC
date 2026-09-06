@@ -129,10 +129,47 @@ Guidelines:
       };
     };
 
-    // Determine engine order:
-    // If user explicitly chose OpenRouter or requested gpt-4o / claude, use OpenRouter first.
-    // Otherwise, prioritize Groq for sub-second, real-time responses!
+    // Determine engine preference
     const wantsOpenRouter = provider === 'openrouter' || model?.includes('gpt-4') || model?.includes('claude');
+
+    // 2. Primary Execution: Route through Python AI Service (:3030)
+    const pythonAiUrl = process.env.PYTHON_AI_URL || 'http://localhost:3030';
+    const pythonAiKey = process.env.PYTHON_AI_API_KEY || 'business-os-internal-ai-key-secret';
+
+    try {
+      const pyResponse = await fetch(`${pythonAiUrl}/v1/inference/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Tenant-ID': tenantId,
+          'X-Service-Key': pythonAiKey,
+        },
+        body: JSON.stringify({
+          model: model || (wantsOpenRouter ? 'openrouter/openai/gpt-4o' : 'groq/compound'),
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: query },
+          ],
+          tenant_id: tenantId,
+          temperature: 0.7,
+        }),
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (pyResponse.ok) {
+        const pyData = await pyResponse.json();
+        return {
+          reply: pyData.content || '',
+          model: pyData.model || model || 'python-ai-routed',
+          provider: 'python-ai',
+          usage: pyData.usage,
+          latencyMs: Date.now() - startTime,
+          context: { contactCount, dealCount, ticketCount },
+        };
+      }
+    } catch {
+      // Graceful fallback to direct cloud providers if Python AI is unavailable
+    }
 
     if (!wantsOpenRouter && groqKey) {
       try {

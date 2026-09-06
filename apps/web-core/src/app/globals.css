@@ -15,6 +15,37 @@
   --muted-foreground: #475569;
   --border: rgba(0, 0, 0, 0.1);
   --ring: #10b981;
+  --accent-glow: rgba(16, 185, 129, 0.45);
+  --accent-hover: #059669;
+
+  --palette-50: #ecfdf5;
+  --palette-100: #d1fae5;
+  --palette-200: #a7f3d0;
+  --palette-300: #6ee7b7;
+  --palette-400: #34d399;
+  --palette-500: #10b981;
+  --palette-600: #059669;
+  --palette-700: #047857;
+  --palette-800: #065f46;
+  --palette-900: #064e3b;
+  --palette-950: #022c22;
+
+  --color-emerald-50: var(--palette-50);
+  --color-emerald-100: var(--palette-100);
+  --color-emerald-200: var(--palette-200);
+  --color-emerald-300: var(--palette-300);
+  --color-emerald-400: var(--palette-400);
+  --color-emerald-500: var(--palette-500);
+  --color-emerald-600: var(--palette-600);
+  --color-emerald-700: var(--palette-700);
+  --color-emerald-800: var(--palette-800);
+  --color-emerald-900: var(--palette-900);
+  --color-emerald-950: var(--palette-950);
+
+  --color-teal-300: var(--palette-300);
+  --color-teal-400: var(--palette-400);
+  --color-teal-500: var(--palette-500);
+  --color-teal-600: var(--palette-600);
 }
 
 .dark,
@@ -32,6 +63,37 @@ html.dark {
   --muted-foreground: #cbd5e1;
   --border: rgba(255, 255, 255, 0.12);
   --ring: #10b981;
+  --accent-glow: rgba(16, 185, 129, 0.55);
+  --accent-hover: #059669;
+
+  --palette-50: #ecfdf5;
+  --palette-100: #d1fae5;
+  --palette-200: #a7f3d0;
+  --palette-300: #6ee7b7;
+  --palette-400: #34d399;
+  --palette-500: #10b981;
+  --palette-600: #059669;
+  --palette-700: #047857;
+  --palette-800: #065f46;
+  --palette-900: #064e3b;
+  --palette-950: #022c22;
+
+  --color-emerald-50: var(--palette-50);
+  --color-emerald-100: var(--palette-100);
+  --color-emerald-200: var(--palette-200);
+  --color-emerald-300: var(--palette-300);
+  --color-emerald-400: var(--palette-400);
+  --color-emerald-500: var(--palette-500);
+  --color-emerald-600: var(--palette-600);
+  --color-emerald-700: var(--palette-700);
+  --color-emerald-800: var(--palette-800);
+  --color-emerald-900: var(--palette-900);
+  --color-emerald-950: var(--palette-950);
+
+  --color-teal-300: var(--palette-300);
+  --color-teal-400: var(--palette-400);
+  --color-teal-500: var(--palette-500);
+  --color-teal-600: var(--palette-600);
 }
 
 @theme inline {
@@ -39,6 +101,23 @@ html.dark {
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-emerald-50: var(--palette-50);
+  --color-emerald-100: var(--palette-100);
+  --color-emerald-200: var(--palette-200);
+  --color-emerald-300: var(--palette-300);
+  --color-emerald-400: var(--palette-400);
+  --color-emerald-500: var(--palette-500);
+  --color-emerald-600: var(--palette-600);
+  --color-emerald-700: var(--palette-700);
+  --color-emerald-800: var(--palette-800);
+  --color-emerald-900: var(--palette-900);
+  --color-emerald-950: var(--palette-950);
+
+  --color-teal-300: var(--palette-300);
+  --color-teal-400: var(--palette-400);
+  --color-teal-500: var(--palette-500);
+  --color-teal-600: var(--palette-600);
 }
 
 /* ========================================================================= */
@@ -112,12 +191,12 @@ body {
 .luxe-box-hover:hover,
 .botanical-glass-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(52, 211, 153, 0.45) !important;
+  border-color: var(--color-emerald-400, rgba(52, 211, 153, 0.45)) !important;
   box-shadow: 
     0 22px 50px -10px rgba(0, 0, 0, 0.7),
-    0 0 26px -2px rgba(16, 185, 129, 0.22),
+    0 0 26px -2px var(--accent-glow, rgba(16, 185, 129, 0.22)),
     inset 0 1px 1px 0 rgba(255, 255, 255, 0.28),
-    inset 0 0 16px 0 rgba(16, 185, 129, 0.06) !important;
+    inset 0 0 16px 0 var(--accent-glow, rgba(16, 185, 129, 0.06)) !important;
 }
 
 /* Hover boost on top specular gleam */
@@ -126,7 +205,7 @@ body {
 .luxe-box:hover::before,
 .botanical-glass-card:hover::before {
   opacity: 1;
-  background: linear-gradient(90deg, transparent 0%, rgba(52, 211, 153, 0.7) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, var(--color-emerald-400, rgba(52, 211, 153, 0.7)) 50%, transparent 100%);
 }
 
 /* 2. Interactive Input Fields, Textareas & Selects Hover Animation */
@@ -142,15 +221,15 @@ select {
 input:hover,
 textarea:hover,
 select:hover {
-  border-color: rgba(52, 211, 153, 0.5) !important;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  border-color: var(--color-emerald-400, rgba(52, 211, 153, 0.5)) !important;
+  box-shadow: 0 0 12px var(--accent-glow, rgba(16, 185, 129, 0.18)), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 input:focus,
 textarea:focus,
 select:focus {
-  border-color: #10b981 !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25), 0 0 20px rgba(16, 185, 129, 0.2) !important;
+  border-color: var(--color-emerald-500, #10b981) !important;
+  box-shadow: 0 0 0 3px var(--accent-glow, rgba(16, 185, 129, 0.25)), 0 0 20px var(--accent-glow, rgba(16, 185, 129, 0.2)) !important;
 }
 
 /* 3. Table Row Hover Animation */

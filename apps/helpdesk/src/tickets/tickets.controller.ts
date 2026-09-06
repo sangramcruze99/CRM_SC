@@ -30,14 +30,20 @@ export class TicketsController {
 
   @Patch(':id/status')
   async updateStatus(
+    @Headers('x-tenant-id') tenantId: string,
     @Param('id') id: string,
     @Body() data: { status: string }
   ) {
-    return this.ticketsService.updateStatus(id, data.status);
+    const effectiveTenantId = tenantId || 'default-tenant';
+    return this.ticketsService.updateStatus(effectiveTenantId, id, data.status);
   }
 
   @Delete(':id')
-  async deleteTicket(@Param('id') id: string) {
-    return this.ticketsService.delete(id);
+  async deleteTicket(
+    @Headers('x-tenant-id') tenantId: string,
+    @Param('id') id: string
+  ) {
+    const effectiveTenantId = tenantId || 'default-tenant';
+    return this.ticketsService.delete(effectiveTenantId, id);
   }
 }

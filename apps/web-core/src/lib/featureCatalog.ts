@@ -41,7 +41,7 @@ export const ALL_67_FEATURES: FeatureItem[] = [
     category: 1,
     categoryName: 'Core CRM & Operations',
     iconName: 'Users',
-    route: '/',
+    route: '/contacts',
     defaultInNiches: ['all', 'hospital', 'realestate', 'restaurant', 'retail', 'sme', 'agency'],
   },
   {
@@ -134,7 +134,7 @@ export const ALL_67_FEATURES: FeatureItem[] = [
     category: 2,
     categoryName: 'AI & Neural Autonomy',
     iconName: 'Sparkles',
-    route: '/',
+    route: '/contacts',
     defaultInNiches: ['all', 'sme', 'agency'],
   },
   {

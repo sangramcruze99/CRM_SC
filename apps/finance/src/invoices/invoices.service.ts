@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { publishInvoiceOverdue } from '@repo/core-types';
 
 @Injectable()
 export class InvoicesService {
-  constructor(private prisma: PrismaService) {}
-
+  private readonly logger = new Logger(InvoicesService.name);
   private static inMemoryInvoices: any[] = [];
+
+  constructor(private prisma: PrismaService) {}
 
   async findAll(tenantId: string) {
     if (this.prisma.isConnected) {
@@ -20,7 +22,7 @@ export class InvoicesService {
         // fallback
       }
     }
-    return InvoicesService.inMemoryInvoices.filter(i => i.tenantId === tenantId || i.tenantId === 'default-tenant');
+    return InvoicesService.inMemoryInvoices.filter(i => i.tenantId === tenantId);
   }
 
   async findOne(id: string, tenantId: string) {
@@ -35,16 +37,17 @@ export class InvoicesService {
         // fallback
       }
     }
-    return InvoicesService.inMemoryInvoices.find(i => i.id === id) || null;
+    return InvoicesService.inMemoryInvoices.find(i => i.id === id && i.tenantId === tenantId) || null;
   }
 
   async create(tenantId: string, data: { amount: number, status?: string, dueDate?: Date, lineItems?: any[] }) {
+    let created: any = null;
     if (this.prisma.isConnected) {
       try {
-        return await this.prisma.invoice.create({
+        created = await this.prisma.invoice.create({
           data: {
             tenantId,
-            invoiceNum: `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            invoiceNum: `INV-${Date.now().toString().slice(-4)}`,
             amount: data.amount,
             status: data.status || 'DRAFT',
             dueDate: data.dueDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
@@ -59,24 +62,33 @@ export class InvoicesService {
       }
     }
 
-    const newInv = {
-      id: `inv_${Date.now()}`,
-      tenantId,
-      invoiceNum: `INV-${Date.now()}`,
-      amount: data.amount,
-      status: data.status || 'DRAFT',
-      dueDate: data.dueDate || new Date(Date.now() + 30 * 86400000),
-      createdAt: new Date(),
-      lineItems: data.lineItems || []
-    };
-    InvoicesService.inMemoryInvoices.unshift(newInv);
-    return newInv;
+    if (!created) {
+      created = {
+        id: `inv_${Date.now()}`,
+        tenantId,
+        invoiceNum: `INV-${Date.now()}`,
+        amount: data.amount,
+        status: data.status || 'DRAFT',
+        dueDate: data.dueDate || new Date(Date.now() + 30 * 86400000),
+        createdAt: new Date(),
+        lineItems: data.lineItems || []
+      };
+      InvoicesService.inMemoryInvoices.unshift(created);
+    }
+
+    return created;
   }
 
   async update(id: string, tenantId: string, data: any) {
+    let updated: any = null;
     if (this.prisma.isConnected) {
       try {
-        return await this.prisma.invoice.update({
+        const existing = await this.prisma.invoice.findFirst({
+          where: { id, tenantId }
+        });
+        if (!existing) return null;
+
+        updated = await this.prisma.invoice.update({
           where: { id },
           data,
           include: { lineItems: true }
@@ -86,13 +98,26 @@ export class InvoicesService {
       }
     }
 
-    const idx = InvoicesService.inMemoryInvoices.findIndex(i => i.id === id);
-    if (idx !== -1) {
-      InvoicesService.inMemoryInvoices[idx] = { ...InvoicesService.inMemoryInvoices[idx], ...data };
-      return InvoicesService.inMemoryInvoices[idx];
+    if (!updated) {
+      const idx = InvoicesService.inMemoryInvoices.findIndex(i => i.id === id && i.tenantId === tenantId);
+      if (idx !== -1) {
+        InvoicesService.inMemoryInvoices[idx] = { ...InvoicesService.inMemoryInvoices[idx], ...data };
+        updated = InvoicesService.inMemoryInvoices[idx];
+      }
     }
-    return null;
+
+    if (updated && (data.status === 'OVERDUE' || updated.status === 'OVERDUE')) {
+      publishInvoiceOverdue(tenantId, {
+        id: updated.id,
+        invoiceNum: updated.invoiceNum || `INV-${updated.id}`,
+        amount: Number(updated.amount || 0),
+        dueDate: updated.dueDate || new Date(),
+      }).catch((e) => this.logger.warn(`Failed to publish INVOICE_OVERDUE: ${e.message}`));
+    }
+
+    return updated;
   }
+
 
   async delete(id: string, tenantId: string) {
     if (this.prisma.isConnected) {
@@ -105,7 +130,7 @@ export class InvoicesService {
       }
     }
 
-    InvoicesService.inMemoryInvoices = InvoicesService.inMemoryInvoices.filter(i => i.id !== id);
+    InvoicesService.inMemoryInvoices = InvoicesService.inMemoryInvoices.filter(i => !(i.id === id && i.tenantId === tenantId));
     return { count: 1 };
   }
 

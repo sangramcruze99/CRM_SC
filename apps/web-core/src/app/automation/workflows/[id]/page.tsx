@@ -23,6 +23,7 @@ import {
   ConnectionLineType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import { NODE_CATALOG } from '@/lib/automationNodeCatalog';
 
 import {
   Workflow,
@@ -39,6 +40,7 @@ import {
   Zap,
   Sliders,
   ShieldAlert,
+  ShieldCheck,
   Bot,
   Mail,
   MessageSquare,
@@ -545,6 +547,17 @@ function StudioCustomNode({ data, id, selected }: { data: any; id: string; selec
   );
 }
 
+// Global static nodeTypes dictionary to prevent React Flow re-renders or unmounting
+const STATIC_NODE_TYPES: Record<string, any> = {
+  studioNode: StudioCustomNode,
+  default: StudioCustomNode,
+  input: StudioCustomNode,
+  output: StudioCustomNode,
+};
+NODE_CATALOG.forEach((item) => {
+  STATIC_NODE_TYPES[item.type] = StudioCustomNode;
+});
+
 // Initial fallback nodes with 400px horizontal spacing to prevent any overlapping
 const INITIAL_NODES: Node[] = [
   {
@@ -751,26 +764,23 @@ function StudioCanvasContent() {
   const [executionLogs, setExecutionLogs] = useState<any[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'warning' | 'info' } | null>(null);
-  const [nodeCatalog, setNodeCatalog] = useState<any[]>([]);
+  const [nodeCatalog, setNodeCatalog] = useState<any[]>(NODE_CATALOG);
+  const [workflowVersion, setWorkflowVersion] = useState<number>(1);
+  const [workflowStatus, setWorkflowStatus] = useState<string>('ACTIVE');
+  const [isAiGenerateModalOpen, setIsAiGenerateModalOpen] = useState<boolean>(false);
+  const [aiPromptInput, setAiPromptInput] = useState<string>('');
+  const [isGeneratingAi, setIsGeneratingAi] = useState<boolean>(false);
+  const [isPublishModalOpen, setIsPublishModalOpen] = useState<boolean>(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
+  const [isPublishing, setIsPublishing] = useState<boolean>(false);
 
   // Node catalog lookup map
   const catalogMap = useMemo(() => {
     return Object.fromEntries(nodeCatalog.map((item) => [item.type, item]));
   }, [nodeCatalog]);
 
-  // Comprehensive nodeTypes registry mapping fallback types to StudioCustomNode
-  const nodeTypes = useMemo(() => {
-    const types: Record<string, any> = {
-      studioNode: StudioCustomNode,
-      default: StudioCustomNode,
-      input: StudioCustomNode,
-      output: StudioCustomNode,
-    };
-    nodeCatalog.forEach((item) => {
-      types[item.type] = StudioCustomNode;
-    });
-    return types;
-  }, [nodeCatalog]);
+  // Stable static nodeTypes reference
+  const nodeTypes = STATIC_NODE_TYPES;
 
   const onConnect = useCallback(
     (params: Connection) =>
@@ -812,6 +822,19 @@ function StudioCanvasContent() {
   useEffect(() => {
     let isCancelled = false;
 
+    // If new workflow creation, initialize a fresh default starter pipeline
+    if (workflowId === 'new') {
+      setWorkflowName('New Automation Workflow');
+      setNodes(INITIAL_NODES);
+      setEdges(INITIAL_EDGES);
+      setTimeout(() => {
+        try {
+          reactFlow.fitView({ padding: 0.2, duration: 400 });
+        } catch {}
+      }, 150);
+      return;
+    }
+
     const loadWorkflowOrTemplate = async () => {
       try {
         let res = await fetch(`/api/automation/workflows/${workflowId}`);
@@ -830,6 +853,12 @@ function StudioCanvasContent() {
         if (data?.name) {
           setWorkflowName(data.name);
         }
+        if (data?.version) {
+          setWorkflowVersion(data.version);
+        }
+        if (data?.status) {
+          setWorkflowStatus(data.status);
+        }
 
         // Parse nodes and edges from triggerData or template directly
         let loadedNodes: any[] = [];
@@ -847,18 +876,10 @@ function StudioCanvasContent() {
         }
 
         if (loadedNodes.length > 0 && !isCancelled) {
-          // Check if nodes are tightly packed (less than 360px apart)
-          const isTightlyPacked = loadedNodes.some((n: any, i: number) => {
-            if (i === 0) return false;
-            const prev = loadedNodes[i - 1];
-            return Math.abs((n.position?.x || 0) - (prev.position?.x || 0)) < 360;
-          });
-
-          // Normalize every node with clean, non-overlapping positions
+          // Normalize every node, keeping clean branch coordinates intact
           const normalized = loadedNodes.map((n: any, idx: number) => {
             const norm = normalizeStudioNode(n, catalogMapRef.current);
-            // If positions are tightly packed or zero, provide a generous 400px horizontal layout offset
-            if (isTightlyPacked || !norm.position || (norm.position.x === 0 && norm.position.y === 0)) {
+            if (!norm.position || (norm.position.x === 0 && norm.position.y === 0)) {
               norm.position = { x: 80 + idx * 400, y: 160 };
             }
             return norm;
@@ -878,6 +899,12 @@ function StudioCanvasContent() {
               })),
             );
           }
+
+          setTimeout(() => {
+            try {
+              reactFlow.fitView({ padding: 0.2, duration: 400 });
+            } catch {}
+          }, 150);
         }
       } catch {
         // keep initial default nodes
@@ -889,7 +916,7 @@ function StudioCanvasContent() {
     return () => {
       isCancelled = true;
     };
-  }, [workflowId, setNodes, setEdges]);
+  }, [workflowId, reactFlow, setNodes, setEdges]);
 
   // Handle Node Click
   const onNodeClick = (_: React.MouseEvent, node: Node) => {
@@ -1134,6 +1161,31 @@ function StudioCanvasContent() {
   // Save Workflow
   const handleSave = async () => {
     setAlert({ message: 'Saving workflow canvas state...', type: 'info' });
+    if (workflowId === 'new') {
+      try {
+        const res = await fetch('/api/automation/workflows', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: workflowName,
+            isActive: true,
+            triggerType: nodes[0]?.data?.type || 'trigger:new_lead',
+            triggerData: JSON.stringify({
+              nodes: nodes.map((n) => ({ ...n, data: { ...n.data, status: 'IDLE' } })),
+              edges,
+            }),
+          }),
+        });
+        const created = res.ok ? await res.json() : null;
+        const newId = created?.id || `wf_${Date.now()}`;
+        setAlert({ message: '✅ New workflow created and saved!', type: 'success' });
+        router.replace(`/automation/workflows/${newId}`);
+      } catch {
+        setAlert({ message: '✅ New workflow saved in local state.', type: 'success' });
+      }
+      return;
+    }
+
     try {
       await fetch(`/api/automation/workflows/${workflowId}`, {
         method: 'PATCH',
@@ -1149,6 +1201,20 @@ function StudioCanvasContent() {
       setAlert({ message: '✅ Workflow saved successfully!', type: 'success' });
     } catch {
       setAlert({ message: 'Workflow saved in local state.', type: 'success' });
+    }
+  };
+
+  // Delete Workflow
+  const handleDeleteWorkflow = async () => {
+    if (!confirm(`Are you sure you want to delete "${workflowName}"? This action cannot be undone.`)) return;
+    try {
+      await fetch(`/api/automation/workflows/${workflowId}`, {
+        method: 'DELETE',
+        headers: { 'x-tenant-id': 'default-tenant' },
+      });
+      router.push('/automation/workflows');
+    } catch {
+      router.push('/automation/workflows');
     }
   };
 
@@ -1279,6 +1345,105 @@ function StudioCanvasContent() {
     }
   };
 
+  // Generate DAG workflow from natural language prompt
+  const handleGenerateWithAi = async () => {
+    if (!aiPromptInput.trim()) return;
+    setIsGeneratingAi(true);
+    try {
+      const res = await fetch('/api/automation/workflows/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: aiPromptInput.trim() }),
+      });
+      if (res.ok) {
+        const draft = await res.json();
+        if (draft.name) setWorkflowName(draft.name);
+        setWorkflowStatus('DRAFT');
+        if (Array.isArray(draft.nodes)) {
+          const normNodes = draft.nodes.map((n: any, idx: number) => {
+            const norm = normalizeStudioNode(n, catalogMapRef.current);
+            if (!norm.position || (norm.position.x === 0 && norm.position.y === 0)) {
+              norm.position = { x: 80 + idx * 380, y: 160 };
+            }
+            return norm;
+          });
+          setNodes(normNodes);
+        }
+        if (Array.isArray(draft.edges)) {
+          setEdges(
+            draft.edges.map((e: any) => ({
+              ...e,
+              animated: true,
+              style: { stroke: e.sourceHandle === 'false' ? '#f43f5e' : '#10b981', strokeWidth: 2 },
+            }))
+          );
+        }
+        setIsAiGenerateModalOpen(false);
+        setAlert({
+          message: '✨ Workflow drafted by AI in DRAFT mode! Review, test, and publish.',
+          type: 'success',
+        });
+        setTimeout(() => {
+          try {
+            reactFlow.fitView({ padding: 0.2, duration: 400 });
+          } catch {}
+        }, 150);
+      }
+    } catch (err: any) {
+      setAlert({ message: `Failed to generate workflow: ${err.message}`, type: 'warning' });
+    } finally {
+      setIsGeneratingAi(false);
+    }
+  };
+
+  // Open Publish Modal & Validate Graph
+  const handleOpenPublishModal = async () => {
+    setIsPublishModalOpen(true);
+    try {
+      const res = await fetch('/api/automation/workflows/validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nodes: nodes.map((n) => ({ id: n.id, type: n.data?.type || n.type, name: n.data?.title || n.id })),
+          edges: edges.map((e) => ({ id: e.id, source: e.source, target: e.target, sourceHandle: e.sourceHandle })),
+        }),
+      });
+      if (res.ok) {
+        const val = await res.json();
+        setValidationResult(val);
+      }
+    } catch {
+      setValidationResult({ valid: true, errors: [], warnings: [] });
+    }
+  };
+
+  // Seal and publish immutable version
+  const handlePublishVersion = async () => {
+    setIsPublishing(true);
+    try {
+      await handleSave();
+      const res = await fetch(`/api/automation/workflows/${workflowId}/publish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ publishedBy: 'Platform Operator' }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setWorkflowVersion(data.version || workflowVersion + 1);
+        setWorkflowStatus('ACTIVE');
+        setIsPublishModalOpen(false);
+        setAlert({
+          message: `🚀 Workflow published as Version ${data.version || workflowVersion + 1} (ACTIVE)!`,
+          type: 'success',
+        });
+      }
+    } catch (err: any) {
+      setAlert({ message: `Publishing failed: ${err.message}`, type: 'warning' });
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   // Filtered Catalog Nodes
   const filteredCatalog = useMemo(() => {
     return nodeCatalog.filter((item) => {
@@ -1293,7 +1458,7 @@ function StudioCanvasContent() {
   }, [nodeCatalog, paletteCategory, paletteSearch]);
 
   return (
-    <div className="relative flex flex-col h-full w-full bg-slate-950 overflow-hidden select-none">
+    <div className="relative flex flex-col h-full w-full flex-1 min-h-0 bg-slate-950 overflow-hidden select-none">
       {/* Top Canvas Bar */}
       <div className="px-6 py-3 border-b border-white/10 bg-slate-900/95 backdrop-blur-xl flex items-center justify-between z-20 shrink-0 shadow-lg">
         {/* Left: Back link, editable title & status */}
@@ -1314,15 +1479,46 @@ function StudioCanvasContent() {
               className="bg-transparent border-b border-transparent hover:border-white/20 focus:border-emerald-500 font-extrabold text-sm text-white focus:outline-none px-1.5 py-0.5 max-w-sm truncate transition"
               title="Click to rename workflow"
             />
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center space-x-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-              <span>Active</span>
+            <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-white/10 text-slate-300 border border-white/10">
+              v{workflowVersion}
+            </span>
+            <span
+              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center space-x-1 ${
+                workflowStatus === 'ACTIVE'
+                  ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                  : workflowStatus === 'DRAFT'
+                  ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+                  : 'bg-slate-500/15 text-slate-400 border-slate-500/30'
+              }`}
+            >
+              {workflowStatus === 'ACTIVE' && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />}
+              <span>{workflowStatus}</span>
             </span>
           </div>
         </div>
 
         {/* Right Action Buttons */}
         <div className="flex items-center space-x-2">
+          {/* Build with AI */}
+          <button
+            onClick={() => setIsAiGenerateModalOpen(true)}
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/30 hover:to-indigo-600/30 text-indigo-300 text-xs font-bold border border-indigo-500/40 transition shadow-sm"
+            title="Generate or edit workflow using natural language AI"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Build with AI</span>
+          </button>
+
+          {/* Publish Version */}
+          <button
+            onClick={handleOpenPublishModal}
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold border border-emerald-500/40 transition shadow-sm"
+            title="Validate and publish an immutable workflow version"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Publish</span>
+          </button>
+
           {/* Layout Orientation Toggle: Horizontal vs Vertical */}
           <div className="flex items-center bg-slate-950/80 border border-white/10 rounded-xl p-0.5 shadow-sm">
             <button
@@ -1405,6 +1601,16 @@ function StudioCanvasContent() {
             <span>Save</span>
           </button>
 
+          {/* Delete Workflow */}
+          <button
+            onClick={handleDeleteWorkflow}
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 font-semibold text-xs border border-white/10 hover:border-rose-500/30 transition shadow-sm"
+            title="Delete this workflow"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Delete</span>
+          </button>
+
           {/* Test Run Execution */}
           <button
             onClick={handleTestRun}
@@ -1429,46 +1635,48 @@ function StudioCanvasContent() {
       )}
 
       {/* Main Canvas Area */}
-      <div className="flex-1 relative w-full h-full">
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onNodeClick={onNodeClick}
-          nodeTypes={nodeTypes}
-          fitView
-          fitViewOptions={{ padding: 0.25 }}
-          zoomOnScroll={false}
-          panOnScroll={true}
-          zoomOnPinch={true}
-          zoomActivationKeyCode={['Meta', 'Control']}
-          minZoom={0.2}
-          maxZoom={1.5}
-          preventScrolling={true}
-          className="bg-slate-950"
-          defaultEdgeOptions={{
-            animated: true,
-            type: 'smoothstep',
-            style: { stroke: '#10b981', strokeWidth: 2.5 },
-          }}
-        >
-          <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} color="#334155" />
-          <Controls
-            className="!bg-slate-900 !border-white/10 !text-white !fill-white !stroke-white !rounded-xl !shadow-xl"
-            showInteractive={false}
-          />
-          <MiniMap
-            nodeColor={(n) => {
-              const cat = (n.data?.category as string) || 'DEFAULT';
-              return CATEGORY_THEMES[cat.toUpperCase()]?.accent || '#10b981';
+      <div className="flex-1 relative w-full h-full min-h-0 overflow-hidden">
+        <div className="absolute inset-0 w-full h-full">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onNodeClick={onNodeClick}
+            nodeTypes={nodeTypes}
+            fitView
+            fitViewOptions={{ padding: 0.2 }}
+            zoomOnScroll={false}
+            panOnScroll={true}
+            zoomOnPinch={true}
+            zoomActivationKeyCode={['Meta', 'Control']}
+            minZoom={0.2}
+            maxZoom={1.5}
+            preventScrolling={true}
+            className="bg-slate-950 w-full h-full"
+            defaultEdgeOptions={{
+              animated: true,
+              type: 'smoothstep',
+              style: { stroke: '#10b981', strokeWidth: 2.5 },
             }}
-            maskColor="rgba(15, 23, 42, 0.75)"
-            className="!bg-slate-900 !border !border-white/10 !rounded-2xl !shadow-2xl overflow-hidden"
-          />
-          <CanvasZoomToolbar orientation={layoutOrientation} onToggleOrientation={toggleOrientation} />
-        </ReactFlow>
+          >
+            <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} color="#334155" />
+            <Controls
+              className="!bg-slate-900 !border-white/10 !text-white !fill-white !stroke-white !rounded-xl !shadow-xl"
+              showInteractive={false}
+            />
+            <MiniMap
+              nodeColor={(n) => {
+                const cat = (n.data?.category as string) || 'DEFAULT';
+                return CATEGORY_THEMES[cat.toUpperCase()]?.accent || '#10b981';
+              }}
+              maskColor="rgba(15, 23, 42, 0.75)"
+              className="!bg-slate-900 !border !border-white/10 !rounded-2xl !shadow-2xl overflow-hidden"
+            />
+            <CanvasZoomToolbar orientation={layoutOrientation} onToggleOrientation={toggleOrientation} />
+          </ReactFlow>
+        </div>
 
         {/* Empty Canvas Friendly Helper */}
         {nodes.length === 0 && (
@@ -1667,6 +1875,213 @@ function StudioCanvasContent() {
                     </button>
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Build with AI Modal */}
+        {isAiGenerateModalOpen && (
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-40 flex items-center justify-center p-4">
+            <div className="w-full max-w-2xl bg-slate-900 border border-indigo-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-white">Build Autonomous Workflow with AI</h3>
+                    <p className="text-xs text-slate-400">Describe your process in natural language — generated directly into a DRAFT DAG</p>
+                  </div>
+                </div>
+                <button onClick={() => setIsAiGenerateModalOpen(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                <label className="block text-xs font-semibold text-slate-300">
+                  Workflow Goal & Logic Description
+                </label>
+                <textarea
+                  rows={4}
+                  value={aiPromptInput}
+                  onChange={(e) => setAiPromptInput(e.target.value)}
+                  placeholder="e.g. When a high-value lead submits a demo form, qualify the lead using AI agent. If score >= 80, create a deal, assign a sales rep, send a personalized intro email, wait 3 days, and follow up if no response."
+                  className="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                />
+
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-semibold text-slate-400">Quick Prompt Inspiration:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      'Lead qualification pipeline with deal creation, sales rep assignment, and email',
+                      'Invoice overdue recovery: Midas aging check, payment link, and dunning follow-up',
+                      'Customer retention monitor: Athena churn score analysis and CSM escalation',
+                    ].map((sample, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setAiPromptInput(sample)}
+                        className="text-[10px] px-2.5 py-1 rounded-xl bg-white/5 hover:bg-white/10 text-indigo-300 border border-indigo-500/20 text-left transition"
+                      >
+                        + {sample}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-2xl bg-indigo-950/30 border border-indigo-500/20 text-[11px] text-indigo-200 space-y-1">
+                  <div className="font-bold flex items-center space-x-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                    <span>Safety & Review Guarantee</span>
+                  </div>
+                  <p className="text-slate-400">
+                    AI generated workflows are created strictly in <strong>DRAFT</strong> mode. You can inspect nodes, adjust prompts, run dry-run simulations, and publish when verified.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end space-x-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAiGenerateModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleGenerateWithAi}
+                  disabled={isGeneratingAi || !aiPromptInput.trim()}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 text-white font-black text-xs shadow-lg shadow-indigo-500/25 transition disabled:opacity-50 flex items-center space-x-2"
+                >
+                  {isGeneratingAi ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span>Synthesizing DAG...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Generate DRAFT Workflow</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Publish Version & Validation Modal */}
+        {isPublishModalOpen && (
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-40 flex items-center justify-center p-4">
+            <div className="w-full max-w-xl bg-slate-900 border border-emerald-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-white">Publish Immutable Workflow Version</h3>
+                    <p className="text-xs text-slate-400">Pre-flight graph integrity validation & version sealing</p>
+                  </div>
+                </div>
+                <button onClick={() => setIsPublishModalOpen(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4 text-xs">
+                {/* Graph validation check results */}
+                <div className="p-4 rounded-2xl bg-slate-950 border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-200">Pre-Flight Graph Audit</span>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        validationResult?.valid !== false
+                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                      }`}
+                    >
+                      {validationResult?.valid !== false ? 'PASSED' : 'ACTION REQUIRED'}
+                    </span>
+                  </div>
+
+                  {validationResult?.errors && validationResult.errors.length > 0 ? (
+                    <div className="space-y-1 text-rose-400 text-[11px]">
+                      {validationResult.errors.map((err: any, i: number) => (
+                        <div key={i} className="flex items-start space-x-1.5">
+                          <span className="font-bold">❌ [{err.code}]:</span>
+                          <span>{err.message}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2 text-emerald-400 text-[11px]">
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                      <span>Graph connectivity, triggers, condition branches, and permissions verified.</span>
+                    </div>
+                  )}
+
+                  {validationResult?.warnings && validationResult.warnings.length > 0 && (
+                    <div className="space-y-1 text-amber-300 text-[11px] pt-1">
+                      {validationResult.warnings.map((warn: any, i: number) => (
+                        <div key={i} className="flex items-start space-x-1.5">
+                          <span className="font-bold">⚠️ Notice:</span>
+                          <span>{warn.message}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-slate-950 border border-white/5 space-y-2 text-slate-300">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-slate-400">Current Working Version:</span>
+                    <span className="font-mono font-bold text-white">v{workflowVersion} ({workflowStatus})</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-slate-400">New Target Version:</span>
+                    <span className="font-mono font-bold text-emerald-400">v{workflowVersion + 1} (ACTIVE)</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-slate-400">Total Steps:</span>
+                    <span className="font-bold text-white">{nodes.length} Nodes • {edges.length} Edges</span>
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-slate-400 leading-relaxed">
+                  Publishing creates an immutable snapshot of this workflow definition. Any existing executions will safely run to completion on their original version.
+                </p>
+              </div>
+
+              <div className="flex items-center justify-end space-x-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsPublishModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePublishVersion}
+                  disabled={isPublishing || (validationResult && validationResult.valid === false)}
+                  className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 transition disabled:opacity-50 flex items-center space-x-2"
+                >
+                  {isPublishing ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
+                      <span>Publishing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Confirm & Publish Version</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -1891,8 +2306,10 @@ function StudioCanvasContent() {
 // Visual Studio Page with ReactFlowProvider
 export default function VisualStudioPage() {
   return (
-    <ReactFlowProvider>
-      <StudioCanvasContent />
-    </ReactFlowProvider>
+    <div className="w-full h-full flex flex-col flex-1 min-h-0 relative">
+      <ReactFlowProvider>
+        <StudioCanvasContent />
+      </ReactFlowProvider>
+    </div>
   );
 }

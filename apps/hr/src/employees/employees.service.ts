@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { publishCandidateApplied, publishBusinessEvent } from '@repo/core-types';
 
 @Injectable()
 export class EmployeesService {
+  private readonly logger = new Logger(EmployeesService.name);
   constructor(private prisma: PrismaService) {}
 
   private static inMemoryEmployees: any[] = [];
@@ -26,13 +28,14 @@ export class EmployeesService {
         // fallback
       }
     }
-    return EmployeesService.inMemoryEmployees.filter(e => e.tenantId === tenantId || e.tenantId === 'default-tenant');
+    return EmployeesService.inMemoryEmployees.filter(e => e.tenantId === tenantId);
   }
 
   async createEmployee(tenantId: string, data: { firstName: string, lastName: string, email: string, jobTitle?: string, departmentId?: string }) {
+    let emp: any = null;
     if (this.prisma.isConnected) {
       try {
-        return await this.prisma.employee.create({
+        emp = await this.prisma.employee.create({
           data: {
             tenantId,
             firstName: data.firstName,
@@ -47,19 +50,43 @@ export class EmployeesService {
       }
     }
 
-    const newEmp = {
-      id: `emp_${Date.now()}`,
+    if (!emp) {
+      emp = {
+        id: `emp_${Date.now()}`,
+        tenantId,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        jobTitle: data.jobTitle || 'Team Member',
+        department: { name: 'General' },
+        leaveRequests: []
+      };
+      EmployeesService.inMemoryEmployees.unshift(emp);
+    }
+
+    publishBusinessEvent({
       tenantId,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      jobTitle: data.jobTitle || 'Team Member',
-      department: { name: 'General' },
-      leaveRequests: []
-    };
-    EmployeesService.inMemoryEmployees.unshift(newEmp);
-    return newEmp;
+      type: 'EMPLOYEE_CREATED',
+      source: 'hr',
+      payload: { employeeId: emp.id, name: `${emp.firstName} ${emp.lastName}`, email: emp.email },
+    }).catch(() => null);
+
+    return emp;
   }
+
+  async submitCandidateApplication(tenantId: string, data: { name: string; email: string; roleApplied: string; resumeUrl?: string }) {
+    const candidateId = `cand_${Date.now()}`;
+    await publishCandidateApplied(tenantId, {
+      id: candidateId,
+      name: data.name,
+      email: data.email,
+      roleApplied: data.roleApplied,
+      resumeUrl: data.resumeUrl,
+    }).catch((e) => this.logger.warn(`Failed to publish CANDIDATE_APPLIED: ${e.message}`));
+
+    return { candidateId, status: 'APPLICATION_RECEIVED', role: data.roleApplied };
+  }
+
 
   async findLeaveRequests(tenantId: string) {
     if (this.prisma.isConnected) {
@@ -99,9 +126,14 @@ export class EmployeesService {
     return { id: `leave_${Date.now()}`, tenantId, ...data, status: 'PENDING' };
   }
 
-  async updateLeaveStatus(id: string, status: string) {
+  async updateLeaveStatus(tenantId: string, id: string, status: string) {
     if (this.prisma.isConnected) {
       try {
+        const existing = await this.prisma.leaveRequest.findFirst({
+          where: { id, tenantId }
+        });
+        if (!existing) return null;
+
         return await this.prisma.leaveRequest.update({
           where: { id },
           data: { status }

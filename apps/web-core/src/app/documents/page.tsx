@@ -38,6 +38,7 @@ export default async function DocumentsPage({
 
   return (
     <DocumentsClient 
+      key={folderId}
       initialFolders={initialFolders}
       initialDocuments={initialDocuments}
       currentFolder={currentFolder}

@@ -36,7 +36,15 @@ export class UsersService implements OnModuleInit {
   async create(data: any) {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = data.password ? await bcrypt.hash(data.password, salt) : undefined;
-    const tenantId = data.tenantId || 'default-tenant';
+    
+    // Prevent tenant hijacking: Create dedicated isolated tenant if none or default requested
+    const isNewTenant = !data.tenantId || data.tenantId === 'default-tenant';
+    const tenantId = isNewTenant 
+      ? `tnt_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`
+      : data.tenantId;
+
+    // Prevent privilege escalation: Never allow self-registration as SUPERADMIN
+    const assignedRole = data.role === 'SUPERADMIN' ? 'USER' : (data.role || 'USER');
 
     const newUser = {
       id: `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -44,7 +52,7 @@ export class UsersService implements OnModuleInit {
       passwordHash,
       name: data.name || 'User',
       tenantId,
-      role: data.role || 'ADMIN',
+      role: assignedRole,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -54,7 +62,7 @@ export class UsersService implements OnModuleInit {
       await this.prisma.tenant.upsert({
         where: { id: tenantId },
         update: {},
-        create: { id: tenantId, name: 'Default Tenant' },
+        create: { id: tenantId, name: data.organizationName || `${data.name || 'User'}'s Workspace` },
       });
 
       return await this.prisma.user.create({
@@ -63,7 +71,7 @@ export class UsersService implements OnModuleInit {
           passwordHash,
           name: data.name,
           tenantId,
-          role: data.role || 'ADMIN',
+          role: assignedRole,
         },
       });
     } catch (err: any) {

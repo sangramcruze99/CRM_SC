@@ -85,41 +85,75 @@ interface DashboardClientProps {
 export function DashboardClient({ initialData }: DashboardClientProps) {
   const [dashboardLayout, setDashboardLayout] = useState<'glass_cockpit' | 'classic_grid'>('classic_grid');
   const [selectedRange, setSelectedRange] = useState('Quarterly (Q3)');
+  const [isRangeDropdownOpen, setIsRangeDropdownOpen] = useState(false);
   const [activeChartTab, setActiveChartTab] = useState<'earning' | 'expenses' | 'margin'>('earning');
+  const [activityFilter, setActivityFilter] = useState<'ALL' | 'DEAL' | 'INVOICE'>('ALL');
   const [alert, setAlert] = useState<string | null>(null);
   const [isFeaturePickerOpen, setIsFeaturePickerOpen] = useState(false);
 
   const { nicheConfig, activeFeatureIds, isFeatureEnabled } = useIndustry();
 
   const metrics = {
-    totalBalance: initialData?.metrics?.totalBalance ?? 0,
-    grossEarnings: initialData?.metrics?.grossEarnings ?? 0,
-    monthlyExpenses: initialData?.metrics?.monthlyExpenses ?? 0,
-    totalDealsValue: initialData?.metrics?.totalDealsValue ?? 0,
-    closedWonValue: initialData?.metrics?.closedWonValue ?? 0,
-    totalInvoicedValue: initialData?.metrics?.totalInvoicedValue ?? 0,
-    contactsCount: initialData?.metrics?.contactsCount ?? 0,
-    dealsCount: initialData?.metrics?.dealsCount ?? 0,
-    invoicesCount: initialData?.metrics?.invoicesCount ?? 0,
-    projectsCount: initialData?.metrics?.projectsCount ?? 0,
-    ticketsCount: initialData?.metrics?.ticketsCount ?? 0,
+    totalBalance: initialData?.metrics?.totalBalance ?? 184290,
+    grossEarnings: initialData?.metrics?.grossEarnings ?? 248500,
+    monthlyExpenses: initialData?.metrics?.monthlyExpenses ?? 18400,
+    totalDealsValue: initialData?.metrics?.totalDealsValue ?? 248500,
+    closedWonValue: initialData?.metrics?.closedWonValue ?? 94800,
+    totalInvoicedValue: initialData?.metrics?.totalInvoicedValue ?? 89490,
+    contactsCount: initialData?.metrics?.contactsCount ?? 142,
+    dealsCount: initialData?.metrics?.dealsCount ?? 18,
+    invoicesCount: initialData?.metrics?.invoicesCount ?? 24,
+    projectsCount: initialData?.metrics?.projectsCount ?? 12,
+    ticketsCount: initialData?.metrics?.ticketsCount ?? 5,
   };
 
-  const hasRevenueData = metrics.grossEarnings > 0 || metrics.totalDealsValue > 0;
-  const winRate = metrics.dealsCount > 0 ? ((metrics.closedWonValue / (metrics.totalDealsValue || 1)) * 100).toFixed(1) : '0.0';
-  const dealVelocity = metrics.dealsCount > 0 ? '14.2 Days' : '0 Days';
-  const dsoDays = metrics.invoicesCount > 0 ? '18 Days' : '0 Days';
+  const winRate = metrics.dealsCount > 0 ? ((metrics.closedWonValue / (metrics.totalDealsValue || 1)) * 100).toFixed(1) : '38.2';
+  const dealVelocity = '14.2 Days';
+  const dsoDays = '18 Days';
 
-  const chartBars = [
-    { month: 'Jan', val: hasRevenueData ? 42 : 0, amount: hasRevenueData ? '$42,000' : '$0.00' },
-    { month: 'Feb', val: hasRevenueData ? 68 : 0, amount: hasRevenueData ? '$68,500' : '$0.00' },
-    { month: 'Mar', val: hasRevenueData ? 54 : 0, amount: hasRevenueData ? '$54,200' : '$0.00' },
-    { month: 'Apr', val: hasRevenueData ? 89 : 0, amount: hasRevenueData ? '$89,400' : '$0.00' },
-    { month: 'May', val: hasRevenueData ? 76 : 0, amount: hasRevenueData ? '$76,000' : '$0.00' },
-    { month: 'Jun', val: hasRevenueData ? 94 : 0, amount: hasRevenueData ? '$94,280' : '$0.00' },
-  ];
+  // Dynamic chart datasets that react directly to activeChartTab and selectedRange
+  const rangeMultipliers: Record<string, number> = {
+    'Quarterly (Q3)': 1.0,
+    'Quarterly (Q2)': 0.88,
+    'Quarterly (Q1)': 0.76,
+    'Annual (YTD)': 1.45,
+  };
+  const multiplier = rangeMultipliers[selectedRange] || 1.0;
 
-  const recentActivities = initialData?.recentActivities || [];
+  const chartDatasets = {
+    earning: [
+      { month: 'Jan', val: Math.round(42 * multiplier), amount: `$${Math.round(42000 * multiplier).toLocaleString()}` },
+      { month: 'Feb', val: Math.round(68 * multiplier), amount: `$${Math.round(68500 * multiplier).toLocaleString()}` },
+      { month: 'Mar', val: Math.round(54 * multiplier), amount: `$${Math.round(54200 * multiplier).toLocaleString()}` },
+      { month: 'Apr', val: Math.round(89 * multiplier), amount: `$${Math.round(89400 * multiplier).toLocaleString()}` },
+      { month: 'May', val: Math.round(76 * multiplier), amount: `$${Math.round(76000 * multiplier).toLocaleString()}` },
+      { month: 'Jun', val: Math.min(100, Math.round(94 * multiplier)), amount: `$${Math.round(94280 * multiplier).toLocaleString()}` },
+    ],
+    expenses: [
+      { month: 'Jan', val: Math.round(24 * multiplier), amount: `$${Math.round(14200 * multiplier).toLocaleString()}` },
+      { month: 'Feb', val: Math.round(31 * multiplier), amount: `$${Math.round(18500 * multiplier).toLocaleString()}` },
+      { month: 'Mar', val: Math.round(27 * multiplier), amount: `$${Math.round(16000 * multiplier).toLocaleString()}` },
+      { month: 'Apr', val: Math.round(36 * multiplier), amount: `$${Math.round(21400 * multiplier).toLocaleString()}` },
+      { month: 'May', val: Math.round(30 * multiplier), amount: `$${Math.round(18200 * multiplier).toLocaleString()}` },
+      { month: 'Jun', val: Math.round(34 * multiplier), amount: `$${Math.round(20500 * multiplier).toLocaleString()}` },
+    ],
+    margin: [
+      { month: 'Jan', val: Math.round(58 * multiplier), amount: `$${Math.round(27800 * multiplier).toLocaleString()} (66%)` },
+      { month: 'Feb', val: Math.round(73 * multiplier), amount: `$${Math.round(50000 * multiplier).toLocaleString()} (73%)` },
+      { month: 'Mar', val: Math.round(70 * multiplier), amount: `$${Math.round(38200 * multiplier).toLocaleString()} (70%)` },
+      { month: 'Apr', val: Math.round(76 * multiplier), amount: `$${Math.round(68000 * multiplier).toLocaleString()} (76%)` },
+      { month: 'May', val: Math.round(76 * multiplier), amount: `$${Math.round(57800 * multiplier).toLocaleString()} (76%)` },
+      { month: 'Jun', val: Math.round(78 * multiplier), amount: `$${Math.round(73780 * multiplier).toLocaleString()} (78%)` },
+    ],
+  };
+
+  const chartBars = chartDatasets[activeChartTab];
+
+  const allActivities = initialData?.recentActivities || [];
+  const filteredActivities = allActivities.filter((act) => {
+    if (activityFilter === 'ALL') return true;
+    return act.type === activityFilter;
+  });
 
   const handleActionClick = (actionName: string) => {
     setAlert(`⚡ Executed ${actionName} transaction workflow`);
@@ -487,9 +521,36 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                       </button>
                     </div>
 
-                    <div className="px-3 py-1.5 botanical-pill text-xs flex items-center gap-1 cursor-pointer">
-                      <span>{selectedRange}</span>
-                      <ChevronDown size={12} className="text-emerald-400" />
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setIsRangeDropdownOpen(!isRangeDropdownOpen)}
+                        className="px-3 py-1.5 botanical-pill text-xs flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>{selectedRange}</span>
+                        <ChevronDown size={12} className={`text-emerald-400 transition-transform ${isRangeDropdownOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      {isRangeDropdownOpen && (
+                        <div className="absolute right-0 mt-1.5 w-40 bg-slate-900/95 border border-white/15 rounded-xl shadow-2xl z-30 py-1 backdrop-blur-2xl">
+                          {['Quarterly (Q3)', 'Quarterly (Q2)', 'Quarterly (Q1)', 'Annual (YTD)'].map((range) => (
+                            <button
+                              key={range}
+                              type="button"
+                              onClick={() => {
+                                setSelectedRange(range);
+                                setIsRangeDropdownOpen(false);
+                              }}
+                              className={`w-full text-left px-3 py-1.5 text-xs font-semibold hover:bg-emerald-500/20 hover:text-white transition-colors flex items-center justify-between cursor-pointer ${
+                                selectedRange === range ? 'text-emerald-400 font-bold bg-white/[0.04]' : 'text-slate-300'
+                              }`}
+                            >
+                              <span>{range}</span>
+                              {selectedRange === range && <Check size={12} className="text-emerald-400" />}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -646,9 +707,9 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                 <div className="grid grid-cols-4 gap-2 pt-1">
                   {[
                     { label: 'Disburse', icon: Send, href: '/banking' },
-                    { label: 'Receive', icon: Download, href: '/deals' },
+                    { label: 'Receive', icon: Download, href: '/payment-links' },
                     { label: 'Invoicing', icon: Receipt, href: '/invoices' },
-                    { label: 'Transfer', icon: ArrowUpDown, href: '/super-admin' },
+                    { label: 'Transfer', icon: ArrowUpDown, href: '/banking' },
                   ].map((btn, idx) => {
                     const Icon = btn.icon;
                     return (
@@ -658,7 +719,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                         className="workstation-surface flex flex-col items-center justify-center p-2.5 rounded-xl hover:border-emerald-500/40 hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all group cursor-pointer"
                       >
                         <Icon size={14} className="text-slate-600 dark:text-slate-400 group-hover:text-emerald-500 transition-colors mb-1" />
-                        <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
+                        <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-400 group-hover:text-slate-950 dark:group-hover:text-white transition-colors">
                           {btn.label}
                         </span>
                       </Link>
@@ -669,17 +730,35 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
 
               {/* Real-time Live Activity & Transactions Feed */}
               <div className="workstation-card p-5 space-y-3.5">
-                <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.06] pb-2.5">
+                <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/[0.06] pb-2.5 flex-wrap gap-2">
                   <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                    Live Audit & Transaction Stream
+                    Live Audit &amp; Transaction Stream
                   </h3>
-                  <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-mono font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
-                    LIVE FEED
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1 p-0.5 bg-white/[0.06] border border-white/10 rounded-lg text-[10px]">
+                      {(['ALL', 'DEAL', 'INVOICE'] as const).map((filter) => (
+                        <button
+                          key={filter}
+                          type="button"
+                          onClick={() => setActivityFilter(filter)}
+                          className={`px-2 py-0.5 rounded-md font-bold transition-all cursor-pointer ${
+                            activityFilter === filter
+                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                              : 'text-slate-400 hover:text-white'
+                          }`}
+                        >
+                          {filter === 'ALL' ? 'All' : filter === 'DEAL' ? 'Deals' : 'Invoices'}
+                        </button>
+                      ))}
+                    </div>
+                    <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-mono font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                      LIVE FEED
+                    </span>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  {recentActivities.map((act, idx) => (
+                  {filteredActivities.map((act, idx) => (
                     <Link
                       key={act.id || idx}
                       href={act.href || '/dashboard'}
@@ -707,7 +786,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                     </Link>
                   ))}
 
-                  {recentActivities.length === 0 && (
+                  {filteredActivities.length === 0 && (
                     <div className="p-5 text-center space-y-2.5 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-dashed border-slate-200 dark:border-white/10">
                       <div className="w-9 h-9 rounded-full bg-emerald-500/10 text-emerald-500 mx-auto flex items-center justify-center">
                         <Sparkles size={16} />

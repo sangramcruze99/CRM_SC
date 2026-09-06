@@ -21,83 +21,82 @@ import {
 
 export default function AutomationOverviewPage() {
   const [stats, setStats] = useState({
-    activeWorkflows: 8,
-    totalExecutions: 1420,
-    pendingApprovals: 2,
-    connectedIntegrations: 12,
-    healthRate: '99.4%',
+    activeWorkflows: 0,
+    totalExecutions: 0,
+    pendingApprovals: 0,
+    connectedIntegrations: 0,
+    healthRate: '100%',
   });
 
-  const [recentExecutions, setRecentExecutions] = useState<any[]>([
-    {
-      id: 'exec_101',
-      workflowName: 'AI Lead Qualification & Fast-Track Routing',
-      status: 'SUCCESS',
-      time: '2 mins ago',
-      duration: '340ms',
-      trigger: 'NEW_LEAD (elena@hyperion.io)',
-      tokens: 420,
-    },
-    {
-      id: 'exec_102',
-      workflowName: 'WhatsApp Autonomous Sales Concierge',
-      status: 'APPROVAL_REQUIRED',
-      time: '6 mins ago',
-      duration: '1.2s',
-      trigger: 'WHATSAPP_INBOUND (+15553492001)',
-      tokens: 680,
-    },
-    {
-      id: 'exec_103',
-      workflowName: 'Autonomous OCR Invoice & Dual Khata Reconciler',
-      status: 'SUCCESS',
-      time: '14 mins ago',
-      duration: '890ms',
-      trigger: 'DOCUMENT_UPLOADED (inv_8829.pdf)',
-      tokens: 1250,
-    },
-  ]);
-
-  const [activeAgents, setActiveAgents] = useState<any[]>([
-    { name: 'Ares Sales Sentinel', domain: 'Sales & Growth', model: 'Groq / Llama-3-70B', decisionsToday: 142, status: 'AUTONOMOUS' },
-    { name: 'Maya Voice Receptionist', domain: 'Voice Telephony', model: 'Groq / Whisper-v3', decisionsToday: 89, status: 'HYBRID' },
-    { name: 'Content Autopilot Agent', domain: 'Social & Media', model: 'OpenRouter / Claude-3.5', decisionsToday: 24, status: 'HYBRID' },
-    { name: 'Nexus Recruitment Screener', domain: 'HR & People', model: 'Groq / Compound', decisionsToday: 51, status: 'AUTONOMOUS' },
-  ]);
-
-  const [loading, setLoading] = useState(false);
+  const [recentExecutions, setRecentExecutions] = useState<any[]>([]);
+  const [activeAgents, setActiveAgents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchLiveStats = async () => {
     setLoading(true);
     try {
-      const [execRes, apprRes, agentRes] = await Promise.all([
-        fetch('/api/automation/workflows/executions/all?limit=5').catch(() => null),
+      const [execRes, apprRes, agentRes, wfRes, mktRes] = await Promise.all([
+        fetch('/api/automation/workflows/executions/all?limit=10').catch(() => null),
         fetch('/api/automation/approvals?status=PENDING').catch(() => null),
         fetch('/api/ai/agents').catch(() => null),
+        fetch('/api/automation/workflows').catch(() => null),
+        fetch('/api/marketplace/items').catch(() => null),
       ]);
+
+      let totalExecs = 0;
+      let successCount = 0;
 
       if (execRes?.ok) {
         const execs = await execRes.json();
-        if (Array.isArray(execs) && execs.length > 0) {
+        if (Array.isArray(execs)) {
           setRecentExecutions(execs);
+          totalExecs = execs.length;
+          successCount = execs.filter((e: any) => e.status === 'SUCCESS' || e.status === 'COMPLETED').length;
         }
       }
 
+      let activeWfCount = 0;
+      if (wfRes?.ok) {
+        const wfs = await wfRes.json();
+        if (Array.isArray(wfs)) {
+          activeWfCount = wfs.filter((w: any) => w.isActive || w.status === 'ACTIVE').length;
+        }
+      }
+
+      let pendingApprCount = 0;
       if (apprRes?.ok) {
         const apprs = await apprRes.json();
         if (Array.isArray(apprs)) {
-          setStats((prev) => ({ ...prev, pendingApprovals: apprs.length }));
+          pendingApprCount = apprs.length;
         }
       }
 
       if (agentRes?.ok) {
         const agents = await agentRes.json();
-        if (Array.isArray(agents) && agents.length > 0) {
+        if (Array.isArray(agents)) {
           setActiveAgents(agents);
         }
       }
+
+      let integrationsCount = 0;
+      if (mktRes?.ok) {
+        const items = await mktRes.json();
+        if (Array.isArray(items)) {
+          integrationsCount = items.length;
+        }
+      }
+
+      const calculatedHealth = totalExecs > 0 ? `${Math.round((successCount / totalExecs) * 100)}%` : '100%';
+
+      setStats({
+        activeWorkflows: activeWfCount,
+        totalExecutions: totalExecs,
+        pendingApprovals: pendingApprCount,
+        connectedIntegrations: integrationsCount,
+        healthRate: calculatedHealth,
+      });
     } catch {
-      // fallback
+      // safe fallback with zero values
     } finally {
       setLoading(false);
     }
@@ -211,63 +210,69 @@ export default function AutomationOverviewPage() {
           </div>
 
           <div className="rounded-xl border border-white/10 bg-slate-900/60 divide-y divide-white/5 backdrop-blur-lg overflow-hidden">
-            {recentExecutions.map((exec) => (
-              <div key={exec.id} className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition">
-                <div className="flex items-center space-x-3.5">
-                  <div
-                    className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      exec.status === 'SUCCESS'
-                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                        : exec.status === 'APPROVAL_REQUIRED'
-                        ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                        : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                    }`}
-                  >
-                    {exec.status === 'SUCCESS' ? (
-                      <CheckCircle2 className="w-4 h-4" />
-                    ) : exec.status === 'APPROVAL_REQUIRED' ? (
-                      <ShieldAlert className="w-4 h-4" />
-                    ) : (
-                      <AlertTriangle className="w-4 h-4" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-white">{exec.workflowName || 'Workflow Execution'}</div>
-                    <div className="text-xs text-slate-400 flex items-center space-x-2 mt-0.5">
-                      <span>{exec.trigger || 'Trigger: API'}</span>
-                      <span>•</span>
-                      <span>{exec.duration || '240ms'}</span>
-                      {exec.tokens && (
-                        <>
-                          <span>•</span>
-                          <span className="text-cyan-400">{exec.tokens} tokens</span>
-                        </>
+            {recentExecutions.length === 0 ? (
+              <div className="p-8 text-center text-xs text-slate-400">
+                No executions recorded yet. Run a test execution from Workflow Studio or trigger a business event to view live telemetry.
+              </div>
+            ) : (
+              recentExecutions.map((exec) => (
+                <div key={exec.id} className="p-4 flex items-center justify-between hover:bg-white/[0.02] transition">
+                  <div className="flex items-center space-x-3.5">
+                    <div
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        exec.status === 'SUCCESS'
+                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                          : exec.status === 'APPROVAL_REQUIRED'
+                          ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                          : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                      }`}
+                    >
+                      {exec.status === 'SUCCESS' ? (
+                        <CheckCircle2 className="w-4 h-4" />
+                      ) : exec.status === 'APPROVAL_REQUIRED' ? (
+                        <ShieldAlert className="w-4 h-4" />
+                      ) : (
+                        <AlertTriangle className="w-4 h-4" />
                       )}
                     </div>
+                    <div>
+                      <div className="text-sm font-semibold text-white">{exec.workflowName || 'Workflow Execution'}</div>
+                      <div className="text-xs text-slate-400 flex items-center space-x-2 mt-0.5">
+                        <span>{exec.trigger || 'Trigger: API'}</span>
+                        <span>•</span>
+                        <span>{exec.duration || '240ms'}</span>
+                        {exec.tokens && (
+                          <>
+                            <span>•</span>
+                            <span className="text-cyan-400">{exec.tokens} tokens</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        exec.status === 'SUCCESS'
+                          ? 'bg-emerald-500/15 text-emerald-300'
+                          : exec.status === 'APPROVAL_REQUIRED'
+                          ? 'bg-amber-500/15 text-amber-300'
+                          : 'bg-rose-500/15 text-rose-300'
+                      }`}
+                    >
+                      {exec.status}
+                    </span>
+                    <Link
+                      href={`/automation/executions`}
+                      className="text-slate-400 hover:text-white p-1 rounded transition"
+                    >
+                      <ArrowUpRight className="w-4 h-4" />
+                    </Link>
                   </div>
                 </div>
-
-                <div className="flex items-center space-x-3">
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      exec.status === 'SUCCESS'
-                        ? 'bg-emerald-500/15 text-emerald-300'
-                        : exec.status === 'APPROVAL_REQUIRED'
-                        ? 'bg-amber-500/15 text-amber-300'
-                        : 'bg-rose-500/15 text-rose-300'
-                    }`}
-                  >
-                    {exec.status}
-                  </span>
-                  <Link
-                    href={`/automation/executions`}
-                    className="text-slate-400 hover:text-white p-1 rounded transition"
-                  >
-                    <ArrowUpRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -288,21 +293,27 @@ export default function AutomationOverviewPage() {
           </div>
 
           <div className="rounded-xl border border-white/10 bg-slate-900/60 divide-y divide-white/5 backdrop-blur-lg overflow-hidden">
-            {activeAgents.map((agent, i) => (
-              <div key={i} className="p-4 hover:bg-white/[0.02] transition">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm font-bold text-white">{agent.name}</div>
-                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-                    {agent.autonomyMode || agent.status}
-                  </span>
-                </div>
-                <div className="text-xs text-slate-400 mt-1">{agent.role || agent.domain}</div>
-                <div className="text-[11px] text-slate-500 mt-1.5 flex items-center justify-between">
-                  <span>Model: {agent.model}</span>
-                  <span className="text-emerald-400 font-semibold">{agent.totalDecisions || agent.decisionsToday || 45} runs</span>
-                </div>
+            {activeAgents.length === 0 ? (
+              <div className="p-8 text-center text-xs text-slate-400">
+                No autonomous sentinels registered yet. Configure agents in the Agent Registry.
               </div>
-            ))}
+            ) : (
+              activeAgents.map((agent, i) => (
+                <div key={i} className="p-4 hover:bg-white/[0.02] transition">
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm font-bold text-white">{agent.name}</div>
+                    <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                      {agent.autonomyMode || agent.status || 'AUTONOMOUS'}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-400 mt-1">{agent.role || agent.domain}</div>
+                  <div className="text-[11px] text-slate-500 mt-1.5 flex items-center justify-between">
+                    <span>Model: {agent.model || 'Groq / Llama-3-70B'}</span>
+                    <span className="text-emerald-400 font-semibold">{agent.totalDecisions || agent.decisionsToday || 0} runs</span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

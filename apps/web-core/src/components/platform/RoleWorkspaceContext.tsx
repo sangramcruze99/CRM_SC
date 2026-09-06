@@ -22,7 +22,7 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     icon: '🌐',
     description: 'Unrestricted access to all 72 platform features across 13 functional pillars.',
     allowedCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/invoices', '/quotes', '/subscriptions', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/lead-prospector', '/ocr-invoice', '/chat', '/documents', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/developer', '/super-admin', '/customization', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/onboarding', '/smart-upload', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations', '/automation', '/ai-agents', '/banking', '/payment-links', '/qr-payments'],
+    visiblePaths: ['/dashboard', '/contacts', '/', '/deals', '/projects', '/invoices', '/quotes', '/subscriptions', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/lead-prospector', '/ocr-invoice', '/chat', '/documents', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/developer', '/super-admin', '/customization', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/onboarding', '/smart-upload', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations', '/automation', '/ai-agents', '/banking', '/payment-links', '/qr-payments'],
   },
   sales: {
     id: 'sales',

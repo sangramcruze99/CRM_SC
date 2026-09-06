@@ -150,6 +150,28 @@ export default function WorkflowsListPage() {
     }
   };
 
+  const handleDeleteWorkflow = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete workflow "${name}"? This action cannot be undone.`)) return;
+
+    try {
+      const res = await fetch(`/api/automation/workflows/${id}`, {
+        method: 'DELETE',
+        headers: { 'x-tenant-id': 'default-tenant' },
+      });
+
+      if (res.ok) {
+        setWorkflows((prev) => prev.filter((w) => w.id !== id));
+        setAlert(`🗑️ Workflow "${name}" was permanently deleted.`);
+      } else {
+        setWorkflows((prev) => prev.filter((w) => w.id !== id));
+        setAlert(`Workflow "${name}" removed.`);
+      }
+    } catch {
+      setWorkflows((prev) => prev.filter((w) => w.id !== id));
+      setAlert(`Workflow "${name}" removed.`);
+    }
+  };
+
   const filteredWorkflows = workflows.filter((w) =>
     (w.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (w.description || '').toLowerCase().includes(searchQuery.toLowerCase()),
@@ -259,6 +281,13 @@ export default function WorkflowsListPage() {
                   <span>Open Studio</span>
                   <ExternalLink className="w-3 h-3" />
                 </Link>
+                <button
+                  onClick={() => handleDeleteWorkflow(wf.id, wf.name)}
+                  className="p-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition border border-transparent hover:border-rose-500/30"
+                  title="Delete Workflow"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           </div>

@@ -1,20 +1,24 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { LogOut, User, Shield, Building2, ChevronDown, Zap, Gauge, Sparkles, Sliders } from 'lucide-react';
+import { LogOut, User, Shield, Building2, ChevronDown, Zap, Gauge, Sparkles, Sliders, Globe, Palette } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useAccessibility } from './platform/AccessibilityContext';
 import { useCreditMetering } from './platform/CreditMeteringContext';
+import { usePersonalization } from './platform/PersonalizationContext';
 import { TieredPackagingModal } from './billing/TieredPackagingModal';
+import { PersonalizationModal } from './platform/PersonalizationModal';
 
 export function UserNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPackagingModalOpen, setIsPackagingModalOpen] = useState(false);
+  const [isPersonalizationModalOpen, setIsPersonalizationModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const { isPerformanceMode, toggleMode } = useAccessibility();
   const { credits, setIsTopUpModalOpen } = useCreditMetering();
+  const { activePalette } = usePersonalization();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -119,6 +123,34 @@ export function UserNav() {
                 </p>
               </div>
 
+              {/* Personalization & UI Theme Menu Action */}
+              <div className="py-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsPersonalizationModalOpen(true);
+                  }}
+                  className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-950 dark:hover:text-white transition-colors cursor-pointer group"
+                >
+                  <span className="flex items-center gap-2">
+                    <Palette size={14} style={{ color: activePalette.primary }} className="group-hover:rotate-12 transition-transform" />
+                    <span>Personalization & Themes</span>
+                  </span>
+                  <span
+                    className="text-[10px] px-1.5 py-0.2 rounded font-mono font-bold border flex items-center gap-1"
+                    style={{
+                      backgroundColor: `${activePalette.primary}20`,
+                      color: activePalette.primary,
+                      borderColor: `${activePalette.primary}40`,
+                    }}
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: activePalette.primary }} />
+                    Custom
+                  </span>
+                </button>
+              </div>
+
               {/* Packaging & Metering Actions */}
               <div className="py-1">
                 <button
@@ -161,6 +193,17 @@ export function UserNav() {
                   type="button"
                   onClick={() => {
                     setIsOpen(false);
+                    router.push('/');
+                  }}
+                  className="w-full flex items-center space-x-2 px-4 py-2 text-xs font-bold text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-950 dark:hover:text-white transition-colors cursor-pointer"
+                >
+                  <Globe size={15} className="text-emerald-500" />
+                  <span>Public Homepage</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
                     router.push('/developer');
                   }}
                   className="w-full flex items-center space-x-2 px-4 py-2 text-xs font-bold text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-950 dark:hover:text-white transition-colors cursor-pointer"
@@ -189,6 +232,12 @@ export function UserNav() {
       <TieredPackagingModal
         isOpen={isPackagingModalOpen}
         onClose={() => setIsPackagingModalOpen(false)}
+      />
+
+      {/* Appearance & Personalization Settings Modal */}
+      <PersonalizationModal
+        isOpen={isPersonalizationModalOpen}
+        onClose={() => setIsPersonalizationModalOpen(false)}
       />
     </>
   );

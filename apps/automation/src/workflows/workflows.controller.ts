@@ -1,12 +1,61 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, Query } from '@nestjs/common';
 import { WorkflowsService } from './workflows.service';
+import { WorkflowGeneratorService } from './workflow-generator.service';
 
 @Controller('workflows')
 export class WorkflowsController {
-  constructor(private readonly workflowsService: WorkflowsService) {}
+  constructor(
+    private readonly workflowsService: WorkflowsService,
+    private readonly workflowGenerator: WorkflowGeneratorService,
+  ) {}
 
   private getTenant(tenantIdHeader?: string) {
     return tenantIdHeader || 'default-tenant';
+  }
+
+  @Post('generate')
+  generateFromPrompt(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Body() body: { prompt: string }
+  ) {
+    return this.workflowGenerator.generateFromPrompt(this.getTenant(tenantIdHeader), body.prompt);
+  }
+
+  @Post('validate')
+  validateGraph(
+    @Body() body: { nodes: any[]; edges: any[] }
+  ) {
+    return this.workflowGenerator.validateWorkflowGraph(body.nodes || [], body.edges || []);
+  }
+
+  @Post(':id/publish')
+  publishVersion(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+    @Body() body: { publishedBy?: string }
+  ) {
+    return this.workflowsService.publishVersion(this.getTenant(tenantIdHeader), id, body?.publishedBy);
+  }
+
+  @Get(':id/versions')
+  getVersions(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string
+  ) {
+    return this.workflowsService.getVersions(this.getTenant(tenantIdHeader), id);
+  }
+
+  @Post(':id/versions/:version/rollback')
+  rollbackVersion(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+    @Param('version') version: string
+  ) {
+    return this.workflowsService.rollbackVersion(
+      this.getTenant(tenantIdHeader),
+      id,
+      parseInt(version, 10)
+    );
   }
 
   @Post()

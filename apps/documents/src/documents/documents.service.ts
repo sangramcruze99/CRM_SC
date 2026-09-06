@@ -10,22 +10,24 @@ export class DocumentsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(tenantId: string, folderId?: string) {
-    if (folderId === 'root') folderId = '';
+    const targetFolderId = folderId === 'root' || !folderId ? null : folderId;
     if (this.prisma.isConnected) {
       try {
         const records = await this.prisma.document.findMany({
           where: {
             tenantId,
-            folderId: folderId || null,
+            folderId: targetFolderId,
           },
           orderBy: { createdAt: 'desc' },
         });
-        if (records && records.length > 0) return records;
+        return records;
       } catch {
         // fallback
       }
     }
-    return DocumentsService.inMemoryDocs.filter(d => d.tenantId === tenantId || d.tenantId === 'default-tenant');
+    return DocumentsService.inMemoryDocs.filter(
+      (d) => d.tenantId === tenantId && (d.folderId || null) === targetFolderId,
+    );
   }
 
   async create(data: { name: string; folderId?: string; mimeType?: string; size?: number; url?: string }, tenantId: string) {

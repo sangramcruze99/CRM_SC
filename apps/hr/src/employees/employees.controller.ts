@@ -44,9 +44,11 @@ export class EmployeesController {
 
   @Patch('leave/:id/status')
   async updateLeaveStatus(
+    @Headers('x-tenant-id') tenantId: string,
     @Param('id') id: string,
     @Body() data: { status: string }
   ) {
-    return this.employeesService.updateLeaveStatus(id, data.status);
+    if (!tenantId) throw new BadRequestException('x-tenant-id header is required');
+    return this.employeesService.updateLeaveStatus(tenantId, id, data.status);
   }
 }

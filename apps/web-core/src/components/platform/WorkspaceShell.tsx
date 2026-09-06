@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { SidebarNav } from '../SidebarNav';
 import { GlobalSearch } from '../GlobalSearch';
@@ -16,12 +17,20 @@ import { GlowingOrbitalBackground } from './GlowingOrbitalBackground';
 import { NativeAppTitlebar } from './NativeAppTitlebar';
 import { CommandPalette } from './CommandPalette';
 import { MobileAppDock } from './MobileAppDock';
+import { AIAutomationConsole } from '../automations/AIAutomationConsole';
+import { AgentApprovalsWidget } from './AgentApprovalsWidget';
 
 const AUTH_ROUTES = ['/login', '/register'];
 
 export function WorkspaceShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAuthPage = AUTH_ROUTES.includes(pathname);
+  const isMarketingPage = pathname === '/';
+
+  // If on Landing Homepage, render clean full-screen layout without internal CRM sidebar
+  if (isMarketingPage) {
+    return <>{children}</>;
+  }
 
   // If on Login or Register auth pages, render pure full-screen layout with zero sidebars
   if (isAuthPage) {
@@ -46,11 +55,11 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
   // Authenticated workspace view with full SidebarNav, Topbar, AI Copilot, and Metering
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-transparent relative">
+    <div className="flex flex-col h-screen h-[100dvh] w-screen max-w-full overflow-hidden bg-[#07090e] relative">
       {/* Native Desktop Window Header Bar */}
       <NativeAppTitlebar />
 
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex overflow-hidden relative min-h-0">
         {/* Dynamic Niche-Adapted & Role-Filtered Dark Frosted Sidebar */}
         <SidebarNav />
 
@@ -58,15 +67,27 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
         <GlowingOrbitalBackground />
 
         {/* Main Workspace Area */}
-        <main className="flex-1 flex flex-col h-full overflow-hidden bg-transparent relative z-10">
+        <main className="flex-1 flex flex-col h-full overflow-hidden bg-transparent relative z-10 min-h-0">
           {/* Floating Frosted Glass Topbar */}
           <header className="h-14 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-5 sm:px-8 bg-white/85 dark:bg-[#0c1411]/75 backdrop-blur-3xl z-20 shadow-xs dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)] shrink-0">
             <div className="flex items-center space-x-3 text-sm font-medium text-slate-700 dark:text-slate-400">
               <SidebarToggle />
               <div className="flex items-center">
-                <span className="text-slate-700 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer font-bold">Business OS</span>
+                <Link
+                  href="/"
+                  title="Return to Public Homepage"
+                  className="text-slate-700 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors font-bold"
+                >
+                  Business OS
+                </Link>
                 <span className="mx-2 text-slate-400 dark:text-slate-600">/</span>
-                <span className="text-slate-900 dark:text-white font-extrabold">Workspace</span>
+                <Link
+                  href="/dashboard"
+                  title="Go to Executive Dashboard"
+                  className="text-slate-900 dark:text-white font-extrabold hover:text-emerald-500 transition-colors"
+                >
+                  Workspace
+                </Link>
               </div>
             </div>
             <div className="flex items-center space-x-2.5">
@@ -74,6 +95,8 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
               <LanguageSwitcher />
               <IndustrySwitcher />
+              <AgentApprovalsWidget />
+              <AIAutomationConsole />
               <GlobalSearch />
               <div className="h-5 w-px bg-slate-300 dark:bg-white/10" />
               <UserNav />
@@ -84,7 +107,7 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           {(() => {
             const isAutomationRoute = pathname?.startsWith('/automation');
             return (
-              <div className={`flex-1 ${isAutomationRoute ? 'overflow-hidden p-0' : 'overflow-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8'}`}>
+              <div className={`flex-1 min-h-0 ${isAutomationRoute ? 'h-full flex flex-col overflow-hidden p-0 relative' : 'overflow-auto p-4 sm:p-6 lg:p-8 pb-20 md:pb-8'}`}>
                 {children}
               </div>
             );

@@ -287,14 +287,39 @@ export class ExecutionPersistenceService {
 
     return {
       workflowId,
-      enrolledLeads: totalEnrolled || 1420,
-      completedLeads: completed || 1198,
-      activeLeads: active || 222,
-      convertedLeads: converted || 494,
-      failedLeads: failed || 0,
-      conversionRate: totalEnrolled > 0 ? conversionRate : '34.8%',
-      revenueAttributed: `$${(converted * 650 + 148500).toLocaleString()}`,
+      enrolledLeads: totalEnrolled,
+      completedLeads: completed,
+      activeLeads: active,
+      convertedLeads: converted,
+      failedLeads: failed,
+      conversionRate,
+      revenueAttributed: `$${(converted * 12500).toLocaleString()}`,
       nodeAnalytics,
+    };
+  }
+
+  /**
+   * Get telemetry and execution analytics stats
+   */
+  async getExecutionStats(tenantId?: string): Promise<{
+    totalExecutions: number;
+    successCount: number;
+    failedCount: number;
+    approvalRequiredCount: number;
+  }> {
+    const list = tenantId ? this.getExecutions(tenantId) : Array.from(this.executions.values());
+    const successCount = list.filter((e) => e.status === 'COMPLETED' || e.status === 'CONVERTED').length;
+    const failedCount = list.filter((e) => e.status === 'FAILED').length;
+    const approvalRequiredCount = list.filter(
+      (e) => e.status === 'PAUSED' || (e.status as string) === 'APPROVAL_REQUIRED' || e.status === 'WAITING'
+    ).length;
+    const totalExecutions = successCount + failedCount + approvalRequiredCount;
+
+    return {
+      totalExecutions,
+      successCount,
+      failedCount,
+      approvalRequiredCount,
     };
   }
 }

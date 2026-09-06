@@ -181,6 +181,9 @@ export class BusinessEventBusService implements OnModuleInit {
       // 6. Dispatch to Developer Webhooks
       this.dispatchWebhooks(event).catch(() => null);
 
+      // 7. Dispatch to Autonomous AI Agent Mesh (Trigger -> Condition -> Action)
+      this.dispatchToAutonomousAgents(event).catch(() => null);
+
       return {
         eventId,
         eventType: type,
@@ -287,4 +290,44 @@ export class BusinessEventBusService implements OnModuleInit {
       // ignore webhook failures
     }
   }
+
+  /**
+   * Helper: Dispatch to Autonomous AI Agent Orchestrator (Central Nervous System)
+   */
+  private async dispatchToAutonomousAgents(event: BusinessEvent): Promise<void> {
+    const aiEngineUrl = process.env.AI_ENGINE_URL || 'http://localhost:3010';
+    const { type, tenantId, id: eventId } = event;
+
+    try {
+      this.logger.log(`[EventBus -> Agent Orchestrator] Dispatching event ${type} (${eventId}) to AI Engine`);
+      const response = await fetch(`${aiEngineUrl}/orchestrator/handle-event`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-tenant-id': tenantId,
+        },
+        body: JSON.stringify(event),
+      });
+
+      if (!response.ok) {
+        // Fallback to legacy endpoint if orchestrator route is migrating
+        await fetch(`${aiEngineUrl}/agents/decide`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-tenant-id': tenantId,
+          },
+          body: JSON.stringify({
+            targetEntity: event.payload?.entityType || type.split('_')[0],
+            targetId: event.payload?.entityId || event.payload?.dealId || event.payload?.contactId || eventId,
+            scenario: type,
+            parameters: event.payload,
+          }),
+        }).catch(() => null);
+      }
+    } catch (err: any) {
+      this.logger.warn(`Autonomous Agent Orchestrator dispatch deferred (${type}): ${err.message}`);
+    }
+  }
 }
+
