@@ -57,6 +57,7 @@ export class GlobalSearchService {
         projects,
         employees,
         workflows,
+        documents,
       ] = await Promise.all([
         this.prisma.contact
           .findMany({
@@ -165,6 +166,25 @@ export class GlobalSearchService {
             take: 5,
           })
           .catch(() => []),
+
+        this.prisma.document
+          .findMany({
+            where: {
+              tenantId,
+              status: 'ACTIVE',
+              OR: searchTerms.flatMap((term) => [
+                { name: { contains: term } },
+                { originalName: { contains: term } },
+                { service: { contains: term } },
+                { module: { contains: term } },
+                { entityType: { contains: term } },
+                { entityId: { contains: term } },
+                { category: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
       ]);
 
       // 1. Contacts
@@ -260,6 +280,18 @@ export class GlobalSearchService {
           subtitle: w.description || 'Enterprise Automation Flow',
           url: `/automations`,
           badge: w.status,
+        })),
+      );
+
+      // 9. Documents (Centralized Service-Aware Vault)
+      results.push(
+        ...documents.map((d: any) => ({
+          id: d.id,
+          type: 'DOCUMENT' as const,
+          title: d.originalName || d.name,
+          subtitle: `${(d.service || 'DOCUMENTS').toUpperCase()} / ${d.module || 'general'} · ${d.category || 'upload'} · ${d.entityId || 'Vault'}`,
+          url: `/documents?service=${d.service || 'documents'}&search=${encodeURIComponent(d.name)}`,
+          badge: (d.category || 'UPLOAD').toUpperCase(),
         })),
       );
     } catch (err: any) {

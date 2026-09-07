@@ -239,7 +239,7 @@ tbody tr {
 
 tbody tr:hover {
   background-color: rgba(255, 255, 255, 0.05) !important;
-  box-shadow: inset 3px 0 0 0 #10b981;
+  box-shadow: inset 3px 0 0 0 var(--palette-500, #10b981);
 }
 
 /* 4. Badges, Chips & Pills Hover Animation */
@@ -340,18 +340,18 @@ html.light .text-slate-500 {
 
 /* 3. Light Mode Accent Tokens (Preserving Rich Contrast) */
 html.light .text-emerald-300 {
-  color: #047857 !important;
+  color: var(--palette-700, #047857) !important;
   font-weight: 700;
 }
 
 html.light .text-emerald-400 {
-  color: #059669 !important;
+  color: var(--palette-600, #059669) !important;
   font-weight: 700;
 }
 
 html.light .text-teal-300,
 html.light .text-teal-400 {
-  color: #0f766e !important;
+  color: var(--palette-600, #0f766e) !important;
   font-weight: 700;
 }
 
@@ -503,9 +503,9 @@ html.light nav a.bg-emerald-500\/20 span,
 html.light nav .rounded-2xl button.bg-emerald-500\/15,
 html.light nav .rounded-2xl button.bg-emerald-500\/15 span,
 html.light nav a.border-emerald-500\/40 {
-  background-color: #ecfdf5 !important;
-  color: #065f46 !important;
-  border-color: #34d399 !important;
+  background-color: var(--palette-50, #ecfdf5) !important;
+  color: var(--palette-800, #065f46) !important;
+  border-color: var(--palette-400, #34d399) !important;
   font-weight: 800 !important;
 }
 
@@ -513,7 +513,7 @@ html.light nav a.bg-emerald-500\/20 span,
 html.light nav a.bg-emerald-500\/20 svg,
 html.light nav .rounded-2xl button.bg-emerald-500\/15 span,
 html.light nav .rounded-2xl button.bg-emerald-500\/15 svg {
-  color: #047857 !important;
+  color: var(--palette-700, #047857) !important;
 }
 
 html.light nav .font-mono {
@@ -530,8 +530,8 @@ html.light nav a[href="/cockpit"] {
 }
 
 html.light nav a[href="/cockpit"]:hover {
-  background-color: #ecfdf5 !important;
-  border-color: #34d399 !important;
+  background-color: var(--palette-50, #ecfdf5) !important;
+  border-color: var(--palette-400, #34d399) !important;
 }
 
 /* ========================================================================= */
@@ -851,20 +851,21 @@ html.light ::-webkit-scrollbar-thumb:hover {
 .btn-primary,
 button.btn-primary,
 a.btn-primary {
-  background: linear-gradient(135deg, #10b981 0%, #0d9488 50%, #059669 100%) !important;
+  background: linear-gradient(135deg, var(--palette-500, #10b981) 0%, var(--palette-600, #0d9488) 50%, var(--palette-700, #059669) 100%) !important;
   color: #ffffff !important;
   font-weight: 700;
-  border: 1px solid rgba(52, 211, 153, 0.45) !important;
-  border-top-color: rgba(110, 231, 183, 0.75) !important;
-  box-shadow: 0 4px 16px -2px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
+  border: 1px solid var(--palette-400, rgba(52, 211, 153, 0.45)) !important;
+  border-top-color: var(--palette-300, rgba(110, 231, 183, 0.75)) !important;
+  box-shadow: 0 4px 16px -2px var(--accent-glow, rgba(16, 185, 129, 0.4)), inset 0 1px 0 rgba(255, 255, 255, 0.35) !important;
   border-radius: 0.75rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary:hover,
 button.btn-primary:hover,
 a.btn-primary:hover {
-  background: linear-gradient(135deg, #34d399 0%, #14b8a6 50%, #10b981 100%) !important;
-  box-shadow: 0 6px 22px -2px rgba(16, 185, 129, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+  background: linear-gradient(135deg, var(--palette-400, #34d399) 0%, var(--palette-500, #14b8a6) 50%, var(--palette-600, #10b981) 100%) !important;
+  box-shadow: 0 6px 22px -2px var(--accent-glow, rgba(16, 185, 129, 0.55)), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
   transform: translateY(-1.5px) scale(1.02);
 }
 
@@ -916,10 +917,10 @@ a.btn-pill:hover {
 .btn-pill-active,
 button.btn-pill-active,
 a.btn-pill-active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4) 0%, rgba(20, 184, 166, 0.4) 100%) !important;
-  border: 1px solid rgba(45, 212, 191, 0.7) !important;
+  background: linear-gradient(135deg, var(--palette-500, rgba(16, 185, 129, 0.4)) 0%, var(--palette-600, rgba(20, 184, 166, 0.4)) 100%) !important;
+  border: 1px solid var(--palette-400, rgba(45, 212, 191, 0.7)) !important;
   color: #ffffff !important;
-  box-shadow: 0 0 14px rgba(45, 212, 191, 0.35) !important;
+  box-shadow: 0 0 14px var(--accent-glow, rgba(45, 212, 191, 0.35)) !important;
   font-weight: 700;
   border-radius: 9999px;
 }
@@ -980,11 +981,11 @@ a.btn-pill-active {
 }
 
 .botanical-pill-active {
-  background: linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #059669 100%) !important;
+  background: linear-gradient(135deg, var(--palette-500, #10b981) 0%, var(--palette-400, #14b8a6) 50%, var(--palette-600, #059669) 100%) !important;
   color: #07090e !important;
   font-weight: 800 !important;
-  border: 1px solid rgba(52, 211, 153, 0.6) !important;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.45) !important;
+  border: 1px solid var(--palette-300, rgba(52, 211, 153, 0.6)) !important;
+  box-shadow: 0 0 16px var(--accent-glow, rgba(16, 185, 129, 0.45)) !important;
   border-radius: 9999px;
 }
 
@@ -1027,10 +1028,10 @@ html.light .botanical-pill:hover {
 }
 
 html.light .botanical-pill-active {
-  background: #10b981 !important;
-  border-color: #059669 !important;
+  background: var(--palette-500, #10b981) !important;
+  border-color: var(--palette-600, #059669) !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 4px 12px var(--accent-glow, rgba(16, 185, 129, 0.3)) !important;
   font-weight: 800 !important;
 }
 

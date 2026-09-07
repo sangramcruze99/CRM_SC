@@ -43,7 +43,7 @@ export function AiNavigationTabs({ pendingApprovalsCount = 0 }: AiNavigationTabs
   ];
 
   return (
-    <div className="border-b border-slate-200 dark:border-white/10 bg-white/50 dark:bg-slate-900/40 backdrop-blur-md sticky top-0 z-10 px-4 md:px-8">
+    <div className="border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0c1411]/95 backdrop-blur-2xl sticky top-0 z-20 px-4 md:px-8 shadow-xs">
       <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-none">
         {tabs.map((tab) => {
           const Icon = tab.icon;

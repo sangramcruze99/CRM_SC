@@ -28,6 +28,64 @@ export class WorkflowsController {
     return this.workflowGenerator.validateWorkflowGraph(body.nodes || [], body.edges || []);
   }
 
+  // --- Unified Enterprise Event Bus Routes (Defined before :id to prevent route hijacking) ---
+
+  /**
+   * Unified Enterprise Event Bus: Publish Standardized Business Event
+   */
+  @Post('events/publish')
+  publishEvent(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Body() body: any
+  ) {
+    return this.workflowsService.publishEvent(this.getTenant(tenantIdHeader), body);
+  }
+
+  /**
+   * Behavioral website event ingestion trigger
+   * Ingests PAGE_VISITED, FORM_SUBMITTED, CART_ABANDONED, etc.
+   */
+  @Post('events')
+  ingestEvent(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Body() body: any
+  ) {
+    return this.workflowsService.ingestEvent(this.getTenant(tenantIdHeader), body);
+  }
+
+  /**
+   * Query Event Bus History for Observability
+   */
+  @Get('events/history')
+  getEventHistory(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Query('limit') limit?: string
+  ) {
+    return this.workflowsService.getEventHistory(
+      this.getTenant(tenantIdHeader),
+      limit ? parseInt(limit, 10) : 50
+    );
+  }
+
+  /**
+   * Query Dead Letter Queue
+   */
+  @Get('events/dead-letter')
+  getDeadLetterQueue(@Headers('x-tenant-id') tenantIdHeader: string) {
+    return this.workflowsService.getDeadLetterQueue(this.getTenant(tenantIdHeader));
+  }
+
+  /**
+   * Replay Event from Dead Letter / History
+   */
+  @Post('events/:eventId/replay')
+  replayEvent(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('eventId') eventId: string
+  ) {
+    return this.workflowsService.replayEvent(this.getTenant(tenantIdHeader), eventId);
+  }
+
   @Post(':id/publish')
   publishVersion(
     @Headers('x-tenant-id') tenantIdHeader: string,
@@ -119,61 +177,7 @@ export class WorkflowsController {
     return this.workflowsService.findAll(this.getTenant(tenantIdHeader));
   }
 
-  /**
-   * Behavioral website event ingestion trigger
-   * Ingests PAGE_VISITED, FORM_SUBMITTED, CART_ABANDONED, etc.
-   */
-  @Post('events')
-  ingestEvent(
-    @Headers('x-tenant-id') tenantIdHeader: string,
-    @Body() body: any
-  ) {
-    return this.workflowsService.ingestEvent(this.getTenant(tenantIdHeader), body);
-  }
 
-  /**
-   * Unified Enterprise Event Bus: Publish Standardized Business Event
-   */
-  @Post('events/publish')
-  publishEvent(
-    @Headers('x-tenant-id') tenantIdHeader: string,
-    @Body() body: any
-  ) {
-    return this.workflowsService.publishEvent(this.getTenant(tenantIdHeader), body);
-  }
-
-  /**
-   * Query Event Bus History for Observability
-   */
-  @Get('events/history')
-  getEventHistory(
-    @Headers('x-tenant-id') tenantIdHeader: string,
-    @Query('limit') limit?: string
-  ) {
-    return this.workflowsService.getEventHistory(
-      this.getTenant(tenantIdHeader),
-      limit ? parseInt(limit, 10) : 50
-    );
-  }
-
-  /**
-   * Query Dead Letter Queue
-   */
-  @Get('events/dead-letter')
-  getDeadLetterQueue(@Headers('x-tenant-id') tenantIdHeader: string) {
-    return this.workflowsService.getDeadLetterQueue(this.getTenant(tenantIdHeader));
-  }
-
-  /**
-   * Replay Event from Dead Letter / History
-   */
-  @Post('events/:eventId/replay')
-  replayEvent(
-    @Headers('x-tenant-id') tenantIdHeader: string,
-    @Param('eventId') eventId: string
-  ) {
-    return this.workflowsService.replayEvent(this.getTenant(tenantIdHeader), eventId);
-  }
 
   /**
    * Workflow Collision Management Check

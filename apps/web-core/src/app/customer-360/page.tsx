@@ -18,8 +18,10 @@ import {
   Layers,
   Phone,
   Mail,
-  CheckCircle2
+  CheckCircle2,
+  Bot
 } from 'lucide-react';
+import { openAgentModal } from '@/components/ai/ContextualAgentModal';
 
 interface AccountOverview {
   id: string;
@@ -141,6 +143,21 @@ export default function Customer360DirectoryPage() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            type="button"
+            onClick={() => openAgentModal('athena')}
+            className="px-3.5 py-2.5 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 hover:text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+            title="Open Athena — Retention Sentinel & Customer Health AI"
+          >
+            <Bot size={14} className="text-rose-400 animate-pulse" />
+            <span>Ask Athena (Retention AI)</span>
+            {atRiskCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-rose-500/30 text-rose-200 text-[10px] font-mono font-bold">
+                {atRiskCount} at risk
+              </span>
+            )}
+          </button>
+
           <button
             onClick={handleRunHealthCheck}
             disabled={loading}
@@ -304,15 +321,25 @@ export default function Customer360DirectoryPage() {
                   </td>
 
                   <td className="px-6 py-4">
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                      acc.churnRisk === 'HIGH'
-                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
-                        : acc.churnRisk === 'MEDIUM'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                    }`}>
-                      {acc.churnRisk}
-                    </span>
+                    {acc.churnRisk === 'HIGH' ? (
+                      <button
+                        type="button"
+                        onClick={() => openAgentModal('athena')}
+                        className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 inline-flex items-center gap-1 cursor-pointer transition-colors"
+                        title="Open Athena — Customer Retention AI to diagnose and save account"
+                      >
+                        <Bot size={11} className="text-rose-400 animate-pulse" />
+                        <span>HIGH · Ask Athena</span>
+                      </button>
+                    ) : (
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                        acc.churnRisk === 'MEDIUM'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                      }`}>
+                        {acc.churnRisk}
+                      </span>
+                    )}
                   </td>
 
                   <td className="px-6 py-4">
@@ -330,16 +357,22 @@ export default function Customer360DirectoryPage() {
                   </td>
 
                   <td className="px-6 py-4 text-xs text-slate-400">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       {acc.openTickets > 0 && (
                         <span className="text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded font-mono text-[11px]">
                           {acc.openTickets} Tickets
                         </span>
                       )}
                       {acc.unpaidInvoices > 0 && (
-                        <span className="text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded font-mono text-[11px]">
-                          {acc.unpaidInvoices} Overdue
-                        </span>
+                        <button
+                          type="button"
+                          onClick={() => openAgentModal('midas')}
+                          className="text-amber-300 hover:text-amber-200 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 px-2 py-0.5 rounded font-mono text-[11px] inline-flex items-center gap-1 cursor-pointer transition-colors"
+                          title="Ask Midas to draft payment reminder or reconcile balance"
+                        >
+                          <Bot size={11} className="text-amber-400" />
+                          <span>{acc.unpaidInvoices} Overdue · Ask Midas</span>
+                        </button>
                       )}
                       {acc.openTickets === 0 && acc.unpaidInvoices === 0 && (
                         <span className="text-emerald-400 text-[11px] flex items-center gap-1">

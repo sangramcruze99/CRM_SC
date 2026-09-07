@@ -55,16 +55,14 @@ export function IndustrySwitcher() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] border border-slate-200 dark:border-white/[0.1] rounded-xl text-xs font-semibold transition-all shadow-xs hover:border-emerald-500/40 cursor-pointer active:scale-[0.98]"
+        className="h-8.5 flex items-center gap-2 px-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.09] border border-slate-200 dark:border-white/[0.08] hover:border-emerald-500/40 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-[0.98] whitespace-nowrap"
+        title={`Active Organization Niche: ${nicheConfig.name}`}
       >
-        <span className="text-sm">{nicheConfig.icon}</span>
-        <div className="text-left hidden sm:block">
-          <span className="text-[9px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider block -mb-0.5">
-            Active Niche
-          </span>
-          <span className="text-slate-900 dark:text-white font-bold text-xs">{nicheConfig.shortName}</span>
-        </div>
-        <ChevronDown size={13} className={`text-slate-500 dark:text-slate-400 ml-0.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="text-sm shrink-0">{nicheConfig.icon}</span>
+        <span className="text-slate-900 dark:text-white font-bold text-xs truncate max-w-[125px] hidden sm:inline">
+          {nicheConfig.shortName}
+        </span>
+        <ChevronDown size={12} className={`text-slate-400 shrink-0 ml-0.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Quick Switch Toast Notification */}

@@ -29,6 +29,7 @@ import {
   Activity,
   Award
 } from 'lucide-react';
+import { EntityDocumentsHub } from '@/components/documents/EntityDocumentsHub';
 
 interface Contact360Data {
   contact: {
@@ -83,7 +84,7 @@ export default function Customer360Page({
 
   const [data, setData] = useState<Contact360Data | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'timeline' | 'deals' | 'invoices' | 'committee' | 'governance'>('timeline');
+  const [activeTab, setActiveTab] = useState<'timeline' | 'deals' | 'invoices' | 'committee' | 'governance' | 'documents'>('timeline');
   const [timelineFilter, setTimelineFilter] = useState<'ALL' | 'NOTE' | 'DEAL' | 'INVOICE' | 'TICKET'>('ALL');
   const [actionSuccess, setActionSuccess] = useState<string | null>(null);
 
@@ -451,6 +452,18 @@ export default function Customer360Page({
             <Users size={14} />
             <span>Buying Committee ({buyingCommittee.length})</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('documents')}
+            className={`pb-3 text-xs font-bold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
+              activeTab === 'documents'
+                ? 'border-emerald-400 text-emerald-400'
+                : 'border-transparent text-slate-400 hover:text-white'
+            }`}
+          >
+            <Layers size={14} />
+            <span>Vault Files & Deliverables</span>
+          </button>
         </div>
 
         {/* Tab Content Panels */}
@@ -662,6 +675,19 @@ export default function Customer360Page({
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* TAB 5: Vault Documents & Deliverables */}
+          {activeTab === 'documents' && (
+            <div className="pt-2">
+              <EntityDocumentsHub
+                service="crm"
+                module="contacts"
+                entityType="contact"
+                entityId={contact.id}
+                entityTitle={contact.fullName}
+              />
             </div>
           )}
         </div>

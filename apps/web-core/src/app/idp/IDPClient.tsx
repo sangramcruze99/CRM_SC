@@ -25,7 +25,9 @@ import {
   Inbox,
   HardDrive,
   Filter,
+  FolderOpen,
 } from 'lucide-react';
+import { DocumentVaultPickerModal, VaultDocument } from '@/components/documents/DocumentVaultPickerModal';
 
 interface LineItem {
   id: string;
@@ -71,6 +73,7 @@ export function IDPClient() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [uploadSource, setUploadSource] = useState<'MANUAL' | 'EMAIL' | 'GDRIVE'>('MANUAL');
   const [alert, setAlert] = useState<string | null>(null);
+  const [isVaultPickerOpen, setIsVaultPickerOpen] = useState(false);
 
   const handleSimulateExtraction = (sampleName = 'New_Vendor_Invoice_Scan.pdf') => {
     setIsProcessing(true);
@@ -395,14 +398,34 @@ export function IDPClient() {
                 <Upload size={14} className="text-emerald-400" />
                 <span>Upload Document / PDF</span>
               </h3>
+              <button
+                type="button"
+                onClick={() => setIsVaultPickerOpen(true)}
+                className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer shadow-xs"
+                title="Pick document directly from Document Vault"
+              >
+                <FolderOpen size={12} />
+                <span>Vault</span>
+              </button>
             </div>
 
-            <div className="border-2 border-dashed border-white/20 hover:border-amber-400/50 rounded-2xl p-6 text-center space-y-2 transition-colors bg-white/[0.02]">
-              <Receipt size={28} className="mx-auto text-emerald-400" />
+            <div className="border-2 border-dashed border-white/20 hover:border-emerald-400/50 rounded-2xl p-5 text-center space-y-2.5 transition-colors bg-white/[0.02]">
+              <Receipt size={26} className="mx-auto text-emerald-400" />
               <div>
                 <p className="text-xs font-bold text-white">Drag & drop invoice or contract</p>
                 <p className="text-[11px] text-slate-500">PDF, PNG, JPG, or TIFF up to 50MB</p>
               </div>
+              <div className="flex items-center gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsVaultPickerOpen(true)}
+                  className="w-full py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98]"
+                >
+                  <FolderOpen size={13} />
+                  <span>Select from Document Vault</span>
+                </button>
+              </div>
+              <div className="text-[10px] text-slate-500 uppercase tracking-widest font-mono">or local file</div>
               <input
                 type="file"
                 accept=".pdf,.png,.jpg,.jpeg,.tiff"
@@ -411,10 +434,22 @@ export function IDPClient() {
                     handleSimulateExtraction(e.target.files[0].name);
                   }
                 }}
-                className="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500 file:text-slate-950 hover:file:bg-amber-400 cursor-pointer"
+                className="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-500 file:text-slate-950 hover:file:bg-emerald-400 cursor-pointer"
               />
             </div>
           </div>
+
+          <DocumentVaultPickerModal
+            isOpen={isVaultPickerOpen}
+            onClose={() => setIsVaultPickerOpen(false)}
+            onSelect={(doc: VaultDocument) => {
+              handleSimulateExtraction(doc.name);
+              setAlert(`✨ Ingesting "${doc.name}" from Document Vault into Neural IDP Pipeline...`);
+            }}
+            title="Select Document from Vault"
+            description="Choose any stored invoice, receipt, contract or PO from the Document Vault to extract."
+            actionLabel="Extract Document"
+          />
 
           {/* Processed Invoices Queue */}
           <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-3">

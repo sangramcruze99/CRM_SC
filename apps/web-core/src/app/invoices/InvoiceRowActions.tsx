@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Mail, Printer, Download } from 'lucide-react';
+import Link from 'next/link';
+import { Mail, Printer, Download, FolderOpen } from 'lucide-react';
 import { InvoiceDispatchModal } from '@/components/billing/InvoiceDispatchModal';
 import { DeleteActionButton } from '@/components/DeleteActionButton';
 import { deleteInvoice } from '../actions';
@@ -79,6 +80,15 @@ export function InvoiceRowActions({ invoice }: InvoiceRowActionsProps) {
           <Printer size={12} className="text-teal-400" />
           <span>Receipt</span>
         </button>
+
+        <Link
+          href="/documents"
+          className="px-2.5 py-1 bg-white/[0.06] hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 rounded-xl text-xs font-semibold transition-all border border-white/[0.1] inline-flex items-center gap-1 cursor-pointer"
+          title="Open Document Vault to view stored invoice archives"
+        >
+          <FolderOpen size={12} className="text-emerald-400" />
+          <span>Vault</span>
+        </Link>
 
         <DeleteActionButton
           onDeleteAction={async () => {

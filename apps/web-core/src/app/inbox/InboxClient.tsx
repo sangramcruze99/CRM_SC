@@ -22,7 +22,9 @@ import {
   Building,
   Mail,
   Share2,
+  FolderOpen,
 } from 'lucide-react';
+import { DocumentVaultPickerModal, VaultDocument } from '@/components/documents/DocumentVaultPickerModal';
 
 interface ChannelMessage {
   id: string;
@@ -59,6 +61,7 @@ export function InboxClient() {
   const [replyText, setReplyText] = useState('');
   const [search, setSearch] = useState('');
   const [alert, setAlert] = useState<string | null>(null);
+  const [isVaultPickerOpen, setIsVaultPickerOpen] = useState(false);
 
   const activeConv = conversations.find((c) => c.id === selectedConvId) || conversations[0] || null;
 
@@ -321,19 +324,29 @@ export function InboxClient() {
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[10px] font-bold">
                   <button
                     type="button"
-                    onClick={handleSendInvoice}
-                    className="px-2.5 py-1 bg-emerald-500/15 hover:bg-amber-500/30 border border-emerald-500/30 text-emerald-300 rounded-lg whitespace-nowrap flex items-center gap-1 cursor-pointer"
+                    onClick={() => setIsVaultPickerOpen(true)}
+                    className="px-2.5 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-emerald-300 rounded-lg whitespace-nowrap flex items-center gap-1 cursor-pointer transition-all shadow-xs"
+                    title="Attach any document, PDF, contract or invoice from Document Vault"
                   >
-                    <Receipt size={12} />
+                    <FolderOpen size={12} />
+                    <span>Attach from Vault</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSendInvoice}
+                    className="px-2.5 py-1 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-slate-300 hover:text-white rounded-lg whitespace-nowrap flex items-center gap-1 cursor-pointer"
+                  >
+                    <Receipt size={12} className="text-emerald-400" />
                     <span>Send Invoice PDF</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleSendPaymentQR}
-                    className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/30 border border-emerald-500/30 text-emerald-300 rounded-lg whitespace-nowrap flex items-center gap-1 cursor-pointer"
+                    className="px-2.5 py-1 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-slate-300 hover:text-white rounded-lg whitespace-nowrap flex items-center gap-1 cursor-pointer"
                   >
-                    <QrCode size={12} />
+                    <QrCode size={12} className="text-emerald-400" />
                     <span>Send Payment Link</span>
                   </button>
 
@@ -355,16 +368,24 @@ export function InboxClient() {
                   }}
                   className="flex items-center gap-2"
                 >
+                  <button
+                    type="button"
+                    onClick={() => setIsVaultPickerOpen(true)}
+                    className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-emerald-500/20 border border-white/[0.1] hover:border-emerald-500/30 text-slate-400 hover:text-emerald-300 transition-all cursor-pointer"
+                    title="Attach file from Document Vault"
+                  >
+                    <Paperclip size={15} />
+                  </button>
                   <input
                     type="text"
-                    placeholder="Type your message..."
+                    placeholder="Type your message or attach vault documents..."
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     className="flex-1 px-3.5 py-2.5 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:bg-white/[0.08]"
                   />
                   <button
                     type="submit"
-                    className="p-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl hover:from-amber-400 hover:to-orange-400 shadow-md cursor-pointer"
+                    className="p-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold rounded-xl hover:from-emerald-400 hover:to-teal-400 shadow-md cursor-pointer"
                   >
                     <Send size={15} />
                   </button>
@@ -420,6 +441,26 @@ export function InboxClient() {
           )}
         </div>
       </div>
+
+      <DocumentVaultPickerModal
+        isOpen={isVaultPickerOpen}
+        onClose={() => setIsVaultPickerOpen(false)}
+        onSelect={(doc: VaultDocument) => {
+          handleSendMessage(
+            `📄 Attached Document from Vault: ${doc.name}`,
+            {
+              type: 'invoice',
+              title: doc.name,
+              amount: `${(doc.size / 1024).toFixed(1)} KB`,
+            }
+          );
+          setAlert(`Attached "${doc.name}" from Document Vault!`);
+          setTimeout(() => setAlert(null), 3000);
+        }}
+        title="Attach from Document Vault"
+        description="Select any document, invoice, proposal, or media from your vault to attach to this chat."
+        actionLabel="Attach to Conversation"
+      />
     </div>
   );
 }

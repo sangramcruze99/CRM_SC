@@ -17,7 +17,12 @@ import {
   Sparkles,
   Receipt,
   Share2,
+  FolderOpen,
+  Paperclip,
+  Plus,
+  Trash2,
 } from 'lucide-react';
+import { DocumentVaultPickerModal, VaultDocument } from '@/components/documents/DocumentVaultPickerModal';
 
 export interface InvoiceDispatchData {
   invoiceNumber: string;
@@ -79,6 +84,8 @@ export function InvoiceDispatchModal({
   const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [attachedVaultDocs, setAttachedVaultDocs] = useState<VaultDocument[]>([]);
+  const [isVaultPickerOpen, setIsVaultPickerOpen] = useState(false);
 
   if (!isOpen || !mounted) return null;
 
@@ -244,21 +251,68 @@ export function InvoiceDispatchModal({
                 </div>
 
                 {/* Attachments & Options */}
-                <div className="p-3.5 bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-between text-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <div className="p-2 bg-emerald-500/15 border border-emerald-500/30 rounded-lg text-emerald-400">
-                      <FileText size={16} />
-                    </div>
-                    <div>
-                      <div className="font-bold text-white">Invoice_{invoice.invoiceNumber}.pdf</div>
-                      <div className="text-[11px] text-slate-400 font-mono">
-                        Auto-generated cryptographic tax PDF attached
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">
+                    <span>Attached Documents</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsVaultPickerOpen(true)}
+                      className="text-emerald-400 hover:text-emerald-300 flex items-center gap-1 font-bold text-[10px] cursor-pointer transition-colors"
+                    >
+                      <Plus size={12} />
+                      <span>Attach from Vault</span>
+                    </button>
+                  </div>
+
+                  {/* Primary System Invoice PDF */}
+                  <div className="p-3 bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-between text-xs">
+                    <div className="flex items-center space-x-2.5">
+                      <div className="p-2 bg-emerald-500/15 border border-emerald-500/30 rounded-lg text-emerald-400">
+                        <FileText size={16} />
+                      </div>
+                      <div>
+                        <div className="font-bold text-white">Invoice_{invoice.invoiceNumber}.pdf</div>
+                        <div className="text-[11px] text-slate-400 font-mono">
+                          Auto-generated cryptographic tax PDF attached
+                        </div>
                       </div>
                     </div>
+                    <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold rounded-md">
+                      System
+                    </span>
                   </div>
-                  <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold rounded-md">
-                    Ready
-                  </span>
+
+                  {/* Additional Documents from Document Vault */}
+                  {attachedVaultDocs.map((doc) => (
+                    <div
+                      key={doc.id}
+                      className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-between text-xs animate-in fade-in"
+                    >
+                      <div className="flex items-center space-x-2.5 overflow-hidden">
+                        <div className="p-2 bg-emerald-500/20 border border-emerald-500/40 rounded-lg text-emerald-300">
+                          <Paperclip size={15} />
+                        </div>
+                        <div className="overflow-hidden">
+                          <div className="font-bold text-white truncate" title={doc.name}>
+                            {doc.name}
+                          </div>
+                          <div className="text-[10px] text-emerald-300/80 font-mono">
+                            {(doc.size / 1024).toFixed(1)} KB · Document Vault
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setAttachedVaultDocs((prev) => prev.filter((d) => d.id !== doc.id))
+                        }
+                        className="p-1 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-white/10 cursor-pointer"
+                        title="Remove attachment"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
 
                 {/* Actions */}
@@ -577,6 +631,20 @@ export function InvoiceDispatchModal({
 
         </div>
       </div>
+
+      {/* Document Vault Selection Modal */}
+      <DocumentVaultPickerModal
+        isOpen={isVaultPickerOpen}
+        onClose={() => setIsVaultPickerOpen(false)}
+        onSelect={(doc: VaultDocument) => {
+          if (!attachedVaultDocs.some((d) => d.id === doc.id)) {
+            setAttachedVaultDocs((prev) => [...prev, doc]);
+          }
+        }}
+        title="Attach Document from Vault"
+        description="Select any supporting contract, SOW, receipt, or spec sheet to attach to this invoice email."
+        actionLabel="Attach to Invoice"
+      />
     </div>,
     document.body
   );

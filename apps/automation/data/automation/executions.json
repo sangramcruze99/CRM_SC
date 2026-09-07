@@ -178,5 +178,2367 @@
     "completedAt": "2026-09-05T17:09:19.553Z",
     "durationMs": 4396,
     "conversionGoal": "CONVERTED"
+  },
+  {
+    "id": "exec_1788792643451_7j84z",
+    "workflowId": "wf_flagship_enterprise",
+    "workflowName": "Flagship Enterprise Nurture (wf_flagship_enterprise)",
+    "workflowVersion": 1,
+    "tenantId": "tenant_synthetic_eval",
+    "contactEmail": "admin@eval.corp",
+    "contactName": "admin Lead",
+    "status": "CONVERTED",
+    "triggerEvent": "CONTACT_ADDED",
+    "startedAt": "2026-09-07T14:50:43.451Z",
+    "currentStepIndex": 8,
+    "steps": [
+      {
+        "stepIndex": 0,
+        "nodeId": "act_email_1",
+        "nodeType": "SEND_EMAIL",
+        "nodeTitle": "Email 1 (Welcome / Value)",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-07T14:50:43.452Z",
+        "completedAt": "2026-09-07T14:50:44.048Z",
+        "durationMs": 596,
+        "output": {
+          "actionType": "SEND_EMAIL",
+          "nodeId": "act_email_1",
+          "stepName": "Email 1 (Welcome / Value)",
+          "to": "admin@eval.corp",
+          "subject": "Executive Briefing: Business OS ROI & Architecture for Hyperion Technologies",
+          "preview": "Hello admin,\n\nFollowing up on your interest in Business OS for Enterprise Prospect. Modern leaders in Enterprise SaaS are unifying CRM pipelines, automated bill",
+          "activityId": "cmtrcydma000gshdpdt5n0m64",
+          "resendStatus": "FAILED",
+          "optimalSendTime": "Tuesday at 10:15 AM (Local Time)",
+          "optimalSendRationale": "B2B Tech & SaaS executives demonstrate peak email triage and link click-through velocity on Tuesday mid-mornings.",
+          "smartIndustryBlockApplied": "Enterprise SaaS",
+          "status": "DISPATCH_ERROR"
+        }
+      },
+      {
+        "stepIndex": 1,
+        "nodeId": "act_delay_1",
+        "nodeType": "DELAY",
+        "nodeTitle": "Wait 24 HOURS",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-07T14:50:44.049Z",
+        "completedAt": "2026-09-07T14:50:44.049Z",
+        "durationMs": 0,
+        "output": {
+          "actionType": "DELAY",
+          "nodeId": "act_delay_1",
+          "duration": 24,
+          "unit": "HOURS",
+          "resumeAt": "2026-09-08T14:50:44.049Z",
+          "status": "SCHEDULED"
+        }
+      },
+      {
+        "stepIndex": 2,
+        "nodeId": "act_cond_1",
+        "nodeType": "CONDITION",
+        "nodeTitle": "Did contact click link in Email 1?",
+        "branch": "YES",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-07T14:50:44.051Z",
+        "completedAt": "2026-09-07T14:50:44.051Z",
+        "durationMs": 0,
+        "output": {
+          "actionType": "CONDITION",
+          "nodeId": "act_cond_1",
+          "conditionType": "CLICKED_EMAIL",
+          "description": "Did contact click link in Email 1?",
+          "evaluationResult": "YES",
+          "selectedBranch": "YES Branch",
+          "rationale": "Link click telemetry event detected within 24h window.",
+          "status": "EVALUATED"
+        }
+      },
+      {
+        "stepIndex": 3,
+        "nodeId": "act_score_10",
+        "nodeType": "UPDATE_LEAD_SCORE",
+        "nodeTitle": "Update Lead Score (+10)",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-07T14:50:44.053Z",
+        "completedAt": "2026-09-07T14:50:44.192Z",
+        "durationMs": 139,
+        "output": {
+          "actionType": "UPDATE_LEAD_SCORE",
+          "nodeId": "act_score_10",
+          "scoreDelta": 10,
+          "previousScore": 20,
+          "newScore": 30,
+          "thresholdReached": false,
+          "status": "APPLIED"
+        }
+      },
+      {
+        "stepIndex": 4,
+        "nodeId": "act_score_gate",
+        "nodeType": "CONDITION",
+        "nodeTitle": "Check if lead score is >= 50 for Sales Qualification",
+        "branch": "NO",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-07T14:50:44.193Z",
+        "completedAt": "2026-09-07T14:50:44.193Z",
+        "durationMs": 0,
+        "output": {
+          "actionType": "CONDITION",
+          "nodeId": "act_score_gate",
+          "conditionType": "SCORE_ABOVE",
+          "description": "Check if lead score is >= 50 for Sales Qualification",
+          "evaluationResult": "NO",
+          "selectedBranch": "NO Branch",
+          "rationale": "Current lead score (30) < threshold (50).",
+          "status": "EVALUATED"
+        }
+      },
+      {
+        "stepIndex": 5,
+        "nodeId": "act_notify_sales",
+        "nodeType": "NOTIFY_SALES",
+        "nodeTitle": "Notify Sales (Enterprise Account Executive)",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-07T14:50:44.194Z",
+        "completedAt": "2026-09-07T14:50:44.260Z",
+        "durationMs": 66,
+        "output": {
+          "actionType": "NOTIFY_SALES",
+          "nodeId": "act_notify_sales",
+          "rep": "Enterprise Account Executive",
+          "channel": "SLACK",
+          "message": "🔥 Hot Lead Qualified: admin Lead from Hyperion Technologies reached 30 points!",
+          "activityId": "cmtrcydsz000kshdpsz32l3ly",
+          "status": "DISPATCHED"
+        }
+      },
+      {
+        "stepIndex": 6,
+        "nodeId": "act_create_task",
+        "nodeType": "CREATE_CRM_TASK",
+        "nodeTitle": "Create Task: \"Schedule 15-min Architecture Review for admin (Hyperion Technologies)\"",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-07T14:50:44.261Z",
+        "completedAt": "2026-09-07T14:50:44.392Z",
+        "durationMs": 131,
+        "output": {
+          "actionType": "CREATE_CRM_TASK",
+          "nodeId": "act_create_task",
+          "taskTitle": "Schedule 15-min Architecture Review for admin (Hyperion Technologies)",
+          "taskId": "cmtrcyduw000mshdp9tmt1683",
+          "assignedTo": "Active Account Exec",
+          "priority": "HIGH",
+          "activityId": "cmtrcydwn000oshdpgy68q8sf",
+          "status": "CREATED"
+        }
+      },
+      {
+        "stepIndex": 7,
+        "nodeId": "act_exit_goal",
+        "nodeType": "EXIT_WORKFLOW",
+        "nodeTitle": "Goal Achieved: CONVERTED",
+        "status": "SUCCESS",
+        "startedAt": "2026-09-07T14:50:44.393Z",
+        "completedAt": "2026-09-07T14:50:44.449Z",
+        "durationMs": 56,
+        "output": {
+          "actionType": "EXIT_WORKFLOW",
+          "nodeId": "act_exit_goal",
+          "goal": "CONVERTED",
+          "status": "GOAL_COMPLETED"
+        }
+      }
+    ],
+    "finalLeadScore": 30,
+    "activeTags": [
+      "New Lead",
+      "Website Behavioral Capture"
+    ],
+    "completedAt": "2026-09-07T14:50:44.450Z",
+    "durationMs": 999,
+    "conversionGoal": "CONVERTED"
+  },
+  {
+    "id": "exec_1788793068379_z24ug",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "admin@crm.internal",
+    "contactName": "admin Lead",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T14:57:48.379Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 20,
+    "activeTags": [
+      "New Lead",
+      "Website Behavioral Capture"
+    ],
+    "completedAt": "2026-09-07T14:57:48.381Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788793293108_7yspt",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T15:01:33.108Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T15:01:33.109Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801548967_pe6ty",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:19:08.967Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:19:08.968Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801548972_i7x1p",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:19:08.972Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:19:08.973Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801638261_mq9al",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:20:38.261Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:20:38.262Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801638433_6gsrw",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:20:38.433Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:20:38.434Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801662972_76b6x",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:02.972Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:02.974Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801662979_c3hgt",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:02.979Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:02.983Z",
+    "durationMs": 4
+  },
+  {
+    "id": "exec_1788801663222_whnd7",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:03.222Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:03.224Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801663299_3xcs5",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:03.299Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:03.300Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801663441_2l7u8",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:03.441Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:03.445Z",
+    "durationMs": 4
+  },
+  {
+    "id": "exec_1788801663446_0th0h",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:03.446Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:03.449Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788801663689_1xuk4",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:03.689Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:03.690Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801663782_w5lka",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:03.782Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:03.787Z",
+    "durationMs": 5
+  },
+  {
+    "id": "exec_1788801663951_x61dy",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:03.951Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:03.953Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801663966_ip17p",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:03.966Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:03.968Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801664215_xc1n8",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:04.215Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:04.216Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801664217_ehwmp",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:04.217Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:04.219Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801664477_khj0a",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:04.477Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:04.479Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801664570_kgo5o",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:04.570Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:04.571Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801664755_chhti",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:04.755Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:04.757Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801664769_qro8x",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:04.769Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:04.771Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801665050_hwshf",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:05.050Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:05.052Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801665053_ljhdt",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:05.053Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:05.055Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801665469_h81b1",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:05.469Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:05.470Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801665483_k3vq7",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:05.483Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:05.484Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801665858_avysw",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:05.858Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:05.859Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801665872_ehmw7",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:21:05.872Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:21:05.883Z",
+    "durationMs": 11
+  },
+  {
+    "id": "exec_1788801764841_uhxi2",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:44.841Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:44.843Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801765104_pbrwr",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.104Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.108Z",
+    "durationMs": 4
+  },
+  {
+    "id": "exec_1788801765111_6esuf",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.111Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.112Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801765114_nanlq",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.114Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.116Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801765404_290dc",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.404Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.424Z",
+    "durationMs": 20
+  },
+  {
+    "id": "exec_1788801765430_vfagb",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.430Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.435Z",
+    "durationMs": 5
+  },
+  {
+    "id": "exec_1788801765672_670v6",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.672Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.674Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801765748_tbf4k",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.748Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.749Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801765916_cg5st",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.916Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.918Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801765931_t1464",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:45.931Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:45.934Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788801766425_up5tb",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:46.425Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:46.428Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788801766435_avnbj",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:46.435Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:46.437Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801766640_wglr2",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:46.640Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:46.643Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788801766716_u6nko",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:46.716Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:46.717Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801766812_3mi5s",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:46.812Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:46.814Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801766816_f5f6d",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:46.816Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:46.817Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801766920_x7fzj",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:46.920Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:46.921Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801767169_a4fxg",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:47.169Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:47.171Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801767325_ner5o",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:47.325Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:47.326Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788801767401_rssox",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:47.401Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:47.403Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801767715_3hd5q",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:47.715Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:47.717Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788801767729_atwq9",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T17:22:47.729Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T17:22:47.730Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788807910013_kvrs5",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T19:05:10.013Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T19:05:10.015Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788807910017_ccsfh",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T19:05:10.017Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T19:05:10.019Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788807965269_ebzzs",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T19:06:05.269Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T19:06:05.270Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788807965283_ghr96",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T19:06:05.283Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T19:06:05.284Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788811880139_fy6nz",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:11:20.139Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:11:20.144Z",
+    "durationMs": 5
+  },
+  {
+    "id": "exec_1788811880146_up6df",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:11:20.146Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:11:20.149Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788811880417_s1cqa",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:11:20.417Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:11:20.419Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788811880421_vtgyy",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:11:20.421Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:11:20.422Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788813211660_ozmxh",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:33:31.660Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:33:31.662Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813211664_gcoz2",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:33:31.665Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:33:31.667Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813211940_ulci3",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:33:31.940Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:33:31.943Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788813211954_ideem",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:33:31.954Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:33:31.956Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813232823_gf6vs",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:33:52.823Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:33:52.825Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813232827_cqfrg",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:33:52.827Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:33:52.828Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788813464333_mgrdx",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:44.333Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:44.336Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788813464347_16wyw",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:44.347Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:44.350Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788813464623_h2psj",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:44.623Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:44.624Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788813464626_2tgye",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:44.626Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:44.628Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813464869_6e5xv",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:44.869Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:44.870Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788813464946_9x42p",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:44.946Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:44.948Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813465103_coue7",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:45.103Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:45.104Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788813465116_60e3y",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:45.116Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:45.118Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813465380_nyq5f",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:45.380Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:45.382Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813465394_znp2b",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:45.394Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:45.396Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813465612_soqqi",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:45.612Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:45.613Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788813465614_rly4g",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:45.614Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:45.616Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813465857_f7x9s",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:45.857Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:45.863Z",
+    "durationMs": 6
+  },
+  {
+    "id": "exec_1788813466152_nnevj",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:46.152Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:46.153Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788813466155_s5a5j",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:46.155Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:46.158Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788813466381_jgj1r",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:46.381Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:46.383Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813466388_i37sg",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:46.388Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:46.390Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813466612_jlvih",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:46.612Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:46.614Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813466767_hrooc",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:46.767Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:46.769Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813466771_z2k4x",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:46.771Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:46.774Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788813467092_nng2t",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:47.092Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:47.095Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788813467106_su3kq",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:37:47.106Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:37:47.109Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788813766312_rm3rd",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:42:46.312Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:42:46.314Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813766320_q378d",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:42:46.320Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:42:46.322Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813766403_l8bf7",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:42:46.403Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:42:46.408Z",
+    "durationMs": 5
+  },
+  {
+    "id": "exec_1788813766410_twnzl",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:42:46.410Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:42:46.412Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788813766416_3zyvi",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:42:46.416Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:42:46.419Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788813766421_nogmq",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:42:46.421Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:42:46.423Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788814110504_3dgjv",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:48:30.504Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:48:30.506Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788814110749_2ntx7",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:48:30.749Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:48:30.750Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788814110753_t5sk9",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:48:30.753Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:48:30.755Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788814110765_xida8",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:48:30.765Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:48:30.767Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788814110780_mbjiw",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:48:30.780Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:48:30.782Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788814110795_3cgny",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T20:48:30.795Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T20:48:30.797Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788815356877_vai27",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T21:09:16.877Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T21:09:16.879Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788815356891_iwrjz",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T21:09:16.891Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T21:09:16.892Z",
+    "durationMs": 1
+  },
+  {
+    "id": "exec_1788815370772_zhym5",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T21:09:30.772Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T21:09:30.774Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788815370788_y53yb",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T21:09:30.788Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T21:09:30.794Z",
+    "durationMs": 6
+  },
+  {
+    "id": "exec_1788816512051_ee4uy",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T21:28:32.051Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T21:28:32.053Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788816512225_nqfog",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T21:28:32.225Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T21:28:32.228Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788816512299_0kj26",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T21:28:32.299Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T21:28:32.301Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788816512313_9c1fz",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T21:28:32.314Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T21:28:32.321Z",
+    "durationMs": 7
+  },
+  {
+    "id": "exec_1788823787880_i3gbf",
+    "workflowId": "cmtonhdzr000t3u6ohv2glpmr",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T23:29:47.880Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T23:29:47.883Z",
+    "durationMs": 3
+  },
+  {
+    "id": "exec_1788823787885_tfa6d",
+    "workflowId": "cmtrti81d001bm05l7nbepeuy",
+    "workflowName": "Autonomous Recruitment Resume Screener & Scheduler",
+    "workflowVersion": 2,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T23:29:47.885Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T23:29:47.887Z",
+    "durationMs": 2
+  },
+  {
+    "id": "exec_1788823787889_8ewgf",
+    "workflowId": "cmtrdg1ab000ushdpa52bkprt",
+    "workflowName": "Autonomous OCR Invoice & Dual Khata Reconciler",
+    "workflowVersion": 1,
+    "tenantId": "default-tenant",
+    "contactEmail": "elena.rostova@hyperion.io",
+    "contactName": "Elena Rostova",
+    "status": "COMPLETED",
+    "triggerEvent": "trigger:document_uploaded",
+    "startedAt": "2026-09-07T23:29:47.889Z",
+    "currentStepIndex": 0,
+    "steps": [],
+    "finalLeadScore": 45,
+    "activeTags": [
+      "New Lead"
+    ],
+    "completedAt": "2026-09-07T23:29:47.890Z",
+    "durationMs": 1
   }
 ]

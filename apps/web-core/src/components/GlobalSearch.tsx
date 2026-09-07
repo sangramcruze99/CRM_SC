@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRoleWorkspace, WorkspaceRole } from "./platform/RoleWorkspaceContext";
+import { MASTER_NAV_ITEMS, BUSINESS_DOMAINS } from "@/lib/navigation.config";
 
 interface CommandItem {
   id: string;
@@ -32,6 +33,7 @@ interface CommandItem {
   url?: string;
   action?: () => void;
   icon: any;
+  keywords?: string[];
 }
 
 export function GlobalSearch() {
@@ -101,28 +103,29 @@ export function GlobalSearch() {
     {
       id: 'page-dashboard',
       title: 'Executive Revenue Dashboard',
-      subtitle: 'Dual-curve cash-flow charts and ARR metrics',
+      subtitle: 'Sales & CRM · Dual-curve cash-flow charts and ARR metrics',
       type: 'PAGE',
       url: '/dashboard',
       icon: DollarSign,
-    },
-    {
-      id: 'page-invoices',
-      title: 'Billing & Commercial Invoices',
-      subtitle: 'PDF invoice generator and payment statuses',
-      type: 'PAGE',
-      url: '/invoices',
-      icon: Receipt,
-    },
-    {
-      id: 'page-deals',
-      title: 'Deals Pipeline & Next Best Action',
-      subtitle: 'Kanban stages and predictive deal scoring',
-      type: 'PAGE',
-      url: '/deals',
-      icon: Briefcase,
+      keywords: ['dashboard', 'home', 'metrics', 'cash flow'],
     },
   ];
+
+  // Dynamic catalog navigation commands for all canonical business domains
+  const PAGE_COMMANDS: CommandItem[] = MASTER_NAV_ITEMS.map((item) => {
+    const domain = BUSINESS_DOMAINS[item.domain];
+    return {
+      id: `nav-${item.id}`,
+      title: item.label,
+      subtitle: `${domain?.title || 'Business OS'} · ${item.href}`,
+      type: 'PAGE',
+      url: item.href,
+      icon: item.domain === 'ai' ? Sparkles : item.domain === 'finance' ? Receipt : item.domain === 'marketing' ? Zap : Briefcase,
+      keywords: [item.domain, domain?.title || '', ...(item.keywords || [])],
+    };
+  });
+
+  const ALL_COMMANDS = [...QUICK_COMMANDS, ...PAGE_COMMANDS];
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -142,13 +145,16 @@ export function GlobalSearch() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Filter commands and search items
+  // Filter commands and search items matching title, subtitle, or keywords
   const filteredCommands = query
-    ? QUICK_COMMANDS.filter(
-        (c) =>
-          c.title.toLowerCase().includes(query.toLowerCase()) ||
-          c.subtitle.toLowerCase().includes(query.toLowerCase())
-      )
+    ? ALL_COMMANDS.filter((c) => {
+        const q = query.toLowerCase().trim();
+        return (
+          c.title.toLowerCase().includes(q) ||
+          c.subtitle.toLowerCase().includes(q) ||
+          (c.keywords && c.keywords.some((k) => k.toLowerCase().includes(q)))
+        );
+      })
     : QUICK_COMMANDS;
 
   const totalItems = filteredCommands.length + results.length;
@@ -176,17 +182,22 @@ export function GlobalSearch() {
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <button 
         onClick={() => {
           setIsOpen(true);
           setTimeout(() => inputRef.current?.focus(), 100);
         }}
-        className="flex items-center space-x-2.5 px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white rounded-xl text-xs font-semibold transition-all border border-slate-200 dark:border-white/[0.1] shadow-xs cursor-pointer active:scale-[0.98]"
+        className="w-full h-8.5 flex items-center justify-between px-3 bg-slate-100 hover:bg-slate-200/90 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 rounded-xl text-xs font-medium transition-all border border-slate-200 dark:border-white/[0.08] hover:border-emerald-500/40 shadow-xs cursor-pointer active:scale-[0.99] whitespace-nowrap"
+        title="Universal Search & Command Palette (⌘K / Ctrl+K)"
       >
-        <Search size={14} className="text-emerald-600 dark:text-emerald-400" />
-        <span>Command Palette...</span>
-        <span className="text-[10px] font-mono font-bold bg-slate-200 dark:bg-white/[0.08] text-emerald-700 dark:text-emerald-400 px-1.5 py-0.5 rounded-md border border-slate-300 dark:border-white/10 ml-2 shadow-2xs">⌘K</span>
+        <div className="flex items-center gap-2 min-w-0">
+          <Search size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span className="truncate text-slate-600 dark:text-slate-300 font-medium">Search or jump to...</span>
+        </div>
+        <kbd className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/15 shrink-0 ml-2">
+          ⌘K
+        </kbd>
       </button>
 
       {isOpen && mounted && createPortal(

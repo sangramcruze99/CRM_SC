@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { openAgentModal } from './ai/ContextualAgentModal';
 import { useIndustry } from './industry/IndustryContext';
 import { useRoleWorkspace, WORKSPACE_ROLES, WorkspaceRole } from './platform/RoleWorkspaceContext';
 import { useSidebar } from './platform/SidebarContext';
@@ -62,8 +63,16 @@ import {
   Layout,
   CreditCard,
   CheckCircle2,
+  CheckSquare,
+  ListTodo,
+  LayoutGrid,
   Shield,
+  Clock,
+  Network,
+  FileText,
+  AlertTriangle,
 } from 'lucide-react';
+import { resolveNavigationSections } from '@/lib/navigation.config';
 
 const ICON_MAP: Record<string, any> = {
   CreditCard,
@@ -82,6 +91,9 @@ const ICON_MAP: Record<string, any> = {
   Users,
   Briefcase,
   ClipboardList,
+  CheckSquare,
+  ListTodo,
+  LayoutGrid,
   Receipt,
   Ticket,
   Contact,
@@ -116,11 +128,17 @@ const ICON_MAP: Record<string, any> = {
   Sliders,
   CheckCircle2,
   Shield,
+  Clock,
+  Network,
+  FileText,
+  AlertTriangle,
 };
 
 const SECTION_ICONS: Record<string, any> = {
   '✨ AI Intelligence': Sparkles,
+  'AI Intelligence': Sparkles,
   'Core CRM & Sales Hub': Briefcase,
+  'Sales & CRM': Briefcase,
   'Core CRM': Briefcase,
   'Omnichannel & Growth': MessageSquare,
   'Marketing & Growth': TrendingUp,
@@ -129,11 +147,97 @@ const SECTION_ICONS: Record<string, any> = {
   'Industry Workspaces': Sparkles,
   'Automation & Enterprise': Workflow,
   'Platform & Operations': Layers,
+  'Customer Service': Ticket,
+  'AI Automation OS': Workflow,
+  'Automation OS': Workflow,
+  'Operations & Comms': Phone,
+  'Projects & Tasks': ClipboardList,
+  'People & HR': Users,
+  'Inventory & Products': Layers,
+  'Documents & Legal': Folder,
+  'Analytics & BI': Activity,
+  'Administration & Security': Shield,
+  'Developer & Engineering': Code2,
 };
+
+/**
+ * Universal route, subpath, and agent active state matcher.
+ * Accurately matches exact routes, nested sub-paths (/deals/[id]), query params, and open agent drawers.
+ */
+function isItemActive(
+  itemHref: string,
+  pathname: string,
+  activeModalAgent: string | null,
+  itemAgentId?: string,
+  currentHash: string = ''
+): boolean {
+  if (!pathname) return false;
+
+  // 1. If an agent drawer/modal is active and matches this item's agentId
+  if (itemAgentId && activeModalAgent && itemAgentId === activeModalAgent) {
+    return true;
+  }
+
+  // Parse itemHref components (strip query params and hashes)
+  const [baseWithoutHash, itemHash] = itemHref.split('#');
+  const [cleanItemPath, itemQuery] = baseWithoutHash.split('?');
+
+  // 2. For AI agent items, prioritize modal state or exact ?agent= query match,
+  // preventing false positive collisions with core department landing pages (e.g. Ares vs AI Sales Department)
+  if (itemAgentId) {
+    if (activeModalAgent === itemAgentId) return true;
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('agent') === itemAgentId) return true;
+    }
+    return false;
+  }
+
+  // 3. Base path check (exact or nested sub-path like /deals/[id] -> /deals)
+  const isBasePathMatch =
+    pathname === cleanItemPath ||
+    (cleanItemPath !== '/' &&
+      cleanItemPath !== '/dashboard' &&
+      pathname.startsWith(cleanItemPath + '/'));
+
+  if (!isBasePathMatch) {
+    return false;
+  }
+
+  // 4. If item specifies a hash anchor (e.g. #followup or #risk), verify hash matches in client
+  if (itemHash) {
+    const activeHash = currentHash || (typeof window !== 'undefined' ? window.location.hash : '');
+    const cleanActiveHash = activeHash.replace(/^#/, '');
+    return cleanActiveHash === itemHash;
+  }
+
+  // 5. If item specifies query parameters (e.g. ?dept=finance), verify all match
+  if (itemQuery) {
+    if (typeof window !== 'undefined') {
+      const currentParams = new URLSearchParams(window.location.search);
+      const expectedParams = new URLSearchParams(itemQuery);
+      let allMatch = true;
+      expectedParams.forEach((val, key) => {
+        if (currentParams.get(key) !== val) allMatch = false;
+      });
+      return allMatch;
+    }
+    return false;
+  }
+
+  // 6. If the current URL has a specific hash, generic base route shouldn't highlight over hash anchor
+  const activeHash = currentHash || (typeof window !== 'undefined' ? window.location.hash : '');
+  if (activeHash && activeHash.length > 1) {
+    return false;
+  }
+
+  return true;
+}
 
 export function SidebarNav() {
   const pathname = usePathname();
-  const { currentNiche, setNiche, nicheConfig, allNiches } = useIndustry();
+  const router = useRouter();
+  const { currentNiche, setNiche, nicheConfig, allNiches, activeFeatureIds } = useIndustry();
   const { currentRole, setRole, roleConfig, allRoles, isPathVisible } = useRoleWorkspace();
   const { isCollapsed, toggleSidebar } = useSidebar();
   const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
@@ -142,6 +246,52 @@ export function SidebarNav() {
   
   // Track open/collapsed state of each main navigation dropdown
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+
+  // Active AI agent modal tracking
+  const [activeModalAgent, setActiveModalAgent] = useState<string | null>(null);
+
+  // Track URL hash for precise anchor sub-item matching (e.g. #followup, #risk)
+  const [currentHash, setCurrentHash] = useState('');
+
+  useEffect(() => {
+    const updateHash = () => {
+      if (typeof window !== 'undefined') {
+        setCurrentHash(window.location.hash);
+      }
+    };
+    updateHash();
+    window.addEventListener('hashchange', updateHash);
+    window.addEventListener('popstate', updateHash);
+    return () => {
+      window.removeEventListener('hashchange', updateHash);
+      window.removeEventListener('popstate', updateHash);
+    };
+  }, [pathname]);
+
+  useEffect(() => {
+    const handleOpen = (e: CustomEvent<{ agentId: string }>) => {
+      if (e.detail?.agentId) setActiveModalAgent(e.detail.agentId);
+    };
+    const handleClose = () => setActiveModalAgent(null);
+
+    window.addEventListener('open-agent-modal', handleOpen as EventListener);
+    window.addEventListener('close-agent-modal', handleClose as EventListener);
+    return () => {
+      window.removeEventListener('open-agent-modal', handleOpen as EventListener);
+      window.removeEventListener('close-agent-modal', handleClose as EventListener);
+    };
+  }, []);
+
+  // Resolve business domain navigation sections deterministically
+  const navigationSections = useMemo(() => {
+    return resolveNavigationSections({
+      niche: currentNiche,
+      nicheConfig,
+      activeFeatureIds,
+      isPathVisible,
+      pathname,
+    });
+  }, [currentNiche, nicheConfig, activeFeatureIds, isPathVisible, pathname]);
 
   useEffect(() => {
     if (!isRoleDropdownOpen) return;
@@ -167,27 +317,43 @@ export function SidebarNav() {
     };
   }, [isRoleDropdownOpen]);
 
-  // Auto-expand the dropdown category that contains the currently active page
+  // Auto-expand the dropdown category that contains the currently active page or open agent
   useEffect(() => {
-    nicheConfig.navigationSections.forEach((section) => {
-      const hasActiveChild = section.items.some((item) => item.href === pathname);
-      if (hasActiveChild) {
-        setOpenSections((prev) => ({ ...prev, [section.sectionTitle]: true }));
-      }
-    });
-  }, [pathname, nicheConfig]);
+    const activeSection = navigationSections.find((sec) =>
+      sec.items.some((item) => isItemActive(item.href, pathname, activeModalAgent, item.agentId)) ||
+      (sec.aiItems && sec.aiItems.some((item) => isItemActive(item.href, pathname, activeModalAgent, item.agentId)))
+    );
+    if (activeSection) {
+      setOpenSections((prev) => {
+        if (prev[activeSection.sectionTitle]) return prev;
+        return { ...prev, [activeSection.sectionTitle]: true };
+      });
+    }
+  }, [pathname, navigationSections, activeModalAgent]);
 
   const toggleSection = (title: string) => {
-    setOpenSections((prev) => ({
-      ...prev,
-      [title]: prev[title] !== undefined ? !prev[title] : false,
-    }));
+    setOpenSections((prev) => {
+      const isCurrentlyOpen =
+        prev[title] !== undefined
+          ? prev[title]
+          : Boolean(navigationSections.find((s) => s.sectionTitle === title)?.defaultExpanded);
+      return {
+        ...prev,
+        [title]: !isCurrentlyOpen,
+      };
+    });
   };
 
   const toggleAllSections = () => {
-    const allOpen = Object.values(openSections).every(Boolean) && Object.keys(openSections).length === nicheConfig.navigationSections.length;
+    const allOpen =
+      navigationSections.length > 0 &&
+      navigationSections.every((sec) => {
+        return openSections[sec.sectionTitle] !== undefined
+          ? openSections[sec.sectionTitle]
+          : Boolean(sec.defaultExpanded);
+      });
     const newState: Record<string, boolean> = {};
-    nicheConfig.navigationSections.forEach((sec) => {
+    navigationSections.forEach((sec) => {
       newState[sec.sectionTitle] = !allOpen;
     });
     setOpenSections(newState);
@@ -414,55 +580,98 @@ export function SidebarNav() {
           </button>
         </div>
 
-        {nicheConfig.navigationSections.map((section, idx) => {
-          // Filter items based on active role workspace
-          const visibleItems = section.items.filter((item) => isPathVisible(item.href));
-          if (visibleItems.length === 0) return null;
+        {navigationSections.map((section, idx) => {
+          const visibleItems = section.items;
+          const aiItems = section.aiItems || [];
+          const totalItems = visibleItems.length + aiItems.length;
+          if (totalItems === 0) return null;
 
-          // Check if dropdown is open (default: first section open or explicitly opened)
-          const isOpen = openSections[section.sectionTitle] !== undefined ? openSections[section.sectionTitle] : idx === 0;
-          const hasActiveChild = visibleItems.some((item) => item.href === pathname);
-          const SectionIcon = SECTION_ICONS[section.sectionTitle] || Layers;
+          // Check if dropdown is open (respect user toggle or default domain expansion / active child)
+          const isOpen = openSections[section.sectionTitle] !== undefined
+            ? openSections[section.sectionTitle]
+            : section.defaultExpanded;
+          const hasActiveChild =
+            visibleItems.some((item) => isItemActive(item.href, pathname, activeModalAgent, item.agentId, currentHash)) ||
+            aiItems.some((item) => isItemActive(item.href, pathname, activeModalAgent, item.agentId, currentHash));
+          const SectionIcon = ICON_MAP[section.iconName] || SECTION_ICONS[section.sectionTitle] || Layers;
 
           return (
-            <div key={idx} className="rounded-2xl overflow-hidden border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.015]">
+            <div
+              key={idx}
+              className={`rounded-2xl overflow-hidden transition-all duration-200 border ${
+                hasActiveChild
+                  ? 'border-emerald-500/50 dark:border-emerald-500/40 bg-emerald-500/[0.04] dark:bg-emerald-950/[0.2] shadow-sm shadow-emerald-950/5'
+                  : isOpen
+                  ? 'border-emerald-500/30 dark:border-emerald-500/25 bg-slate-100/70 dark:bg-emerald-950/[0.08]'
+                  : 'border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-white/[0.015]'
+              }`}
+            >
               {/* Main Option (Dropdown Header Trigger) */}
               <button
                 type="button"
                 onClick={() => toggleSection(section.sectionTitle)}
                 className={`w-full px-3 py-2.5 flex items-center justify-between text-left transition-all cursor-pointer select-none group ${
                   hasActiveChild
-                    ? 'bg-emerald-500/15 text-emerald-900 dark:text-emerald-300 font-extrabold border-l-2 border-emerald-600 dark:border-emerald-400'
+                    ? 'bg-emerald-500/15 text-emerald-950 dark:text-emerald-300 font-extrabold border-l-2 border-emerald-600 dark:border-emerald-400'
+                    : isOpen
+                    ? 'bg-emerald-500/[0.08] dark:bg-emerald-500/[0.06] text-emerald-900 dark:text-emerald-200 font-bold border-l-2 border-emerald-500/40'
                     : 'text-slate-900 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.04]'
                 }`}
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <SectionIcon
                     size={15}
-                    className={hasActiveChild ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors'}
+                    className={
+                      hasActiveChild
+                        ? 'text-emerald-600 dark:text-emerald-400 shrink-0'
+                        : isOpen
+                        ? 'text-emerald-600/90 dark:text-emerald-400/90 shrink-0'
+                        : 'text-slate-600 dark:text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors shrink-0'
+                    }
                   />
-                  <span className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
+                  <span
+                    className={`text-xs font-extrabold truncate ${
+                      hasActiveChild
+                        ? 'text-emerald-950 dark:text-emerald-300'
+                        : isOpen
+                        ? 'text-emerald-900 dark:text-emerald-200'
+                        : 'text-slate-900 dark:text-slate-200 group-hover:text-slate-950 dark:group-hover:text-white'
+                    }`}
+                  >
                     {section.sectionTitle}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0 ml-1">
-                  <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-md bg-slate-200 dark:bg-white/[0.06] text-slate-800 dark:text-slate-400 border border-slate-300 dark:border-transparent">
-                    {visibleItems.length}
+                  <span
+                    className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded-md transition-colors ${
+                      hasActiveChild
+                        ? 'bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border border-emerald-500/40'
+                        : isOpen
+                        ? 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300/90 border border-emerald-500/30'
+                        : 'bg-slate-200 dark:bg-white/[0.06] text-slate-800 dark:text-slate-400 border border-slate-300 dark:border-transparent'
+                    }`}
+                  >
+                    {totalItems}
                   </span>
                   <ChevronRight
                     size={13}
-                    className={`text-slate-500 dark:text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-90 text-emerald-600 dark:text-emerald-400' : ''}`}
+                    className={`transition-transform duration-200 ${
+                      isOpen
+                        ? 'rotate-90 text-emerald-600 dark:text-emerald-400'
+                        : 'text-slate-500 dark:text-slate-400'
+                    }`}
                   />
                 </div>
               </button>
 
               {/* Sub-Options List (Accordion Body with Tree Connector Line) */}
               {isOpen && (
-                <div className="pl-2.5 pr-2 py-1.5 space-y-1 border-l-2 border-slate-200 dark:border-white/[0.08] ml-3.5 my-1 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="pl-2.5 pr-2 py-1.5 space-y-1 border-l-2 border-emerald-500/30 dark:border-emerald-500/20 ml-3.5 my-1 animate-in fade-in slide-in-from-top-1 duration-150">
+                  {/* 1. Core Domain Capabilities */}
                   {visibleItems.map((item) => {
                     const IconComp = ICON_MAP[item.iconName] || Layers;
-                    const isActive = pathname === item.href;
+                    const isActive = isItemActive(item.href, pathname, activeModalAgent, item.agentId, currentHash);
 
                     return (
                       <Link
@@ -471,7 +680,7 @@ export function SidebarNav() {
                         title={item.label}
                         className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all group ${
                           isActive
-                            ? 'bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border border-emerald-500/40 shadow-xs'
+                            ? 'bg-emerald-500/20 text-emerald-950 dark:text-emerald-300 border border-emerald-500/40 shadow-xs'
                             : 'text-slate-800 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/[0.06]'
                         }`}
                       >
@@ -495,6 +704,61 @@ export function SidebarNav() {
                       </Link>
                     );
                   })}
+
+                  {/* 2. Contextual AI Automation Sub-Section */}
+                  {aiItems.length > 0 && (
+                    <div className="pt-2 mt-1.5 border-t border-slate-200/80 dark:border-white/[0.06] space-y-1">
+                      <div className="px-2 py-0.5 flex items-center justify-between text-[9px] font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                        <span className="flex items-center gap-1">
+                          <Sparkles size={10} className="text-emerald-600 dark:text-emerald-400" />
+                          <span>AI Automation</span>
+                        </span>
+                        <span className="text-[8px] font-mono px-1 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 font-bold">
+                          {aiItems.length}
+                        </span>
+                      </div>
+
+                      {aiItems.map((aiItem) => {
+                        const IconComp = ICON_MAP[aiItem.iconName] || Bot;
+                        const isActive = isItemActive(aiItem.href, pathname, activeModalAgent, aiItem.agentId, currentHash);
+
+                        return (
+                          <button
+                            key={aiItem.id}
+                            type="button"
+                            onClick={() => {
+                              if (aiItem.agentId) {
+                                openAgentModal(aiItem.agentId);
+                              } else {
+                                router.push(aiItem.href);
+                              }
+                            }}
+                            title={aiItem.label}
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all group text-left cursor-pointer ${
+                              isActive
+                                ? 'bg-emerald-500/20 text-emerald-950 dark:text-emerald-300 border border-emerald-500/40 shadow-xs'
+                                : 'text-slate-800 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white hover:bg-emerald-500/10 dark:hover:bg-emerald-500/10'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-2 min-w-0 pr-1">
+                              <span className="text-xs shrink-0">🤖</span>
+                              <span className="truncate">{aiItem.label}</span>
+                            </div>
+
+                            {aiItem.badge && (
+                              <span className={`px-1.5 py-0.2 rounded-md text-[9px] font-bold shrink-0 font-mono ${
+                                isActive
+                                  ? 'bg-emerald-500/30 text-emerald-950 dark:text-emerald-200 border border-emerald-500/40'
+                                  : 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30'
+                              }`}>
+                                {aiItem.badge}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

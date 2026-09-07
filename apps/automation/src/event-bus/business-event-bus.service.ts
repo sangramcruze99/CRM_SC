@@ -130,13 +130,20 @@ export class BusinessEventBusService implements OnModuleInit {
     // 5. Match & Dispatch to Subscribed Workflows
     const dispatchedWorkflows: string[] = [];
     try {
+      const triggerVariants = [
+        type,
+        type.toLowerCase(),
+        `trigger:${type.toLowerCase()}`,
+        type.toLowerCase().replace(/_/g, '.'),
+      ];
+
       // Find workflows active for this tenant matching trigger
       const matchingWorkflows = await this.prisma.workflow.findMany({
         where: {
           tenantId,
           isActive: true,
           OR: [
-            { triggerType: type },
+            ...triggerVariants.map((v) => ({ triggerType: v })),
             { triggerType: 'ON_RECORD_CREATE' },
             { triggerType: 'WEBHOOK' },
           ],
@@ -146,13 +153,13 @@ export class BusinessEventBusService implements OnModuleInit {
 
       for (const wf of matchingWorkflows) {
         let shouldTrigger = false;
-        if (wf.triggerType === type) {
+        if (triggerVariants.includes(wf.triggerType)) {
           shouldTrigger = true;
         } else if (wf.triggerType === 'ON_RECORD_CREATE') {
           // If triggerData specifies event
           try {
             const tData = JSON.parse(wf.triggerData || '{}');
-            if (tData.eventType === type || tData.model === type.split('_')[0]) {
+            if (tData.eventType === type || triggerVariants.includes(tData.eventType) || tData.model === type.split('_')[0]) {
               shouldTrigger = true;
             }
           } catch {}

@@ -114,7 +114,7 @@ export function BotanicalGlassCockpit({ metrics }: BotanicalGlassCockpitProps) {
                   href={item.href}
                   className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer inline-flex items-center justify-center ${
                     isActive
-                      ? 'botanical-pill-active shadow-[0_0_12px_rgba(45,212,191,0.3)]'
+                      ? 'botanical-pill-active shadow-[0_0_12px_var(--accent-glow)]'
                       : 'botanical-pill hover:text-white'
                   }`}
                 >
@@ -168,11 +168,11 @@ export function BotanicalGlassCockpit({ metrics }: BotanicalGlassCockpitProps) {
                   cy="18"
                   r="15.915"
                   fill="transparent"
-                  stroke="#2dd4bf"
+                  stroke="var(--palette-400, #2dd4bf)"
                   strokeWidth="3.5"
                   strokeDasharray="18 100"
                   strokeLinecap="round"
-                  className="filter drop-shadow-[0_0_8px_rgba(45,212,191,0.8)]"
+                  style={{ filter: 'drop-shadow(0 0 8px var(--accent-glow, rgba(45,212,191,0.8)))' }}
                 />
               </svg>
               <span className="absolute font-bold text-sm text-white font-mono flex items-start">
@@ -292,7 +292,13 @@ export function BotanicalGlassCockpit({ metrics }: BotanicalGlassCockpitProps) {
           <div className="flex-1 max-w-md mx-4 hidden md:flex items-center">
             <div className="w-full h-1 bg-white/15 rounded-full relative flex items-center justify-between">
               <div className="w-2.5 h-2.5 rounded-full bg-white ring-2 ring-white/30" />
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-emerald-400/40" />
+              <div
+                className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-2 ring-emerald-400/40"
+                style={{
+                  backgroundColor: 'var(--palette-400, #34d399)',
+                  boxShadow: '0 0 8px var(--accent-glow, rgba(52,211,153,0.6))',
+                }}
+              />
               <div className="w-2.5 h-2.5 rounded-full bg-white/50" />
             </div>
           </div>
@@ -441,7 +447,13 @@ export function BotanicalGlassCockpit({ metrics }: BotanicalGlassCockpitProps) {
                 >
                   <span className="text-[9px] font-mono text-emerald-300 font-bold block">34,311$</span>
                   <div className="h-10 w-full bg-emerald-500/20 rounded-lg flex items-center justify-center border border-emerald-500/30">
-                    <div className="w-1.5 h-6 bg-emerald-400 rounded-full shadow-[0_0_6px_rgba(52,211,153,0.8)]" />
+                    <div
+                      className="w-1.5 h-6 bg-emerald-400 rounded-full"
+                      style={{
+                        backgroundColor: 'var(--palette-400, #34d399)',
+                        boxShadow: '0 0 6px var(--accent-glow, rgba(52,211,153,0.8))',
+                      }}
+                    />
                   </div>
                   <span className="text-[10px] font-bold text-white block">Wise</span>
                 </div>

@@ -1,9 +1,9 @@
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-business-os-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'replace-with-a-secure-random-32-byte-hex-or-base64-string';
 
-function signInternalToken(payload: object): string {
+export function signInternalToken(payload: object): string {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   const signature = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${body}`).digest('base64url');

@@ -23,11 +23,14 @@ import {
   Check,
   X,
   ExternalLink,
-  DollarSign
+  DollarSign,
+  Bot
 } from 'lucide-react';
 import { InvoiceDispatchModal } from './InvoiceDispatchModal';
 import { createInvoice, updateInvoiceStatus, deleteInvoice } from '../../app/actions';
 import { useRouter } from 'next/navigation';
+import { openAgentModal } from '../ai/ContextualAgentModal';
+import { EntityDocumentsHub } from '../documents/EntityDocumentsHub';
 
 export interface InvoiceItem {
   id: string;
@@ -53,6 +56,7 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceItem | null>(null);
+  const [vaultInvoice, setVaultInvoice] = useState<InvoiceItem | null>(null);
   const [dispatchTab, setDispatchTab] = useState<'email' | 'receipt'>('email');
   const [mounted, setMounted] = useState(false);
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'info' } | null>(null);
@@ -233,6 +237,21 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
 
         {/* Top Actions */}
         <div className="flex items-center gap-2.5 flex-wrap">
+          <button
+            type="button"
+            onClick={() => openAgentModal('midas')}
+            className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 hover:text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all cursor-pointer shadow-sm shadow-amber-500/10"
+            title="Open Midas — Finance AI for Overdue AR, Reminders, and Risk Detection"
+          >
+            <Bot size={14} className="text-amber-400 animate-pulse" />
+            <span>Ask Midas (Finance AI)</span>
+            {overdueCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 text-amber-200 text-[10px] font-mono font-bold">
+                {overdueCount} Overdue
+              </span>
+            )}
+          </button>
+
           <Link
             href="/ocr-invoice"
             className="px-3.5 py-2 botanical-pill hover:border-teal-500/50 text-xs font-bold text-teal-300 flex items-center gap-1.5 transition-all cursor-pointer"
@@ -241,7 +260,6 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
             <Scan size={14} className="text-teal-400" />
             <span>AI OCR Scanner</span>
           </Link>
-
 
           <button
             onClick={() => setIsCreateModalOpen(true)}
@@ -441,6 +459,18 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
                   {/* Actions */}
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-1.5">
+                      {inv.status === 'OVERDUE' && (
+                        <button
+                          type="button"
+                          onClick={() => openAgentModal('midas')}
+                          className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1 cursor-pointer shadow-xs shadow-amber-500/10"
+                          title="Ask Midas to prepare payment reminder and follow-up"
+                        >
+                          <Bot size={12} className="text-amber-400 animate-pulse" />
+                          <span>Ask Midas</span>
+                        </button>
+                      )}
+
                       <button
                         onClick={() => openDispatch(inv, 'email')}
                         className="px-2.5 py-1 botanical-glass-inset hover:border-emerald-500/50 text-slate-300 hover:text-emerald-300 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1 cursor-pointer"
@@ -457,6 +487,16 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
                       >
                         <Printer size={12} className="text-teal-400" />
                         <span>Receipt</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setVaultInvoice(inv)}
+                        className="px-2.5 py-1 botanical-glass-inset hover:border-emerald-500/50 text-slate-300 hover:text-emerald-300 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1 cursor-pointer"
+                        title="Vault Documents & Attached Receipts"
+                      >
+                        <Layers size={12} className="text-emerald-400" />
+                        <span>Files</span>
                       </button>
 
                       <button
@@ -627,6 +667,39 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
           initialTab={dispatchTab}
           invoice={formattedSelectedInvoice}
         />
+      )}
+
+      {/* ========================================================= */}
+      {/* 7. INVOICE VAULT DOCUMENTS & ATTACHED RECEIPTS MODAL      */}
+      {/* ========================================================= */}
+      {vaultInvoice && (
+        <div
+          className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setVaultInvoice(null)}
+        >
+          <div
+            className="max-w-3xl w-full max-h-[90vh] overflow-y-auto rounded-3xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-end mb-2">
+              <button
+                type="button"
+                onClick={() => setVaultInvoice(null)}
+                className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer"
+              >
+                <X size={14} />
+                <span>Close</span>
+              </button>
+            </div>
+            <EntityDocumentsHub
+              service="finance"
+              module="invoices"
+              entityType="invoice"
+              entityId={vaultInvoice.id}
+              entityTitle={vaultInvoice.invoiceNum || `Invoice #${vaultInvoice.id.slice(0, 8)}`}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

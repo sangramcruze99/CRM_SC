@@ -332,6 +332,9 @@ interface PersonalizationContextType extends PersonalizationState {
   selectedPreset: WallpaperPreset;
   colorPalettes: ColorPlate[];
   presets: WallpaperPreset[];
+  isPersonalizationModalOpen: boolean;
+  openPersonalizationModal: () => void;
+  closePersonalizationModal: () => void;
   setWallpaperType: (type: 'preset' | 'custom') => void;
   uploadCustomWallpaper: (file: File) => Promise<boolean>;
   removeCustomWallpaper: () => void;
@@ -390,20 +393,34 @@ function compressImage(file: File): Promise<{ dataUrl: string; name: string }> {
   });
 }
 
+function hexToRgb(hex: string): string {
+  const clean = hex.replace('#', '');
+  const bigint = parseInt(clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean, 16);
+  if (isNaN(bigint)) return '16, 185, 129';
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `${r}, ${g}, ${b}`;
+}
+
 function applyPaletteToCSS(palette: ColorPlate) {
   if (typeof document === 'undefined') return;
   const root = document.documentElement;
 
   // 1. Generic Tokens
   root.style.setProperty('--primary', palette.primary);
+  root.style.setProperty('--primary-rgb', hexToRgb(palette.primary));
   root.style.setProperty('--ring', palette.ring);
   root.style.setProperty('--accent-glow', palette.glowHex);
   root.style.setProperty('--accent-hover', palette.hover);
 
   // 2. Full Palette Spectrum (--palette-* and --color-emerald-*)
   (Object.entries(palette.shades) as [string, string][]).forEach(([shade, hex]) => {
+    const rgb = hexToRgb(hex);
     root.style.setProperty(`--palette-${shade}`, hex);
+    root.style.setProperty(`--palette-${shade}-rgb`, rgb);
     root.style.setProperty(`--color-emerald-${shade}`, hex);
+    root.style.setProperty(`--color-emerald-${shade}-rgb`, rgb);
   });
 
   // 3. Teal Bridge (used across multi-stop gradients like "from-emerald-500 via-teal-500 to-emerald-600")
@@ -411,11 +428,19 @@ function applyPaletteToCSS(palette: ColorPlate) {
   root.style.setProperty('--color-teal-400', palette.shades[400]);
   root.style.setProperty('--color-teal-500', palette.shades[500]);
   root.style.setProperty('--color-teal-600', palette.shades[600]);
+  root.style.setProperty('--color-teal-300-rgb', hexToRgb(palette.shades[300]));
+  root.style.setProperty('--color-teal-400-rgb', hexToRgb(palette.shades[400]));
+  root.style.setProperty('--color-teal-500-rgb', hexToRgb(palette.shades[500]));
+  root.style.setProperty('--color-teal-600-rgb', hexToRgb(palette.shades[600]));
 }
 
 export function PersonalizationProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<PersonalizationState>(DEFAULT_STATE);
+  const [isPersonalizationModalOpen, setIsPersonalizationModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const openPersonalizationModal = useCallback(() => setIsPersonalizationModalOpen(true), []);
+  const closePersonalizationModal = useCallback(() => setIsPersonalizationModalOpen(false), []);
 
   // Load saved personalization preferences on mount
   useEffect(() => {
@@ -524,6 +549,9 @@ export function PersonalizationProvider({ children }: { children: React.ReactNod
         selectedPreset,
         colorPalettes: COLOR_PLATES,
         presets: WALLPAPER_PRESETS,
+        isPersonalizationModalOpen,
+        openPersonalizationModal,
+        closePersonalizationModal,
         setWallpaperType,
         uploadCustomWallpaper,
         removeCustomWallpaper,

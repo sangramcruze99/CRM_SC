@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { ALL_67_FEATURES, FeatureItem } from '@/lib/featureCatalog';
 
 export type IndustryNiche =
@@ -75,81 +75,121 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         ],
       },
       {
-        sectionTitle: 'Core CRM & Sales Hub',
+        sectionTitle: 'Sales & CRM',
         items: [
           { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
           { label: 'Contacts & Accounts', href: '/contacts', iconName: 'Users' },
           { label: 'Customer 360 Graph', href: '/customer-360', iconName: 'Users', badge: '360°' },
           { label: 'Deals Pipeline', href: '/deals', iconName: 'Briefcase' },
-          { label: 'Sprint Projects', href: '/projects', iconName: 'ClipboardList' },
-          { label: 'Commercial Invoices', href: '/invoices', iconName: 'Receipt' },
-          { label: 'AI OCR Invoices', href: '/ocr-invoice', iconName: 'Scan', badge: 'OCR' },
-          { label: 'Helpdesk Tickets', href: '/tickets', iconName: 'Ticket' },
-          { label: 'Employee Directory', href: '/directory', iconName: 'Contact', badge: 'Org' },
-          { label: 'Document Vault', href: '/documents', iconName: 'Folder' },
-          { label: 'CRM Migration', href: '/migration', iconName: 'ArrowRightLeft', badge: 'Import' },
+          { label: 'Lead Prospector', href: '/lead-prospector', iconName: 'Database', badge: '275M+' },
+          { label: 'AI Sales Department', href: '/sales-department', iconName: 'TrendingUp', badge: 'Autonomous' },
+          { label: 'CRM Migration Studio', href: '/migration', iconName: 'ArrowRightLeft', badge: 'Import' },
         ],
       },
       {
-        sectionTitle: 'Omnichannel & Growth',
+        sectionTitle: 'Marketing & Growth',
         items: [
-          { label: 'Lead Prospector', href: '/lead-prospector', iconName: 'Database', badge: '275M+' },
-          { label: 'AI Softphone', href: '/voice', iconName: 'Phone', badge: 'VoIP' },
-          { label: 'SIM Call & SMS', href: '/sim-gateway', iconName: 'Smartphone', badge: 'Dual-SIM' },
-          { label: 'Unified Inbox', href: '/inbox', iconName: 'MessageSquare', badge: '6-in-1' },
-          { label: 'Social Studio', href: '/social', iconName: 'Share2', badge: 'AI' },
-          { label: 'Email Marketing', href: '/email-marketing', iconName: 'Mail', badge: 'New' },
+          { label: 'Email Marketing', href: '/email-marketing', iconName: 'Mail', badge: 'Campaigns' },
           { label: 'Visual Email Builder', href: '/platform/templates/email', iconName: 'Palette', badge: 'Studio' },
-          { label: 'Website Builder', href: '/site-builder', iconName: 'Layout', badge: 'No-Code' },
-          { label: 'Enterprise AI', href: '/ai-studio', iconName: 'Brain', badge: 'v4.8' },
+          { label: 'Social Media Studio', href: '/social', iconName: 'Share2', badge: 'AI' },
+          { label: 'Website & Landing Builder', href: '/site-builder', iconName: 'Layout', badge: 'No-Code' },
         ],
       },
       {
         sectionTitle: 'Finance & Treasury',
         items: [
-          { label: 'Bank & Forex', href: '/banking', iconName: 'Landmark', badge: 'Reconcile' },
-          { label: 'QR Payments', href: '/qr-payments', iconName: 'QrCode', badge: 'POS' },
-          { label: 'Payment Links', href: '/payment-links', iconName: 'Zap' },
-          { label: 'Boardroom Deck', href: '/forecast', iconName: 'Presentation', badge: 'Forecast' },
-          { label: 'Subscriptions', href: '/subscriptions', iconName: 'DollarSign', badge: 'SaaS' },
-          { label: 'SaaS Billing & Plans', href: '/settings/billing', iconName: 'CreditCard', badge: 'Stage 6' },
-          { label: 'Commercial Quotes', href: '/quotes', iconName: 'FileBadge' },
-          { label: 'Price Books', href: '/price-books', iconName: 'Layers' },
-          { label: 'E-Signatures', href: '/e-signatures', iconName: 'FileSignature' },
+          { label: 'Commercial Invoices', href: '/invoices', iconName: 'Receipt' },
+          { label: 'AI OCR Invoice Scanner', href: '/ocr-invoice', iconName: 'Scan', badge: 'OCR' },
+          { label: 'Bank & Forex Accounts', href: '/banking', iconName: 'Landmark', badge: 'Reconcile' },
+          { label: 'QR Payments POS', href: '/qr-payments', iconName: 'Scan', badge: 'POS' },
+          { label: 'Instant Payment Links', href: '/payment-links', iconName: 'Zap' },
+          { label: 'SaaS Subscriptions & MRR', href: '/subscriptions', iconName: 'DollarSign', badge: 'MRR' },
+          { label: 'SaaS Billing & Plans', href: '/settings/billing', iconName: 'CreditCard', badge: 'Tiers' },
+          { label: 'Boardroom Deck & Forecast', href: '/forecast', iconName: 'Presentation', badge: 'Forecast' },
+          { label: 'Commercial CPQ Quotes', href: '/quotes', iconName: 'FileBadge' },
+          { label: 'Price Books & Catalog', href: '/price-books', iconName: 'Layers' },
+          { label: 'AI Finance Department', href: '/finance-department', iconName: 'Landmark', badge: 'Autonomous' },
+          { label: 'Tax & GST Settings', href: '/taxes', iconName: 'Receipt' },
         ],
       },
       {
-        sectionTitle: 'Multi-Niche Workspaces',
+        sectionTitle: 'Customer Service',
         items: [
-          { label: 'Niche Studio', href: '/industry', iconName: 'Sparkles', badge: '67 Feat' },
-          { label: '🏥 Hospital & EHR', href: '/industry/hospital', iconName: 'Stethoscope' },
-          { label: '🏡 Real Estate MLS', href: '/industry/realestate', iconName: 'Home' },
-          { label: '🍽️ Restaurant POS', href: '/industry/restaurant', iconName: 'UtensilsCrossed' },
-          { label: '🛍️ Retail Register', href: '/industry/retail', iconName: 'ShoppingBag' },
+          { label: 'Helpdesk Tickets', href: '/tickets', iconName: 'Ticket' },
+          { label: 'AI Customer Success Dept', href: '/customer-success', iconName: 'ShieldCheck', badge: 'Autonomous' },
+          { label: 'SLA Escalation Policies', href: '/slas', iconName: 'Clock' },
+          { label: 'Unified Inbox', href: '/inbox', iconName: 'MessageSquare', badge: '6-in-1' },
+          { label: 'Team Chat Channels', href: '/chat', iconName: 'MessageSquare' },
+          { label: 'Embeddable Chat Widgets', href: '/chat-widgets', iconName: 'Globe' },
         ],
       },
       {
-        sectionTitle: 'Automation & Enterprise',
+        sectionTitle: 'Projects & Tasks',
         items: [
-          { label: 'AI Sales Dept (Stage 5)', href: '/sales-department', iconName: 'TrendingUp', badge: '5.1' },
-          { label: 'AI CS Dept (Stage 5)', href: '/customer-success', iconName: 'ShieldCheck', badge: '5.2' },
-          { label: 'AI Finance Dept (Stage 5)', href: '/finance-department', iconName: 'Landmark', badge: '5.3' },
-          { label: 'Lead Qualification', href: '/lead-qualification', iconName: 'Zap', badge: 'Hot' },
-          { label: 'Intelligent Doc (IDP)', href: '/idp', iconName: 'Scan', badge: 'IDP' },
-          { label: 'AI Support Sentinel', href: '/ai-support', iconName: 'Bot', badge: 'Auto' },
-          { label: 'Content Repurpose', href: '/content-repurpose', iconName: 'Share2', badge: '5-in-1' },
-          { label: 'Data Sync & Stacks', href: '/data-sync', iconName: 'ArrowRightLeft', badge: 'Mesh' },
+          { label: 'Sprint Projects & Tasks', href: '/projects', iconName: 'ClipboardList' },
+        ],
+      },
+      {
+        sectionTitle: 'People & HR',
+        items: [
+          { label: 'Employee Directory & Org Tree', href: '/directory', iconName: 'Contact', badge: 'Org' },
+          { label: 'Employee Onboarding', href: '/onboarding', iconName: 'Users' },
+        ],
+      },
+      {
+        sectionTitle: 'Operations & Comms',
+        items: [
+          { label: 'AI Softphone & VoIP', href: '/voice', iconName: 'Phone', badge: 'VoIP' },
+          { label: 'SIM Gateway & SMS', href: '/sim-gateway', iconName: 'Smartphone', badge: 'Dual-SIM' },
           { label: 'AI Automation OS', href: '/automation', iconName: 'Sparkles', badge: 'v2.5' },
           { label: 'Automations Engine', href: '/automations', iconName: 'Workflow', badge: 'Zapier' },
-          { label: 'Governed AI Agents', href: '/ai-agents', iconName: 'Bot', badge: 'Fleet' },
+          { label: 'Data Sync & Stacks', href: '/data-sync', iconName: 'ArrowRightLeft', badge: 'Mesh' },
+          { label: 'Client Extranet Portal', href: '/portal', iconName: 'Globe', badge: 'Portal' },
+        ],
+      },
+      {
+        sectionTitle: 'Documents & Legal',
+        items: [
+          { label: 'Central Document Vault', href: '/documents', iconName: 'Folder' },
+          { label: 'Digital E-Signatures', href: '/e-signatures', iconName: 'FileSignature' },
+          { label: 'Confidentiality NDAs', href: '/ndas', iconName: 'FileCheck' },
+          { label: 'Employment Offer Letters', href: '/offer-letters', iconName: 'FileCheck' },
+          { label: 'Cloud Direct Storage', href: '/s3-uploads', iconName: 'CloudUpload' },
+        ],
+      },
+      {
+        sectionTitle: 'Analytics & BI',
+        items: [
+          { label: 'Business Reports & BI', href: '/reports', iconName: 'Activity' },
           { label: 'Platform Observability', href: '/observability', iconName: 'Activity', badge: 'Mesh' },
-          { label: 'Leaderboards', href: '/leaderboard', iconName: 'Trophy', badge: 'Reps' },
-          { label: 'Client Portal', href: '/portal', iconName: 'Globe', badge: 'Extranet' },
-          { label: 'White-Label CNAME', href: '/branding', iconName: 'Palette', badge: 'Brand' },
-          { label: 'Customization', href: '/customization', iconName: 'Sliders', badge: 'Studio' },
-          { label: 'Developer APIs', href: '/developer', iconName: 'Code2', badge: 'Webhooks' },
-          { label: 'SOC2 Security', href: '/compliance', iconName: 'ShieldAlert', badge: 'Audit' },
-          { label: 'Super Admin', href: '/super-admin', iconName: 'Building' },
+          { label: 'Sales Leaderboards', href: '/leaderboard', iconName: 'Trophy', badge: 'Reps' },
+        ],
+      },
+      {
+        sectionTitle: 'Administration & Security',
+        items: [
+          { label: 'Super Admin Console', href: '/super-admin', iconName: 'Building' },
+          { label: 'White-Label & Branding', href: '/branding', iconName: 'Palette', badge: 'CNAME' },
+          { label: 'Customization Studio', href: '/customization', iconName: 'Sliders', badge: 'Studio' },
+          { label: 'SOC2 & HIPAA Compliance', href: '/compliance', iconName: 'ShieldAlert', badge: 'Audit' },
+          { label: 'Tamper-Evident Audit Logs', href: '/audit-logs', iconName: 'ShieldCheck' },
+          { label: 'Roles & RBAC Permissions', href: '/platform/roles', iconName: 'Shield' },
+          { label: 'Navigation Builder', href: '/platform/navigation', iconName: 'FolderTree' },
+          { label: 'Marketplace & Integrations', href: '/marketplace', iconName: 'ShoppingBag' },
+        ],
+      },
+      {
+        sectionTitle: 'Developer & Engineering',
+        items: [
+          { label: 'Developer APIs & Webhooks', href: '/developer', iconName: 'Code2', badge: 'REST' },
+          { label: 'Enterprise AI Studio', href: '/ai-studio', iconName: 'Brain', badge: 'v4.8' },
+          { label: 'Governed AI Fleet (OODA)', href: '/ai-agents', iconName: 'Bot', badge: 'Fleet' },
+          { label: 'Low-Code Schema Builder', href: '/platform/schema', iconName: 'Database' },
+          { label: 'Custom Objects Studio', href: '/platform/objects', iconName: 'Layers' },
+          { label: 'Dynamic Page Builder', href: '/platform/pages', iconName: 'Layout' },
+          { label: 'Vector AI Knowledge Base', href: '/platform/ai', iconName: 'Database' },
+          { label: 'Full-Text Search Indexer', href: '/search-index', iconName: 'SearchCheck' },
+          { label: 'Localization & i18n Studio', href: '/localization', iconName: 'Globe2' },
         ],
       },
     ],
@@ -179,7 +219,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Clinical Command Hub', href: '/industry/hospital', iconName: 'Stethoscope', badge: 'Live' },
           { label: 'Patients Directory (EHR)', href: '/contacts', iconName: 'Users' },
           { label: 'Doctor Appointment Queue', href: '/industry/hospital#appointments', iconName: 'Calendar' },
-          { label: 'Patient Inquiries & Triage', href: '/tickets', iconName: 'Ticket' },
+          { label: 'Patient Triage & Inquiries', href: '/tickets', iconName: 'Ticket' },
         ],
       },
       {
@@ -199,6 +239,14 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Automated Patient SMS/Email', href: '/email-marketing', iconName: 'Mail' },
         ],
       },
+      {
+        sectionTitle: 'Platform Services',
+        items: [
+          { label: 'AI Command Center', href: '/ai', iconName: 'Sparkles' },
+          { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
+          { label: 'Clinical Reports & BI', href: '/reports', iconName: 'Activity' },
+        ],
+      },
     ],
   },
   realestate: {
@@ -214,25 +262,25 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     terminology: {
       contacts: 'Buyers, Sellers & Tenants',
       deals: 'Property Sales & Escrow',
-      projects: 'Site Visits & Inspections',
+      projects: 'Property Showings & Tasks',
       invoices: 'Commission & Rental Billing',
       products: 'Property Listings & Units',
       tickets: 'Tenant Maintenance Requests',
     },
     navigationSections: [
       {
-        sectionTitle: 'Real Estate CRM',
+        sectionTitle: 'Real Estate & Property Hub',
         items: [
           { label: 'Property Command Center', href: '/industry/realestate', iconName: 'Home', badge: 'MLS' },
           { label: 'Buyer & Seller Directory', href: '/contacts', iconName: 'Users' },
           { label: 'Sales & Escrow Pipeline', href: '/deals', iconName: 'Briefcase' },
           { label: 'Property Showings & Tasks', href: '/projects', iconName: 'ClipboardList' },
+          { label: 'Property Inventory Catalog', href: '/price-books', iconName: 'Layers' },
         ],
       },
       {
-        sectionTitle: 'Listings & Contracts',
+        sectionTitle: 'Contracts & Documents',
         items: [
-          { label: 'Property Inventory Catalog', href: '/price-books', iconName: 'Layers' },
           { label: 'Buyer Proposals & Quotes', href: '/quotes', iconName: 'FileBadge' },
           { label: 'Purchase Agreements & Deeds', href: '/e-signatures', iconName: 'FileSignature' },
           { label: 'Confidentiality NDAs', href: '/ndas', iconName: 'FileCheck' },
@@ -246,6 +294,14 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Email Newsletter to Buyers', href: '/email-marketing', iconName: 'Mail' },
           { label: 'Brokerage Commission Ledger', href: '/invoices', iconName: 'Receipt' },
           { label: 'Licensed Agents Directory', href: '/directory', iconName: 'Contact' },
+        ],
+      },
+      {
+        sectionTitle: 'Platform Services',
+        items: [
+          { label: 'AI Command Center', href: '/ai', iconName: 'Sparkles' },
+          { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
+          { label: 'Tenant Support Tickets', href: '/tickets', iconName: 'Ticket' },
         ],
       },
     ],
@@ -274,7 +330,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
         items: [
           { label: 'Table Floor Plan & Host Desk', href: '/industry/restaurant', iconName: 'UtensilsCrossed', badge: 'Live' },
           { label: 'Kitchen Orders Queue (KOT)', href: '/projects', iconName: 'ClipboardList' },
-          { label: 'VIP Guests & Regulars', href: '/contacts', iconName: 'Users' },
+          { label: 'VIP Guests & Diners', href: '/contacts', iconName: 'Users' },
           { label: 'Guest Feedback & Support', href: '/tickets', iconName: 'Ticket' },
         ],
       },
@@ -290,9 +346,17 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
       {
         sectionTitle: 'Staff & Promos',
         items: [
+          { label: 'Chefs & Waitstaff Roster', href: '/directory', iconName: 'Contact' },
           { label: 'Social Food Promo Studio', href: '/social', iconName: 'Share2' },
           { label: 'Weekly Special Email Blast', href: '/email-marketing', iconName: 'Mail' },
-          { label: 'Chefs & Waitstaff Roster', href: '/directory', iconName: 'Contact' },
+        ],
+      },
+      {
+        sectionTitle: 'Platform Services',
+        items: [
+          { label: 'AI Command Center', href: '/ai', iconName: 'Sparkles' },
+          { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
+          { label: 'Daily Sales Reports', href: '/reports', iconName: 'Activity' },
         ],
       },
     ],
@@ -322,7 +386,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Cashier POS & Register', href: '/industry/retail', iconName: 'ShoppingBag', badge: 'POS' },
           { label: 'Customer Khata Credit Book', href: '/contacts', iconName: 'Users' },
           { label: 'Retail Sales Ledger', href: '/invoices', iconName: 'Receipt' },
-          { label: 'Product Stock & Barcodes', href: '/price-books', iconName: 'Layers' },
+          { label: 'Barcode Inventory SKUs', href: '/price-books', iconName: 'Layers' },
         ],
       },
       {
@@ -340,6 +404,13 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Cashiers & Staff Roster', href: '/directory', iconName: 'Contact' },
           { label: 'Sales & Inventory Reports', href: '/reports', iconName: 'Activity' },
           { label: 'Tax & GST Settings', href: '/taxes', iconName: 'Receipt' },
+        ],
+      },
+      {
+        sectionTitle: 'Platform Services',
+        items: [
+          { label: 'AI Command Center', href: '/ai', iconName: 'Sparkles' },
+          { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
         ],
       },
     ],
@@ -390,6 +461,13 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'SOC2 Audit Compliance', href: '/compliance', iconName: 'ShieldAlert' },
         ],
       },
+      {
+        sectionTitle: 'Platform Services',
+        items: [
+          { label: 'AI Command Center', href: '/ai', iconName: 'Sparkles' },
+          { label: 'Document Vault', href: '/documents', iconName: 'Folder' },
+        ],
+      },
     ],
   },
   agency: {
@@ -412,7 +490,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     },
     navigationSections: [
       {
-        sectionTitle: 'Client Operations',
+        sectionTitle: 'Client & Agency Operations',
         items: [
           { label: 'Client Accounts & Stakeholders', href: '/contacts', iconName: 'Users' },
           { label: 'Pitch & Retainer Proposals', href: '/deals', iconName: 'Briefcase' },
@@ -438,13 +516,20 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Agency Talent Directory', href: '/directory', iconName: 'Contact' },
         ],
       },
+      {
+        sectionTitle: 'Platform Services',
+        items: [
+          { label: 'AI Command Center', href: '/ai', iconName: 'Sparkles' },
+          { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
+        ],
+      },
     ],
   },
   custom: {
     id: 'custom',
     name: 'Custom Tailored Workspace',
     shortName: 'Custom Niche',
-    tagline: 'Bespoke workspace configured with user-selected features from the 67-feature catalog.',
+    tagline: 'Bespoke workspace dynamically configured with user-selected features from the catalog.',
     icon: '⚡',
     accentColor: 'amber',
     badgeBg: 'bg-amber-50',
@@ -460,7 +545,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     },
     navigationSections: [
       {
-        sectionTitle: 'My Selected Features',
+        sectionTitle: 'Custom Business Modules',
         items: [
           { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },
           { label: 'Contacts & Accounts', href: '/contacts', iconName: 'Users' },
@@ -546,11 +631,14 @@ export function IndustryProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Get active features for current niche (from custom map or defaults)
-  const activeFeatureIds =
-    nicheFeatureMap[currentNiche] || getDefaultFeaturesForNiche(currentNiche);
+  // Get active features for current niche (from custom map or defaults, memoized to prevent render loops)
+  const activeFeatureIds = useMemo(() => {
+    return nicheFeatureMap[currentNiche] || getDefaultFeaturesForNiche(currentNiche);
+  }, [nicheFeatureMap, currentNiche]);
 
-  const activeFeatures = ALL_67_FEATURES.filter((f) => activeFeatureIds.includes(f.id));
+  const activeFeatures = useMemo(() => {
+    return ALL_67_FEATURES.filter((f) => activeFeatureIds.includes(f.id));
+  }, [activeFeatureIds]);
 
   const toggleFeature = (featureId: string) => {
     const currentList = activeFeatureIds;

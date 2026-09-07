@@ -7,18 +7,16 @@ import { useAccessibility } from './platform/AccessibilityContext';
 import { useCreditMetering } from './platform/CreditMeteringContext';
 import { usePersonalization } from './platform/PersonalizationContext';
 import { TieredPackagingModal } from './billing/TieredPackagingModal';
-import { PersonalizationModal } from './platform/PersonalizationModal';
 
 export function UserNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPackagingModalOpen, setIsPackagingModalOpen] = useState(false);
-  const [isPersonalizationModalOpen, setIsPersonalizationModalOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   const { isPerformanceMode, toggleMode } = useAccessibility();
   const { credits, setIsTopUpModalOpen } = useCreditMetering();
-  const { activePalette } = usePersonalization();
+  const { activePalette, openPersonalizationModal } = usePersonalization();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -62,28 +60,28 @@ export function UserNav() {
             setIsOpen(false);
             setIsTopUpModalOpen(true);
           }}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 rounded-xl text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300 transition-all cursor-pointer shadow-xs"
+          className="h-8.5 hidden sm:flex items-center gap-1.5 px-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 rounded-xl text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300 transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0 active:scale-[0.98]"
           title="Click to view & top up metered AI / OCR credits"
         >
-          <Zap size={13} className="text-emerald-600 dark:text-emerald-400" />
-          <span>{credits.ocrScansRemaining} OCR · {credits.b2bLeadsRemaining} Leads</span>
+          <Zap size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
+          <span className="whitespace-nowrap">{credits.ocrScansRemaining} OCR · {credits.b2bLeadsRemaining} Leads</span>
         </button>
 
         {/* User Profile Trigger */}
-        <div className="relative" ref={menuRef}>
+        <div className="relative shrink-0" ref={menuRef}>
           <button
             type="button"
             onClick={() => setIsOpen((prev) => !prev)}
-            className="flex items-center space-x-3 p-1.5 px-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-all text-left focus:outline-none border border-transparent hover:border-slate-200 dark:hover:border-white/10 cursor-pointer"
+            className="h-8.5 flex items-center space-x-2 px-2 rounded-xl bg-slate-100/60 hover:bg-slate-200/80 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] transition-all text-left focus:outline-none border border-slate-200/80 dark:border-white/[0.08] hover:border-emerald-500/40 cursor-pointer shadow-xs shrink-0 whitespace-nowrap active:scale-[0.98]"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-xs font-extrabold text-slate-950 shadow-md shadow-emerald-500/20 ring-2 ring-emerald-500/20 dark:ring-white/20">
+            <div className="w-6.5 h-6.5 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-[10px] font-black text-slate-950 shadow-sm shrink-0 ring-1 ring-emerald-500/40">
               SC
             </div>
-            <div className="hidden md:block text-left">
-              <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Sangram Cruze</div>
-              <div className="text-[11px] text-slate-600 dark:text-slate-400 font-medium leading-tight">admin@gmail.com</div>
+            <div className="hidden lg:block text-left leading-none shrink-0">
+              <div className="text-xs font-bold text-slate-900 dark:text-white truncate max-w-[105px]">Sangram Cruze</div>
+              <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-wider">Superadmin</div>
             </div>
-            <ChevronDown size={14} className={`text-slate-500 dark:text-slate-400 hidden md:block transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown size={12} className={`text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {isOpen && (
@@ -129,7 +127,7 @@ export function UserNav() {
                   type="button"
                   onClick={() => {
                     setIsOpen(false);
-                    setIsPersonalizationModalOpen(true);
+                    openPersonalizationModal();
                   }}
                   className="w-full flex items-center justify-between px-4 py-2 text-xs font-bold text-slate-800 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06] hover:text-slate-950 dark:hover:text-white transition-colors cursor-pointer group"
                 >
@@ -232,12 +230,6 @@ export function UserNav() {
       <TieredPackagingModal
         isOpen={isPackagingModalOpen}
         onClose={() => setIsPackagingModalOpen(false)}
-      />
-
-      {/* Appearance & Personalization Settings Modal */}
-      <PersonalizationModal
-        isOpen={isPersonalizationModalOpen}
-        onClose={() => setIsPersonalizationModalOpen(false)}
       />
     </>
   );

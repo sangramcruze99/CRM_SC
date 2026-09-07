@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useEffect } from 'react';
 import {
   ClipboardList,
   Plus,
@@ -19,7 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { createSprintTask, updateSprintTaskStatus, deleteSprintTask } from '../../app/actions';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export interface TaskItem {
   id: string;
@@ -39,6 +39,7 @@ export interface ProjectItem {
 
 interface SprintKanbanBoardProps {
   initialProjects: ProjectItem[];
+  initialView?: 'kanban' | 'list';
 }
 
 const COLUMNS = [
@@ -72,7 +73,10 @@ const COLUMNS = [
   },
 ];
 
-export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
+export function SprintKanbanBoard({ initialProjects, initialView }: SprintKanbanBoardProps) {
+  const searchParams = useSearchParams();
+  const urlView = searchParams?.get('view');
+
   const [projects] = useState<ProjectItem[]>(initialProjects);
   const [selectedProjectId] = useState<string>(initialProjects[0]?.id || 'proj_01');
   const [tasks, setTasks] = useState<TaskItem[]>(initialProjects[0]?.tasks || []);
@@ -81,10 +85,21 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
+  const [viewMode, setViewMode] = useState<'kanban' | 'list'>(
+    initialView || (urlView === 'list' ? 'list' : 'kanban')
+  );
   const [alert, setAlert] = useState<{ message: string; type: 'success' | 'info' } | null>(null);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  // Sync viewMode if query parameter changes (e.g. user clicks sidebar links)
+  useEffect(() => {
+    if (urlView === 'list') {
+      setViewMode('list');
+    } else if (urlView === 'kanban' || (!urlView && initialView !== 'list')) {
+      setViewMode('kanban');
+    }
+  }, [urlView, initialView]);
 
   const currentProject = projects.find((p) => p.id === selectedProjectId) || projects[0] || null;
 
@@ -218,7 +233,7 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
           <div className="flex items-center gap-2">
             <h1 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">{currentProject.name}</h1>
             <span className="px-2 py-0.2 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-              Sprint Cycle Q3
+              {viewMode === 'list' ? 'To-Do & Task List' : 'Sprint Kanban Board'}
             </span>
           </div>
         </div>
@@ -292,20 +307,26 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
           {/* Kanban / List Toggle */}
           <div className="flex items-center gap-1 bg-white/[0.06] p-0.5 rounded-full border border-white/10">
             <button
-              onClick={() => setViewMode('kanban')}
+              onClick={() => {
+                setViewMode('kanban');
+                window.history.replaceState(null, '', '/projects');
+              }}
               className={`p-1.5 rounded-full transition-all cursor-pointer ${
                 viewMode === 'kanban' ? 'botanical-pill-active text-slate-950' : 'text-slate-400 hover:text-white'
               }`}
-              title="Kanban Board View"
+              title="Sprint Kanban Board View"
             >
               <LayoutGrid size={13} />
             </button>
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => {
+                setViewMode('list');
+                window.history.replaceState(null, '', '/projects?view=list');
+              }}
               className={`p-1.5 rounded-full transition-all cursor-pointer ${
                 viewMode === 'list' ? 'botanical-pill-active text-slate-950' : 'text-slate-400 hover:text-white'
               }`}
-              title="Table List View"
+              title="To-Do & Task List View"
             >
               <List size={13} />
             </button>
@@ -339,15 +360,14 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
                 }}
                 onDrop={(e) => {
                   e.preventDefault();
-                  const taskId = e.dataTransfer.getData('text/plain') || draggedTaskId;
-                  if (taskId) {
-                    handleTaskDrop(taskId, col.id);
+                  if (draggedTaskId) {
+                    handleTaskDrop(draggedTaskId, col.id);
                   }
                 }}
-                className={`flex flex-col rounded-2xl transition-all duration-200 min-w-0 w-full ${
+                className={`flex flex-col h-[calc(100vh-10.5rem)] rounded-2xl border transition-all duration-200 overflow-hidden ${
                   isTargetOver
-                    ? 'ring-2 ring-emerald-400/80 bg-emerald-500/[0.08] shadow-[0_0_24px_rgba(16,185,129,0.25)]'
-                    : ''
+                    ? 'border-emerald-400/80 bg-emerald-500/10 shadow-lg shadow-emerald-950/20'
+                    : 'border-slate-200 dark:border-white/[0.08] botanical-glass-card'
                 }`}
               >
                 {/* Column Stage Header */}
@@ -489,7 +509,7 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-white/[0.04] border-b border-slate-200 dark:border-white/[0.08] text-slate-600 dark:text-slate-400 uppercase font-mono text-[10px]">
                 <tr>
-                  <th className="py-2.5 px-4">Task Description</th>
+                  <th className="py-2.5 px-4">To-Do Task</th>
                   <th className="py-2.5 px-4">Priority</th>
                   <th className="py-2.5 px-4">Status / Lane</th>
                   <th className="py-2.5 px-4 text-right">Created</th>
@@ -499,7 +519,31 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
               <tbody className="divide-y divide-slate-100 dark:divide-white/[0.06]">
                 {filteredTasks.map((task) => (
                   <tr key={task.id} className="hover:bg-slate-50 dark:hover:bg-white/[0.04] transition-colors group">
-                    <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">{task.title}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2.5">
+                        <button
+                          type="button"
+                          onClick={() => handleTaskDrop(task.id, task.status === 'DONE' ? 'TODO' : 'DONE')}
+                          className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all cursor-pointer shrink-0 ${
+                            task.status === 'DONE'
+                              ? 'bg-emerald-500 border-emerald-400 text-slate-950 shadow-xs'
+                              : 'border-slate-300 dark:border-white/20 hover:border-emerald-500/60 bg-white/[0.05]'
+                          }`}
+                          title={task.status === 'DONE' ? 'Mark as To-Do' : 'Mark as Done'}
+                        >
+                          {task.status === 'DONE' && <Check size={12} className="stroke-[3]" />}
+                        </button>
+                        <span
+                          className={`font-bold transition-all ${
+                            task.status === 'DONE'
+                              ? 'line-through text-slate-400 dark:text-slate-500'
+                              : 'text-slate-900 dark:text-white'
+                          }`}
+                        >
+                          {task.title}
+                        </span>
+                      </div>
+                    </td>
                     <td className="py-3 px-4">
                       <span
                         className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase ${

@@ -18,12 +18,14 @@ import {
   List,
   Trash2,
   Layers,
-  ChevronDown
+  ChevronDown,
+  Bot
 } from 'lucide-react';
 import { CreateDealModal } from '../CreateDealModal';
 import { RecordAiMenu } from '../ai/RecordAiMenu';
 import { updateDealStage, deleteDeal } from '../../app/actions';
 import { useRouter } from 'next/navigation';
+import { openAgentModal } from '../ai/ContextualAgentModal';
 
 export interface DealItem {
   id: string;
@@ -256,6 +258,16 @@ export function DealsKanbanBoard({ initialDeals }: DealsKanbanBoardProps) {
               <List size={13} />
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => openAgentModal('ares')}
+            className="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/50 text-xs font-bold text-rose-600 dark:text-rose-300 rounded-xl flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+            title="Open Ares — Deal Velocity Agent & Sales AI"
+          >
+            <Bot size={13} className="text-rose-500 animate-pulse" />
+            <span className="hidden sm:inline">Ask Ares (Sales AI)</span>
+          </button>
 
           <RecordAiMenu entityType="deal" entityId="pipeline" entityName="Deals Pipeline" />
           <CreateDealModal />

@@ -16,7 +16,10 @@ import {
   Sparkles,
   User,
   Mail,
+  FolderOpen,
+  Paperclip,
 } from 'lucide-react';
+import { DocumentVaultPickerModal, VaultDocument } from '@/components/documents/DocumentVaultPickerModal';
 
 interface Envelope {
   id: string;
@@ -43,6 +46,8 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
   const [recipientName, setRecipientName] = useState('');
   const [recipientEmail, setRecipientEmail] = useState('');
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
+  const [attachedVaultDoc, setAttachedVaultDoc] = useState<VaultDocument | null>(null);
+  const [isVaultPickerOpen, setIsVaultPickerOpen] = useState(false);
 
   const filteredEnvelopes = envelopes.filter(
     (e) => selectedStatus === 'ALL' || e.status === selectedStatus
@@ -296,7 +301,17 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
 
             <form onSubmit={handleCreate} className="space-y-4 text-xs relative z-10">
               <div className="space-y-1.5">
-                <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Contract / Agreement Title</label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Contract / Agreement Title</label>
+                  <button
+                    type="button"
+                    onClick={() => setIsVaultPickerOpen(true)}
+                    className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <FolderOpen size={12} />
+                    <span>{attachedVaultDoc ? 'Change Vault File' : 'Attach from Vault'}</span>
+                  </button>
+                </div>
                 <div className="relative">
                   <FileText size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
                   <input
@@ -308,6 +323,26 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
                     className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
                   />
                 </div>
+
+                {attachedVaultDoc && (
+                  <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between gap-2 mt-1.5 animate-in fade-in">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Paperclip size={13} className="text-emerald-400 shrink-0" />
+                      <span className="text-[11px] font-bold text-white truncate">{attachedVaultDoc.name}</span>
+                      <span className="text-[10px] text-emerald-300/80 font-mono">
+                        ({(attachedVaultDoc.size / 1024).toFixed(1)} KB)
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setAttachedVaultDoc(null)}
+                      className="text-slate-400 hover:text-rose-400 p-1 rounded-md hover:bg-white/10"
+                      title="Remove attachment"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -361,6 +396,21 @@ export function ESignaturesClient({ initialEnvelopes = [] }: { initialEnvelopes?
         </div>,
         document.body
       )}
+
+      {/* Document Vault Selection Modal */}
+      <DocumentVaultPickerModal
+        isOpen={isVaultPickerOpen}
+        onClose={() => setIsVaultPickerOpen(false)}
+        onSelect={(doc: VaultDocument) => {
+          setAttachedVaultDoc(doc);
+          if (!title) {
+            setTitle(doc.name.replace(/\.[^/.]+$/, ''));
+          }
+        }}
+        title="Attach Document from Vault"
+        description="Select any contract, NDA, agreement, or proposal from your vault for cryptographic e-signing."
+        actionLabel="Attach to Envelope"
+      />
     </div>
   );
 }

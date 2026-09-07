@@ -268,19 +268,32 @@ async function main() {
         : path.resolve(serviceDir, '.venv', 'bin', 'python');
       cmd = fs.existsSync(venvPy) ? venvPy : (process.platform === 'win32' ? 'python' : 'python3');
       cmdArgs = ['-m', 'uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', String(service.port)];
-    } else if (mode === 'watch') {
-      cmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
-      cmdArgs = ['--filter', `@repo/${service.name}`, 'dev'];
     } else {
-      // Fast mode: execute dist/main.js
-      const distPath = path.resolve(serviceDir, 'dist', 'main.js');
-      if (!fs.existsSync(distPath)) {
-        console.warn(`${prefix} ${c.yellow}Warning: dist/main.js not found. Running nest build first...${c.reset}`);
+      let pkgName = `@repo/${service.name}`;
+      const pkgJsonPath = path.resolve(serviceDir, 'package.json');
+      if (fs.existsSync(pkgJsonPath)) {
+        try {
+          const parsed = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+          if (parsed.name) pkgName = parsed.name;
+        } catch {
+          // fallback
+        }
+      }
+
+      if (mode === 'watch') {
         cmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
-        cmdArgs = ['--filter', `@repo/${service.name}`, 'start'];
+        cmdArgs = ['--filter', pkgName, 'dev'];
       } else {
-        cmd = 'node';
-        cmdArgs = [distPath];
+        // Fast mode: execute dist/main.js
+        const distPath = path.resolve(serviceDir, 'dist', 'main.js');
+        if (!fs.existsSync(distPath)) {
+          console.warn(`${prefix} ${c.yellow}Warning: dist/main.js not found. Running nest start...${c.reset}`);
+          cmd = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm';
+          cmdArgs = ['--filter', pkgName, 'start'];
+        } else {
+          cmd = 'node';
+          cmdArgs = [distPath];
+        }
       }
     }
 

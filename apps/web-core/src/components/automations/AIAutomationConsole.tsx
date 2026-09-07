@@ -293,23 +293,23 @@ export function AIAutomationConsole() {
       <button
         type="button"
         onClick={() => setIsDropdownOpen((prev) => !prev)}
-        className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-xs cursor-pointer active:scale-[0.98] ${
+        className={`h-8.5 flex items-center space-x-1.5 px-2.5 rounded-xl text-xs font-bold transition-all border shadow-xs cursor-pointer whitespace-nowrap active:scale-[0.98] ${
           isDropdownOpen
             ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
             : 'bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 text-emerald-400 hover:text-emerald-300 border-emerald-500/25 hover:border-emerald-500/40'
         }`}
         title="AI Automation OS Smart Shortcut Menu (Alt+A)"
       >
-        <span className="relative flex h-2 w-2">
+        <span className="relative flex h-2 w-2 shrink-0">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
         </span>
-        <Zap size={14} className="text-emerald-400 fill-emerald-400/20" />
-        <span className="tracking-tight hidden lg:inline">Automation OS</span>
-        <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/30 hidden sm:inline">
+        <Zap size={13} className="text-emerald-400 fill-emerald-400/20 shrink-0" />
+        <span className="tracking-tight hidden xl:inline">Automation OS</span>
+        <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/30 hidden sm:inline shrink-0">
           ⌥A
         </span>
-        <ChevronDown size={13} className={`text-emerald-400/70 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={12} className={`text-emerald-400/70 shrink-0 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Floating Header Dropdown Menu */}

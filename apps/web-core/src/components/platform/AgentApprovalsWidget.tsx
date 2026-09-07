@@ -97,21 +97,21 @@ export function AgentApprovalsWidget() {
       {/* Topbar Action Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+        className={`h-8.5 flex items-center space-x-1.5 px-2.5 rounded-xl text-xs font-bold transition-all border shadow-xs cursor-pointer whitespace-nowrap active:scale-[0.98] ${
           pendingItems.length > 0
-            ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border-amber-500/30 animate-pulse'
-            : 'bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.06] dark:hover:bg-white/[0.1] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/[0.1]'
+            ? 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 border-amber-500/40 animate-pulse'
+            : 'bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.09] text-slate-700 dark:text-slate-300 border-slate-200 dark:border-white/[0.08] hover:border-emerald-500/40'
         }`}
-        title="Autonomous Agent Approvals"
+        title="Autonomous Agent Approvals & Staged Actions"
       >
-        <ShieldAlert size={14} className={pendingItems.length > 0 ? 'text-amber-500' : 'text-slate-400'} />
-        <span>Agent Actions</span>
+        <ShieldAlert size={14} className={pendingItems.length > 0 ? 'text-amber-500 shrink-0' : 'text-slate-400 shrink-0'} />
+        <span className="hidden xl:inline">Agent Actions</span>
         {pendingItems.length > 0 && (
-          <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950">
+          <span className="px-1.5 py-0.2 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 font-mono">
             {pendingItems.length}
           </span>
         )}
-        <ChevronDown size={12} className="text-slate-400" />
+        <ChevronDown size={12} className={`text-slate-400 shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Floating Review Flyout */}

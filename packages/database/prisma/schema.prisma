@@ -575,6 +575,7 @@ model LeaveRequest {
 model Folder {
   id        String   @id @default(uuid())
   name      String
+  service   String   @default("documents")
   parentId  String?  
   parent    Folder?  @relation("FolderToFolder", fields: [parentId], references: [id])
   children  Folder[] @relation("FolderToFolder")
@@ -587,18 +588,54 @@ model Folder {
 }
 
 model Document {
-  id        String   @id @default(uuid())
-  name      String
-  mimeType  String
-  size      Int
-  url       String
+  id               String   @id @default(uuid())
+  name             String
+  originalName     String?
+  mimeType         String
+  size             Int
+  url              String
+  storageKey       String?
+  checksum         String?
   
-  folderId  String?
-  folder    Folder?  @relation(fields: [folderId], references: [id])
+  service          String   @default("documents")
+  module           String   @default("general")
+  entityType       String?
+  entityId         String?
+  category         String   @default("upload")
   
-  tenantId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  source           String   @default("MANUAL_UPLOAD")
+  status           String   @default("ACTIVE")
+  processingStatus String   @default("COMPLETED")
+  processingError  String?
+  
+  parentDocumentId String?
+  parentDocument   Document?  @relation("DocumentLineage", fields: [parentDocumentId], references: [id], onDelete: SetNull)
+  childDocuments   Document[] @relation("DocumentLineage")
+  
+  references       DocumentReference[]
+  
+  folderId         String?
+  folder           Folder?  @relation(fields: [folderId], references: [id])
+  
+  createdBy        String?
+  tenantId         String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model DocumentReference {
+  id          String   @id @default(uuid())
+  documentId  String
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  tenantId    String
+  service     String
+  module      String
+  entityType  String?
+  entityId    String?
+  category    String   @default("upload")
+  notes       String?
+  createdAt   DateTime @default(now())
 }
 
 // ==========================================

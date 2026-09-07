@@ -5,13 +5,17 @@ import { PrismaService } from '../prisma/prisma.service';
 export class FoldersService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(tenantId: string, parentId?: string) {
+  async findAll(tenantId: string, parentId?: string, service?: string) {
     if (parentId === 'root') parentId = '';
+    const where: any = {
+      tenantId,
+      parentId: parentId || null,
+    };
+    if (service && service !== 'all') {
+      where.service = service.toLowerCase();
+    }
     return this.prisma.folder.findMany({
-      where: {
-        tenantId,
-        parentId: parentId || null,
-      },
+      where,
       orderBy: { name: 'asc' },
     });
   }
@@ -26,11 +30,12 @@ export class FoldersService {
     });
   }
 
-  async create(data: { name: string; parentId?: string }, tenantId: string) {
+  async create(data: { name: string; parentId?: string; service?: string }, tenantId: string) {
     if (data.parentId === 'root') data.parentId = '';
     return this.prisma.folder.create({
       data: {
         name: data.name,
+        service: data.service ? data.service.toLowerCase() : 'documents',
         parentId: data.parentId || null,
         tenantId,
       },

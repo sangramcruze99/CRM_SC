@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { updateDealStage, deleteDeal } from "@/app/actions";
 import { DeleteActionButton } from "@/components/DeleteActionButton";
+import { EntityDocumentsHub } from "@/components/documents/EntityDocumentsHub";
 
 export const dynamic = 'force-dynamic';
 
@@ -23,11 +24,18 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
   const { id } = await params;
   const headers = await getTenantHeaders();
 
-  const deal = await safeFetch<any>(
-    `http://localhost:3005/deals/${id}`,
-    { headers, cache: 'no-store' },
-    null
-  );
+  const [deal, dealDocuments] = await Promise.all([
+    safeFetch<any>(
+      `http://localhost:3005/deals/${id}`,
+      { headers, cache: 'no-store' },
+      null
+    ),
+    safeFetch<any[]>(
+      `http://localhost:3020/documents?entityId=${id}&service=crm`,
+      { headers, cache: 'no-store' },
+      []
+    ),
+  ]);
 
   if (!deal) {
     return (
@@ -151,6 +159,16 @@ export default async function DealDetailPage({ params }: { params: Promise<{ id:
               </div>
             </div>
           </div>
+
+          {/* Embedded Document & Deliverables Hub */}
+          <EntityDocumentsHub
+            service="crm"
+            module="deals"
+            entityType="deal"
+            entityId={deal.id}
+            entityTitle={deal.title}
+            initialDocuments={Array.isArray(dealDocuments) ? dealDocuments : []}
+          />
         </div>
 
         {/* Sidebar Actions */}

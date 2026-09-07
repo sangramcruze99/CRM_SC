@@ -14,7 +14,10 @@ import {
   Calendar,
   Sparkles,
   X,
+  FolderOpen,
+  Paperclip,
 } from 'lucide-react';
+import { DocumentVaultPickerModal, VaultDocument } from '@/components/documents/DocumentVaultPickerModal';
 
 interface Quote {
   id: string;
@@ -38,6 +41,8 @@ export function QuotesClient({ initialQuotes = [] }: { initialQuotes?: any[] }) 
   const [amount, setAmount] = useState('');
   const [validDays, setValidDays] = useState('30');
   const [alert, setAlert] = useState<string | null>(null);
+  const [attachedVaultDoc, setAttachedVaultDoc] = useState<VaultDocument | null>(null);
+  const [isVaultPickerOpen, setIsVaultPickerOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -295,6 +300,50 @@ export function QuotesClient({ initialQuotes = [] }: { initialQuotes?: any[] }) 
                 </div>
               </div>
 
+              {/* Document Vault Proposal Attachment */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Proposal Document / SOW</label>
+                  <button
+                    type="button"
+                    onClick={() => setIsVaultPickerOpen(true)}
+                    className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 cursor-pointer transition-colors"
+                  >
+                    <FolderOpen size={12} />
+                    <span>{attachedVaultDoc ? 'Change Vault File' : 'Attach from Vault'}</span>
+                  </button>
+                </div>
+
+                {attachedVaultDoc ? (
+                  <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between gap-2 animate-in fade-in">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Paperclip size={13} className="text-emerald-400 shrink-0" />
+                      <span className="text-[11px] font-bold text-white truncate">{attachedVaultDoc.name}</span>
+                      <span className="text-[10px] text-emerald-300/80 font-mono">
+                        ({(attachedVaultDoc.size / 1024).toFixed(1)} KB)
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setAttachedVaultDoc(null)}
+                      className="text-slate-400 hover:text-rose-400 p-1 rounded-md hover:bg-white/10"
+                      title="Remove attachment"
+                    >
+                      <X size={13} />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsVaultPickerOpen(true)}
+                    className="w-full py-2 bg-white/[0.03] hover:bg-emerald-500/10 border border-dashed border-white/[0.12] hover:border-emerald-500/40 rounded-xl text-slate-400 hover:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  >
+                    <FolderOpen size={13} />
+                    <span>Attach Proposal PDF or SOW from Document Vault</span>
+                  </button>
+                )}
+              </div>
+
               <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end gap-3 relative z-10">
                 <button
                   type="button"
@@ -316,6 +365,18 @@ export function QuotesClient({ initialQuotes = [] }: { initialQuotes?: any[] }) 
         </div>,
         document.body
       )}
+
+      {/* Document Vault Selection Modal */}
+      <DocumentVaultPickerModal
+        isOpen={isVaultPickerOpen}
+        onClose={() => setIsVaultPickerOpen(false)}
+        onSelect={(doc: VaultDocument) => {
+          setAttachedVaultDoc(doc);
+        }}
+        title="Attach Proposal from Vault"
+        description="Select any SOW, contract pricing sheet, or technical proposal to attach to this client quotation."
+        actionLabel="Attach to Quote"
+      />
     </div>
   );
 }

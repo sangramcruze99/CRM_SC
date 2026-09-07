@@ -13,6 +13,7 @@ import {
   Zap,
   RotateCcw,
   Trash2,
+  Bot
 } from 'lucide-react';
 import { useIndustry } from '@/components/industry/IndustryContext';
 import { EmployeeNode, INITIAL_NICHE_EMPLOYEES } from '@/lib/hrData';
@@ -22,6 +23,7 @@ import { SalaryPayrollHub } from '@/components/hr/SalaryPayrollHub';
 import { EmployeeRoster } from '@/components/hr/EmployeeRoster';
 import { AddEmployeeModal } from '@/components/hr/AddEmployeeModal';
 import { PayslipModal } from '@/components/hr/PayslipModal';
+import { openAgentModal } from '@/components/ai/ContextualAgentModal';
 
 export function DirectoryClient() {
   const { currentNiche, nicheConfig } = useIndustry();
@@ -285,6 +287,16 @@ export function DirectoryClient() {
 
         {/* Tab Switcher & Clean Actions */}
         <div className="flex items-center gap-3 flex-wrap">
+          <button
+            type="button"
+            onClick={() => openAgentModal('hr_assistant')}
+            className="px-3 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-800 dark:text-emerald-300 rounded-xl text-xs font-bold border border-emerald-500/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+            title="Ask HR Assistant for policy, onboarding, and payroll queries"
+          >
+            <Bot size={13} className="text-emerald-600 dark:text-emerald-400" />
+            <span>Ask HR Assistant</span>
+          </button>
+
           {employees.length > 0 && (
             <button
               type="button"

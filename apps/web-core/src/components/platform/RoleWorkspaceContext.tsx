@@ -22,7 +22,7 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     icon: '🌐',
     description: 'Unrestricted access to all 72 platform features across 13 functional pillars.',
     allowedCategories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-    visiblePaths: ['/dashboard', '/contacts', '/', '/deals', '/projects', '/invoices', '/quotes', '/subscriptions', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/lead-prospector', '/ocr-invoice', '/chat', '/documents', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/developer', '/super-admin', '/customization', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/onboarding', '/smart-upload', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations', '/automation', '/ai-agents', '/banking', '/payment-links', '/qr-payments', '/sales-department', '/customer-success', '/finance-department', '/ai', '/ai/team', '/ai/approvals', '/ai/activity', '/ai/automations', '/ai/usage', '/ai/trust'],
+    visiblePaths: ['/dashboard', '/contacts', '/', '/deals', '/projects', '/invoices', '/quotes', '/subscriptions', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/site-builder', '/lead-prospector', '/ocr-invoice', '/chat', '/documents', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/developer', '/super-admin', '/customization', '/branding', '/platform/schema', '/platform/objects', '/platform/pages', '/platform/roles', '/platform/ai', '/platform/navigation', '/onboarding', '/smart-upload', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations', '/automation', '/ai-agents', '/banking', '/payment-links', '/qr-payments', '/sales-department', '/customer-success', '/finance-department', '/forecast', '/price-books', '/taxes', '/settings/billing', '/slas', '/inbox', '/chat-widgets', '/voice', '/sim-gateway', '/portal', '/directory', '/reports', '/observability', '/leaderboard', '/ai-studio', '/search-index', '/localization', '/cockpit', '/customer-360', '/ai', '/ai/team', '/ai/approvals', '/ai/activity', '/ai/automations', '/ai/usage', '/ai/trust'],
   },
   sales: {
     id: 'sales',
@@ -31,7 +31,7 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     icon: '💼',
     description: 'Focuses on pipeline velocity, AI prospecting, social amplification, and contact relationships.',
     allowedCategories: [1, 5, 6, 8, 13],
-    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/lead-prospector', '/chat', '/chat-widgets', '/contacts', '/onboarding', '/lead-qualification', '/content-repurpose', '/ai-support', '/automations', '/automation', '/ai-agents', '/payment-links', '/qr-payments', '/sales-department', '/customer-success', '/finance-department', '/ai', '/ai/team', '/ai/approvals', '/ai/activity', '/ai/automations', '/ai/usage', '/ai/trust'],
+    visiblePaths: ['/dashboard', '/', '/deals', '/projects', '/tickets', '/social', '/email-marketing', '/platform/templates/email', '/site-builder', '/lead-prospector', '/chat', '/chat-widgets', '/contacts', '/customer-360', '/onboarding', '/lead-qualification', '/content-repurpose', '/ai-support', '/automations', '/automation', '/ai-agents', '/payment-links', '/qr-payments', '/sales-department', '/customer-success', '/finance-department', '/voice', '/sim-gateway', '/portal', '/leaderboard', '/inbox', '/documents', '/ai', '/ai/team', '/ai/approvals', '/ai/activity', '/ai/automations', '/ai/usage', '/ai/trust'],
   },
   finance: {
     id: 'finance',
@@ -40,7 +40,7 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     icon: '⚖️',
     description: 'Focused on Dual Khata ledger reconciliations, OCR billing extraction, subscriptions, NDAs, and CPQ.',
     allowedCategories: [3, 7, 9, 13],
-    visiblePaths: ['/dashboard', '/invoices', '/quotes', '/subscriptions', '/price-books', '/payment-links', '/qr-payments', '/banking', '/taxes', '/ocr-invoice', '/smart-upload', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/documents', '/s3-uploads', '/idp', '/data-sync', '/automations', '/automation', '/ai-agents', '/customer-success', '/finance-department', '/ai', '/ai/team', '/ai/approvals', '/ai/activity', '/ai/automations', '/ai/usage', '/ai/trust'],
+    visiblePaths: ['/dashboard', '/cockpit', '/invoices', '/quotes', '/subscriptions', '/price-books', '/payment-links', '/qr-payments', '/banking', '/taxes', '/settings/billing', '/forecast', '/reports', '/ocr-invoice', '/smart-upload', '/e-signatures', '/ndas', '/offer-letters', '/compliance', '/documents', '/s3-uploads', '/idp', '/data-sync', '/automations', '/automation', '/ai-agents', '/customer-success', '/finance-department', '/ai', '/ai/team', '/ai/approvals', '/ai/activity', '/ai/automations', '/ai/usage', '/ai/trust'],
   },
   admin: {
     id: 'admin',
@@ -49,7 +49,7 @@ export const WORKSPACE_ROLES: Record<WorkspaceRole, WorkspaceRoleMetadata> = {
     icon: '🛠️',
     description: 'Focused on low-code schema modeling, custom entities, RBAC permissions, vector AI prompt templates, and API keys.',
     allowedCategories: [2, 4, 10, 11, 13],
-    visiblePaths: ['/dashboard', '/platform/schema', '/platform/objects', '/platform/roles', '/platform/ai', '/platform/navigation', '/developer', '/super-admin', '/customization', '/audit-logs', '/search-index', '/localization', '/marketplace', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations', '/automation', '/ai-agents', '/sales-department', '/customer-success', '/finance-department', '/ai', '/ai/team', '/ai/approvals', '/ai/activity', '/ai/automations', '/ai/usage', '/ai/trust'],
+    visiblePaths: ['/dashboard', '/platform/schema', '/platform/objects', '/platform/pages', '/platform/roles', '/platform/ai', '/platform/navigation', '/developer', '/super-admin', '/customization', '/branding', '/compliance', '/audit-logs', '/search-index', '/localization', '/marketplace', '/industry', '/lead-qualification', '/idp', '/ai-support', '/content-repurpose', '/data-sync', '/automations', '/automation', '/ai-agents', '/ai-studio', '/observability', '/sales-department', '/customer-success', '/finance-department', '/ai', '/ai/team', '/ai/approvals', '/ai/activity', '/ai/automations', '/ai/usage', '/ai/trust'],
   },
 };
 

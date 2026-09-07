@@ -38,12 +38,12 @@ export function LanguageSwitcher() {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.09] border border-slate-200 dark:border-white/[0.08] rounded-xl text-xs font-semibold text-slate-800 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
+        className="h-8.5 px-2 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.09] border border-slate-200 dark:border-white/[0.08] hover:border-emerald-500/40 rounded-xl text-xs font-bold text-slate-800 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap shrink-0 active:scale-[0.98]"
         title="Change Language & RTL"
       >
-        <span className="text-sm">{currentLang.flag}</span>
-        <span className="hidden md:inline font-mono font-medium">{currentLang.code.toUpperCase()}</span>
-        <ChevronDown size={11} className={`text-slate-500 dark:text-slate-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="text-sm shrink-0">{currentLang.flag}</span>
+        <span className="hidden sm:inline font-mono font-bold text-[11px]">{currentLang.code.toUpperCase()}</span>
+        <ChevronDown size={11} className={`text-slate-500 dark:text-slate-400 transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (

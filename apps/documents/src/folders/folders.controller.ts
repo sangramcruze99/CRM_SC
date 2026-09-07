@@ -18,10 +18,11 @@ export class FoldersController {
   findAll(
     @Headers('x-tenant-id') tenantId: string,
     @Query('parentId') parentId?: string,
+    @Query('service') service?: string,
   ) {
     // Default tenant for development
     const tenant = tenantId || 'default-tenant';
-    return this.foldersService.findAll(tenant, parentId);
+    return this.foldersService.findAll(tenant, parentId, service);
   }
 
   @Get(':id')
@@ -32,7 +33,7 @@ export class FoldersController {
 
   @Post()
   create(
-    @Body() data: { name: string; parentId?: string },
+    @Body() data: { name: string; parentId?: string; service?: string },
     @Headers('x-tenant-id') tenantId: string,
   ) {
     const tenant = tenantId || 'default-tenant';

@@ -24,7 +24,9 @@ import {
   Receipt,
   Ticket,
   ChevronRight,
+  FolderOpen,
 } from 'lucide-react';
+import { DocumentVaultPickerModal, VaultDocument } from '@/components/documents/DocumentVaultPickerModal';
 import Link from 'next/link';
 import { executeBatchMigration } from '../actions';
 
@@ -205,6 +207,7 @@ export function MigrationClient() {
   const [history, setHistory] = useState<MigrationHistoryItem[]>([]);
   const [alert, setAlert] = useState<string | null>(null);
   const [activeDataset, setActiveDataset] = useState<any>(SUPPORTED_CRMS[0].mockDataset);
+  const [isVaultPickerOpen, setIsVaultPickerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -458,13 +461,30 @@ export function MigrationClient() {
                 Upload your exported spreadsheet from any CRM, ERP, or SQL database. Our neural pipeline will parse entities automatically.
               </p>
             </div>
-            <button
-              type="button"
-              className="px-5 py-2.5 bg-slate-100 dark:bg-white/[0.08] hover:bg-slate-200 dark:hover:bg-white/[0.14] text-slate-900 dark:text-white font-bold rounded-xl text-xs border border-slate-200 dark:border-white/[0.1] inline-flex items-center gap-2 cursor-pointer"
-            >
-              <FileSpreadsheet size={15} className="text-emerald-600 dark:text-emerald-400" />
-              <span>Browse Spreadsheet File</span>
-            </button>
+            <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsVaultPickerOpen(true);
+                }}
+                className="px-5 py-2.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-600 dark:text-emerald-300 font-bold rounded-xl text-xs border border-emerald-500/40 inline-flex items-center gap-2 cursor-pointer shadow-sm transition-all"
+              >
+                <FolderOpen size={15} />
+                <span>Select from Document Vault</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+                className="px-5 py-2.5 bg-slate-100 dark:bg-white/[0.08] hover:bg-slate-200 dark:hover:bg-white/[0.14] text-slate-900 dark:text-white font-bold rounded-xl text-xs border border-slate-200 dark:border-white/[0.1] inline-flex items-center gap-2 cursor-pointer transition-all"
+              >
+                <FileSpreadsheet size={15} className="text-emerald-600 dark:text-emerald-400" />
+                <span>Browse Local File</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -686,6 +706,19 @@ export function MigrationClient() {
           </table>
         </div>
       </div>
+
+      {/* Document Vault Picker Modal */}
+      <DocumentVaultPickerModal
+        isOpen={isVaultPickerOpen}
+        onClose={() => setIsVaultPickerOpen(false)}
+        onSelect={(doc: VaultDocument) => {
+          setAlert(`📄 Loaded "${doc.name}" from Document Vault. Launching entity mapping...`);
+          setCurrentStep(2);
+        }}
+        title="Select Data Export from Vault"
+        description="Choose any spreadsheet, CSV, or JSON database backup from the Document Vault to import."
+        actionLabel="Import from Vault"
+      />
     </div>
   );
 }
