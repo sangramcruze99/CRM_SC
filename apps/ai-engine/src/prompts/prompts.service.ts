@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
@@ -53,6 +53,49 @@ export class PromptsService {
     model?: string,
   ) {
     const startTime = Date.now();
+
+    // 0. SaaS Entitlement & Token Quota Gate
+    try {
+      const evalRes = await fetch('http://localhost:3027/billing/usage/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId,
+          metric: 'ai.tokens.total',
+          requestedAmount: 500,
+        }),
+      });
+      if (evalRes.ok) {
+        const evalData = (await evalRes.json()) as any;
+        if (!evalData.allowed && evalData.action === 'BLOCK') {
+          throw new BadRequestException(
+            'Monthly AI token quota exhausted for this tenant. Please upgrade your subscription plan in Settings > Billing.',
+          );
+        }
+      }
+    } catch (err: any) {
+      if (err instanceof BadRequestException) throw err;
+      // Continue if billing service is gracefully restarting
+    }
+
+    // Helper to asynchronously record billable token usage
+    const recordMeteredUsage = (tokens: number, pName: string, mName: string) => {
+      const estCost = tokens * 0.000001; // $1.00 / 1M tokens average
+      fetch('http://localhost:3027/billing/usage/record', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId,
+          metric: 'ai.tokens.total',
+          quantity: tokens,
+          source: 'ai-engine',
+          provider: pName,
+          model: mName,
+          estimatedCost: estCost,
+          idempotencyKey: `ai_tok_${tenantId}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        }),
+      }).catch(() => {});
+    };
 
     // 1. Live CRM Context Aggregation
     const [contactCount, dealCount, ticketCount, recentDeals, recentContacts] = await Promise.all([
@@ -145,7 +188,7 @@ Guidelines:
           'X-Service-Key': pythonAiKey,
         },
         body: JSON.stringify({
-          model: model || (wantsOpenRouter ? 'openrouter/openai/gpt-4o' : 'groq/compound'),
+          model: model || (wantsOpenRouter ? 'openrouter/openai/gpt-4o-mini' : 'groq/llama-3.3-70b-versatile'),
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: query },
@@ -158,6 +201,8 @@ Guidelines:
 
       if (pyResponse.ok) {
         const pyData = await pyResponse.json();
+        const tokens = pyData.usage?.total_tokens || 350;
+        recordMeteredUsage(tokens, 'python-ai', pyData.model || model || 'python-ai-routed');
         return {
           reply: pyData.content || '',
           model: pyData.model || model || 'python-ai-routed',
@@ -171,66 +216,73 @@ Guidelines:
       // Graceful fallback to direct cloud providers if Python AI is unavailable
     }
 
-    if (!wantsOpenRouter && groqKey) {
-      try {
-        const selectedModel = model || 'groq/compound';
-        const result = await executeCall('https://api.groq.com/openai/v1', groqKey, selectedModel);
-        return {
-          ...result,
-          provider: 'groq',
-          latencyMs: Date.now() - startTime,
-          context: { contactCount, dealCount, ticketCount },
-        };
-      } catch (error: any) {
-        console.warn('[AI-Engine] Groq call failed, falling back to OpenRouter:', error?.message || error);
+      if (!wantsOpenRouter && groqKey) {
+        try {
+          const selectedModel = model || 'llama-3.3-70b-versatile';
+          const result = await executeCall('https://api.groq.com/openai/v1', groqKey, selectedModel);
+          const tokens = result.usage?.total_tokens || 350;
+          recordMeteredUsage(tokens, 'groq', selectedModel);
+          return {
+            ...result,
+            provider: 'groq',
+            latencyMs: Date.now() - startTime,
+            context: { contactCount, dealCount, ticketCount },
+          };
+        } catch (error: any) {
+          console.warn('[AI-Engine] Groq call failed, falling back to OpenRouter:', error?.message || error);
+        }
       }
-    }
 
-    if (openRouterKey) {
-      try {
-        const selectedModel = model || 'openai/gpt-4o-mini';
-        const result = await executeCall(
-          'https://openrouter.ai/api/v1',
-          openRouterKey,
-          selectedModel,
-          {
-            'HTTP-Referer': 'http://localhost:4000',
-            'X-Title': 'Business OS CRM',
-          },
-        );
-        return {
-          ...result,
-          provider: 'openrouter',
-          latencyMs: Date.now() - startTime,
-          context: { contactCount, dealCount, ticketCount },
-        };
-      } catch (error: any) {
-        console.warn('[AI-Engine] OpenRouter call failed:', error?.message || error);
+      if (openRouterKey) {
+        try {
+          const selectedModel = model || 'openai/gpt-4o-mini';
+          const result = await executeCall(
+            'https://openrouter.ai/api/v1',
+            openRouterKey,
+            selectedModel,
+            {
+              'HTTP-Referer': 'http://localhost:4000',
+              'X-Title': 'Business OS CRM',
+            },
+          );
+          const tokens = result.usage?.total_tokens || 400;
+          recordMeteredUsage(tokens, 'openrouter', selectedModel);
+          return {
+            ...result,
+            provider: 'openrouter',
+            latencyMs: Date.now() - startTime,
+            context: { contactCount, dealCount, ticketCount },
+          };
+        } catch (error: any) {
+          console.warn('[AI-Engine] OpenRouter call failed:', error?.message || error);
+        }
       }
-    }
 
-    // Secondary fallback: If OpenRouter was tried first but failed, try Groq
-    if (wantsOpenRouter && groqKey) {
-      try {
-        const result = await executeCall('https://api.groq.com/openai/v1', groqKey, 'groq/compound');
-        return {
-          ...result,
-          provider: 'groq (fallback)',
-          latencyMs: Date.now() - startTime,
-          context: { contactCount, dealCount, ticketCount },
-        };
-      } catch (error: any) {
-        console.warn('[AI-Engine] Secondary Groq call failed:', error?.message || error);
+      // Secondary fallback: If OpenRouter was tried first but failed, try Groq
+      if (wantsOpenRouter && groqKey) {
+        try {
+          const result = await executeCall('https://api.groq.com/openai/v1', groqKey, 'groq/compound');
+          const tokens = result.usage?.total_tokens || 350;
+          recordMeteredUsage(tokens, 'groq', 'groq/compound');
+          return {
+            ...result,
+            provider: 'groq (fallback)',
+            latencyMs: Date.now() - startTime,
+            context: { contactCount, dealCount, ticketCount },
+          };
+        } catch (error: any) {
+          console.warn('[AI-Engine] Secondary Groq call failed:', error?.message || error);
+        }
       }
-    }
 
-    // Fallback: Local offline context-aware reply
-    return {
-      reply: `[Business OS Copilot] Regarding: "${query}"\n\n- **Active Pipeline Deals**: ${dealCount}\n- **Commercial Contacts**: ${contactCount}\n- **Open Tickets**: ${ticketCount}\n\n*Note: Configure or refresh LLM API keys in .env to enable continuous cloud completions.*`,
-      model: 'business-os-local-context',
-      provider: 'local',
-      latencyMs: Date.now() - startTime,
-      context: { contactCount, dealCount, ticketCount },
-    };
+      // Fallback: Local offline context-aware reply
+      recordMeteredUsage(120, 'local', 'business-os-local-context');
+      return {
+        reply: `[Business OS Copilot] Regarding: "${query}"\n\n- **Active Pipeline Deals**: ${dealCount}\n- **Commercial Contacts**: ${contactCount}\n- **Open Tickets**: ${ticketCount}\n\n*Note: Configure or refresh LLM API keys in .env to enable continuous cloud completions.*`,
+        model: 'business-os-local-context',
+        provider: 'local',
+        latencyMs: Date.now() - startTime,
+        context: { contactCount, dealCount, ticketCount },
+      };
   }
 }

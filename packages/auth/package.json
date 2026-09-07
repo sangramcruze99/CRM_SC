@@ -8,8 +8,8 @@
     "dev": "tsc -w"
   },
   "dependencies": {
-    "@nestjs/common": "^10.0.0",
-    "@nestjs/jwt": "^10.2.0"
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/jwt": "^11.0.2"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

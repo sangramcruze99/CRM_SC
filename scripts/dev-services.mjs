@@ -70,6 +70,7 @@ export const MICROSERVICES = [
   { name: 'cms', dir: 'apps/cms', port: 3024, category: 'Content Management' },
   { name: 'settings', dir: 'apps/settings', port: 3025, category: 'Configuration' },
   { name: 'inventory', dir: 'apps/inventory', port: 3026, category: 'Supply Chain' },
+  { name: 'billing', dir: 'apps/billing', port: 3027, category: 'SaaS Monetization', isCore: true },
   { name: 'python-ai', dir: 'services/python-ai', port: 3030, category: 'AI & Machine Learning', isCore: true, isPython: true },
   { name: 'web-core', dir: 'apps/web-core', port: 4000, category: 'Next.js App Router', isCore: true, isFrontend: true },
 ];

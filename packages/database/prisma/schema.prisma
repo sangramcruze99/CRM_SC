@@ -691,14 +691,165 @@ model PageBlock {
   updatedAt     DateTime @updatedAt
 }
 
-// --- Generated Models to Complete All Tasks ---
+// ============================================================================
+// SAAS BILLING, MONETIZATION & ENTITLEMENTS (STAGE 6)
+// ============================================================================
+
+model BillingCustomer {
+  id               String   @id @default(cuid())
+  tenantId         String   @unique
+  stripeCustomerId String   @unique
+  email            String?
+  currency         String   @default("USD")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([tenantId])
+}
+
+model Plan {
+  id                   String   @id @default(cuid())
+  key                  String   @unique // FREE, STARTER, BUSINESS, PRO, ENTERPRISE
+  name                 String
+  description          String?
+  active               Boolean  @default(true)
+  monthlyPrice         Float    @default(0)
+  annualPrice          Float    @default(0)
+  stripeMonthlyPriceId String?
+  stripeAnnualPriceId  String?
+  features             String   @default("{}") // JSON boolean capabilities
+  limits               String   @default("{}") // JSON numerical quotas
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
 
 model Subscription {
-  id        String   @id @default(uuid())
-  tenantId  String
-  planId    String
-  status    String
-  createdAt DateTime @default(now())
+  id                   String    @id @default(cuid())
+  tenantId             String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?   @unique
+  planId               String    @default("FREE") // references Plan.key
+  priceId              String?
+  status               String    @default("TRIALING") // TRIALING, ACTIVE, PAST_DUE, UNPAID, CANCELED, PAUSED
+  billingInterval      String    @default("monthly") // monthly, annual
+  currentPeriodStart   DateTime  @default(now())
+  currentPeriodEnd     DateTime  @default(now())
+  cancelAtPeriodEnd    Boolean   @default(false)
+  canceledAt           DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  quantity             Int       @default(1)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([tenantId, status])
+}
+
+model TenantEntitlementOverride {
+  id           String    @id @default(cuid())
+  tenantId     String
+  featureKey   String
+  overrideType String    @default("LIMIT") // BOOLEAN, LIMIT, QUOTA
+  value        String    // JSON or string representation
+  reason       String?
+  createdBy    String?
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([tenantId, featureKey])
+  @@index([tenantId])
+}
+
+model UsageEvent {
+  id             String   @id @default(cuid())
+  tenantId       String
+  metric         String   // e.g., 'ai.tokens.total', 'workflow.executions'
+  quantity       Float
+  source         String   // e.g., 'ai-engine', 'automation'
+  sourceId       String?
+  agentId        String?
+  workflowId     String?
+  executionId    String?
+  userId         String?
+  provider       String?  // 'groq', 'openrouter', 'openai'
+  model          String?
+  estimatedCost  Float?   @default(0)
+  idempotencyKey String   @unique
+  timestamp      DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([tenantId, metric, timestamp])
+}
+
+model UsageDailyAggregate {
+  id            String   @id @default(cuid())
+  tenantId      String
+  metric        String
+  date          String   // YYYY-MM-DD
+  totalQuantity Float    @default(0)
+  totalCost     Float    @default(0)
+  eventCount    Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([tenantId, metric, date])
+  @@index([tenantId, date])
+}
+
+model StripeWebhookEvent {
+  id            String    @id @default(cuid())
+  stripeEventId String    @unique
+  eventType     String
+  payloadHash   String?
+  payload       String    @default("{}")
+  status        String    @default("PENDING") // PENDING, PROCESSED, FAILED, IGNORED_DUPLICATE
+  attempts      Int       @default(0)
+  error         String?
+  receivedAt    DateTime  @default(now())
+  processedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, eventType])
+}
+
+model BillingInvoice {
+  id                String    @id @default(cuid())
+  tenantId          String
+  stripeInvoiceId   String?   @unique
+  invoiceNumber     String?
+  amountDue         Float     @default(0)
+  amountPaid        Float     @default(0)
+  currency          String    @default("USD")
+  status            String    @default("DRAFT") // DRAFT, OPEN, PAID, UNCOLLECTIBLE, VOID
+  hostedInvoiceUrl  String?
+  invoicePdfUrl     String?
+  periodStart       DateTime?
+  periodEnd         DateTime?
+  paidAt            DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([tenantId, status])
+}
+
+model EnterpriseContract {
+  id                 String   @id @default(cuid())
+  tenantId           String   @unique
+  contractNumber     String   @unique
+  planId             String   @default("ENTERPRISE")
+  startDate          DateTime @default(now())
+  endDate            DateTime
+  customPrice        Float
+  billingMethod      String   @default("INVOICE") // INVOICE, STRIPE, ACH
+  customEntitlements String   @default("{}")
+  customLimits       String   @default("{}")
+  purchaseOrderRef   String?
+  autoRenew          Boolean  @default(true)
+  status             String   @default("ACTIVE") // ACTIVE, EXPIRED, TERMINATED
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model PaymentLink {

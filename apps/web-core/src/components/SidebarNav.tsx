@@ -60,9 +60,11 @@ import {
   ChevronsUpDown,
   PanelLeftClose,
   Layout,
+  CreditCard,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, any> = {
+  CreditCard,
   Layout,
   Palette,
   Smartphone,

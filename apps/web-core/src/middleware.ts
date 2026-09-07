@@ -12,7 +12,8 @@ export function middleware(request: NextRequest) {
   
   // Set the tenant ID header based on the JWT token for all requests (UI or API)
   const response = NextResponse.next();
-  const tenantId = 'default-tenant';
+  const incomingTenantId = request.headers.get('x-tenant-id');
+  let tenantId = incomingTenantId || 'default-tenant';
   
   if (token) {
     try {

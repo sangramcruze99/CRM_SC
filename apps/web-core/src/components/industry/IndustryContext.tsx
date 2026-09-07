@@ -100,6 +100,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
           { label: 'Payment Links', href: '/payment-links', iconName: 'Zap' },
           { label: 'Boardroom Deck', href: '/forecast', iconName: 'Presentation', badge: 'Forecast' },
           { label: 'Subscriptions', href: '/subscriptions', iconName: 'DollarSign', badge: 'SaaS' },
+          { label: 'SaaS Billing & Plans', href: '/settings/billing', iconName: 'CreditCard', badge: 'Stage 6' },
           { label: 'Commercial Quotes', href: '/quotes', iconName: 'FileBadge' },
           { label: 'Price Books', href: '/price-books', iconName: 'Layers' },
           { label: 'E-Signatures', href: '/e-signatures', iconName: 'FileSignature' },
@@ -118,6 +119,9 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
       {
         sectionTitle: 'Automation & Enterprise',
         items: [
+          { label: 'AI Sales Dept (Stage 5)', href: '/sales-department', iconName: 'TrendingUp', badge: '5.1' },
+          { label: 'AI CS Dept (Stage 5)', href: '/customer-success', iconName: 'ShieldCheck', badge: '5.2' },
+          { label: 'AI Finance Dept (Stage 5)', href: '/finance-department', iconName: 'Landmark', badge: '5.3' },
           { label: 'Lead Qualification', href: '/lead-qualification', iconName: 'Zap', badge: 'Hot' },
           { label: 'Intelligent Doc (IDP)', href: '/idp', iconName: 'Scan', badge: 'IDP' },
           { label: 'AI Support Sentinel', href: '/ai-support', iconName: 'Bot', badge: 'Auto' },

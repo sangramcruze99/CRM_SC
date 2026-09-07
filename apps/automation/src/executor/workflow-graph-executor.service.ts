@@ -58,6 +58,27 @@ export class WorkflowGraphExecutorService {
 
     this.logger.log(`[WorkflowGraphExecutor] Initiating graph run for Workflow ${workflowId} (Nodes: ${nodes.length})`);
 
+    // 0. SaaS Workflow Execution Quota Gate
+    try {
+      const evalRes = await fetch('http://localhost:3027/billing/usage/evaluate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId,
+          metric: 'workflow.executions',
+          requestedAmount: 1,
+        }),
+      });
+      if (evalRes.ok) {
+        const evalData = (await evalRes.json()) as any;
+        if (!evalData.allowed && evalData.action === 'BLOCK') {
+          throw new Error('Monthly workflow execution limit reached for this tenant plan. Upgrade your plan to run additional workflows.');
+        }
+      }
+    } catch (err: any) {
+      if (err.message?.includes('Monthly workflow execution limit reached')) throw err;
+    }
+
     // 1. Create or retrieve WorkflowExecution record
     let execution = options.executionId
       ? await this.prisma.workflowExecution.findUnique({ where: { id: options.executionId } })
@@ -250,6 +271,21 @@ export class WorkflowGraphExecutorService {
           },
         });
       }
+
+      // Asynchronously record metered workflow execution usage
+      fetch('http://localhost:3027/billing/usage/record', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenantId,
+          metric: 'workflow.executions',
+          quantity: 1,
+          source: 'automation',
+          workflowId,
+          executionId: execution.id,
+          idempotencyKey: `wf_exec_${execution.id}`,
+        }),
+      }).catch(() => {});
 
       return {
         status: 'SUCCESS',

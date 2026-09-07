@@ -9,6 +9,9 @@ import { OcrModule } from './ocr/ocr.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PromptsModule } from './prompts/prompts.module';
 import { AgentsModule } from './agents/agents.module';
+import { SalesDepartmentModule } from './departments/sales/sales-department.module';
+import { CustomerSuccessModule } from './departments/customer-success/customer-success.module';
+import { FinanceDepartmentModule } from './departments/finance/finance-department.module';
 
 @Module({
   imports: [
@@ -18,6 +21,9 @@ import { AgentsModule } from './agents/agents.module';
     KnowledgeModule,
     OcrModule,
     PrismaModule,
+    SalesDepartmentModule,
+    CustomerSuccessModule,
+    FinanceDepartmentModule,
   ],
   controllers: [AppController],
   providers: [

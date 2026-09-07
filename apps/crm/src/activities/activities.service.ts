@@ -31,27 +31,7 @@ export class ActivitiesService {
       orderBy: { createdAt: 'desc' }
     });
 
-    // In a fully developed Universal Timeline, we would query the Automation Service 
-    // for WhatsApp logs and the Finance Service for Khata payments, then merge them here.
-    // Simulating that aggregation:
-    const mockAggregated = [
-      {
-        id: 'mock-whatsapp-1',
-        type: 'WHATSAPP',
-        title: 'Auto-Follow Up',
-        content: 'Sent automated WhatsApp reminder about overdue balance.',
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-      {
-        id: 'mock-khata-1',
-        type: 'KHATA_PAYMENT',
-        title: 'Payment Received',
-        content: 'Received $50.00 cash payment against ledger.',
-        createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-      }
-    ];
-
-    return [...activities, ...mockAggregated].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    return activities;
   }
 
   async findOne(tenantId: string, id: string) {
