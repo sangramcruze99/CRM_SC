@@ -852,6 +852,146 @@ model EnterpriseContract {
   updatedAt          DateTime @updatedAt
 }
 
+model PlanVersion {
+  id                 String       @id @default(cuid())
+  planKey            String       // FREE, STARTER, BUSINESS, PRO, ENTERPRISE
+  version            Int          @default(1)
+  name               String
+  description        String?
+  status             String       @default("ACTIVE") // ACTIVE, DEPRECATED, RETIRED
+  features           String       @default("{}") // JSON boolean capabilities
+  limits             String       @default("{}") // JSON numerical quotas
+  effectiveFrom      DateTime     @default(now())
+  prices             PlanPrice[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@unique([planKey, version])
+  @@index([planKey, status])
+}
+
+model PlanPrice {
+  id                 String       @id @default(cuid())
+  planVersionId      String
+  currency           String       @default("USD") // USD, EUR, GBP, BDT
+  interval           String       @default("monthly") // monthly, annual
+  amount             Float
+  stripePriceId      String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  planVersion        PlanVersion  @relation(fields: [planVersionId], references: [id], onDelete: Cascade)
+
+  @@index([planVersionId, currency, interval])
+}
+
+model CreditLedger {
+  id                 String       @id @default(cuid())
+  tenantId           String
+  type               String       // INCLUDED, PURCHASED, PROMOTIONAL, ENTERPRISE, ROLLOVER, EXPIRED, CONSUMED, REFUNDED
+  amount             Float        // Positive for grant, negative for debit
+  balanceAfter       Float
+  source             String       // SUBSCRIPTION, STRIPE_CHECKOUT, ADMIN_GRANT, AI_EXECUTION, PROMO_CODE
+  sourceId           String?
+  expiresAt          DateTime?
+  idempotencyKey     String?      @unique
+  metadata           String       @default("{}")
+  createdAt          DateTime     @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, type])
+}
+
+model AiExecutionCost {
+  id                 String       @id @default(cuid())
+  tenantId           String
+  executionId        String       @unique
+  agentId            String?      // ares, athena, midas, hermes, vesta, etc.
+  workflowId         String?
+  provider           String       // groq, openrouter, openai
+  model              String
+  inputTokens        Int          @default(0)
+  outputTokens       Int          @default(0)
+  totalTokens        Int          @default(0)
+  estimatedProviderCost Float     @default(0)
+  customerCharge     Float        @default(0)
+  latencyMs          Int          @default(0)
+  status             String       @default("COMPLETED") // COMPLETED, THROTTLED, BLOCKED, FAILED
+  timestamp          DateTime     @default(now())
+
+  @@index([tenantId, agentId, timestamp])
+  @@index([tenantId, provider, model])
+}
+
+model AiBudget {
+  id                 String       @id @default(cuid())
+  tenantId           String       @unique
+  monthlyBudgetUsd   Float        @default(100.0)
+  dailyBudgetUsd     Float        @default(10.0)
+  agentAllocations   String       @default("{}") // JSON map: { ares: 30, athena: 25, midas: 15, other: 30 }
+  actionOnExhaustion String       @default("BLOCK") // WARN, THROTTLE, BLOCK, REQUIRE_APPROVAL
+  notifyEmails       String       @default("[]")
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model Coupon {
+  id                 String       @id @default(cuid())
+  code               String       @unique
+  name               String
+  discountType       String       @default("PERCENTAGE") // PERCENTAGE, FIXED
+  value              Float        // e.g. 20 for 20%, or 50.0 for $50 off
+  currency           String       @default("USD")
+  maxRedemptions     Int          @default(100)
+  timesRedeemed      Int          @default(0)
+  eligiblePlans      String       @default("[]") // JSON array of plan keys or empty for all
+  expiresAt          DateTime?
+  isActive           Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  redemptions        CouponRedemption[]
+}
+
+model CouponRedemption {
+  id                 String       @id @default(cuid())
+  couponId           String
+  tenantId           String
+  discountAmount     Float
+  appliedAt          DateTime     @default(now())
+
+  coupon             Coupon       @relation(fields: [couponId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, couponId])
+}
+
+model FeatureFlag {
+  id                 String       @id @default(cuid())
+  key                String       @unique
+  name               String
+  description        String?
+  scope              String       @default("GLOBAL") // GLOBAL, TENANT, ROLLOUT_PERCENT
+  rolloutPercent     Int          @default(100)
+  enabledForTenants  String       @default("[]") // JSON array of tenant IDs
+  isEnabled          Boolean      @default(true)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model AiKillSwitch {
+  id                 String       @id @default(cuid())
+  scope              String       // GLOBAL, TENANT, AGENT, TOOL
+  target             String       // 'GLOBAL', 'tenant_xyz', 'ares', 'athena', 'midas', 'create_payment_link'
+  isEnabled          Boolean      @default(true) // true = active, false = killed / blocked
+  reason             String?
+  updatedBy          String?
+  updatedAt          DateTime     @updatedAt
+  createdAt          DateTime     @default(now())
+
+  @@unique([scope, target])
+  @@index([scope, target])
+}
+
 model PaymentLink {
   id        String   @id @default(uuid())
   tenantId  String

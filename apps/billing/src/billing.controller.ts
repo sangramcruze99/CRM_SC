@@ -16,6 +16,14 @@ import { UsageService, RecordUsageDto } from './usage/usage.service';
 import { StripeService } from './stripe/stripe.service';
 import { StripeWebhookService } from './webhooks/stripe-webhook.service';
 import { PrismaService } from './prisma/prisma.service';
+import { CreditsService } from './credits/credits.service';
+import { AiCostService } from './ai-cost/ai-cost.service';
+import { AiBudgetService } from './ai-cost/ai-budget.service';
+import { CurrenciesService } from './pricing/currencies.service';
+import { CouponsService } from './promotions/coupons.service';
+import { AiKillSwitchesService } from './governance/ai-kill-switches.service';
+import { CircuitBreakerService } from './resilience/circuit-breaker.service';
+import { SubscriptionStateMachineService, SubscriptionState } from './lifecycle/subscription-state-machine.service';
 
 @Controller('billing')
 export class BillingController {
@@ -26,6 +34,14 @@ export class BillingController {
     private readonly stripeService: StripeService,
     private readonly webhookService: StripeWebhookService,
     private readonly prisma: PrismaService,
+    private readonly creditsService: CreditsService,
+    private readonly aiCostService: AiCostService,
+    private readonly aiBudgetService: AiBudgetService,
+    private readonly currenciesService: CurrenciesService,
+    private readonly couponsService: CouponsService,
+    private readonly killSwitchesService: AiKillSwitchesService,
+    private readonly circuitBreakerService: CircuitBreakerService,
+    private readonly stateMachineService: SubscriptionStateMachineService,
   ) {}
 
   private extractTenantId(headers: Record<string, any>): string {
@@ -238,12 +254,246 @@ export class BillingController {
    * Stripe Webhook Endpoint (Raw Body with HMAC Signature)
    */
   @Post('stripe/webhook')
+  @Post('webhook')
   async handleStripeWebhook(
     @Req() req: Request,
     @Headers('stripe-signature') signature?: string,
   ) {
-    const rawBody = (req as any).rawBody || JSON.stringify(req.body);
+    const rawBody = (req as any).rawBody || (typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
     const sig = signature || 'test_signature';
-    return this.webhookService.handleWebhook(rawBody, sig);
+    const result = await this.webhookService.handleWebhook(rawBody, sig);
+    return {
+      received: true,
+      idempotent: result.status === 'IGNORED_DUPLICATE',
+      ...result,
+    };
+  }
+
+  /**
+   * Get tenant credits balance
+   */
+  @Get('credits')
+  async getCredits(@Headers() headers: Record<string, any>) {
+    const tenantId = this.extractTenantId(headers);
+    const balance = await this.creditsService.getBalance(tenantId);
+    const history = await this.creditsService.getLedgerHistory(tenantId);
+    return {
+      ...balance,
+      summary: balance,
+      history,
+    };
+  }
+
+  /**
+   * Grant credits to tenant
+   */
+  @Post('credits/grant')
+  async grantCredits(
+    @Headers() headers: Record<string, any>,
+    @Body() body: { amount: number; type?: any; source?: string; idempotencyKey?: string },
+  ) {
+    const tenantId = this.extractTenantId(headers);
+    return this.creditsService.grantCredits({
+      tenantId,
+      amount: body.amount,
+      type: body.type || 'PURCHASED',
+      source: body.source || 'STRIPE_CHECKOUT',
+      idempotencyKey: body.idempotencyKey,
+    });
+  }
+
+  /**
+   * Consume credits for tenant
+   */
+  @Post('credits/consume')
+  async consumeCredits(
+    @Headers() headers: Record<string, any>,
+    @Body() body: { amount: number; source?: string; idempotencyKey?: string },
+  ) {
+    const tenantId = this.extractTenantId(headers);
+    return this.creditsService.consumeCredits({
+      tenantId,
+      amount: body.amount,
+      source: body.source || 'AI_EXECUTION',
+      idempotencyKey: body.idempotencyKey,
+    });
+  }
+
+  /**
+   * Get credit ledger history
+   */
+  @Get('credits/history')
+  async getCreditHistory(@Headers() headers: Record<string, any>) {
+    const tenantId = this.extractTenantId(headers);
+    return this.creditsService.getLedgerHistory(tenantId);
+  }
+
+  /**
+   * Get AI Unit Economics & Agent breakdown
+   */
+  @Get('ai/economics')
+  async getAiUnitEconomics(@Headers() headers: Record<string, any>) {
+    const tenantId = this.extractTenantId(headers);
+    return this.aiCostService.getUnitEconomics(tenantId);
+  }
+
+  /**
+   * Record AI execution cost telemetry
+   */
+  @Post('ai/cost/record')
+  @Post('ai/telemetry')
+  async recordAiTelemetry(
+    @Headers() headers: Record<string, any>,
+    @Body() body: any,
+  ) {
+    const tenantId = body.tenantId || this.extractTenantId(headers);
+    const record = await this.aiCostService.recordExecutionCost({ ...body, tenantId });
+    return {
+      success: !!record,
+      providerCostUsd: record?.estimatedProviderCost ?? 0,
+      customerChargeUsd: record?.customerCharge ?? 0,
+      grossMarginPercent: record && record.customerCharge > 0
+        ? Number((((record.customerCharge - record.estimatedProviderCost) / record.customerCharge) * 100).toFixed(2))
+        : 95.0,
+      record,
+    };
+  }
+
+  /**
+   * Get tenant AI Budget status and thresholds
+   */
+  @Get('ai/budget')
+  async getAiBudget(@Headers() headers: Record<string, any>) {
+    const tenantId = this.extractTenantId(headers);
+    return this.aiBudgetService.getBudget(tenantId);
+  }
+
+  /**
+   * Configure tenant AI Budget and action on exhaustion
+   */
+  @Post('ai/budget')
+  async setAiBudget(@Headers() headers: Record<string, any>, @Body() body: any) {
+    const tenantId = this.extractTenantId(headers);
+    return this.aiBudgetService.setBudget({ ...body, tenantId });
+  }
+
+  /**
+   * Pre-flight evaluate AI Budget headroom
+   */
+  @Post('ai/budget/evaluate')
+  async evaluateAiBudgetHeadroom(
+    @Headers() headers: Record<string, any>,
+    @Body() body: { estimatedCostUsd?: number; agentId?: string },
+  ) {
+    const tenantId = this.extractTenantId(headers);
+    return this.aiBudgetService.checkHeadroom(tenantId, body.estimatedCostUsd, body.agentId);
+  }
+
+  /**
+   * Transition subscription state via strict state machine
+   */
+  @Post('subscription/transition')
+  async transitionSubscriptionState(
+    @Headers() headers: Record<string, any>,
+    @Body() body: { nextState: SubscriptionState; reason?: string },
+  ) {
+    const tenantId = this.extractTenantId(headers);
+    return this.stateMachineService.transitionState(tenantId, body.nextState, body.reason);
+  }
+
+  /**
+   * Get supported currencies and exchange rates
+   */
+  @Get('currencies')
+  async getCurrencies() {
+    return this.currenciesService.getSupportedCurrencies();
+  }
+
+  /**
+   * Convert between currencies
+   */
+  @Post('currencies/convert')
+  async convertCurrency(@Body() body: { amount: number; from: any; to: any }) {
+    return this.currenciesService.convert(body.amount, body.from, body.to);
+  }
+
+  /**
+   * Validate coupon code
+   */
+  @Post('coupons/validate')
+  async validateCoupon(@Body() body: { code: string; amount: number; planKey?: string }) {
+    const res = await this.couponsService.validateCoupon(body.code, body.amount, body.planKey);
+    return {
+      ...res,
+      isValid: res.valid,
+      code: res.couponCode,
+      discountAmount: res.calculatedDiscount,
+      finalAmount: res.finalPrice,
+      discountValue: res.value,
+    };
+  }
+
+  /**
+   * Redeem coupon code
+   */
+  @Post('coupons/redeem')
+  async redeemCoupon(
+    @Headers() headers: Record<string, any>,
+    @Body() body: { code: string; amount: number; planKey?: string },
+  ) {
+    const tenantId = this.extractTenantId(headers);
+    return this.couponsService.redeemCoupon(body.code, tenantId, body.amount, body.planKey);
+  }
+
+  /**
+   * List emergency AI kill switches
+   */
+  @Get('kill-switches')
+  async getKillSwitches() {
+    return this.killSwitchesService.getAllSwitches();
+  }
+
+  /**
+   * Toggle emergency AI kill switch
+   */
+  @Post('kill-switches')
+  async setKillSwitch(@Body() body: { scope: any; target: string; isEnabled: boolean; reason?: string }) {
+    return this.killSwitchesService.setKillSwitch(body.scope, body.target, body.isEnabled, body.reason);
+  }
+
+  /**
+   * Check circuit breaker statuses
+   */
+  @Get('resilience/circuits')
+  async getCircuitStatuses() {
+    return this.circuitBreakerService.getCircuitStatuses();
+  }
+
+  /**
+   * Process Liveness Health Probe
+   */
+  @Get('health')
+  async getHealth() {
+    return {
+      status: 'ok',
+      service: 'apps/billing',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Dependency Readiness Health Probe
+   */
+  @Get('ready')
+  async getReady() {
+    return {
+      status: 'ready',
+      service: 'apps/billing',
+      database: this.prisma.isConnected ? 'connected' : 'degraded',
+      stripe: 'configured',
+      timestamp: new Date().toISOString(),
+    };
   }
 }
+

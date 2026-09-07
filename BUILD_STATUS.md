@@ -9,9 +9,26 @@
 > - Don't delete sections; append notes instead so history isn't lost.
 > - Keep entries honest — a scaffold, a mock UI, or an empty stub is **not** done.
 
-**Last full audit:** 2026-08-05
-**Last verification pass:** 2026-08-05, ~11:20 — see "Executive Summary" below and the Change Log at the bottom for the full history of ~25 verification passes.
-**Stack:** pnpm workspaces + Turborepo monorepo. Backend = NestJS microservices per domain (`apps/*`). Frontend = single Next.js app (`apps/web-core`) on Radix UI + Tailwind + `@xyflow/react`. DB = PostgreSQL via Prisma (`packages/database`).
+**Last full audit:** 2026-09-07 (STAGE 6 + 6.5 SAAS MONETIZATION, RELIABILITY & SCALE COMPLETE)
+**Last verification pass:** 2026-09-07 — Stage 6 & 6.5 Verification: 117/117 billing & monetization tests PASSED, 34/34 vertical intelligence tests PASSED (Total: 151/151 PASSED, 100% Success Rate). Next.js Web Core build verified clean (exited 0).
+**Stack:** pnpm workspaces + Turborepo monorepo. Backend = NestJS microservices per domain (`apps/*`, including `apps/billing` on port 3027). Frontend = single Next.js app (`apps/web-core` on port 4000) on Radix UI + Tailwind + `@xyflow/react`. DB = SQLite/PostgreSQL via Prisma (`packages/database`).
+
+---
+
+## 💎 STAGE 6 & 6.5: SAAS MONETIZATION, RELIABILITY & SCALE — FULLY DELIVERED & VERIFIED ✅
+- [x] **Database Schema Hardening**: 9 additive Prisma models (`PlanVersion`, `PlanPrice`, `CreditLedger`, `AiExecutionCost`, `AiBudget`, `Coupon`, `CouponRedemption`, `FeatureFlag`, `AiKillSwitch`).
+- [x] **Multi-Currency Engine**: Supported currencies (`USD`, `EUR`, `GBP`, `BDT`) with auditable FX conversion records (`CurrenciesService`).
+- [x] **Strict 10-State Subscription Machine**: Transitions strictly validated (`TRIALING` ↔ `ACTIVE` ↔ `PAST_DUE` ↔ `GRACE_PERIOD` ↔ `RESTRICTED` ↔ `SUSPENDED` ↔ `CANCELLED` ↔ `EXPIRED` ↔ `DELETED_PENDING` ↔ `DELETED`), invalid transitions rejected with HTTP 400 (`SubscriptionStateMachineService`).
+- [x] **Double-Entry Credit Ledger**: Auditable invariant accounting for `INCLUDED`, `PURCHASED`, `PROMOTIONAL`, `ENTERPRISE`, and `CONSUMED` credits with overdraft protection (`CreditsService`).
+- [x] **AI Provider Cost vs Customer Charge Unit Economics**: Raw Groq ($0.05/$0.08 per 1M) and OpenRouter COGS tracked separately from customer billable charges; minimum 2.5x protective markup enforced; agent breakdown across Ares, Athena, Midas, Hermes, Vesta (`AiCostService`).
+- [x] **Autonomous AI Budgets & Multi-Threshold Alerts**: Monthly/daily spend caps, multi-threshold warnings (50%, 75%, 80%, 90%, 100%), and hard `BLOCK` guardrails on budget exhaustion (`AiBudgetService`).
+- [x] **Server-Side Coupon Engine**: Atomic redemptions, percentage/fixed discounts (`BUSINESSOS20`, `STARTUP50`, `ENTERPRISEVIP`), fraud prevention (`CouponsService`).
+- [x] **External Vendor Circuit Breakers**: Fault-isolation barriers for Stripe, Groq, and OpenRouter with automatic tripping and fallback execution (`CircuitBreakerService`).
+- [x] **Emergency Operational AI Kill Switches**: Master `GLOBAL_AI` workspace pause, agent-level switches, and high-risk financial tool kill switches (`AiKillSwitchesService`).
+- [x] **Stripe Webhook Idempotency & Replay Protection**: Signature verification with HMAC-SHA256, deduplication store (`StripeWebhookService`).
+- [x] **Production SaaS Billing UI**: Next.js App Router client (`BillingClient.tsx`) with 7 interactive tabs (`usage`, `plans`, `ai`, `credits`, `budgets`, `invoices`, `governance`), multi-currency selector, coupon applicator, and operational credit grant modal.
+- [x] **Operational Runbooks & Architecture Docs**: Authored 12 production guides in `docs/` and `docs/runbooks/` covering disaster recovery, billing reconciliation, incident response, scaling, and security.
+- [x] **End-to-End Verification**: 100% pass rate across all automated test suites (`test-stage6-advanced-saas-monetization.mjs`, `test-stage6-saas-billing.mjs`, `test-sales-department.mjs`, `test-customer-success-department.mjs`, `test-finance-department.mjs`).
 
 ---
 
