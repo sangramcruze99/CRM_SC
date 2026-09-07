@@ -292,7 +292,7 @@ export class WorkflowsService {
           where: { tenantId },
           include: { actions: true }
         });
-        if (records && records.length > 0) return records;
+        return records;
       } catch {
         // fallback
       }

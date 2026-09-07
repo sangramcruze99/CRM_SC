@@ -81,15 +81,15 @@ export async function GET() {
 
   // 2. Overdue invoices check
   const overdueInvoices = Array.isArray(invoices) ? invoices.filter((i) => i.status === 'OVERDUE' || (i.status === 'UNPAID' && i.dueDate && new Date(i.dueDate) < new Date())) : [];
-  if (overdueInvoices.length > 0 || (Array.isArray(invoices) && invoices.length > 0)) {
-    const inv = overdueInvoices[0] || invoices[0];
+  if (overdueInvoices.length > 0) {
+    const inv = overdueInvoices[0];
     actionItems.push({
       id: `act_inv_${inv.id || 1}`,
       department: 'Finance AI',
       departmentKey: 'finance',
       priority: 'MEDIUM',
       title: `Invoice #${inv.invoiceNumber || inv.id || '1042'} payment overdue`,
-      description: `Outstanding balance of $${Number(inv.amount || 4500).toLocaleString()} awaiting reconciliation.`,
+      description: `Outstanding balance of $${Number(inv.amount || 0).toLocaleString()} awaiting reconciliation.`,
       recommendedAction: 'Send a friendly tone-calibrated payment reminder.',
       targetEntity: 'invoice',
       targetId: inv.id,

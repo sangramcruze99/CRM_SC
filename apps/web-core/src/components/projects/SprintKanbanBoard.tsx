@@ -86,7 +86,19 @@ export function SprintKanbanBoard({ initialProjects }: SprintKanbanBoardProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const currentProject = projects.find((p) => p.id === selectedProjectId) || projects[0] || { id: 'proj_01', name: 'Main Workspace Sprint', tasks: [] };
+  const currentProject = projects.find((p) => p.id === selectedProjectId) || projects[0] || null;
+
+  if (projects.length === 0 || !currentProject) {
+    return (
+      <div className="space-y-4 flex flex-col h-[calc(100vh-5.5rem)] text-slate-900 dark:text-white">
+        <div className="botanical-glass-card p-12 text-center flex flex-col items-center justify-center my-auto rounded-3xl border border-slate-200 dark:border-white/[0.08]">
+          <ClipboardList className="text-emerald-500 mb-3" size={40} />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">No sprint projects found</h2>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm">Create a project in the workspace to begin organizing sprint tasks, backlogs, and milestone velocity.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Filter tasks based on search
   const filteredTasks = tasks.filter((t) => {

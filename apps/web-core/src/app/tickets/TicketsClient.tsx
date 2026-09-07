@@ -53,25 +53,82 @@ const knowledgeBaseArticles = [
 
 export function TicketsClient() {
   const [tickets, setTickets] = useState<SupportTicket[]>(initialTickets);
-  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(initialTickets[0] || null);
+  const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [replyText, setReplyText] = useState('');
   const [search, setSearch] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [alert, setAlert] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // New Ticket Form state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [newTitle, setNewTitle] = useState('');
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   const [newCustomer, setNewCustomer] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [newPriority, setNewPriority] = useState<'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW'>('HIGH');
   const [newChannel, setNewChannel] = useState<'LIVE_CHAT' | 'EMAIL' | 'WHATSAPP' | 'PORTAL'>('EMAIL');
+
+  const fetchTickets = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch('/api/helpdesk/tickets');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          const mapped: SupportTicket[] = data.map((t: any, idx: number) => ({
+            id: t.id,
+            ticketNumber: `HD-2026-${String(idx + 1).padStart(3, '0')}`,
+            title: t.title,
+            customerName: t.customerName || 'Commercial Client',
+            customerEmail: t.customerEmail || 'client@company.com',
+            company: t.company || 'Enterprise Account',
+            channel: (t.channel || 'PORTAL') as any,
+            priority: (t.priority || 'MEDIUM') as any,
+            status: (t.status || 'OPEN') as any,
+            assignedAgent: t.assignedTo || 'Support Specialist',
+            firstResponseSlaMinutes: 30,
+            sentiment: 'NEUTRAL',
+            mrr: 0,
+            khataBalance: 0,
+            messages: Array.isArray(t.messages) && t.messages.length > 0
+              ? t.messages.map((m: any) => ({
+                  id: m.id,
+                  sender: m.isStaff ? ('agent' as const) : ('customer' as const),
+                  senderName: m.isStaff ? 'Support Specialist' : (t.customerName || 'Customer'),
+                  text: m.content || m.text || '',
+                  timestamp: m.createdAt ? new Date(m.createdAt).toLocaleTimeString() : 'Recent',
+                }))
+              : [
+                  {
+                    id: `m_${t.id}`,
+                    sender: 'customer' as const,
+                    senderName: t.customerName || 'Customer',
+                    text: t.description || t.title,
+                    timestamp: t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'Initial',
+                  },
+                ],
+          }));
+          setTickets(mapped);
+          if (mapped.length > 0) {
+            setSelectedTicket(mapped[0]);
+          } else {
+            setSelectedTicket(null);
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Failed to load tickets', e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setMounted(true);
+    fetchTickets();
+  }, []);
 
   const filteredTickets = tickets.filter((t) => {
     const matchSearch =
@@ -84,19 +141,39 @@ export function TicketsClient() {
     return matchSearch && matchPriority && matchStatus;
   });
 
-  const handleSendReply = (e: React.FormEvent) => {
+  const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyText.trim()) return;
+    if (!replyText.trim() || !selectedTicket) return;
 
+    try {
+      const res = await fetch(`/api/helpdesk/tickets/${selectedTicket.id}/messages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: replyText,
+          isStaff: true,
+        }),
+      });
+
+      if (res.ok) {
+        await fetchTickets();
+        setReplyText('');
+        setAlert(`💬 Reply dispatched to ${selectedTicket.customerName}!`);
+        setTimeout(() => setAlert(null), 3000);
+        return;
+      }
+    } catch (e) {
+      console.error('Failed to send reply to backend', e);
+    }
+
+    // Local optimistic update fallback
     const newMsg = {
       id: `m_${Date.now()}`,
       sender: 'agent' as const,
-      senderName: 'Sangram Cruze (Support Lead)',
+      senderName: 'Support Specialist',
       text: replyText,
       timestamp: 'Just now',
     };
-
-    if (!selectedTicket) return;
 
     const updated: SupportTicket = {
       ...selectedTicket,
@@ -107,29 +184,34 @@ export function TicketsClient() {
     setSelectedTicket(updated);
     setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
     setReplyText('');
-    setAlert(`💬 Reply dispatched to ${selectedTicket.customerName} via ${selectedTicket.channel}!`);
+    setAlert(`💬 Reply dispatched to ${selectedTicket.customerName}!`);
     setTimeout(() => setAlert(null), 3000);
   };
 
   const handleAutoSuggestReply = () => {
     if (!selectedTicket) return;
-    if (selectedTicket.id === 'tkt_101') {
-      setReplyText(
-        'Hello Sarah,\n\nWe have verified your SAML Entity ID configuration. The 403 error is caused by a missing ACS URL endpoint certificate in your Google Admin Console. Please navigate to "Security > SAML SSO > Endpoint URL" and update the certificate fingerprint. We are standing by to verify once updated!'
-      );
-    } else {
-      setReplyText(
-        `Hello ${selectedTicket.customerName},\n\nThank you for reaching out. We have investigated the telemetry logs for ${selectedTicket.company} and verified resolution across our edge infrastructure. Please test again and let us know if you need any further assistance!`
-      );
-    }
+    setReplyText(
+      `Hello ${selectedTicket.customerName},\n\nThank you for reaching out regarding "${selectedTicket.title}". We have verified this item in our systems and our engineering team is reviewing it. Please let us know if you have any additional details to share!`
+    );
   };
 
   const handleInsertKB = (articleTitle: string) => {
-    setReplyText((prev) => `${prev}\n\n📚 Helpful Guide: ${articleTitle} (https://docs.business-os.io/kb)`);
+    setReplyText((prev) => `${prev}\n\n📚 Helpful Guide: ${articleTitle}`);
   };
 
-  const handleUpdateStatus = (status: SupportTicket['status']) => {
+  const handleUpdateStatus = async (status: SupportTicket['status']) => {
     if (!selectedTicket) return;
+
+    try {
+      await fetch(`/api/helpdesk/tickets/${selectedTicket.id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+    } catch (e) {
+      console.error('Failed to update status on backend', e);
+    }
+
     const updated: SupportTicket = { ...selectedTicket, status };
     setSelectedTicket(updated);
     setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
@@ -137,10 +219,36 @@ export function TicketsClient() {
     setTimeout(() => setAlert(null), 3000);
   };
 
-  const handleCreateTicket = (e: React.FormEvent) => {
+  const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle || !newCustomer) return;
 
+    try {
+      const res = await fetch('/api/helpdesk/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newTitle,
+          description: `Initiated by ${newCustomer} (${newEmail || 'no email'}). Channel: ${newChannel}.`,
+          priority: newPriority,
+        }),
+      });
+
+      if (res.ok) {
+        await fetchTickets();
+        setIsCreateModalOpen(false);
+        setNewTitle('');
+        setNewCustomer('');
+        setNewEmail('');
+        setAlert(`🎟️ Ticket created and saved to Helpdesk service!`);
+        setTimeout(() => setAlert(null), 3500);
+        return;
+      }
+    } catch (e) {
+      console.error('Failed to create ticket on backend', e);
+    }
+
+    // Local fallback
     const newTkt: SupportTicket = {
       id: `tkt_${Date.now()}`,
       ticketNumber: `HD-2026-${Math.floor(100 + Math.random() * 900)}`,
@@ -151,10 +259,10 @@ export function TicketsClient() {
       channel: newChannel,
       priority: newPriority,
       status: 'OPEN',
-      assignedAgent: 'Sangram Cruze (Support Lead)',
+      assignedAgent: 'Support Specialist',
       firstResponseSlaMinutes: 30,
       sentiment: 'NEUTRAL',
-      mrr: 5000,
+      mrr: 0,
       khataBalance: 0,
       messages: [
         {
@@ -173,7 +281,7 @@ export function TicketsClient() {
     setNewTitle('');
     setNewCustomer('');
     setNewEmail('');
-    setAlert(`🎟️ Ticket ${newTkt.ticketNumber} created and assigned to triage queue!`);
+    setAlert(`🎟️ Ticket ${newTkt.ticketNumber} created!`);
     setTimeout(() => setAlert(null), 3500);
   };
 

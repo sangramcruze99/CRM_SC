@@ -14,7 +14,7 @@ export class TaxRuleService {
     if (this.prisma.isConnected) {
       try {
         const records = await this.prisma.taxRule.findMany({ where: { tenantId } });
-        if (records && records.length > 0) return records;
+        return records;
       } catch {
         // fallback
       }

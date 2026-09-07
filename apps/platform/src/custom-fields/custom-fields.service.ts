@@ -43,7 +43,7 @@ export class CustomFieldsService {
         const records = await this.prisma.customField.findMany({
           where: { customObjectId }
         });
-        if (records && records.length > 0) return records;
+        return records;
       } catch {
         // fallback
       }

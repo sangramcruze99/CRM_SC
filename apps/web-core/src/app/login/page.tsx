@@ -11,11 +11,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  function enterDashboard() {
-    document.cookie = 'access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbi1pZCIsImVtYWlsIjoiYWRtaW5AZ21haWwuY29tIiwidGVuYW50SWQiOiJkZWZhdWx0LXRlbmFudCIsInJvbGUiOiJTVVBFUkFETUlOIiwiaWF0IjoxNzEwMDAwMDAwLCJleHAiOjE4MDAwMDAwMDB9.mock-signature; Path=/; SameSite=Lax; Max-Age=604800';
-    window.location.href = '/dashboard';
-  }
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError('');
@@ -39,10 +34,11 @@ export default function LoginPage() {
         window.location.href = '/dashboard';
         return;
       }
-      // If API responds with error or is offline, fallback seamlessly to authenticated sandbox
-      enterDashboard();
-    } catch (err) {
-      enterDashboard();
+
+      const errData = await res.json().catch(() => ({}));
+      setError(errData.message || (isLogin ? 'Invalid email or password. Please try again.' : 'Registration failed. Please check your information.'));
+    } catch (err: any) {
+      setError(err?.message || 'Authentication service is temporarily unavailable. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -144,16 +140,6 @@ export default function LoginPage() {
             >
               <span>{isLogin ? 'Sign In to Workspace' : 'Create Organization Account'}</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </button>
-
-            {/* Direct 1-Click Instant Demo Sandbox Access */}
-            <button
-              type="button"
-              onClick={enterDashboard}
-              className="w-full py-2.5 px-4 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] hover:border-emerald-500/40 text-xs font-bold text-slate-300 hover:text-white rounded-xl transition-all flex items-center justify-center space-x-2 cursor-pointer"
-            >
-              <Zap size={14} className="text-emerald-400" />
-              <span>⚡ 1-Click Sandbox Sign In (Instant Access)</span>
             </button>
           </form>
 

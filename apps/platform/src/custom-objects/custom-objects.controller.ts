@@ -20,15 +20,7 @@ export class CustomObjectsController {
   @Get()
   async findAll(@Headers('x-tenant-id') tenantIdHeader: string) {
     const tenantId = this.getTenant(tenantIdHeader);
-    let objects = await this.customObjectsService.findAll(tenantId);
-    
-    // Seed some initial data for demo purposes
-    if (objects.length === 0) {
-      await this.customObjectsService.seedDemoData(tenantId);
-      objects = await this.customObjectsService.findAll(tenantId);
-    }
-    
-    return objects;
+    return this.customObjectsService.findAll(tenantId);
   }
 
   @Get(':id')

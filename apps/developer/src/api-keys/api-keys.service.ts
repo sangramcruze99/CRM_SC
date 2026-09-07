@@ -25,7 +25,7 @@ export class ApiKeysService {
           where: { tenantId },
           orderBy: { createdAt: 'desc' },
         });
-        if (records && records.length > 0) return records;
+        return records;
       } catch {
         // fallback
       }

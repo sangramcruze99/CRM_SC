@@ -278,7 +278,7 @@ export class FinanceDepartmentService {
       'Initech Software Corp',
     ];
 
-    // Seeded benchmark invoices if DB is pristine
+    // Real database invoices (Zero synthetic demo fallback)
     const workingInvoices =
       dbInvoices.length > 0
         ? dbInvoices.map((inv, idx) => {
@@ -287,7 +287,7 @@ export class FinanceDepartmentService {
             return {
               id: inv.id,
               invoiceNum: inv.invoiceNum,
-              accountName: mockAccounts[idx % mockAccounts.length],
+              accountName: inv.clientName || inv.vendorName || `Account #${inv.id?.slice(0, 6) || idx + 1}`,
               amount: Number(inv.amount),
               daysOverdue,
               dueDate: new Date(inv.dueDate).toISOString().split('T')[0],
@@ -295,68 +295,7 @@ export class FinanceDepartmentService {
               riskScore: Math.min(100, Math.round(daysOverdue * 1.5 + 10)),
             };
           })
-        : [
-            {
-              id: 'inv-bench-01',
-              invoiceNum: 'INV-2026-401',
-              accountName: 'Acme Global Corp',
-              amount: 14500.0,
-              daysOverdue: 5,
-              dueDate: new Date(now - 5 * 86400000).toISOString().split('T')[0],
-              status: 'OVERDUE',
-              riskScore: 22,
-            },
-            {
-              id: 'inv-bench-02',
-              invoiceNum: 'INV-2026-402',
-              accountName: 'Stark Advanced Cyber',
-              amount: 28000.0,
-              daysOverdue: 0,
-              dueDate: new Date(now + 12 * 86400000).toISOString().split('T')[0],
-              status: 'SENT',
-              riskScore: 8,
-            },
-            {
-              id: 'inv-bench-03',
-              invoiceNum: 'INV-2026-403',
-              accountName: 'Wayne FinTech Labs',
-              amount: 8750.0,
-              daysOverdue: 18,
-              dueDate: new Date(now - 18 * 86400000).toISOString().split('T')[0],
-              status: 'OVERDUE',
-              riskScore: 48,
-            },
-            {
-              id: 'inv-bench-04',
-              invoiceNum: 'INV-2026-404',
-              accountName: 'CyberDyne Systems',
-              amount: 6200.0,
-              daysOverdue: 38,
-              dueDate: new Date(now - 38 * 86400000).toISOString().split('T')[0],
-              status: 'OVERDUE',
-              riskScore: 68,
-            },
-            {
-              id: 'inv-bench-05',
-              invoiceNum: 'INV-2026-405',
-              accountName: 'Hooli SaaS Group',
-              amount: 4200.0,
-              daysOverdue: 74,
-              dueDate: new Date(now - 74 * 86400000).toISOString().split('T')[0],
-              status: 'OVERDUE',
-              riskScore: 82,
-            },
-            {
-              id: 'inv-bench-06',
-              invoiceNum: 'INV-2026-406',
-              accountName: 'Initech Software Corp',
-              amount: 6800.0,
-              daysOverdue: 104,
-              dueDate: new Date(now - 104 * 86400000).toISOString().split('T')[0],
-              status: 'OVERDUE',
-              riskScore: 96,
-            },
-          ];
+        : [];
 
     const totalAr = workingInvoices.reduce((sum, i) => sum + i.amount, 0);
 

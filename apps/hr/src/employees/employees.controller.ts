@@ -19,15 +19,7 @@ export class EmployeesController {
     if (!tenantId)
       throw new BadRequestException('x-tenant-id header is required');
 
-    let employees = await this.employeesService.findEmployees(tenantId);
-
-    // Seed some initial data for demo purposes
-    if (employees.length === 0) {
-      await this.employeesService.seedDemoData(tenantId);
-      employees = await this.employeesService.findEmployees(tenantId);
-    }
-
-    return employees;
+    return this.employeesService.findEmployees(tenantId);
   }
 
   @Post('employees')

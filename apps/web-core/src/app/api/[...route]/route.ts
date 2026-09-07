@@ -117,6 +117,25 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
     newHeaders.set('authorization', `Bearer ${token}`);
   }
 
+  // Forward incoming API key / Service key if provided by client
+  const incomingApiKey = req.headers.get('x-api-key');
+  if (incomingApiKey) {
+    newHeaders.set('x-api-key', incomingApiKey);
+  }
+
+  if (req.headers.get('x-service-key')) {
+    newHeaders.set('x-service-key', req.headers.get('x-service-key')!);
+  }
+  if (req.headers.get('x-user-id')) {
+    newHeaders.set('x-user-id', req.headers.get('x-user-id')!);
+  }
+  if (req.headers.get('x-user-email')) {
+    newHeaders.set('x-user-email', req.headers.get('x-user-email')!);
+  }
+  if (req.headers.get('x-user-role')) {
+    newHeaders.set('x-user-role', req.headers.get('x-user-role')!);
+  }
+
   try {
     const fetchOptions: RequestInit = {
       method: req.method,

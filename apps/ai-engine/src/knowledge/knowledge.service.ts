@@ -87,7 +87,7 @@ export class KnowledgeService {
         const records = await this.prisma.knowledgeBaseDocument.findMany({
           where: { tenantId }
         });
-        if (records && records.length > 0) return records;
+        return records;
       } catch {
         // fallback
       }

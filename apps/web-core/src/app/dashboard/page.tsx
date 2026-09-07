@@ -15,33 +15,16 @@ export default async function DashboardPage() {
     safeFetch<any[]>('http://localhost:3016/tickets', { headers, cache: 'no-store' }, []),
   ]);
 
-  // Dynamic live aggregations
-  const hasLiveDeals = deals.length > 0;
-  const hasLiveInvoices = invoices.length > 0;
-
-  // Fallback demo dataset if database/microservices are empty or starting up
-  const activeDeals = hasLiveDeals
-    ? deals
-    : [
-        { id: 'deal-01', title: 'Apex Global Systems - Enterprise License', amount: 84000, stage: 'Proposal', createdAt: new Date().toISOString() },
-        { id: 'deal-02', title: 'BioTech Pharma - Multi-Seat SLA', amount: 48000, stage: 'Closed Won', createdAt: new Date().toISOString() },
-        { id: 'deal-03', title: 'Nordic Retail Chain - Autonomous AI Pilot', amount: 28500, stage: 'Negotiation', createdAt: new Date().toISOString() },
-        { id: 'deal-04', title: 'Zenith Logistics - Fleet API Modernization', amount: 56000, stage: 'Discovery', createdAt: new Date().toISOString() },
-        { id: 'deal-05', title: 'Vanguard Capital - Custody Ledger Sync', amount: 32000, stage: 'Closed Won', createdAt: new Date().toISOString() },
-      ];
-
-  const activeInvoices = hasLiveInvoices
-    ? invoices
-    : [
-        { id: 'inv-8829', clientName: 'Apex Global Systems', total: 34500, status: 'Paid', createdAt: new Date().toISOString() },
-        { id: 'inv-8828', clientName: 'BioTech Pharma', total: 18200, status: 'Paid', createdAt: new Date().toISOString() },
-        { id: 'inv-8827', clientName: 'Nordic Retail Chain', total: 14790, status: 'Issued', createdAt: new Date().toISOString() },
-        { id: 'inv-8826', clientName: 'Zenith Logistics', total: 22000, status: 'Paid', createdAt: new Date().toISOString() },
-      ];
+  // Real dynamic aggregations (Zero fake/demo data)
+  const activeDeals = Array.isArray(deals) ? deals : [];
+  const activeInvoices = Array.isArray(invoices) ? invoices : [];
+  const activeContacts = Array.isArray(contacts) ? contacts : [];
+  const activeProjects = Array.isArray(projects) ? projects : [];
+  const activeTickets = Array.isArray(tickets) ? tickets : [];
 
   const totalDealsValue = activeDeals.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
   const closedWonValue = activeDeals
-    .filter((d) => d.stage === 'Closed Won')
+    .filter((d) => d.stage === 'Closed Won' || d.stage === 'WON')
     .reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
   const totalInvoicedValue = activeInvoices.reduce((sum, inv) => sum + (Number(inv.amount || inv.total) || 0), 0);
 
@@ -72,11 +55,11 @@ export default async function DashboardPage() {
   ].sort((a, b) => (b.amount || 0) - (a.amount || 0));
 
   const initialData = {
-    contacts: contacts.length > 0 ? contacts : Array.from({ length: 142 }),
+    contacts: activeContacts,
     deals: activeDeals,
     invoices: activeInvoices,
-    projects: projects.length > 0 ? projects : Array.from({ length: 12 }),
-    tickets: tickets.length > 0 ? tickets : Array.from({ length: 5 }),
+    projects: activeProjects,
+    tickets: activeTickets,
     metrics: {
       totalBalance,
       grossEarnings,
@@ -84,11 +67,11 @@ export default async function DashboardPage() {
       totalDealsValue,
       closedWonValue,
       totalInvoicedValue,
-      contactsCount: contacts.length > 0 ? contacts.length : 142,
+      contactsCount: activeContacts.length,
       dealsCount: activeDeals.length,
       invoicesCount: activeInvoices.length,
-      projectsCount: projects.length > 0 ? projects.length : 12,
-      ticketsCount: tickets.length > 0 ? tickets.length : 5,
+      projectsCount: activeProjects.length,
+      ticketsCount: activeTickets.length,
     },
     recentActivities,
   };

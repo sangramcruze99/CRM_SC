@@ -57,7 +57,7 @@ export class ContactsService {
           include: { company: true },
           orderBy: { createdAt: 'desc' },
         });
-        if (records && records.length > 0) return records;
+        return records;
       } catch (err: any) {
         this.logger.warn(
           `Database read deferred, returning memory contacts: ${err.message}`,

@@ -77,7 +77,7 @@ export class CustomObjectsService {
           include: { fields: true },
           orderBy: { name: 'asc' }
         });
-        if (records && records.length > 0) return records;
+        return records;
       } catch {
         // fallback
       }

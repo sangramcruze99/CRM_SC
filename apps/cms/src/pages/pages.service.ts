@@ -14,7 +14,7 @@ export class PagesService {
           where: { tenantId },
           include: { blocks: { orderBy: { orderIndex: 'asc' } } },
         });
-        if (records && records.length > 0) return records;
+        return records;
       } catch {
         // fallback
       }

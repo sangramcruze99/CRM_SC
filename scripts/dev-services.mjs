@@ -21,6 +21,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..');
 
+// Load environment variables from .env
+const envPath = path.resolve(ROOT_DIR, '.env');
+if (fs.existsSync(envPath)) {
+  const content = fs.readFileSync(envPath, 'utf8');
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    if (eqIdx > 0) {
+      const key = trimmed.slice(0, eqIdx).trim();
+      let val = trimmed.slice(eqIdx + 1).trim();
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+      }
+      if (!process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+  }
+}
+
 // Color helpers
 const c = {
   reset: '\x1b[0m',
@@ -267,6 +288,7 @@ async function main() {
       cwd: serviceDir,
       env: {
         ...process.env,
+        DATABASE_URL: `file:${path.resolve(ROOT_DIR, 'packages/database/prisma/dev.db').replace(/\\/g, '/')}`,
         PORT: String(service.port),
         [`${service.name.toUpperCase().replace(/-/g, '_')}_PORT`]: String(service.port),
         AI_PORT: '3010',

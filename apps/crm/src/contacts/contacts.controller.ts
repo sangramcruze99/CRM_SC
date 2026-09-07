@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Headers,
+  NotFoundException,
 } from '@nestjs/common';
 import { ContactsService } from './contacts.service';
 
@@ -36,8 +37,12 @@ export class ContactsController {
   }
 
   @Get(':id')
-  findOne(@Headers() headers: Record<string, string>, @Param('id') id: string) {
-    return this.contactsService.findOne(this.getTenant(headers), id);
+  async findOne(@Headers() headers: Record<string, string>, @Param('id') id: string) {
+    const contact = await this.contactsService.findOne(this.getTenant(headers), id);
+    if (!contact) {
+      throw new NotFoundException(`Contact ${id} not found`);
+    }
+    return contact;
   }
 
   @Patch(':id')
