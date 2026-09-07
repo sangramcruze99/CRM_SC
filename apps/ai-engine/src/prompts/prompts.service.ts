@@ -49,7 +49,7 @@ export class PromptsService {
     tenantId: string,
     query: string,
     templateId?: string,
-    provider: 'groq' | 'openrouter' | 'auto' = 'auto',
+    provider: 'groq' | 'openrouter' | 'gemini' | 'auto' = 'auto',
     model?: string,
   ) {
     const startTime = Date.now();
@@ -142,6 +142,7 @@ Guidelines:
 
     const groqKey = process.env.GROQ_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
+    const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
     const executeCall = async (
       baseURL: string,
@@ -172,10 +173,78 @@ Guidelines:
       };
     };
 
+    const executeGeminiCall = async (apiKey: string, modelName?: string) => {
+      let targetModel = modelName || 'models/gemini-3.6-flash';
+      if (!targetModel.startsWith('models/')) {
+        targetModel = `models/${targetModel}`;
+      }
+
+      const candidateModels = [targetModel, 'models/gemini-3.6-flash', 'models/gemini-3-flash-preview'];
+      const tested = new Set<string>();
+
+      for (const m of candidateModels) {
+        if (tested.has(m)) continue;
+        tested.add(m);
+
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/${m}:generateContent?key=${encodeURIComponent(apiKey)}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                contents: [{ parts: [{ text: query }] }],
+                generationConfig: { temperature: 0.7 },
+              }),
+              signal: AbortSignal.timeout(15000),
+            },
+          );
+
+          if (res.ok) {
+            const data = (await res.json()) as any;
+            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            const tokens = data.usageMetadata?.totalTokenCount || 350;
+            return {
+              reply,
+              model: m.replace('models/', ''),
+              usage: {
+                prompt_tokens: data.usageMetadata?.promptTokenCount || 100,
+                completion_tokens: data.usageMetadata?.candidatesTokenCount || 250,
+                total_tokens: tokens,
+              },
+            };
+          }
+        } catch {
+          // try next model
+        }
+      }
+
+      throw new Error('Gemini API call failed across candidate models');
+    };
+
     // Determine engine preference
+    const wantsGemini = provider === 'gemini' || model?.toLowerCase().includes('gemini');
     const wantsOpenRouter = provider === 'openrouter' || model?.includes('gpt-4') || model?.includes('claude');
 
-    // 2. Primary Execution: Route through Python AI Service (:3030)
+    // If Gemini is explicitly requested
+    if (wantsGemini && geminiKey) {
+      try {
+        const result = await executeGeminiCall(geminiKey, model);
+        const tokens = result.usage?.total_tokens || 350;
+        recordMeteredUsage(tokens, 'gemini', result.model);
+        return {
+          ...result,
+          provider: 'gemini',
+          latencyMs: Date.now() - startTime,
+          context: { contactCount, dealCount, ticketCount },
+        };
+      } catch (error: any) {
+        console.warn('[AI-Engine] Direct Gemini call failed, trying fallback:', error?.message || error);
+      }
+    }
+
+    // 2. Primary Execution: Route through Python AI Service (:3030) if available
     const pythonAiUrl = process.env.PYTHON_AI_URL || 'http://localhost:3030';
     const pythonAiKey = process.env.PYTHON_AI_API_KEY || 'business-os-internal-ai-key-secret';
 
@@ -188,7 +257,7 @@ Guidelines:
           'X-Service-Key': pythonAiKey,
         },
         body: JSON.stringify({
-          model: model || (wantsOpenRouter ? 'openrouter/openai/gpt-4o-mini' : 'groq/llama-3.3-70b-versatile'),
+          model: model || (wantsOpenRouter ? 'openrouter/openai/gpt-4o-mini' : 'groq/compound'),
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: query },
@@ -200,7 +269,7 @@ Guidelines:
       });
 
       if (pyResponse.ok) {
-        const pyData = await pyResponse.json();
+        const pyData = (await pyResponse.json()) as any;
         const tokens = pyData.usage?.total_tokens || 350;
         recordMeteredUsage(tokens, 'python-ai', pyData.model || model || 'python-ai-routed');
         return {
@@ -216,73 +285,92 @@ Guidelines:
       // Graceful fallback to direct cloud providers if Python AI is unavailable
     }
 
-      if (!wantsOpenRouter && groqKey) {
-        try {
-          const selectedModel = model || 'llama-3.3-70b-versatile';
-          const result = await executeCall('https://api.groq.com/openai/v1', groqKey, selectedModel);
-          const tokens = result.usage?.total_tokens || 350;
-          recordMeteredUsage(tokens, 'groq', selectedModel);
-          return {
-            ...result,
-            provider: 'groq',
-            latencyMs: Date.now() - startTime,
-            context: { contactCount, dealCount, ticketCount },
-          };
-        } catch (error: any) {
-          console.warn('[AI-Engine] Groq call failed, falling back to OpenRouter:', error?.message || error);
-        }
+    // 3. Groq Fast Inference (Ultra-low latency)
+    if (!wantsOpenRouter && groqKey) {
+      try {
+        const selectedModel = model || 'groq/compound';
+        const result = await executeCall('https://api.groq.com/openai/v1', groqKey, selectedModel);
+        const tokens = result.usage?.total_tokens || 350;
+        recordMeteredUsage(tokens, 'groq', selectedModel);
+        return {
+          ...result,
+          provider: 'groq',
+          latencyMs: Date.now() - startTime,
+          context: { contactCount, dealCount, ticketCount },
+        };
+      } catch (error: any) {
+        console.warn('[AI-Engine] Groq call failed, falling back:', error?.message || error);
       }
+    }
 
-      if (openRouterKey) {
-        try {
-          const selectedModel = model || 'openai/gpt-4o-mini';
-          const result = await executeCall(
-            'https://openrouter.ai/api/v1',
-            openRouterKey,
-            selectedModel,
-            {
-              'HTTP-Referer': 'http://localhost:4000',
-              'X-Title': 'Business OS CRM',
-            },
-          );
-          const tokens = result.usage?.total_tokens || 400;
-          recordMeteredUsage(tokens, 'openrouter', selectedModel);
-          return {
-            ...result,
-            provider: 'openrouter',
-            latencyMs: Date.now() - startTime,
-            context: { contactCount, dealCount, ticketCount },
-          };
-        } catch (error: any) {
-          console.warn('[AI-Engine] OpenRouter call failed:', error?.message || error);
-        }
+    // 4. Google Gemini Direct Call
+    if (geminiKey) {
+      try {
+        const result = await executeGeminiCall(geminiKey, model);
+        const tokens = result.usage?.total_tokens || 350;
+        recordMeteredUsage(tokens, 'gemini', result.model);
+        return {
+          ...result,
+          provider: 'gemini',
+          latencyMs: Date.now() - startTime,
+          context: { contactCount, dealCount, ticketCount },
+        };
+      } catch (error: any) {
+        console.warn('[AI-Engine] Gemini fallback call failed:', error?.message || error);
       }
+    }
 
-      // Secondary fallback: If OpenRouter was tried first but failed, try Groq
-      if (wantsOpenRouter && groqKey) {
-        try {
-          const result = await executeCall('https://api.groq.com/openai/v1', groqKey, 'groq/compound');
-          const tokens = result.usage?.total_tokens || 350;
-          recordMeteredUsage(tokens, 'groq', 'groq/compound');
-          return {
-            ...result,
-            provider: 'groq (fallback)',
-            latencyMs: Date.now() - startTime,
-            context: { contactCount, dealCount, ticketCount },
-          };
-        } catch (error: any) {
-          console.warn('[AI-Engine] Secondary Groq call failed:', error?.message || error);
-        }
+    // 5. OpenRouter Gateway Call
+    if (openRouterKey) {
+      try {
+        const selectedModel = model || 'openai/gpt-4o-mini';
+        const result = await executeCall(
+          'https://openrouter.ai/api/v1',
+          openRouterKey,
+          selectedModel,
+          {
+            'HTTP-Referer': 'http://localhost:4000',
+            'X-Title': 'Business OS CRM',
+          },
+        );
+        const tokens = result.usage?.total_tokens || 400;
+        recordMeteredUsage(tokens, 'openrouter', selectedModel);
+        return {
+          ...result,
+          provider: 'openrouter',
+          latencyMs: Date.now() - startTime,
+          context: { contactCount, dealCount, ticketCount },
+        };
+      } catch (error: any) {
+        console.warn('[AI-Engine] OpenRouter call failed:', error?.message || error);
       }
+    }
 
-      // Fallback: Local offline context-aware reply
-      recordMeteredUsage(120, 'local', 'business-os-local-context');
-      return {
-        reply: `[Business OS Copilot] Regarding: "${query}"\n\n- **Active Pipeline Deals**: ${dealCount}\n- **Commercial Contacts**: ${contactCount}\n- **Open Tickets**: ${ticketCount}\n\n*Note: Configure or refresh LLM API keys in .env to enable continuous cloud completions.*`,
-        model: 'business-os-local-context',
-        provider: 'local',
-        latencyMs: Date.now() - startTime,
-        context: { contactCount, dealCount, ticketCount },
-      };
+    // 6. Secondary fallback: If OpenRouter was tried first but failed, try Groq
+    if (wantsOpenRouter && groqKey) {
+      try {
+        const result = await executeCall('https://api.groq.com/openai/v1', groqKey, 'groq/compound');
+        const tokens = result.usage?.total_tokens || 350;
+        recordMeteredUsage(tokens, 'groq', 'groq/compound');
+        return {
+          ...result,
+          provider: 'groq (fallback)',
+          latencyMs: Date.now() - startTime,
+          context: { contactCount, dealCount, ticketCount },
+        };
+      } catch (error: any) {
+        console.warn('[AI-Engine] Secondary Groq call failed:', error?.message || error);
+      }
+    }
+
+    // Fallback: Local offline context-aware reply
+    recordMeteredUsage(120, 'local', 'business-os-local-context');
+    return {
+      reply: `[Business OS Copilot] Regarding: "${query}"\n\n- **Active Pipeline Deals**: ${dealCount}\n- **Commercial Contacts**: ${contactCount}\n- **Open Tickets**: ${ticketCount}\n\n*Note: Configure or refresh LLM API keys in .env to enable continuous cloud completions.*`,
+      model: 'business-os-local-context',
+      provider: 'local',
+      latencyMs: Date.now() - startTime,
+      context: { contactCount, dealCount, ticketCount },
+    };
   }
 }

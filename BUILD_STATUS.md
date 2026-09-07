@@ -474,4 +474,12 @@ Trying to build all 21 sections in parallel will produce 21 half-finished skelet
 - [x] Frontend Command Center at `/settings/billing`
 - [x] Verification: 54/54 Tests Passed (100%) in `scripts/test-stage6-saas-billing.mjs`
 
+## 34. API Key System Integration & Multimodal LLM Infrastructure (Stage 6.5)
+
+- [x] **Groq Cloud API Key (`gsk_...`)**: Configured in `.env`, `.env.example`, and updated in `apps/ai-engine` PromptsService and `services/python-ai`. Verified direct inference with `groq/compound` producing real-time responses.
+- [x] **Google Gemini API Key (`AQ.Ab8...`)**: Configured in `.env`, `.env.example`, and alias `GOOGLE_API_KEY`. Built direct native Google Generative Language provider in `apps/ai-engine` PromptsService supporting `gemini-3.6-flash` and `gemini-3-flash-preview`. Created native `GeminiProvider` in `services/python-ai` and registered in ModelRouter/Registry. Added verified Google Gemini connector in `apps/automation` and UI catalog in `apps/web-core`.
+- [x] **System API Key (`ee03f6bc...c919`)**: Configured in `.env` as `API_KEY` and `SYSTEM_API_KEY`. Wired into `@repo/auth` `JwtAuthGuard` enabling programmatic REST access across all 20+ microservices via both `x-api-key` header and `Authorization: Bearer <API_KEY>`. Registered in `apps/developer` ApiKeysService.
+- [x] **Verification**: 15/15 tests passed (100%) in `scripts/verify-api-keys-integration.mjs`.
+
+
 

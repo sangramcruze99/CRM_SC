@@ -12,9 +12,14 @@ export class TwilioWhatsAppService implements IWhatsAppProvider {
 
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const apiKeySid = process.env.TWILIO_API_KEY_SID;
+    const apiKeySecret = process.env.TWILIO_API_KEY_SECRET;
     const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 
-    if (!accountSid || !authToken || !fromNumber) {
+    const authUser = apiKeySid || accountSid;
+    const authPass = apiKeySecret || authToken;
+
+    if (!authUser || !authPass || !fromNumber) {
       this.logger.warn(`Twilio credentials not configured. Operating in simulated mode.`);
       return {
         success: true,
@@ -23,7 +28,8 @@ export class TwilioWhatsAppService implements IWhatsAppProvider {
     }
 
     try {
-      const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+      const targetAccount = accountSid?.startsWith('AC') ? accountSid : (process.env.TWILIO_MAIN_ACCOUNT_SID || authUser);
+      const url = `https://api.twilio.com/2010-04-01/Accounts/${targetAccount}/Messages.json`;
       const params = new URLSearchParams();
       params.append('From', `whatsapp:${fromNumber}`);
       params.append('To', `whatsapp:${cleanNumber}`);
@@ -32,7 +38,7 @@ export class TwilioWhatsAppService implements IWhatsAppProvider {
       const res = await fetch(url, {
         method: 'POST',
         headers: {
-          'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
+          'Authorization': 'Basic ' + Buffer.from(`${authUser}:${authPass}`).toString('base64'),
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: params.toString(),

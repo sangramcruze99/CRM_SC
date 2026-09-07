@@ -123,13 +123,26 @@ const CONNECTORS_CATALOG: ConnectorItem[] = [
 
   // AI
   {
+    id: 'conn-gemini',
+    name: 'Google Gemini AI',
+    category: 'AI',
+    description: 'Next-generation multimodal reasoning and high-throughput intelligence powered by Gemini 3.6 Flash.',
+    status: 'CONNECTED',
+    latencyMs: 82,
+    accountLabel: 'Tier-1 API (gemini-3.6-flash)',
+    authType: 'API_KEY',
+    supportedTriggersCount: 1,
+    supportedActionsCount: 4,
+    iconType: 'Cpu',
+  },
+  {
     id: 'conn-groq',
     name: 'Groq Cloud Inference',
     category: 'AI',
     description: 'Ultra-low-latency LPU inference powering ReAct agent reasoning loops and live conversational bots.',
     status: 'CONNECTED',
     latencyMs: 65,
-    accountLabel: 'Tier-1 API (llama-3.3-70b)',
+    accountLabel: 'Tier-1 API (groq/compound)',
     authType: 'API_KEY',
     supportedTriggersCount: 1,
     supportedActionsCount: 4,

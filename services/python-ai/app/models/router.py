@@ -6,6 +6,7 @@ import logging
 from typing import Optional, List
 from .providers.base import BaseModelProvider, GenerateRequest, GenerateResponse
 from .providers.groq_provider import GroqProvider
+from .providers.gemini_provider import GeminiProvider
 from .providers.openrouter_provider import OpenRouterProvider
 from .providers.openai_provider import OpenAIProvider
 from .providers.local_provider import LocalModelProvider
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 class ModelRouter:
     def __init__(self):
         self.groq_provider = GroqProvider()
+        self.gemini_provider = GeminiProvider()
         self.openrouter_provider = OpenRouterProvider()
         self.openai_provider = OpenAIProvider()
         self.local_provider = LocalModelProvider()
@@ -24,6 +26,7 @@ class ModelRouter:
     def get_provider(self, provider_name: str) -> Optional[BaseModelProvider]:
         mapping = {
             "groq": self.groq_provider,
+            "gemini": self.gemini_provider,
             "openrouter": self.openrouter_provider,
             "openai": self.openai_provider,
             "local": self.local_provider,
@@ -41,6 +44,8 @@ class ModelRouter:
         # Prefix resolution
         if model_id.startswith("groq/") and self.groq_provider.is_configured():
             return self.groq_provider
+        if model_id.startswith("gemini/") and self.gemini_provider.is_configured():
+            return self.gemini_provider
         if model_id.startswith("openrouter/") and self.openrouter_provider.is_configured():
             return self.openrouter_provider
         if model_id.startswith("openai/") and self.openai_provider.is_configured():
@@ -49,6 +54,8 @@ class ModelRouter:
         # Default to configured cloud providers or local
         if self.groq_provider.is_configured():
             return self.groq_provider
+        if self.gemini_provider.is_configured():
+            return self.gemini_provider
         if self.openrouter_provider.is_configured():
             return self.openrouter_provider
         if self.openai_provider.is_configured():
@@ -96,7 +103,7 @@ class ModelRouter:
         primary = self.resolve_provider_for_model(request.model)
 
         fallback_chain: List[BaseModelProvider] = [primary]
-        for candidate in [self.groq_provider, self.openrouter_provider, self.openai_provider, self.local_provider]:
+        for candidate in [self.groq_provider, self.gemini_provider, self.openrouter_provider, self.openai_provider, self.local_provider]:
             if candidate != primary and candidate.is_configured():
                 fallback_chain.append(candidate)
 

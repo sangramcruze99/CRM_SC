@@ -5,6 +5,14 @@ import * as crypto from 'crypto';
 @Injectable()
 export class ApiKeysService {
   private static inMemoryKeys: any[] = [
+    {
+      id: 'key_system_prod',
+      name: 'System Integration Key (API_KEY)',
+      key: 'ee03f6bc...c919 (System Active)',
+      permissions: ['read', 'write', 'admin'],
+      tenantId: 'default-tenant',
+      createdAt: new Date(),
+    },
     { id: 'key_1', name: 'Production Sync Key', key: 'sk_live_...789', permissions: ['read', 'write'], tenantId: 'default-tenant', createdAt: new Date() }
   ];
 
@@ -61,13 +69,14 @@ export class ApiKeysService {
     if (this.prisma.isConnected) {
       try {
         return await this.prisma.apiKey.deleteMany({
-          where: { id, tenantId },
+          where: { id, tenantId }
         });
       } catch {
         // fallback
       }
     }
-    ApiKeysService.inMemoryKeys = ApiKeysService.inMemoryKeys.filter(k => !(k.id === id && k.tenantId === tenantId));
-    return { count: 1 };
+
+    ApiKeysService.inMemoryKeys = ApiKeysService.inMemoryKeys.filter(k => k.id !== id || k.tenantId !== tenantId);
+    return { success: true, count: 1 };
   }
 }

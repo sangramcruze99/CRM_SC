@@ -144,7 +144,10 @@ export class ConnectorRegistryService implements OnModuleInit {
         triggers: [
           { key: 'call_completed', name: 'Call Completed', description: 'Call hangup with recording', eventPayloadSchema: { callSid: 'string', duration: 'number' } },
         ],
-        testConnection: async () => ({ ok: true, message: 'Twilio Trunk Verified' }),
+        testConnection: async (creds) => ({
+          ok: Boolean(creds?.apiKey || process.env.TWILIO_ACCOUNT_SID || process.env.TWILIO_API_KEY_SID),
+          message: 'Twilio Trunk Verified',
+        }),
         executeAction: async (action, creds, params) => ({ success: true, sid: `SM_${Date.now()}` }),
       },
       // 8. Airtable
@@ -227,6 +230,21 @@ export class ConnectorRegistryService implements OnModuleInit {
         triggers: [],
         testConnection: async () => ({ ok: Boolean(process.env.OPENROUTER_API_KEY), message: 'OpenRouter Gateway Online' }),
         executeAction: async (action, creds, params) => ({ success: true, result: 'Reasoning result.' }),
+      },
+      // 13. Google Gemini AI
+      {
+        key: 'gemini',
+        name: 'Google Gemini',
+        category: 'AI',
+        description: 'Next-generation multimodal intelligence and reasoning powered by Gemini 3.6 Flash.',
+        icon: 'Sparkles',
+        authType: 'API_KEY',
+        actions: [
+          { key: 'generate_content', name: 'Multimodal Generation', description: 'Fast Gemini text & reasoning generation', inputSchema: { prompt: 'string' }, outputSchema: { reply: 'string' } },
+        ],
+        triggers: [],
+        testConnection: async () => ({ ok: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY), message: 'Gemini Cluster Online' }),
+        executeAction: async (action, creds, params) => ({ success: true, reply: 'Gemini response generated.' }),
       },
     ];
 

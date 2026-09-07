@@ -30,10 +30,39 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
+    const apiKeyHeader = (request.headers['x-api-key'] || request.headers['x-service-key']) as string | undefined;
+    const configuredApiKey = process.env.API_KEY || process.env.SYSTEM_API_KEY;
+
+    // Check direct X-API-Key or X-Service-Key authentication
+    if (configuredApiKey && apiKeyHeader === configuredApiKey) {
+      const tenantId = (request.headers['x-tenant-id'] as string) || 'default-tenant';
+      (request as any)['user'] = {
+        sub: 'system-api-key',
+        email: 'system@crm.internal',
+        role: 'ADMIN',
+        tenantId,
+      };
+      request.headers['x-tenant-id'] = tenantId;
+      return true;
+    }
+
     const token = this.extractTokenFromHeader(request);
 
     if (!token) {
       throw new UnauthorizedException('Access token missing');
+    }
+
+    // Check direct API key passed as Bearer token
+    if (configuredApiKey && token === configuredApiKey) {
+      const tenantId = (request.headers['x-tenant-id'] as string) || 'default-tenant';
+      (request as any)['user'] = {
+        sub: 'system-api-key',
+        email: 'system@crm.internal',
+        role: 'ADMIN',
+        tenantId,
+      };
+      request.headers['x-tenant-id'] = tenantId;
+      return true;
     }
 
     try {

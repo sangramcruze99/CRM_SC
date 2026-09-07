@@ -63,6 +63,40 @@ class ModelRegistry:
             )
         )
 
+        # Google Gemini Frontier Models
+        self.register(
+            ModelMetadata(
+                id="gemini/gemini-3.6-flash",
+                provider="gemini",
+                model_name="gemini-3.6-flash",
+                capabilities=["chat", "multimodal", "fast_reasoning", "tool_calling"],
+                context_window=1048576,
+                supports_tools=True,
+                supports_vision=True,
+                supports_json=True,
+                cost_profile="LOW",
+                latency_profile="ULTRA_FAST",
+                status="PRODUCTION",
+                version="3.6.0",
+            )
+        )
+        self.register(
+            ModelMetadata(
+                id="gemini/gemini-3-flash-preview",
+                provider="gemini",
+                model_name="gemini-3-flash-preview",
+                capabilities=["chat", "deep_research", "fast_reasoning"],
+                context_window=1048576,
+                supports_tools=True,
+                supports_vision=True,
+                supports_json=True,
+                cost_profile="LOW",
+                latency_profile="ULTRA_FAST",
+                status="PRODUCTION",
+                version="3.0.0",
+            )
+        )
+
         # OpenRouter Frontier Models
         self.register(
             ModelMetadata(
