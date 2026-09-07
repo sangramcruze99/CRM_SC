@@ -17,7 +17,8 @@ export const SYSTEM_ROLES: Record<string, RoleDefinition> = {
   },
   ADMIN: {
     name: 'ADMIN',
-    description: 'Tenant administrator with full control over tenant settings, billing, and users',
+    description:
+      'Tenant administrator with full control over tenant settings, billing, and users',
     permissions: [
       'tenant:manage',
       'users:read',
@@ -38,7 +39,8 @@ export const SYSTEM_ROLES: Record<string, RoleDefinition> = {
   },
   MANAGER: {
     name: 'MANAGER',
-    description: 'Team lead with management access over CRM, Sales, Projects, and Helpdesk',
+    description:
+      'Team lead with management access over CRM, Sales, Projects, and Helpdesk',
     permissions: [
       'users:read',
       'contacts:*',
@@ -74,7 +76,8 @@ export const SYSTEM_ROLES: Record<string, RoleDefinition> = {
   },
   USER: {
     name: 'USER',
-    description: 'Default user with standard read and basic collaborative access',
+    description:
+      'Default user with standard read and basic collaborative access',
     permissions: [
       'contacts:read',
       'deals:read',
@@ -114,7 +117,10 @@ export class RolesService {
     return role;
   }
 
-  async getUserRole(tenantId: string, userId: string): Promise<{ role: string; permissions: string[] }> {
+  async getUserRole(
+    tenantId: string,
+    userId: string,
+  ): Promise<{ role: string; permissions: string[] }> {
     const user = await this.prisma.user.findFirst({
       where: { id: userId, tenantId },
       select: { id: true, email: true, role: true },

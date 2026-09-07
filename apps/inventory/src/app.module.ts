@@ -7,7 +7,9 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
-    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'super-secret-business-os-key',
+    }),
   ],
   controllers: [AppController],
   providers: [

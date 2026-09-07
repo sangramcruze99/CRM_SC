@@ -4,7 +4,15 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class DocumentsService {
   private static inMemoryDocs: any[] = [
-    { id: 'doc_1', name: 'Commercial_Agreement_2026.pdf', mimeType: 'application/pdf', size: 1048576, url: 'https://storage.crm.example.com/demo.pdf', tenantId: 'default-tenant', createdAt: new Date() }
+    {
+      id: 'doc_1',
+      name: 'Commercial_Agreement_2026.pdf',
+      mimeType: 'application/pdf',
+      size: 1048576,
+      url: 'https://storage.crm.example.com/demo.pdf',
+      tenantId: 'default-tenant',
+      createdAt: new Date(),
+    },
   ];
 
   constructor(private prisma: PrismaService) {}
@@ -30,7 +38,16 @@ export class DocumentsService {
     );
   }
 
-  async create(data: { name: string; folderId?: string; mimeType?: string; size?: number; url?: string }, tenantId: string) {
+  async create(
+    data: {
+      name: string;
+      folderId?: string;
+      mimeType?: string;
+      size?: number;
+      url?: string;
+    },
+    tenantId: string,
+  ) {
     if (data.folderId === 'root') data.folderId = '';
     if (this.prisma.isConnected) {
       try {
@@ -40,7 +57,9 @@ export class DocumentsService {
             folderId: data.folderId || null,
             mimeType: data.mimeType || 'application/octet-stream',
             size: data.size || 1024,
-            url: data.url || `https://storage.crm.example.com/${tenantId}/${data.name}`,
+            url:
+              data.url ||
+              `https://storage.crm.example.com/${tenantId}/${data.name}`,
             tenantId,
           },
         });
@@ -54,9 +73,10 @@ export class DocumentsService {
       folderId: data.folderId || null,
       mimeType: data.mimeType || 'application/octet-stream',
       size: data.size || 1024,
-      url: data.url || `https://storage.crm.example.com/${tenantId}/${data.name}`,
+      url:
+        data.url || `https://storage.crm.example.com/${tenantId}/${data.name}`,
       tenantId,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
     DocumentsService.inMemoryDocs.unshift(newDoc);
     return newDoc;
@@ -72,7 +92,9 @@ export class DocumentsService {
         // fallback
       }
     }
-    DocumentsService.inMemoryDocs = DocumentsService.inMemoryDocs.filter(d => !(d.id === id && d.tenantId === tenantId));
+    DocumentsService.inMemoryDocs = DocumentsService.inMemoryDocs.filter(
+      (d) => !(d.id === id && d.tenantId === tenantId),
+    );
     return { count: 1 };
   }
 }

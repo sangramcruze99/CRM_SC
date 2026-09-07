@@ -11,7 +11,9 @@ import { SearchIndexService } from './search-index/search-index.service';
 
 @Module({
   imports: [
-    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'super-secret-business-os-key',
+    }),
     GlobalSearchModule,
     PrismaModule,
   ],

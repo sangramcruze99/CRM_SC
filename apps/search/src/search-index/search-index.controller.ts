@@ -1,5 +1,11 @@
-
-import { Controller, Get, Post, Body, Headers, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Headers,
+  BadRequestException,
+} from '@nestjs/common';
 import { SearchIndexService } from './search-index.service';
 
 @Controller('search-index')

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Headers } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Headers,
+} from '@nestjs/common';
 import { DealsService } from './deals.service';
 
 @Controller('deals')
@@ -10,7 +19,10 @@ export class DealsController {
   }
 
   @Post()
-  create(@Headers() headers: Record<string, string>, @Body() createDealDto: any) {
+  create(
+    @Headers() headers: Record<string, string>,
+    @Body() createDealDto: any,
+  ) {
     return this.dealsService.create(this.getTenant(headers), createDealDto);
   }
 
@@ -25,7 +37,11 @@ export class DealsController {
   }
 
   @Patch(':id')
-  update(@Headers() headers: Record<string, string>, @Param('id') id: string, @Body() updateDealDto: any) {
+  update(
+    @Headers() headers: Record<string, string>,
+    @Param('id') id: string,
+    @Body() updateDealDto: any,
+  ) {
     return this.dealsService.update(this.getTenant(headers), id, updateDealDto);
   }
 

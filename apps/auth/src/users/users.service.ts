@@ -28,23 +28,28 @@ export class UsersService implements OnModuleInit {
       const user = await this.prisma.user.findUnique({ where: { email } });
       if (user) return user;
     } catch (err: any) {
-      this.logger.warn(`Database unreachable, using memory fallback for findByEmail: ${email}`);
+      this.logger.warn(
+        `Database unreachable, using memory fallback for findByEmail: ${email}`,
+      );
     }
     return UsersService.inMemoryUsers.get(email.toLowerCase()) || null;
   }
 
   async create(data: any) {
     const salt = await bcrypt.genSalt(10);
-    const passwordHash = data.password ? await bcrypt.hash(data.password, salt) : undefined;
-    
+    const passwordHash = data.password
+      ? await bcrypt.hash(data.password, salt)
+      : undefined;
+
     // Prevent tenant hijacking: Create dedicated isolated tenant if none or default requested
     const isNewTenant = !data.tenantId || data.tenantId === 'default-tenant';
-    const tenantId = isNewTenant 
+    const tenantId = isNewTenant
       ? `tnt_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`
       : data.tenantId;
 
     // Prevent privilege escalation: Never allow self-registration as SUPERADMIN
-    const assignedRole = data.role === 'SUPERADMIN' ? 'USER' : (data.role || 'USER');
+    const assignedRole =
+      data.role === 'SUPERADMIN' ? 'USER' : data.role || 'USER';
 
     const newUser = {
       id: `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
@@ -62,7 +67,10 @@ export class UsersService implements OnModuleInit {
       await this.prisma.tenant.upsert({
         where: { id: tenantId },
         update: {},
-        create: { id: tenantId, name: data.organizationName || `${data.name || 'User'}'s Workspace` },
+        create: {
+          id: tenantId,
+          name: data.organizationName || `${data.name || 'User'}'s Workspace`,
+        },
       });
 
       return await this.prisma.user.create({
@@ -75,7 +83,9 @@ export class UsersService implements OnModuleInit {
         },
       });
     } catch (err: any) {
-      this.logger.warn(`Database unreachable, storing user in memory: ${data.email}`);
+      this.logger.warn(
+        `Database unreachable, storing user in memory: ${data.email}`,
+      );
       UsersService.inMemoryUsers.set(data.email.toLowerCase(), newUser);
       return newUser;
     }

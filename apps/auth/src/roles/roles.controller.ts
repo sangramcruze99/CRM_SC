@@ -37,7 +37,14 @@ export class RolesController {
 
   @Post('check-permission')
   checkPermission(@Body() body: { role: string; permission: string }) {
-    const hasPermission = this.rolesService.hasPermission(body.role, body.permission);
-    return { role: body.role, permission: body.permission, allowed: hasPermission };
+    const hasPermission = this.rolesService.hasPermission(
+      body.role,
+      body.permission,
+    );
+    return {
+      role: body.role,
+      permission: body.permission,
+      allowed: hasPermission,
+    };
   }
 }

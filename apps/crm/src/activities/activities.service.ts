@@ -25,10 +25,10 @@ export class ActivitiesService {
     if (query.contactId) where.contactId = query.contactId;
     if (query.companyId) where.companyId = query.companyId;
     if (query.dealId) where.dealId = query.dealId;
-    
+
     const activities = await this.prisma.activity.findMany({
       where,
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
 
     return activities;
@@ -36,7 +36,7 @@ export class ActivitiesService {
 
   async findOne(tenantId: string, id: string) {
     const activity = await this.prisma.activity.findFirst({
-      where: { id, tenantId }
+      where: { id, tenantId },
     });
     if (!activity) throw new NotFoundException('Activity not found');
     return activity;

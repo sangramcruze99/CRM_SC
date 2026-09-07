@@ -15,7 +15,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       await this.$connect();
       this.logger.log('Database connected successfully');
     } catch (err: any) {
-      this.logger.warn(`Database connection deferred (offline or starting up): ${err.message}`);
+      this.logger.warn(
+        `Database connection deferred (offline or starting up): ${err.message}`,
+      );
     }
   }
 }

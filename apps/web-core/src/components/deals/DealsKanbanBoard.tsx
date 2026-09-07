@@ -21,6 +21,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { CreateDealModal } from '../CreateDealModal';
+import { RecordAiMenu } from '../ai/RecordAiMenu';
 import { updateDealStage, deleteDeal } from '../../app/actions';
 import { useRouter } from 'next/navigation';
 
@@ -256,6 +257,7 @@ export function DealsKanbanBoard({ initialDeals }: DealsKanbanBoardProps) {
             </button>
           </div>
 
+          <RecordAiMenu entityType="deal" entityId="pipeline" entityName="Deals Pipeline" />
           <CreateDealModal />
         </div>
       </div>

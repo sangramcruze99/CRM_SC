@@ -13,19 +13,21 @@ export class UsersController {
         email: 'admin@gmail.com',
         name: 'Sangram Cruze',
         role: 'SUPERADMIN',
-        tenantId: 'default-tenant'
-      }
+        tenantId: 'default-tenant',
+      },
     ];
   }
 
   @Get('me')
   async getMe(@Req() req: any) {
-    return req.user || {
-      id: 'usr_default_admin',
-      email: 'admin@gmail.com',
-      name: 'Sangram Cruze',
-      role: 'SUPERADMIN',
-      tenantId: 'default-tenant'
-    };
+    return (
+      req.user || {
+        id: 'usr_default_admin',
+        email: 'admin@gmail.com',
+        name: 'Sangram Cruze',
+        role: 'SUPERADMIN',
+        tenantId: 'default-tenant',
+      }
+    );
   }
 }

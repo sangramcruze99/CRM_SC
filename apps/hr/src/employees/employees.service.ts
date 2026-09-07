@@ -1,6 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { publishCandidateApplied, publishBusinessEvent } from '@repo/core-types';
+import {
+  publishCandidateApplied,
+  publishBusinessEvent,
+} from '@repo/core-types';
 
 @Injectable()
 export class EmployeesService {
@@ -18,20 +21,31 @@ export class EmployeesService {
             department: true,
             leaveRequests: {
               orderBy: { startDate: 'desc' },
-              take: 5
-            }
+              take: 5,
+            },
           },
-          orderBy: { firstName: 'asc' }
+          orderBy: { firstName: 'asc' },
         });
         if (records && records.length > 0) return records;
       } catch {
         // fallback
       }
     }
-    return EmployeesService.inMemoryEmployees.filter(e => e.tenantId === tenantId);
+    return EmployeesService.inMemoryEmployees.filter(
+      (e) => e.tenantId === tenantId,
+    );
   }
 
-  async createEmployee(tenantId: string, data: { firstName: string, lastName: string, email: string, jobTitle?: string, departmentId?: string }) {
+  async createEmployee(
+    tenantId: string,
+    data: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      jobTitle?: string;
+      departmentId?: string;
+    },
+  ) {
     let emp: any = null;
     if (this.prisma.isConnected) {
       try {
@@ -42,8 +56,8 @@ export class EmployeesService {
             lastName: data.lastName,
             email: data.email,
             jobTitle: data.jobTitle,
-            departmentId: data.departmentId
-          }
+            departmentId: data.departmentId,
+          },
         });
       } catch {
         // fallback
@@ -59,7 +73,7 @@ export class EmployeesService {
         email: data.email,
         jobTitle: data.jobTitle || 'Team Member',
         department: { name: 'General' },
-        leaveRequests: []
+        leaveRequests: [],
       };
       EmployeesService.inMemoryEmployees.unshift(emp);
     }
@@ -68,13 +82,25 @@ export class EmployeesService {
       tenantId,
       type: 'EMPLOYEE_CREATED',
       source: 'hr',
-      payload: { employeeId: emp.id, name: `${emp.firstName} ${emp.lastName}`, email: emp.email },
+      payload: {
+        employeeId: emp.id,
+        name: `${emp.firstName} ${emp.lastName}`,
+        email: emp.email,
+      },
     }).catch(() => null);
 
     return emp;
   }
 
-  async submitCandidateApplication(tenantId: string, data: { name: string; email: string; roleApplied: string; resumeUrl?: string }) {
+  async submitCandidateApplication(
+    tenantId: string,
+    data: {
+      name: string;
+      email: string;
+      roleApplied: string;
+      resumeUrl?: string;
+    },
+  ) {
     const candidateId = `cand_${Date.now()}`;
     await publishCandidateApplied(tenantId, {
       id: candidateId,
@@ -82,11 +108,16 @@ export class EmployeesService {
       email: data.email,
       roleApplied: data.roleApplied,
       resumeUrl: data.resumeUrl,
-    }).catch((e) => this.logger.warn(`Failed to publish CANDIDATE_APPLIED: ${e.message}`));
+    }).catch((e) =>
+      this.logger.warn(`Failed to publish CANDIDATE_APPLIED: ${e.message}`),
+    );
 
-    return { candidateId, status: 'APPLICATION_RECEIVED', role: data.roleApplied };
+    return {
+      candidateId,
+      status: 'APPLICATION_RECEIVED',
+      role: data.roleApplied,
+    };
   }
-
 
   async findLeaveRequests(tenantId: string) {
     if (this.prisma.isConnected) {
@@ -94,9 +125,9 @@ export class EmployeesService {
         return await this.prisma.leaveRequest.findMany({
           where: { tenantId },
           include: {
-            employee: true
+            employee: true,
           },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
         });
       } catch {
         // fallback
@@ -105,7 +136,16 @@ export class EmployeesService {
     return [];
   }
 
-  async requestLeave(tenantId: string, data: { employeeId: string, type: string, startDate: string, endDate: string, reason?: string }) {
+  async requestLeave(
+    tenantId: string,
+    data: {
+      employeeId: string;
+      type: string;
+      startDate: string;
+      endDate: string;
+      reason?: string;
+    },
+  ) {
     if (this.prisma.isConnected) {
       try {
         return await this.prisma.leaveRequest.create({
@@ -116,8 +156,8 @@ export class EmployeesService {
             startDate: new Date(data.startDate),
             endDate: new Date(data.endDate),
             reason: data.reason,
-            status: 'PENDING'
-          }
+            status: 'PENDING',
+          },
         });
       } catch {
         // fallback
@@ -130,13 +170,13 @@ export class EmployeesService {
     if (this.prisma.isConnected) {
       try {
         const existing = await this.prisma.leaveRequest.findFirst({
-          where: { id, tenantId }
+          where: { id, tenantId },
         });
         if (!existing) return null;
 
         return await this.prisma.leaveRequest.update({
           where: { id },
-          data: { status }
+          data: { status },
         });
       } catch {
         // fallback

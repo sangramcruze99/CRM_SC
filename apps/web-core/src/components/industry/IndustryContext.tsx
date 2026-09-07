@@ -63,6 +63,18 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     },
     navigationSections: [
       {
+        sectionTitle: '✨ AI Intelligence',
+        items: [
+          { label: 'AI Command Center', href: '/ai', iconName: 'Sparkles', badge: 'Command' },
+          { label: 'My AI Team', href: '/ai/team', iconName: 'Users', badge: '6 Roles' },
+          { label: 'Approvals', href: '/ai/approvals', iconName: 'CheckCircle2', badge: 'Review' },
+          { label: 'Activity Feed', href: '/ai/activity', iconName: 'Activity' },
+          { label: 'Automations', href: '/ai/automations', iconName: 'Workflow', badge: 'Auto' },
+          { label: 'Usage & Limits', href: '/ai/usage', iconName: 'DollarSign' },
+          { label: 'Trust & Privacy', href: '/ai/trust', iconName: 'Shield' },
+        ],
+      },
+      {
         sectionTitle: 'Core CRM & Sales Hub',
         items: [
           { label: 'Executive Dashboard', href: '/dashboard', iconName: 'LayoutDashboard' },

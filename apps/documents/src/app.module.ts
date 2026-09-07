@@ -14,16 +14,14 @@ import { S3UploadService } from './s3-uploads/s3-uploads.service';
 
 @Module({
   imports: [
-    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET || 'super-secret-business-os-key',
+    }),
     PrismaModule,
     FoldersModule,
     DocumentsModule,
   ],
-  controllers: [
-    ESignatureController,
-    S3UploadController,
-    AppController,
-  ],
+  controllers: [ESignatureController, S3UploadController, AppController],
   providers: [
     {
       provide: APP_GUARD,

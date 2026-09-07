@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Headers } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Headers,
+} from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 
 @Controller('companies')
@@ -10,8 +19,14 @@ export class CompaniesController {
   }
 
   @Post()
-  create(@Headers() headers: Record<string, string>, @Body() createCompanyDto: any) {
-    return this.companiesService.create(this.getTenant(headers), createCompanyDto);
+  create(
+    @Headers() headers: Record<string, string>,
+    @Body() createCompanyDto: any,
+  ) {
+    return this.companiesService.create(
+      this.getTenant(headers),
+      createCompanyDto,
+    );
   }
 
   @Get()
@@ -25,8 +40,16 @@ export class CompaniesController {
   }
 
   @Patch(':id')
-  update(@Headers() headers: Record<string, string>, @Param('id') id: string, @Body() updateCompanyDto: any) {
-    return this.companiesService.update(this.getTenant(headers), id, updateCompanyDto);
+  update(
+    @Headers() headers: Record<string, string>,
+    @Param('id') id: string,
+    @Body() updateCompanyDto: any,
+  ) {
+    return this.companiesService.update(
+      this.getTenant(headers),
+      id,
+      updateCompanyDto,
+    );
   }
 
   @Delete(':id')

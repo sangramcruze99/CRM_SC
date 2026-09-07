@@ -18,10 +18,12 @@ export class ContactsService {
             ...data,
             tenantId,
           },
-          include: { company: true }
+          include: { company: true },
         });
       } catch (err: any) {
-        this.logger.warn(`Database write deferred, saving contact to memory: ${err.message}`);
+        this.logger.warn(
+          `Database write deferred, saving contact to memory: ${err.message}`,
+        );
       }
     }
 
@@ -30,7 +32,9 @@ export class ContactsService {
         id: `cont_${Date.now()}`,
         tenantId,
         ...data,
-        company: data.companyId ? { id: data.companyId, name: 'Assigned Company' } : null,
+        company: data.companyId
+          ? { id: data.companyId, name: 'Assigned Company' }
+          : null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -39,12 +43,11 @@ export class ContactsService {
 
     // Emit reactive business event to Event Bus & Agent Orchestrator
     publishContactCreated(tenantId, createdContact).catch((e) =>
-      this.logger.warn(`Failed to publish CONTACT_CREATED event: ${e.message}`)
+      this.logger.warn(`Failed to publish CONTACT_CREATED event: ${e.message}`),
     );
 
     return createdContact;
   }
-
 
   async findAll(tenantId: string) {
     if (this.prisma.isConnected) {
@@ -52,14 +55,18 @@ export class ContactsService {
         const records = await this.prisma.contact.findMany({
           where: { tenantId },
           include: { company: true },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
         });
         if (records && records.length > 0) return records;
       } catch (err: any) {
-        this.logger.warn(`Database read deferred, returning memory contacts: ${err.message}`);
+        this.logger.warn(
+          `Database read deferred, returning memory contacts: ${err.message}`,
+        );
       }
     }
-    return ContactsService.inMemoryContacts.filter(c => c.tenantId === tenantId);
+    return ContactsService.inMemoryContacts.filter(
+      (c) => c.tenantId === tenantId,
+    );
   }
 
   async findOne(tenantId: string, id: string) {
@@ -67,14 +74,18 @@ export class ContactsService {
       try {
         const record = await this.prisma.contact.findFirst({
           where: { id, tenantId },
-          include: { company: true }
+          include: { company: true },
         });
         if (record) return record;
       } catch (err: any) {
         this.logger.warn(`Database read deferred: ${err.message}`);
       }
     }
-    return ContactsService.inMemoryContacts.find(c => c.id === id && c.tenantId === tenantId) || null;
+    return (
+      ContactsService.inMemoryContacts.find(
+        (c) => c.id === id && c.tenantId === tenantId,
+      ) || null
+    );
   }
 
   async update(tenantId: string, id: string, data: any) {
@@ -97,9 +108,14 @@ export class ContactsService {
       }
     }
 
-    const idx = ContactsService.inMemoryContacts.findIndex(c => c.id === id && c.tenantId === tenantId);
+    const idx = ContactsService.inMemoryContacts.findIndex(
+      (c) => c.id === id && c.tenantId === tenantId,
+    );
     if (idx !== -1) {
-      ContactsService.inMemoryContacts[idx] = { ...ContactsService.inMemoryContacts[idx], ...data };
+      ContactsService.inMemoryContacts[idx] = {
+        ...ContactsService.inMemoryContacts[idx],
+        ...data,
+      };
       return ContactsService.inMemoryContacts[idx];
     }
     return null;
@@ -124,7 +140,9 @@ export class ContactsService {
       }
     }
 
-    ContactsService.inMemoryContacts = ContactsService.inMemoryContacts.filter(c => !(c.id === id && c.tenantId === tenantId));
+    ContactsService.inMemoryContacts = ContactsService.inMemoryContacts.filter(
+      (c) => !(c.id === id && c.tenantId === tenantId),
+    );
     return { success: true, id };
   }
 }

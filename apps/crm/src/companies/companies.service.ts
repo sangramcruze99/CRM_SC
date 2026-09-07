@@ -17,7 +17,7 @@ export class CompaniesService {
   findAll(tenantId: string) {
     return this.prisma.company.findMany({
       where: { tenantId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 

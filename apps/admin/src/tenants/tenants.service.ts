@@ -4,8 +4,20 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class TenantsService implements OnModuleInit {
   private static inMemoryTenants: any[] = [
-    { id: 'tenant-1', name: 'Acme Corporation', domain: 'acme.crm.example.com', createdAt: new Date(), _count: { users: 5, contacts: 12, companies: 3 } },
-    { id: 'tenant-2', name: 'Globex Inc', domain: 'globex.crm.example.com', createdAt: new Date(), _count: { users: 2, contacts: 4, companies: 1 } },
+    {
+      id: 'tenant-1',
+      name: 'Acme Corporation',
+      domain: 'acme.crm.example.com',
+      createdAt: new Date(),
+      _count: { users: 5, contacts: 12, companies: 3 },
+    },
+    {
+      id: 'tenant-2',
+      name: 'Globex Inc',
+      domain: 'globex.crm.example.com',
+      createdAt: new Date(),
+      _count: { users: 2, contacts: 4, companies: 1 },
+    },
   ];
 
   constructor(private prisma: PrismaService) {}
@@ -43,9 +55,9 @@ export class TenantsService implements OnModuleInit {
           orderBy: { createdAt: 'desc' },
           include: {
             _count: {
-              select: { users: true, contacts: true, companies: true }
-            }
-          }
+              select: { users: true, contacts: true, companies: true },
+            },
+          },
         });
       } catch {
         // fallback
@@ -89,7 +101,7 @@ export class TenantsService implements OnModuleInit {
         // fallback
       }
     }
-    const idx = TenantsService.inMemoryTenants.findIndex(t => t.id === id);
+    const idx = TenantsService.inMemoryTenants.findIndex((t) => t.id === id);
     if (idx !== -1) TenantsService.inMemoryTenants.splice(idx, 1);
     return { id };
   }

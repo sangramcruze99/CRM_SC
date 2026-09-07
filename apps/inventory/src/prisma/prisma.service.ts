@@ -22,7 +22,9 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       this.logger.log('Database connected successfully');
     } catch (err: any) {
       this.isConnected = false;
-      this.logger.warn(`Database connection deferred, using memory store: ${err.message}`);
+      this.logger.warn(
+        `Database connection deferred, using memory store: ${err.message}`,
+      );
     }
   }
 }

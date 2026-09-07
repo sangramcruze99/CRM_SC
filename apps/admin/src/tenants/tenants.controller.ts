@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete, Req, ForbiddenException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Req,
+  ForbiddenException,
+} from '@nestjs/common';
 import { TenantsService } from './tenants.service';
 
 @Controller('tenants')
@@ -7,7 +16,9 @@ export class TenantsController {
 
   private checkSuperAdmin(req: any) {
     if (req.user?.role !== 'SUPERADMIN') {
-      throw new ForbiddenException('Superadmin privileges required to manage tenant accounts');
+      throw new ForbiddenException(
+        'Superadmin privileges required to manage tenant accounts',
+      );
     }
   }
 

@@ -1,5 +1,11 @@
-
-import { Controller, Get, Post, Body, Headers, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Headers,
+  BadRequestException,
+} from '@nestjs/common';
 import { OnboardingTaskService } from './onboarding.service';
 
 @Controller('onboarding')

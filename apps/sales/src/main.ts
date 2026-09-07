@@ -9,4 +9,3 @@ async function bootstrap() {
   console.log(`[Sales Service] Ready on http://localhost:${port}`);
 }
 bootstrap();
-

@@ -21,8 +21,8 @@ export class FoldersService {
       where: { id, tenantId },
       include: {
         children: { orderBy: { name: 'asc' } },
-        documents: { orderBy: { name: 'asc' } }
-      }
+        documents: { orderBy: { name: 'asc' } },
+      },
     });
   }
 

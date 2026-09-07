@@ -61,6 +61,8 @@ import {
   PanelLeftClose,
   Layout,
   CreditCard,
+  CheckCircle2,
+  Shield,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, any> = {
@@ -112,9 +114,12 @@ const ICON_MAP: Record<string, any> = {
   Calendar,
   Settings,
   Sliders,
+  CheckCircle2,
+  Shield,
 };
 
 const SECTION_ICONS: Record<string, any> = {
+  '✨ AI Intelligence': Sparkles,
   'Core CRM & Sales Hub': Briefcase,
   'Core CRM': Briefcase,
   'Omnichannel & Growth': MessageSquare,

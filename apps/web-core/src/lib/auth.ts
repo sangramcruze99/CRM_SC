@@ -46,7 +46,8 @@ export async function getTenantHeaders() {
 
   return {
     'x-tenant-id': tenantId,
-    'Authorization': `Bearer ${token}`
+    'Authorization': `Bearer ${token}`,
+    'x-api-key': process.env.API_KEY || 'ee03f6bc2fba450fdf6d080ae6c8c919'
   };
 }
 

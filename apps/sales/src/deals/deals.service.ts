@@ -18,10 +18,12 @@ export class DealsService {
             ...data,
             tenantId,
           },
-          include: { company: true }
+          include: { company: true },
         });
       } catch (err: any) {
-        this.logger.warn(`Database write deferred, saving deal to memory: ${err.message}`);
+        this.logger.warn(
+          `Database write deferred, saving deal to memory: ${err.message}`,
+        );
       }
     }
 
@@ -30,7 +32,9 @@ export class DealsService {
         id: `deal_${Date.now()}`,
         tenantId,
         ...data,
-        company: data.companyId ? { id: data.companyId, name: 'Target Account' } : null,
+        company: data.companyId
+          ? { id: data.companyId, name: 'Target Account' }
+          : null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -44,7 +48,9 @@ export class DealsService {
       amount: Number(createdDeal.amount || 0),
       stage: createdDeal.stage || 'Lead',
       contactId: createdDeal.contactId,
-    }).catch((e) => this.logger.warn(`Failed to publish deal event: ${e.message}`));
+    }).catch((e) =>
+      this.logger.warn(`Failed to publish deal event: ${e.message}`),
+    );
 
     return createdDeal;
   }
@@ -55,14 +61,16 @@ export class DealsService {
         const records = await this.prisma.deal.findMany({
           where: { tenantId },
           include: { company: true },
-          orderBy: { createdAt: 'desc' }
+          orderBy: { createdAt: 'desc' },
         });
         if (records && records.length > 0) return records;
       } catch (err: any) {
-        this.logger.warn(`Database read deferred, returning memory deals: ${err.message}`);
+        this.logger.warn(
+          `Database read deferred, returning memory deals: ${err.message}`,
+        );
       }
     }
-    return DealsService.inMemoryDeals.filter(d => d.tenantId === tenantId);
+    return DealsService.inMemoryDeals.filter((d) => d.tenantId === tenantId);
   }
 
   async findOne(tenantId: string, id: string) {
@@ -70,14 +78,18 @@ export class DealsService {
       try {
         const record = await this.prisma.deal.findFirst({
           where: { id, tenantId },
-          include: { company: true }
+          include: { company: true },
         });
         if (record) return record;
       } catch (err: any) {
         this.logger.warn(`Database read deferred: ${err.message}`);
       }
     }
-    return DealsService.inMemoryDeals.find(d => d.id === id && d.tenantId === tenantId) || null;
+    return (
+      DealsService.inMemoryDeals.find(
+        (d) => d.id === id && d.tenantId === tenantId,
+      ) || null
+    );
   }
 
   async update(tenantId: string, id: string, data: any) {
@@ -105,10 +117,15 @@ export class DealsService {
     }
 
     if (!updatedDeal) {
-      const idx = DealsService.inMemoryDeals.findIndex(d => d.id === id && d.tenantId === tenantId);
+      const idx = DealsService.inMemoryDeals.findIndex(
+        (d) => d.id === id && d.tenantId === tenantId,
+      );
       if (idx !== -1) {
         previousStage = DealsService.inMemoryDeals[idx].stage;
-        DealsService.inMemoryDeals[idx] = { ...DealsService.inMemoryDeals[idx], ...data };
+        DealsService.inMemoryDeals[idx] = {
+          ...DealsService.inMemoryDeals[idx],
+          ...data,
+        };
         updatedDeal = DealsService.inMemoryDeals[idx];
       }
     }
@@ -122,12 +139,13 @@ export class DealsService {
         stage: updatedDeal.stage,
         previousStage,
         contactId: updatedDeal.contactId,
-      }).catch((e) => this.logger.warn(`Failed to publish deal stage event: ${e.message}`));
+      }).catch((e) =>
+        this.logger.warn(`Failed to publish deal stage event: ${e.message}`),
+      );
     }
 
     return updatedDeal;
   }
-
 
   async remove(tenantId: string, id: string) {
     if (this.prisma.isConnected) {
@@ -148,7 +166,9 @@ export class DealsService {
       }
     }
 
-    DealsService.inMemoryDeals = DealsService.inMemoryDeals.filter(d => !(d.id === id && d.tenantId === tenantId));
+    DealsService.inMemoryDeals = DealsService.inMemoryDeals.filter(
+      (d) => !(d.id === id && d.tenantId === tenantId),
+    );
     return { success: true, id };
   }
 }

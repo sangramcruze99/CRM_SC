@@ -3,7 +3,16 @@ import { PrismaService } from '../prisma/prisma.service';
 
 export interface SearchResult {
   id: string;
-  type: 'CONTACT' | 'COMPANY' | 'DEAL' | 'INVOICE' | 'TICKET' | 'PROJECT' | 'EMPLOYEE' | 'DOCUMENT' | 'WORKFLOW';
+  type:
+    | 'CONTACT'
+    | 'COMPANY'
+    | 'DEAL'
+    | 'INVOICE'
+    | 'TICKET'
+    | 'PROJECT'
+    | 'EMPLOYEE'
+    | 'DOCUMENT'
+    | 'WORKFLOW';
   title: string;
   subtitle?: string;
   url: string;
@@ -30,7 +39,7 @@ export class GlobalSearchService {
     if (!query || query.trim().length < 2) return [];
 
     const q = query.trim();
-    const tokens = q.split(/\s+/).filter(w => w.length > 2);
+    const tokens = q.split(/\s+/).filter((w) => w.length > 2);
     const searchTerms = tokens.length > 0 ? tokens.slice(0, 4) : [q];
     const results: SearchResult[] = [];
 
@@ -39,98 +48,123 @@ export class GlobalSearchService {
     }
 
     try {
-      const [contacts, companies, deals, invoices, tickets, projects, employees, workflows] = await Promise.all([
-        this.prisma.contact.findMany({
-          where: {
-            tenantId,
-            OR: searchTerms.flatMap(term => [
-              { firstName: { contains: term } },
-              { lastName: { contains: term } },
-              { email: { contains: term } },
-            ]),
-          },
-          take: 5,
-        }).catch(() => []),
+      const [
+        contacts,
+        companies,
+        deals,
+        invoices,
+        tickets,
+        projects,
+        employees,
+        workflows,
+      ] = await Promise.all([
+        this.prisma.contact
+          .findMany({
+            where: {
+              tenantId,
+              OR: searchTerms.flatMap((term) => [
+                { firstName: { contains: term } },
+                { lastName: { contains: term } },
+                { email: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
 
-        this.prisma.company.findMany({
-          where: {
-            tenantId,
-            OR: searchTerms.flatMap(term => [
-              { name: { contains: term } },
-              { domain: { contains: term } },
-              { industry: { contains: term } },
-            ]),
-          },
-          take: 5,
-        }).catch(() => []),
+        this.prisma.company
+          .findMany({
+            where: {
+              tenantId,
+              OR: searchTerms.flatMap((term) => [
+                { name: { contains: term } },
+                { domain: { contains: term } },
+                { industry: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
 
-        this.prisma.deal.findMany({
-          where: {
-            tenantId,
-            OR: searchTerms.flatMap(term => [
-              { title: { contains: term } },
-              { stage: { contains: term } },
-            ]),
-          },
-          take: 5,
-        }).catch(() => []),
+        this.prisma.deal
+          .findMany({
+            where: {
+              tenantId,
+              OR: searchTerms.flatMap((term) => [
+                { title: { contains: term } },
+                { stage: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
 
-        this.prisma.invoice.findMany({
-          where: {
-            tenantId,
-            OR: searchTerms.flatMap(term => [
-              { invoiceNum: { contains: term } },
-              { status: { contains: term } },
-            ]),
-          },
-          take: 5,
-        }).catch(() => []),
+        this.prisma.invoice
+          .findMany({
+            where: {
+              tenantId,
+              OR: searchTerms.flatMap((term) => [
+                { invoiceNum: { contains: term } },
+                { status: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
 
-        this.prisma.ticket.findMany({
-          where: {
-            tenantId,
-            OR: searchTerms.flatMap(term => [
-              { title: { contains: term } },
-              { description: { contains: term } },
-            ]),
-          },
-          take: 5,
-        }).catch(() => []),
+        this.prisma.ticket
+          .findMany({
+            where: {
+              tenantId,
+              OR: searchTerms.flatMap((term) => [
+                { title: { contains: term } },
+                { description: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
 
-        this.prisma.project.findMany({
-          where: {
-            tenantId,
-            OR: searchTerms.flatMap(term => [
-              { name: { contains: term } },
-              { description: { contains: term } },
-            ]),
-          },
-          take: 5,
-        }).catch(() => []),
+        this.prisma.project
+          .findMany({
+            where: {
+              tenantId,
+              OR: searchTerms.flatMap((term) => [
+                { name: { contains: term } },
+                { description: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
 
-        this.prisma.employee.findMany({
-          where: {
-            tenantId,
-            OR: searchTerms.flatMap(term => [
-              { firstName: { contains: term } },
-              { lastName: { contains: term } },
-              { email: { contains: term } },
-              { jobTitle: { contains: term } },
-            ]),
-          },
-          take: 5,
-        }).catch(() => []),
+        this.prisma.employee
+          .findMany({
+            where: {
+              tenantId,
+              OR: searchTerms.flatMap((term) => [
+                { firstName: { contains: term } },
+                { lastName: { contains: term } },
+                { email: { contains: term } },
+                { jobTitle: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
 
-        this.prisma.workflow.findMany({
-          where: {
-            tenantId,
-            OR: searchTerms.flatMap(term => [
-              { name: { contains: term } },
-              { description: { contains: term } },
-            ]),
-          },
-          take: 5,
-        }).catch(() => []),
+        this.prisma.workflow
+          .findMany({
+            where: {
+              tenantId,
+              OR: searchTerms.flatMap((term) => [
+                { name: { contains: term } },
+                { description: { contains: term } },
+              ]),
+            },
+            take: 5,
+          })
+          .catch(() => []),
       ]);
 
       // 1. Contacts
@@ -142,7 +176,7 @@ export class GlobalSearchService {
           subtitle: c.email || undefined,
           url: `/contacts/${c.id}`,
           badge: 'Stakeholder',
-        }))
+        })),
       );
 
       // 2. Companies
@@ -154,7 +188,7 @@ export class GlobalSearchService {
           subtitle: `${comp.industry || 'Account'} · ${comp.domain || ''}`,
           url: `/customer-360`,
           badge: 'Account',
-        }))
+        })),
       );
 
       // 3. Deals
@@ -166,7 +200,7 @@ export class GlobalSearchService {
           subtitle: `Value: $${(d.amount || 0).toLocaleString()} · Stage: ${d.stage}`,
           url: `/deals`,
           badge: d.stage,
-        }))
+        })),
       );
 
       // 4. Invoices
@@ -178,7 +212,7 @@ export class GlobalSearchService {
           subtitle: `Amount: $${(inv.amount || 0).toLocaleString()} · Status: ${inv.status}`,
           url: `/invoices`,
           badge: inv.status,
-        }))
+        })),
       );
 
       // 5. Tickets
@@ -190,7 +224,7 @@ export class GlobalSearchService {
           subtitle: `Priority: ${t.priority} · Status: ${t.status}`,
           url: `/tickets`,
           badge: t.priority,
-        }))
+        })),
       );
 
       // 6. Projects
@@ -202,7 +236,7 @@ export class GlobalSearchService {
           subtitle: p.description || 'Sprint Project',
           url: `/projects`,
           badge: 'Sprint',
-        }))
+        })),
       );
 
       // 7. Employees
@@ -214,7 +248,7 @@ export class GlobalSearchService {
           subtitle: `${e.jobTitle || 'Team Member'}`,
           url: `/directory`,
           badge: e.jobTitle || 'Employee',
-        }))
+        })),
       );
 
       // 8. Workflows
@@ -226,7 +260,7 @@ export class GlobalSearchService {
           subtitle: w.description || 'Enterprise Automation Flow',
           url: `/automations`,
           badge: w.status,
-        }))
+        })),
       );
     } catch (err: any) {
       this.logger.error(`Database search query failed: ${err.message}`);
@@ -240,29 +274,60 @@ export class GlobalSearchService {
     return results;
   }
 
-  async aiSearch(tenantId: string, naturalQuery: string): Promise<AISearchResponse> {
+  async aiSearch(
+    tenantId: string,
+    naturalQuery: string,
+  ): Promise<AISearchResponse> {
     const qLower = (naturalQuery || '').toLowerCase().trim();
 
     // 1. Natural Language Intent Parser
     const targetEntities: string[] = [];
     const filtersApplied: Record<string, any> = {};
 
-    if (qLower.includes('contact') || qLower.includes('lead') || qLower.includes('person') || qLower.includes('stakeholder')) {
+    if (
+      qLower.includes('contact') ||
+      qLower.includes('lead') ||
+      qLower.includes('person') ||
+      qLower.includes('stakeholder')
+    ) {
       targetEntities.push('CONTACT');
     }
-    if (qLower.includes('company') || qLower.includes('account') || qLower.includes('client')) {
+    if (
+      qLower.includes('company') ||
+      qLower.includes('account') ||
+      qLower.includes('client')
+    ) {
       targetEntities.push('COMPANY');
     }
-    if (qLower.includes('deal') || qLower.includes('pipeline') || qLower.includes('revenue') || qLower.includes('opportunity')) {
+    if (
+      qLower.includes('deal') ||
+      qLower.includes('pipeline') ||
+      qLower.includes('revenue') ||
+      qLower.includes('opportunity')
+    ) {
       targetEntities.push('DEAL');
     }
-    if (qLower.includes('invoice') || qLower.includes('bill') || qLower.includes('payment') || qLower.includes('overdue')) {
+    if (
+      qLower.includes('invoice') ||
+      qLower.includes('bill') ||
+      qLower.includes('payment') ||
+      qLower.includes('overdue')
+    ) {
       targetEntities.push('INVOICE');
     }
-    if (qLower.includes('ticket') || qLower.includes('issue') || qLower.includes('support') || qLower.includes('urgent')) {
+    if (
+      qLower.includes('ticket') ||
+      qLower.includes('issue') ||
+      qLower.includes('support') ||
+      qLower.includes('urgent')
+    ) {
       targetEntities.push('TICKET');
     }
-    if (qLower.includes('project') || qLower.includes('task') || qLower.includes('sprint')) {
+    if (
+      qLower.includes('project') ||
+      qLower.includes('task') ||
+      qLower.includes('sprint')
+    ) {
       targetEntities.push('PROJECT');
     }
 
@@ -274,7 +339,8 @@ export class GlobalSearchService {
     // Detect conditions
     if (qLower.includes('overdue')) filtersApplied.status = 'OVERDUE';
     if (qLower.includes('urgent')) filtersApplied.priority = 'URGENT';
-    if (qLower.includes('won') || qLower.includes('closed')) filtersApplied.stage = 'Won';
+    if (qLower.includes('won') || qLower.includes('closed'))
+      filtersApplied.stage = 'Won';
 
     // Amount extraction (e.g. > 50000 or 50k)
     const amountMatch = qLower.match(/(\d+)(k|thousand|000)?/);
@@ -286,15 +352,17 @@ export class GlobalSearchService {
 
     // 2. Perform entity retrieval
     const baseResults = await this.search(tenantId, naturalQuery);
-    const filteredResults = baseResults.filter(r => {
+    const filteredResults = baseResults.filter((r) => {
       if (targetEntities.length > 0 && !targetEntities.includes(r.type)) {
         return false;
       }
       return true;
     });
 
-    const totalMatches = filteredResults.length > 0 ? filteredResults.length : baseResults.length;
-    const finalResults = filteredResults.length > 0 ? filteredResults : baseResults;
+    const totalMatches =
+      filteredResults.length > 0 ? filteredResults.length : baseResults.length;
+    const finalResults =
+      filteredResults.length > 0 ? filteredResults : baseResults;
 
     const summary = `Interpreted intent: Querying [${targetEntities.join(', ')}] with parameters [${JSON.stringify(filtersApplied)}]. Found ${totalMatches} relevant record(s) across the Business OS.`;
 
@@ -362,10 +430,11 @@ export class GlobalSearchService {
     ];
 
     const qLower = (q || '').toLowerCase();
-    const qWords = qLower.split(/\s+/).filter(w => w.length > 2);
-    return fallbackBank.filter(item => {
-      const text = `${item.title} ${item.subtitle || ''} ${item.badge || ''} ${item.type}`.toLowerCase();
-      return qWords.length === 0 || qWords.some(w => text.includes(w));
+    const qWords = qLower.split(/\s+/).filter((w) => w.length > 2);
+    return fallbackBank.filter((item) => {
+      const text =
+        `${item.title} ${item.subtitle || ''} ${item.badge || ''} ${item.type}`.toLowerCase();
+      return qWords.length === 0 || qWords.some((w) => text.includes(w));
     });
   }
 }

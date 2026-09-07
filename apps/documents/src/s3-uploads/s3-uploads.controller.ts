@@ -1,5 +1,11 @@
-
-import { Controller, Get, Post, Body, Headers, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Headers,
+  BadRequestException,
+} from '@nestjs/common';
 import { S3UploadService } from './s3-uploads.service';
 
 @Controller('s3-uploads')
