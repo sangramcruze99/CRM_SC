@@ -103,7 +103,7 @@ export class WorkflowsService {
     this.logger.log(`Ingesting Behavioral Event: ${event.eventType} for ${event.contactEmail}`);
 
     // Ensure Contact exists in CRM database (CRM as source of truth)
-    let contact = null;
+    let contact: any = null;
     try {
       contact = await this.prisma.contact.findFirst({
         where: { email: event.contactEmail.toLowerCase().trim(), tenantId },
@@ -132,7 +132,7 @@ export class WorkflowsService {
     }
 
     // Find active workflow matching triggerType
-    let targetWorkflow = null;
+    let targetWorkflow: any = null;
     try {
       targetWorkflow = await this.prisma.workflow.findFirst({
         where: {

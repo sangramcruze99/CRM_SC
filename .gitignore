@@ -135,3 +135,17 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Python caches and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+
+# Local database files
+*.db
+*.db-journal
+packages/database/prisma/*.db
+packages/database/prisma/*.db-journal

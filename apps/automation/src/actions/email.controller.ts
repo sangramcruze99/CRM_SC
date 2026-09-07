@@ -8,7 +8,7 @@ export class EmailController {
   @Get('status')
   getStatus() {
     const isConfigured = Boolean(
-      process.env.RESEND_API_KEY || ''
+      process.env.RESEND_API_KEY
     );
     return {
       provider: 'Resend',

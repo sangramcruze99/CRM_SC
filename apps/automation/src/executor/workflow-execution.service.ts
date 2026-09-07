@@ -289,7 +289,7 @@ export class WorkflowExecutionService {
 
     // If Contact exists in CRM DB, read it
     try {
-      let dbContact = null;
+      let dbContact: any = null;
       if (contactId) {
         dbContact = await this.prisma.contact.findUnique({ where: { id: contactId } });
       } else if (contactEmail) {
