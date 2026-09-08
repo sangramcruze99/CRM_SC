@@ -46,6 +46,7 @@ interface ParsedInvoice {
   total?: number;
   amountPaid?: number;
   balanceDue?: number;
+  depositDue?: number;
   requiresReview?: boolean;
   reviewReasons?: string[];
   extraction?: CanonicalDocumentExtraction;
@@ -95,6 +96,15 @@ function toLegacyParsedInvoice(extraction: CanonicalDocumentExtraction, previewI
   const invoiceNumber = extraction.identifiers.find((i) => i.type === 'invoice_number')?.value || extraction.document.id;
   const vendorTaxId = extraction.identifiers.find((i) => i.type === 'tax_id')?.value || '';
 
+  const clientCompany = customerEntity?.name || (contactEntity && contactEntity.name !== 'Client' ? contactEntity.name : '') || '';
+  const clientName = contactEntity?.name || customerEntity?.name || (clientCompany ? clientCompany : 'Client');
+
+  let taxRate = extraction.financial.taxRate || 0;
+  if (!taxRate && extraction.financial.tax && extraction.financial.subtotal) {
+    const taxableBase = Math.max(1, extraction.financial.subtotal - (extraction.financial.discount || 0));
+    taxRate = Number(((extraction.financial.tax / taxableBase) * 100).toFixed(2));
+  }
+
   return {
     invoiceNumber,
     vendorName: vendorEntity?.name || 'Authorized Merchant',
@@ -102,15 +112,15 @@ function toLegacyParsedInvoice(extraction: CanonicalDocumentExtraction, previewI
     vendorPhone: vendorEntity?.phone || '',
     vendorAddress: vendorAddr,
     vendorTaxId,
-    clientName: contactEntity?.name || customerEntity?.name || 'Client',
-    clientCompany: customerEntity?.name || '',
+    clientName,
+    clientCompany,
     clientEmail: customerEntity?.email || contactEntity?.email || '',
     clientPhone: customerEntity?.phone || contactEntity?.phone || '',
     clientAddress: billingAddr,
     issueDate,
     dueDate,
     currency: extraction.financial.currencySymbol || '$',
-    taxRate: extraction.financial.taxRate || 0,
+    taxRate,
     discount: extraction.financial.discount || 0,
     discountType: extraction.financial.discountType || 'amount',
     items: extraction.lineItems.map((li) => ({
@@ -130,6 +140,7 @@ function toLegacyParsedInvoice(extraction: CanonicalDocumentExtraction, previewI
     total: extraction.financial.total || 0,
     amountPaid: extraction.financial.amountPaid || 0,
     balanceDue: extraction.financial.balanceDue || 0,
+    depositDue: extraction.financial.depositDue ? Number(extraction.financial.depositDue) : undefined,
     requiresReview: extraction.requiresReview,
     reviewReasons: extraction.reviewReasons,
     extraction,

@@ -7,6 +7,9 @@
 import { ExtractedEntity, EntityType, EntityRole, EntityRelationship } from './types';
 
 const CORPORATE_SUFFIXES = [
+  'company',
+  'co',
+  'co.',
   'ltd',
   'ltd.',
   'limited',
@@ -107,6 +110,14 @@ export function entitySimilarity(a: string, b: string): number {
 export function classifyEntityType(name: string, surroundingText = ''): EntityType {
   const lower = name.toLowerCase().trim();
   const context = surroundingText.toLowerCase();
+  // 0. Filter out Address patterns, dates, and generic document headers
+  if (
+    /\b(?:Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Boulevard|Blvd|Lane|Ln|Court|Ct|Parkway|Pkwy|Suite|Ste)\b/i.test(name) ||
+    /\b(?:City,\s*[A-Z][a-z]+|\d{5}|United States|USA|UK|Canada)\b/i.test(name) ||
+    /^(?:Sample\s*Invoice|Invoice|Receipt|Bill|Statement|Amount\s*Due|Total|Subtotal)\b/i.test(name)
+  ) {
+    return 'UNKNOWN';
+  }
 
   // 1. Check Organization
   if (ORGANIZATION_KEYWORDS.some((kw) => lower.includes(kw) || context.includes(kw))) {
@@ -220,6 +231,24 @@ export function resolveEntitiesFromDocument(
       continue;
     }
 
+    // Switch to BODY section when line item table headers or tabular columns are encountered
+    if (
+      lowerLine.startsWith('description') ||
+      /\b(?:rate\s+qty|qty\s+price|quantity|unit\s*price)\b/i.test(line)
+    ) {
+      currentSection = 'BODY';
+      continue;
+    }
+
+    // Skip all table rows, price lines, and totals from entity parsing
+    if (/\d+\.\d{2}/.test(line) || /[$€£¥]\s*\d+/.test(line)) {
+      continue;
+    }
+
+    if (currentSection === 'BODY') {
+      continue;
+    }
+
     // Line detection by entity classification if line is concise (< 60 chars)
     if (
       line.length <= 60 &&
@@ -228,10 +257,21 @@ export function resolveEntitiesFromDocument(
       !lowerLine.startsWith('email') &&
       !lowerLine.startsWith('mobile') &&
       !lowerLine.startsWith('phone') &&
+      !lowerLine.startsWith('tel') &&
       !lowerLine.startsWith('due') &&
       !lowerLine.startsWith('date') &&
       !lowerLine.startsWith('subtotal') &&
-      !lowerLine.startsWith('total')
+      !lowerLine.startsWith('total') &&
+      !lowerLine.startsWith('amount') &&
+      !lowerLine.startsWith('balance') &&
+      !lowerLine.startsWith('deposit') &&
+      !lowerLine.startsWith('notes') &&
+      !lowerLine.startsWith('terms') &&
+      !lowerLine.startsWith('sample') &&
+      !lowerLine.startsWith('rate') &&
+      !lowerLine.startsWith('qty') &&
+      !/^\d+/.test(line) &&
+      !/\b(?:Street|Road|Avenue|Boulevard|Lane|Drive|City,\s*[A-Z][a-z]+|\d{5}|United States)\b/i.test(line)
     ) {
       const type = classifyEntityType(line.trim());
       if (type === 'COMPANY' || type === 'ORGANIZATION') {
@@ -239,6 +279,14 @@ export function resolveEntitiesFromDocument(
         addOrMergeEntity(resolved, {
           name: line.trim(),
           role,
+          context: line,
+        });
+        continue;
+      } else if (currentSection === 'CUSTOMER' && !resolved.some((e) => e.role === 'customer')) {
+        // Direct customer entity under Billed To section (e.g., "Your Client")
+        addOrMergeEntity(resolved, {
+          name: line.trim(),
+          role: 'customer',
           context: line,
         });
         continue;
@@ -274,7 +322,7 @@ export function resolveEntitiesFromDocument(
     // If person has role 'customer' and there is a company with role 'customer',
     // link person as 'REPRESENTATIVE_OF' or 'CONTACT_FOR' the company!
     const customerCompany = companies.find((c) => c.role === 'customer');
-    if (customerCompany && (person.role === 'customer' || person.role === 'contact')) {
+    if (customerCompany && (person.role === 'customer' || person.role === 'contact') && person.name !== customerCompany.name) {
       person.role = 'contact';
       relationships.push({
         sourceEntityId: person.id,

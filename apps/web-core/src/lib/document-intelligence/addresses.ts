@@ -84,6 +84,10 @@ export function normalizeAddressText(text: string): string {
   let cleaned = text.trim();
   // Unglue lower-to-upper camel concatenations (e.g. streetAlexander -> street, Alexander)
   cleaned = cleaned.replace(/([a-z])([A-Z])/g, '$1, $2');
+  // Add comma between street designators and city: e.g. "Street City" -> "Street, City"
+  cleaned = cleaned.replace(/\b(Street|St|Road|Rd|Avenue|Ave|Drive|Dr|Boulevard|Blvd|Way|Lane|Ln|Court|Ct)\s+([A-Z][a-z]+)\b/gi, '$1, $2');
+  // Add comma between postal code and country name: e.g. "90210 United States" -> "90210, United States"
+  cleaned = cleaned.replace(/\b(\d{5}(?:-\d{4})?)\s+([A-Z][a-zA-Z\s]+)\b/g, '$1, $2');
   // Unglue text glued to postal codes (e.g. road576832 -> road 576832)
   cleaned = cleaned.replace(/([a-zA-Z])(\d{4,})/g, '$1 $2');
   // Clean double commas or messy spacing

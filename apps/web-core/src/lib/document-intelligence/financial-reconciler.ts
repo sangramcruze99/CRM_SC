@@ -66,9 +66,23 @@ export function reconcileFinancials(
   }
 
   const declaredBalance = data.balanceDue !== undefined && data.balanceDue !== null ? Number(data.balanceDue) : null;
+  const declaredDeposit = data.depositDue !== undefined && data.depositDue !== null ? Number(data.depositDue) : null;
+
+  let effectiveBalance = calculatedBalance;
   if (declaredBalance !== null && calculatedBalance !== null) {
     const diff = Math.abs(declaredBalance - calculatedBalance);
-    if (diff > ROUNDING_TOLERANCE) {
+    // If the declared balance matches a deposit requirement (e.g. Deposit Due $169.95 on a $1699.48 invoice with 0 paid)
+    const isDeposit =
+      (declaredDeposit !== null && Math.abs(declaredBalance - declaredDeposit) <= ROUNDING_TOLERANCE) ||
+      (effectivePaid === 0 && declaredBalance < calculatedBalance && declaredBalance > 0 && Math.abs(declaredBalance - calculatedBalance * 0.1) <= 1.0);
+
+    if (isDeposit && effectivePaid === 0) {
+      // Retain declaredBalance as depositDue, use calculatedBalance as the true remaining invoice balance
+      effectiveBalance = calculatedBalance;
+      if (!data.depositDue) {
+        data.depositDue = declaredBalance;
+      }
+    } else if (diff > ROUNDING_TOLERANCE) {
       issues.push({
         code: 'BALANCE_DUE_MISMATCH',
         message: `Declared balance due (${declaredBalance}) does not match total minus paid (${calculatedBalance}). Difference: $${diff.toFixed(2)}`,
@@ -77,6 +91,9 @@ export function reconcileFinancials(
         actual: declaredBalance,
         difference: diff,
       });
+      effectiveBalance = declaredBalance;
+    } else {
+      effectiveBalance = declaredBalance;
     }
   }
 
@@ -142,7 +159,8 @@ export function reconcileFinancials(
     fees,
     total: effectiveTotal,
     amountPaid: effectivePaid,
-    balanceDue: declaredBalance !== null ? declaredBalance : calculatedBalance,
+    balanceDue: effectiveBalance,
+    depositDue: data.depositDue || declaredDeposit || null,
     paymentStatus: data.paymentStatus || 'UNKNOWN',
     paymentTerms: data.paymentTerms,
     paymentInstructions: data.paymentInstructions,
@@ -160,6 +178,7 @@ export function reconcileFinancials(
     total: effectiveTotal,
     paidAmount: effectivePaid,
     balanceDue: normalizedFinancial.balanceDue,
+    depositDue: normalizedFinancial.depositDue,
     calculatedTotal,
     calculatedBalance,
     issues,

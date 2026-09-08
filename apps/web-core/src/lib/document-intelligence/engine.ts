@@ -39,6 +39,22 @@ export interface ProcessDocumentOptions {
   openaiApiKey?: string;
 }
 
+/**
+ * Normalizes line item description: unglues concatenated titles and sub-descriptions,
+ * fixes standard OCR typos (e.g., "Comsultant" -> "Consultant").
+ */
+export function normalizeLineItemDescription(text: string): string {
+  if (!text) return '';
+  let cleaned = text.trim();
+  // Unglue camel-cased headers/subtitles: e.g. "ServicesCost of" -> "Services — Cost of"
+  cleaned = cleaned.replace(/([a-z])([A-Z])/g, '$1 — $2');
+  // Fix OCR typo in common business templates: "Comsultant" -> "Consultant"
+  cleaned = cleaned.replace(/\bComsultant\b/g, 'Consultant');
+  // Clean multiple spaces and hyphens
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  return cleaned;
+}
+
 export class DocumentIntelligenceEngine {
   /**
    * Main entry point to process any document into CanonicalDocumentExtraction.
@@ -243,14 +259,38 @@ export class DocumentIntelligenceEngine {
     // Extract Contact metadata: Email, Phone, Payee & Payment Instructions
     const emailMatch = rawText.match(/(?:Email|E-mail)\s*[:|]?\s*([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i) ||
                        rawText.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/i);
-    const phoneMatch = rawText.match(/(?:Mobile|Phone|Tel|Cell)\s*[:|#]?\s*([+0-9\s-]{7,20})/i);
     const payeeMatch = rawText.match(/(?:Pay\s*Cheque\s*to|Pay\s*to)\s*([A-Za-z\s]+?)(?:\r?\n|$)/i);
     const instructionsMatch = rawText.match(/(?:Payment\s*Instructions|Payment\s*Terms)\s*[:|]?\s*([^\n\r]+)/i);
+
+    // Sectional Phone Number Extraction (Vendor vs Customer)
+    // Matches standard formats (e.g. 1-888-123-4567, (888) 123-4567, +123456789, Mobile: +123456)
+    const phonePattern = /(?:(?:Mobile|Phone|Tel|Cell)\s*[:|#]?\s*)?(\b1-(?:800|888|877|866|855|844)[-.\t ]?\d{3}[-.\t ]?\d{4}\b|\b(?:\+?1[-.\t ]?)?\(?\d{3}\)?[-.\t ]?\d{3}[-.\t ]?\d{4}\b|\+[0-9]{7,15}\b)/i;
+    
+    // Split text by Billed To / Customer section marker if present
+    const billedToIndex = rawText.search(/\b(?:Bill\s*To|Billed\s*To|Customer)\b/i);
+    const vendorText = billedToIndex > 0 ? rawText.substring(0, billedToIndex) : rawText;
+    const customerText = billedToIndex > 0 ? rawText.substring(billedToIndex) : '';
+
+    const vendorPhoneMatch = vendorText.match(phonePattern);
+    const customerPhoneMatch = customerText ? customerText.match(phonePattern) : null;
 
     const vendorEnt = entities.find((e) => e.role === 'vendor' || e.role === 'issuer');
     if (vendorEnt) {
       if (emailMatch && !vendorEnt.email) vendorEnt.email = emailMatch[1].trim();
-      if (phoneMatch && !vendorEnt.phone) vendorEnt.phone = phoneMatch[1].trim();
+      if (llmCandidateData?.vendorPhone) {
+        vendorEnt.phone = llmCandidateData.vendorPhone;
+      } else if (vendorPhoneMatch && !vendorEnt.phone) {
+        vendorEnt.phone = vendorPhoneMatch[1].trim();
+      }
+    }
+
+    const customerEnt = entities.find((e) => e.role === 'customer');
+    if (customerEnt) {
+      if (llmCandidateData?.clientPhone) {
+        customerEnt.phone = llmCandidateData.clientPhone;
+      } else if (customerPhoneMatch && !customerEnt.phone) {
+        customerEnt.phone = customerPhoneMatch[1].trim();
+      }
     }
     if (payeeMatch) {
       const payeeName = payeeMatch[1].trim();
@@ -509,7 +549,7 @@ export class DocumentIntelligenceEngine {
 
         items.push({
           id: it.id || String(i + 1),
-          description: String(it.description || `Line Item ${i + 1}`).trim(),
+          description: normalizeLineItemDescription(String(it.description || `Line Item ${i + 1}`).trim()),
           sku: it.sku || undefined,
           quantity: qty,
           unitPrice,
@@ -522,40 +562,74 @@ export class DocumentIntelligenceEngine {
       return items;
     }
 
-    // Heuristic regex for tabular lines: Description Qty Price Total
-    const lineRegex = /([A-Za-z0-9\s—–\-\(\)\.,]+?)\s+(\d+)\s+[$€£¥]?([0-9,]+(?:\.\d{2})?)\s+[$€£¥]?([0-9,]+(?:\.\d{2})?)/g;
-    let m: RegExpExecArray | null;
-    let idx = 1;
+    // Heuristic parsing for tabular line items (line-by-line to prevent multi-line bleeding):
+    // Support both common column layouts:
+    // 1. Description Rate/Price Qty Total (e.g. Services... 55.00 10 $550.00)
+    // 2. Description Qty Rate/Price Total (e.g. Desktop furniture 1 $232.00 $232.00)
+    const parseTabularLines = (isRateFirst: boolean): ExtractedLineItem[] => {
+      const parsed: ExtractedLineItem[] = [];
+      const lines = rawText.split(/\r?\n/);
+      let idx = 1;
 
-    while ((m = lineRegex.exec(rawText)) !== null) {
-      const desc = m[1].trim();
-      const qty = parseInt(m[2], 10) || 1;
-      const unitPrice = parseFloat(m[3].replace(/,/g, '')) || 0;
-      const total = parseFloat(m[4].replace(/,/g, '')) || Number((qty * unitPrice).toFixed(2));
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) continue;
+        const lower = trimmed.toLowerCase();
+        if (
+          lower.startsWith('description') ||
+          lower.startsWith('subtotal') ||
+          lower.startsWith('total') ||
+          lower.startsWith('tax') ||
+          lower.startsWith('discount') ||
+          lower.startsWith('deposit') ||
+          lower.startsWith('balance') ||
+          lower.startsWith('notes') ||
+          lower.startsWith('terms')
+        ) {
+          continue;
+        }
 
-      // Filter out total/subtotal labels
-      if (
-        desc &&
-        !matchesSynonym(desc, 'TOTAL') &&
-        !matchesSynonym(desc, 'SUBTOTAL') &&
-        !desc.toLowerCase().includes('balance') &&
-        unitPrice > 0
-      ) {
-        const expected = Number((qty * unitPrice).toFixed(2));
-        items.push({
-          id: String(idx++),
-          description: desc,
-          quantity: qty,
-          unitPrice,
-          total,
-          isConsistent: Math.abs(total - expected) <= 0.05,
-          confidence: 0.92,
-          sourcePage: 1,
-        });
+        const pattern = isRateFirst
+          ? /^([A-Za-z0-9\s—–\-\(\)\.,]+?)\s+[$€£¥]?([0-9,]+(?:\.\d{2})?)\s+(\d+)\s+[$€£¥]?([0-9,]+(?:\.\d{2})?)$/
+          : /^([A-Za-z0-9\s—–\-\(\)\.,]+?)\s+(\d+)\s+[$€£¥]?([0-9,]+(?:\.\d{2})?)\s+[$€£¥]?([0-9,]+(?:\.\d{2})?)$/;
+
+        const m = trimmed.match(pattern);
+        if (m) {
+          const desc = m[1].trim();
+          const qty = parseInt(isRateFirst ? m[3] : m[2], 10) || 1;
+          const unitPrice = parseFloat((isRateFirst ? m[2] : m[3]).replace(/,/g, '')) || 0;
+          const total = parseFloat(m[4].replace(/,/g, '')) || Number((qty * unitPrice).toFixed(2));
+
+          if (desc && unitPrice > 0) {
+            const expected = Number((qty * unitPrice).toFixed(2));
+            parsed.push({
+              id: String(idx++),
+              description: normalizeLineItemDescription(desc),
+              quantity: qty,
+              unitPrice,
+              total,
+              isConsistent: Math.abs(total - expected) <= 0.05,
+              confidence: 0.92,
+              sourcePage: 1,
+            });
+          }
+        }
       }
+      return parsed;
+    };
+
+    const hasRateBeforeQty = /Rate\s+Qty/i.test(rawText);
+    let extracted = hasRateBeforeQty
+      ? parseTabularLines(true)
+      : parseTabularLines(false);
+
+    if (extracted.length === 0) {
+      extracted = hasRateBeforeQty
+        ? parseTabularLines(false)
+        : parseTabularLines(true);
     }
 
-    return items;
+    return extracted;
   }
 
   private static extractPayments(rawText: string, llmData: any): ExtractedPaymentRecord[] {
@@ -647,8 +721,8 @@ export class DocumentIntelligenceEngine {
 
     if (result.total === undefined || result.total === null) {
       result.total =
-        parseAmount(/(?:Total\s*Amount|Grand\s*Total|Invoice\s*Total|Total)\s*[:|]?\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/i) ||
-        parseAmount(/TOTAL\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/);
+        parseAmount(/\b(?:Total\s*Amount|Grand\s*Total|Invoice\s*Total|Total)\b\s*[:|]?\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/i) ||
+        parseAmount(/\bTOTAL\b\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/);
     }
 
     if (result.subtotal === undefined || result.subtotal === null) {
@@ -656,11 +730,15 @@ export class DocumentIntelligenceEngine {
     }
 
     if (result.tax === undefined || result.tax === null) {
-      result.tax = parseAmount(/(?:Tax|VAT|GST|Sales\s*Tax)\s*[:|]?\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/i);
+      result.tax = parseAmount(/(?:Tax|VAT|GST|Sales\s*Tax)\s*(?:\([^)]*\))?\s*[:|]?\s*[+\-]?\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/i);
     }
 
     if (result.discount === undefined || result.discount === null) {
-      result.discount = parseAmount(/(?:Discount|Rebate|Promo)\s*[:|]?\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/i);
+      result.discount = parseAmount(/(?:Discount|Rebate|Promo)\s*[:|]?\s*[+\-]?\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/i);
+    }
+
+    if (result.depositDue === undefined || result.depositDue === null) {
+      result.depositDue = parseAmount(/(?:Deposit\s*Requested|Deposit\s*Due|Required\s*Deposit)\s*[:|]?\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/i);
     }
 
     if (result.amountPaid === undefined || result.amountPaid === null) {
@@ -671,6 +749,12 @@ export class DocumentIntelligenceEngine {
 
     if (result.balanceDue === undefined || result.balanceDue === null) {
       result.balanceDue = parseAmount(/(?:Amount\s*Due|Balance\s*Due|Outstanding|Remaining|Open\s*Balance|Total\s*Due)\s*[:|]?\s*[$€£¥]?\s*([0-9,]+(?:\.\d{2})?)/i);
+    }
+
+    // Auto-infer taxRate from tax amount if taxRate is missing or 0
+    if ((result.taxRate === undefined || result.taxRate === 0) && result.tax && result.subtotal) {
+      const taxableBase = Math.max(1, result.subtotal - (result.discount || 0));
+      result.taxRate = Number(((result.tax / taxableBase) * 100).toFixed(2));
     }
 
     return result;
@@ -750,10 +834,12 @@ Extract all structured data from this business document strictly conforming to t
   "poNumber": "string",
   "vendorName": "string",
   "vendorEmail": "string",
+  "vendorPhone": "string",
   "vendorAddress": "string",
   "customerName": "string",
   "clientCompany": "string",
   "clientEmail": "string",
+  "clientPhone": "string",
   "clientAddress": "string",
   "shippingAddress": "string",
   "issueDate": "YYYY-MM-DD",
@@ -768,6 +854,7 @@ Extract all structured data from this business document strictly conforming to t
   "total": number,
   "amountPaid": number,
   "balanceDue": number,
+  "depositDue": number,
   "payments": [
     { "amount": number, "date": "YYYY-MM-DD", "method": "string", "reference": "string" }
   ],

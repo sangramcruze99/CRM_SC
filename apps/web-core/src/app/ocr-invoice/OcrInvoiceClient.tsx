@@ -73,6 +73,7 @@ interface ParsedInvoice {
   paymentStatus?: string;
   amountPaid?: number;
   balanceDue?: number;
+  depositDue?: number;
   vendorPhone?: string;
   clientPhone?: string;
   paymentInstructions?: string;
@@ -83,6 +84,44 @@ interface ParsedInvoice {
 }
 
 const samplePresets: { label: string; image: string; data: ParsedInvoice }[] = [
+  {
+    label: 'Sample Invoice - Services & Consulting (INV-10012)',
+    image: 'https://images.unsplash.com/photo-1450133064473-71024230f91b?w=800&auto=format&fit=crop&q=80',
+    data: {
+      invoiceNumber: 'INV-10012',
+      vendorName: 'YOUR COMPANY',
+      vendorEmail: '',
+      vendorPhone: '1-888-123-4567',
+      vendorAddress: '1234 Your Street, City, California, 90210, United States',
+      vendorTaxId: '',
+      clientName: 'Your Client',
+      clientCompany: 'Your Client',
+      clientEmail: '',
+      clientPhone: '1-888-123-8910',
+      clientAddress: '1234 Clients Street, City, California, 90210, United States',
+      issueDate: '2021-03-26',
+      dueDate: '2021-04-25',
+      currency: '$',
+      taxRate: 5,
+      discount: 179.84,
+      discountType: 'amount',
+      items: [
+        { id: '1', description: 'Services — Cost of various services.', quantity: 10, unitPrice: 55.0, total: 550.0 },
+        { id: '2', description: 'Consulting — Consultant for your business.', quantity: 15, unitPrice: 75.0, total: 1125.0 },
+        { id: '3', description: 'Materials — Cost of materials and supplies to complete job.', quantity: 1, unitPrice: 123.39, total: 123.39 },
+      ],
+      paymentTerms: 'Payment due within 30 days of invoice date.',
+      paymentInstructions: 'Standard Terms',
+      payeeName: '',
+      bankDetails: 'Direct Settlement',
+      confidenceScore: 98.2,
+      documentType: 'invoice',
+      paymentStatus: 'OVERDUE',
+      amountPaid: 0,
+      balanceDue: 1699.48,
+      depositDue: 169.95,
+    },
+  },
   {
     label: 'Ad4tech Material LLC (INV-005)',
     image: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&auto=format&fit=crop&q=80',
@@ -246,17 +285,19 @@ export function OcrInvoiceClient() {
 
   // Totals calculations
   const subtotal = invoice.items.reduce((acc, item) => acc + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0), 0);
-  const taxAmount = (subtotal * (Number(invoice.taxRate) || 0)) / 100;
   const discountType = invoice.discountType || 'amount';
   const discountValue = Number(invoice.discount) || 0;
   const discountAmount = discountType === 'percentage'
     ? (subtotal * discountValue) / 100
     : discountValue;
-  const grandTotal = Math.max(0, subtotal + taxAmount - discountAmount);
+  const taxableBase = Math.max(0, subtotal - discountAmount);
+  const taxAmount = (taxableBase * (Number(invoice.taxRate) || 0)) / 100;
+  const grandTotal = Math.max(0, taxableBase + taxAmount);
   const currentPaid = Number(invoice.amountPaid) || 0;
-  const currentBalance = invoice.balanceDue !== undefined && invoice.balanceDue !== null
+  const calculatedBalance = Math.max(0, Number((grandTotal - currentPaid).toFixed(2)));
+  const currentBalance = (invoice.balanceDue !== undefined && invoice.balanceDue !== null && (currentPaid > 0 || Math.abs(Number(invoice.balanceDue) - calculatedBalance) < 0.05))
     ? Number(invoice.balanceDue)
-    : Math.max(0, Number((grandTotal - currentPaid).toFixed(2)));
+    : calculatedBalance;
   const isInvoiceOverdue = Boolean(invoice.dueDate && invoice.dueDate < new Date().toISOString().split('T')[0] && currentBalance > 0);
 
   // Fetch Vault documents
@@ -1252,10 +1293,10 @@ export function OcrInvoiceClient() {
                   onChange={(e) => setInvoice({ ...invoice, clientCompany: e.target.value })}
                   className="w-full px-2.5 py-1.5 bg-white/[0.05] border border-emerald-500/30 rounded-lg text-xs font-bold text-white focus:outline-none"
                 />
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <input
                     type="text"
-                    placeholder="Contact / Payee Name"
+                    placeholder="Contact Name"
                     value={invoice.clientName}
                     onChange={(e) => setInvoice({ ...invoice, clientName: e.target.value })}
                     className="w-full px-2 py-1 bg-white/[0.05] border border-emerald-500/30 rounded-lg text-[11px] text-slate-300 focus:outline-none"
@@ -1266,6 +1307,13 @@ export function OcrInvoiceClient() {
                     value={invoice.clientEmail}
                     onChange={(e) => setInvoice({ ...invoice, clientEmail: e.target.value })}
                     className="w-full px-2 py-1 bg-white/[0.05] border border-emerald-500/30 rounded-lg text-[11px] text-slate-300 focus:outline-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Contact Phone"
+                    value={invoice.clientPhone || ''}
+                    onChange={(e) => setInvoice({ ...invoice, clientPhone: e.target.value })}
+                    className="w-full px-2 py-1 bg-white/[0.05] border border-emerald-500/30 rounded-lg text-[11px] text-slate-300 focus:outline-none font-mono"
                   />
                 </div>
                 <input
@@ -1617,9 +1665,14 @@ export function OcrInvoiceClient() {
                     <span className="text-[10px] font-extrabold uppercase tracking-wider block">
                       Balance Due
                     </span>
-                    <span className="text-[10px] opacity-85">
+                    <span className="text-[10px] opacity-85 block">
                       {currentBalance > 0 ? (isInvoiceOverdue ? '⚠️ Overdue Remaining' : 'Remaining Payable') : '✓ Settled in Full'}
                     </span>
+                    {invoice.depositDue !== undefined && invoice.depositDue !== null && Number(invoice.depositDue) > 0 && (
+                      <span className="text-[10px] text-amber-300/90 font-mono block mt-0.5">
+                        Deposit Due: {invoice.currency}{Number(invoice.depositDue).toFixed(2)}
+                      </span>
+                    )}
                   </div>
                   <span className="font-mono font-extrabold text-base">
                     {invoice.currency}

@@ -468,6 +468,87 @@ Pay Cheque to John Doe
   assert(Boolean(payeeEntity), `Payee resolved: John Doe`);
   assert(Boolean(ad4techResult.financial.paymentInstructions?.includes('John Doe')), `Payment instructions: Pay Cheque to John Doe`);
 
+  // ---------------------------------------------------------------------------
+  // TEST T: Real-World Scan Extraction (Sample Invoice - INV-10012)
+  // ---------------------------------------------------------------------------
+  console.log('\nTEST T: Real-World Scan Extraction (Sample Invoice - INV-10012)');
+  const inv10012Doc = `data:text/plain;base64,${Buffer.from(`
+Sample Invoice
+YOUR COMPANY
+1234 Your Street
+City, California 90210
+United States
+1-888-123-4567
+
+Billed To
+Your Client
+1234 Clients Street
+City, California 90210
+United States
+1-888-123-8910
+
+Date Issued: 26/3/2021
+Invoice Number: INV-10012
+Amount Due: $1,699.48
+Due Date: 25/4/2021
+
+DESCRIPTION                 RATE   QTY   AMOUNT
+ServicesCost of various services.    55.00  10    $550.00
+ConsultingComsultant for your business.   75.00  15   $1,125.00
+MaterialsCost of materials and supplies to complete job. 123.39  1    $123.39
+
+Subtotal        $1,798.39
+Discount         -$179.84
+Tax               +$80.93
+
+Total           $1,699.48
+Deposit Requested $169.95
+Deposit Due       $169.95
+
+Notes
+Thank you for your business!
+`).toString('base64')}`;
+
+  const inv10012Result = await DocumentIntelligenceEngine.processDocument({
+    fileData: inv10012Doc,
+    fileName: 'sample_invoice_10012.txt',
+    tenantId: 'tenant_enterprise_test',
+  });
+
+  assert(inv10012Result.document.type === 'invoice', `INV-10012 Type: invoice (got ${inv10012Result.document.type})`);
+  assert(inv10012Result.financial.subtotal === 1798.39, `INV-10012 Subtotal: 1798.39 (got ${inv10012Result.financial.subtotal})`);
+  assert(inv10012Result.financial.discount === 179.84, `INV-10012 Discount: 179.84 (got ${inv10012Result.financial.discount})`);
+  assert(inv10012Result.financial.tax === 80.93, `INV-10012 Tax: 80.93 (got ${inv10012Result.financial.tax})`);
+  assert(inv10012Result.financial.taxRate === 5, `INV-10012 Tax Rate inferred: 5% (got ${inv10012Result.financial.taxRate})`);
+  assert(inv10012Result.financial.total === 1699.48, `INV-10012 Total: 1699.48 (got ${inv10012Result.financial.total})`);
+  assert(inv10012Result.financial.balanceDue === 1699.48, `INV-10012 Balance Due: 1699.48 (got ${inv10012Result.financial.balanceDue})`);
+  assert(inv10012Result.financial.depositDue === 169.95, `INV-10012 Deposit Due: 169.95 (got ${inv10012Result.financial.depositDue})`);
+  assert(inv10012Result.validation.isConsistent === true, `INV-10012 Math Consistency: Consistent`);
+
+  // Entities & Phones
+  const invVendor = inv10012Result.entities.find((e) => e.role === 'vendor' || e.role === 'issuer');
+  assert(Boolean(invVendor && invVendor.name.includes('YOUR COMPANY')), `Vendor: YOUR COMPANY (got ${invVendor?.name})`);
+  assert(invVendor?.phone === '1-888-123-4567', `Vendor Phone: 1-888-123-4567 (got ${invVendor?.phone})`);
+
+  const invCustomer = inv10012Result.entities.find((e) => e.role === 'customer');
+  assert(Boolean(invCustomer && invCustomer.name.includes('Your Client')), `Customer: Your Client (got ${invCustomer?.name})`);
+  assert(invCustomer?.phone === '1-888-123-8910', `Customer Phone: 1-888-123-8910 (got ${invCustomer?.phone})`);
+
+  // Line items ungluing
+  assert(inv10012Result.lineItems.length === 3, `Line items count: 3 (got ${inv10012Result.lineItems.length})`);
+  assert(
+    Boolean(inv10012Result.lineItems[0]?.description.includes('Services — Cost')),
+    `Line 1 unglued: "${inv10012Result.lineItems[0]?.description}"`
+  );
+  assert(
+    Boolean(inv10012Result.lineItems[1]?.description.includes('Consulting — Consultant')),
+    `Line 2 unglued & typo-fixed: "${inv10012Result.lineItems[1]?.description}"`
+  );
+  assert(
+    Boolean(inv10012Result.lineItems[2]?.description.includes('Materials — Cost')),
+    `Line 3 unglued: "${inv10012Result.lineItems[2]?.description}"`
+  );
+
   console.log('\n================================================================');
   console.log(` FINAL TEST MATRIX RESULTS: ${passed} PASSED, ${failed} FAILED`);
   console.log('================================================================');

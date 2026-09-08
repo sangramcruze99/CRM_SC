@@ -154,6 +154,7 @@ export interface FinancialData {
   total: number | null;
   amountPaid: number | null;
   balanceDue: number | null;
+  depositDue?: number | null;
   paymentStatus: PaymentStatus;
   paymentTerms?: string;
   paymentInstructions?: string;
@@ -180,6 +181,7 @@ export interface FinancialValidation {
   total: number | null;
   paidAmount: number | null;
   balanceDue: number | null;
+  depositDue?: number | null;
   calculatedTotal: number | null;
   calculatedBalance: number | null;
   issues: FinancialValidationIssue[];
