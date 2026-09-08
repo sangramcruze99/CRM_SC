@@ -33,13 +33,13 @@ class ChatMessage(BaseModel):
 
 
 class GenerateRequest(BaseModel):
-    model: str
+    model: Optional[str] = "local/gtx1060-cuda"
     messages: List[ChatMessage]
     temperature: float = 0.7
     max_tokens: int = 2048
     tools: Optional[List[ToolDefinitionSchema]] = None
     stream: bool = False
-    tenant_id: str
+    tenant_id: Optional[str] = "default-tenant"
     agent_id: Optional[str] = None
     user_id: Optional[str] = None
     request_id: Optional[str] = None

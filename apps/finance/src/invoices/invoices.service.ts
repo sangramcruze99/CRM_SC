@@ -6,6 +6,8 @@ import { publishInvoiceOverdue } from '@repo/core-types';
 
 export interface CreateInvoiceDto {
   amount?: number;
+  amountPaid?: number;
+  balanceDue?: number;
   currency?: string;
   status?: string;
   clientName?: string;
@@ -134,6 +136,14 @@ export class InvoicesService {
       notes: data.notes || null,
     };
 
+    const isPaidInFull = data.status === 'PAID';
+    const paidAmount = data.amountPaid !== undefined
+      ? Number(data.amountPaid)
+      : (isPaidInFull ? finalAmount : 0);
+    const balanceDue = data.balanceDue !== undefined
+      ? Number(data.balanceDue)
+      : Math.max(0, Number((finalAmount - paidAmount).toFixed(2)));
+
     const created = await this.prisma.invoice.create({
       data: {
         tenantId,
@@ -146,9 +156,9 @@ export class InvoicesService {
         currency: data.currency || 'USD',
         subtotal,
         amount: finalAmount,
-        paidAmount: 0,
-        balanceDue: finalAmount,
-        status: data.status || 'OPEN',
+        paidAmount,
+        balanceDue,
+        status: data.status || (paidAmount >= finalAmount && finalAmount > 0 ? 'PAID' : 'OPEN'),
         issueDate,
         dueDate,
         paymentTerms: data.paymentTerms || 'Net 30',

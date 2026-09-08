@@ -34,6 +34,20 @@ export default function AiCommandCenterPage() {
   const [aiResponse, setAiResponse] = useState<any>(null);
   const [loadingData, setLoadingData] = useState(true);
 
+  const [hardwareStatus, setHardwareStatus] = useState<any>(null);
+
+  const fetchHardwareStatus = async () => {
+    try {
+      const res = await fetch('/api/ocr?action=engine-status');
+      if (res.ok) {
+        const data = await res.json();
+        setHardwareStatus(data);
+      }
+    } catch {
+      setHardwareStatus({ isLocalAvailable: false });
+    }
+  };
+
   const fetchOverview = async () => {
     try {
       setLoadingData(true);
@@ -49,6 +63,7 @@ export default function AiCommandCenterPage() {
 
   useEffect(() => {
     fetchOverview();
+    fetchHardwareStatus();
   }, []);
 
   const handleAsk = async (text?: string) => {
@@ -117,7 +132,31 @@ export default function AiCommandCenterPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <div
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
+                  hardwareStatus?.isLocalAvailable
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
+                    : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30'
+                }`}
+                title={
+                  hardwareStatus?.isLocalAvailable
+                    ? `Running on local GPU (${hardwareStatus?.gpuName || 'GTX 1060 6GB'}) with zero API costs`
+                    : 'Local engine offline. Cascading to cloud API fallback.'
+                }
+              >
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    hardwareStatus?.isLocalAvailable ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+                  }`}
+                />
+                {hardwareStatus?.isLocalAvailable ? (
+                  <span>Local GPU Active ({hardwareStatus?.gpuName || 'GTX 1060 6GB'})</span>
+                ) : (
+                  <span>Cloud Fallback Active</span>
+                )}
+              </div>
+
               <button
                 onClick={fetchOverview}
                 disabled={loadingData}

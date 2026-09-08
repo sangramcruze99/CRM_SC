@@ -26,12 +26,14 @@ import {
   ChevronUp,
   BookmarkCheck,
   UploadCloud,
+  DollarSign,
 } from 'lucide-react';
 import Link from 'next/link';
 import { EdgeImagePreprocessor } from '@/components/ai/EdgeImagePreprocessor';
 import { FinancialGuardrailsModal } from '@/components/ai/FinancialGuardrailsModal';
 import { AutonomousPipelineRunner } from '@/components/ai/AutonomousPipelineRunner';
 import { InvoiceDispatchModal } from '@/components/billing/InvoiceDispatchModal';
+import { DirectSettlementModal } from '@/components/billing/DirectSettlementModal';
 import { useCreditMetering } from '@/components/platform/CreditMeteringContext';
 import { DocumentSummaryCard } from '@/components/ocr/DocumentSummaryCard';
 import { ExtractedDataTabs } from '@/components/ocr/ExtractedDataTabs';
@@ -185,6 +187,9 @@ const samplePresets: { label: string; image: string; data: ParsedInvoice }[] = [
       paymentTerms: 'Net 30 Days. Wire transfer preferred.',
       bankDetails: 'Silicon Valley Commercial Bank · Routing: 121000358 · Acc: 9840192840',
       confidenceScore: 98.4,
+      paymentStatus: 'DUE',
+      amountPaid: 0,
+      balanceDue: 6318.0,
     },
   },
   {
@@ -213,6 +218,10 @@ const samplePresets: { label: string; image: string; data: ParsedInvoice }[] = [
       paymentTerms: 'Paid in Full via Corporate Amex.',
       bankDetails: 'Direct Credit Card Settlement #4821',
       confidenceScore: 96.8,
+      documentType: 'receipt',
+      paymentStatus: 'PAID',
+      amountPaid: 13210.02,
+      balanceDue: 0,
     },
   },
 ];
@@ -256,6 +265,7 @@ export function OcrInvoiceClient() {
   const [scanProgress, setScanProgress] = useState(0);
   const [isGuardrailOpen, setIsGuardrailOpen] = useState(false);
   const [isDispatchOpen, setIsDispatchOpen] = useState(false);
+  const [isSettlementOpen, setIsSettlementOpen] = useState(false);
   const [dispatchTab, setDispatchTab] = useState<'email' | 'receipt'>('email');
 
   // Enterprise Document Intelligence States
@@ -630,6 +640,10 @@ export function OcrInvoiceClient() {
       const resJson = await response.json();
       if (resJson?.data) {
         const extracted: ParsedInvoice = resJson.data;
+        const isPastDue = Boolean(extracted.dueDate && extracted.dueDate < new Date().toISOString().split('T')[0] && (Number(extracted.amountPaid) || 0) < (Number(extracted.total) || 0));
+        if (isPastDue && (extracted.paymentStatus === 'DUE' || extracted.paymentStatus === 'UNPAID' || !extracted.paymentStatus)) {
+          extracted.paymentStatus = 'OVERDUE';
+        }
         setInvoice(extracted);
         if (extracted.previewImage) {
           setActiveImage(extracted.previewImage);
@@ -791,18 +805,30 @@ export function OcrInvoiceClient() {
     setIsGuardrailOpen(true);
   };
 
-  const handleApproveGuardrail = () => {
-    setAlert(`🎉 Invoice ${invoice.invoiceNumber || 'DRAFT'} ($${grandTotal.toFixed(2)}) compliance approved and committed to Khata ledger!`);
-    setTimeout(() => setAlert(null), 4000);
+  const handleApproveGuardrail = async () => {
+    setIsGuardrailOpen(false);
+    await handleSaveReceipt();
+    setAlert(`🎉 Invoice #${invoice.invoiceNumber || 'INV'} ($${grandTotal.toFixed(2)}) compliance approved and committed to Commercial Invoices & Document Vault!`);
+    setTimeout(() => setAlert(null), 5000);
   };
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-emerald-400" />
-          <span>{alert}</span>
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center justify-between gap-3 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+            <span>{alert}</span>
+          </div>
+          <Link
+            href="/invoices"
+            className="px-3 py-1 bg-emerald-500/25 hover:bg-emerald-500/40 text-emerald-200 hover:text-white rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 shrink-0 border border-emerald-500/30 shadow-xs"
+          >
+            <FileText size={12} />
+            <span>Open Commercial Invoices</span>
+            <span>→</span>
+          </Link>
         </div>
       )}
 
@@ -880,6 +906,15 @@ export function OcrInvoiceClient() {
             <ShieldCheck size={14} />
             <span>Audit & Commit to Ledger</span>
           </button>
+
+          <Link
+            href="/invoices"
+            className="px-3.5 py-2 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 hover:text-white rounded-xl text-xs font-bold transition-all border border-emerald-500/40 flex items-center gap-1.5 cursor-pointer shadow-sm"
+            title="Open Commercial Invoices Ledger"
+          >
+            <FileText size={14} className="text-emerald-400" />
+            <span>Commercial Invoices</span>
+          </Link>
         </div>
       </div>
 
@@ -1677,7 +1712,7 @@ export function OcrInvoiceClient() {
                           ? 'PAID'
                           : newPaid > 0
                             ? 'PARTIALLY_PAID'
-                            : 'UNPAID';
+                            : (isInvoiceOverdue ? 'OVERDUE' : 'DUE');
                         setInvoice({
                           ...invoice,
                           amountPaid: newPaid,
@@ -1721,8 +1756,39 @@ export function OcrInvoiceClient() {
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs font-semibold text-slate-400">Status</span>
                   <select
-                    value={invoice.paymentStatus || 'UNPAID'}
-                    onChange={(e) => setInvoice({ ...invoice, paymentStatus: e.target.value })}
+                    value={invoice.paymentStatus || (isInvoiceOverdue ? 'OVERDUE' : 'DUE')}
+                    onChange={(e) => {
+                      const selected = e.target.value;
+                      if (selected === 'PAID') {
+                        const paidTotal = Number(grandTotal.toFixed(2));
+                        setInvoice({
+                          ...invoice,
+                          paymentStatus: 'PAID',
+                          amountPaid: paidTotal,
+                          balanceDue: 0,
+                        });
+                      } else if (selected === 'UNPAID' || selected === 'DUE' || selected === 'OVERDUE') {
+                        setInvoice({
+                          ...invoice,
+                          paymentStatus: selected,
+                          amountPaid: 0,
+                          balanceDue: Number(grandTotal.toFixed(2)),
+                        });
+                      } else if (selected === 'PARTIALLY_PAID') {
+                        const halfPaid = Number((grandTotal / 2).toFixed(2));
+                        const effectivePaid = (Number(invoice.amountPaid) > 0 && Number(invoice.amountPaid) < grandTotal)
+                          ? Number(invoice.amountPaid)
+                          : halfPaid;
+                        setInvoice({
+                          ...invoice,
+                          paymentStatus: 'PARTIALLY_PAID',
+                          amountPaid: effectivePaid,
+                          balanceDue: Math.max(0, Number((grandTotal - effectivePaid).toFixed(2))),
+                        });
+                      } else {
+                        setInvoice({ ...invoice, paymentStatus: selected });
+                      }
+                    }}
                     className={`px-2.5 py-1 rounded-lg text-xs font-bold font-mono border focus:outline-none cursor-pointer ${
                       invoice.paymentStatus === 'PAID'
                         ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
@@ -1730,17 +1796,32 @@ export function OcrInvoiceClient() {
                           ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                           : invoice.paymentStatus === 'OVERDUE'
                             ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                            : 'bg-white/[0.06] text-slate-300 border-white/[0.1]'
+                            : invoice.paymentStatus === 'DUE'
+                              ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                              : 'bg-white/[0.06] text-slate-300 border-white/[0.1]'
                     }`}
                   >
+                    <option value="DUE" className="bg-slate-900 text-sky-400">DUE</option>
+                    <option value="OVERDUE" className="bg-slate-900 text-rose-400">OVERDUE</option>
                     <option value="PAID" className="bg-slate-900 text-emerald-400">PAID</option>
                     <option value="PARTIALLY_PAID" className="bg-slate-900 text-amber-400">PARTIALLY PAID</option>
-                    <option value="OVERDUE" className="bg-slate-900 text-rose-400">OVERDUE</option>
                     <option value="UNPAID" className="bg-slate-900 text-slate-300">UNPAID</option>
                     <option value="VOID" className="bg-slate-900 text-slate-500">VOID</option>
                     <option value="CREDIT" className="bg-slate-900 text-purple-400">CREDIT</option>
                   </select>
                 </div>
+
+                {/* Direct Pay or Receive Amount Button */}
+                <button
+                  type="button"
+                  onClick={() => setIsSettlementOpen(true)}
+                  disabled={invoice.items.length === 0}
+                  className="w-full py-2 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/10 hover:from-emerald-500/35 hover:to-teal-500/35 border border-emerald-500/40 text-emerald-300 hover:text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.98] disabled:opacity-50"
+                  title="Direct Settlement: Pay this bill or record collected payment"
+                >
+                  <DollarSign size={14} className="text-emerald-400 stroke-[2.5]" />
+                  <span>Direct Pay Bill / Receive Amount</span>
+                </button>
 
                 {/* Dispatch, Save & Print Buttons */}
                 <div className="pt-3 grid grid-cols-1 sm:grid-cols-3 gap-2 border-t border-white/[0.08]">
@@ -1884,6 +1965,36 @@ export function OcrInvoiceClient() {
         initialOriginalValue={selectedCorrectionValue}
         onSavedCorrection={handleSavedCorrection}
       />
+
+      {/* Direct Bill Settlement & Payment Modal */}
+      {isSettlementOpen && (
+        <DirectSettlementModal
+          isOpen={isSettlementOpen}
+          onClose={() => setIsSettlementOpen(false)}
+          invoice={{
+            id: invoice.invoiceNumber || 'INV-PENDING',
+            invoiceNum: invoice.invoiceNumber || 'INV-PENDING',
+            amount: grandTotal,
+            paidAmount: invoice.amountPaid || 0,
+            balanceDue: currentBalance,
+            status: invoice.paymentStatus || 'DUE',
+            clientName: invoice.clientCompany || invoice.clientName,
+            vendorName: invoice.vendorName,
+            dueDate: invoice.dueDate,
+            currency: invoice.currency,
+          }}
+          onSettlementComplete={(updated, payment) => {
+            setInvoice({
+              ...invoice,
+              paymentStatus: updated.status,
+              amountPaid: Number(updated.paidAmount),
+              balanceDue: Number(updated.balanceDue),
+            });
+            setAlert(`✅ Settlement transaction ${payment?.paymentNumber || ''} ($${Number(payment?.amount || updated.amount).toFixed(2)}) recorded to General Ledger!`);
+            setTimeout(() => setAlert(null), 5500);
+          }}
+        />
+      )}
     </div>
   );
 }

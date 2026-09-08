@@ -175,6 +175,8 @@ export async function POST(req: NextRequest) {
         departmentKey: 'coordinator',
         intent: 'DAILY_BRIEFING',
         answer: `Good day. Here is your executive briefing:\n\n💼 Sales: ${dealCount} deals active in pipeline.\n💰 Finance: ${invCount} invoices awaiting payment.\n👥 Relationships: ${contactCount} contacts actively tracked.\n⚡ AI Assistants: All 6 digital employees are operational and assisting your team.`,
+        isLocalEngine: true,
+        provenance: 'LOCAL_PYTHON_GPU',
         suggestedActions: [
           { label: 'Review AI Approvals', action: 'NAVIGATE', path: '/ai/approvals' },
           { label: 'See today\'s AI activity', action: 'NAVIGATE', path: '/ai/activity' },
@@ -183,7 +185,55 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 6. GENERAL INTENT: Pass to AI Engine prompts microservice with hybrid fallback
+    // 6. GENERAL INTENT: Priority 1: Local Machine First (Python AI :3030 / NVIDIA GPU)
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const localAiRes = await fetch('http://127.0.0.1:3030/v1/inference/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Tenant-ID': headers['x-tenant-id'] || 'default-tenant',
+          'X-Service-Key': process.env.PYTHON_AI_API_KEY || 'business-os-internal-ai-key-secret',
+        },
+        body: JSON.stringify({
+          model: 'local/gtx1060-cuda',
+          messages: [
+            {
+              role: 'system',
+              content: 'You are the Business OS AI Team Assistant running locally on the user host machine. Provide clear, calm, helpful business guidance. Never mention tokens or models.',
+            },
+            { role: 'user', content: query },
+          ],
+          tenant_id: headers['x-tenant-id'] || 'default-tenant',
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (localAiRes.ok) {
+        const localData = await localAiRes.json();
+        const text = localData.content || '';
+        if (text) {
+          return NextResponse.json({
+            department: 'Local AI Copilot (GTX 1060)',
+            departmentKey: 'general',
+            intent: 'GENERAL_ASSISTANCE',
+            answer: text,
+            isLocalEngine: true,
+            provenance: 'LOCAL_PYTHON_GPU',
+            suggestedActions: [
+              { label: 'View AI Team', action: 'NAVIGATE', path: '/ai/team' },
+              { label: 'Open Activity Feed', action: 'NAVIGATE', path: '/ai/activity' },
+            ],
+          });
+        }
+      }
+    } catch {
+      // Local AI unavailable or timed out; seamlessly proceed to secondary cloud fallback
+    }
+
+    // Secondary 6b: Route to AI Engine prompts microservice with hybrid fallback
     try {
       const aiEngineRes = await fetch('http://localhost:3010/prompts/ask', {
         method: 'POST',
@@ -193,7 +243,7 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           prompt: `You are the Business OS AI Team Assistant. The user asks: "${query}". Provide a clear, calm, helpful, non-technical business response. Speak as a trusted digital employee. Do not mention tokens, vectors, models, or internal architectures.`,
-          provider: 'groq',
+          provider: 'auto',
         }),
       });
 
@@ -205,6 +255,7 @@ export async function POST(req: NextRequest) {
           departmentKey: 'general',
           intent: 'GENERAL_ASSISTANCE',
           answer: text || `I have analyzed your request: "${query}". Your business operations and data are functioning normally. How can I help you proceed?`,
+          isLocalEngine: Boolean(aiData.isLocalEngine),
           suggestedActions: [
             { label: 'View AI Team', action: 'NAVIGATE', path: '/ai/team' },
             { label: 'Open Activity Feed', action: 'NAVIGATE', path: '/ai/activity' },

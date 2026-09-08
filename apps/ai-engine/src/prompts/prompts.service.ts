@@ -223,32 +223,14 @@ Guidelines:
       throw new Error('Gemini API call failed across candidate models');
     };
 
-    // Determine engine preference
-    const wantsGemini = provider === 'gemini' || model?.toLowerCase().includes('gemini');
-    const wantsOpenRouter = provider === 'openrouter' || model?.includes('gpt-4') || model?.includes('claude');
-
-    // If Gemini is explicitly requested
-    if (wantsGemini && geminiKey) {
-      try {
-        const result = await executeGeminiCall(geminiKey, model);
-        const tokens = result.usage?.total_tokens || 350;
-        recordMeteredUsage(tokens, 'gemini', result.model);
-        return {
-          ...result,
-          provider: 'gemini',
-          latencyMs: Date.now() - startTime,
-          context: { contactCount, dealCount, ticketCount },
-        };
-      } catch (error: any) {
-        console.warn('[AI-Engine] Direct Gemini call failed, trying fallback:', error?.message || error);
-      }
-    }
-
-    // 2. Primary Execution: Route through Python AI Service (:3030) if available
+    // PRIORITY 1: LOCAL MACHINE FIRST (Python AI :3030 / NVIDIA GPU)
+    // Always attempt offline local inference on host machine with zero API cost
     const pythonAiUrl = process.env.PYTHON_AI_URL || 'http://localhost:3030';
     const pythonAiKey = process.env.PYTHON_AI_API_KEY || 'business-os-internal-ai-key-secret';
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 7000);
       const pyResponse = await fetch(`${pythonAiUrl}/v1/inference/generate`, {
         method: 'POST',
         headers: {
@@ -257,7 +239,7 @@ Guidelines:
           'X-Service-Key': pythonAiKey,
         },
         body: JSON.stringify({
-          model: model || (wantsOpenRouter ? 'openrouter/openai/gpt-4o-mini' : 'groq/compound'),
+          model: model || 'local/gtx1060-cuda',
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: query },
@@ -265,24 +247,48 @@ Guidelines:
           tenant_id: tenantId,
           temperature: 0.7,
         }),
-        signal: AbortSignal.timeout(10000),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (pyResponse.ok) {
         const pyData = (await pyResponse.json()) as any;
-        const tokens = pyData.usage?.total_tokens || 350;
-        recordMeteredUsage(tokens, 'python-ai', pyData.model || model || 'python-ai-routed');
+        const tokens = pyData.usage?.total_tokens || 40;
+        recordMeteredUsage(tokens, 'local-gpu', pyData.model || 'local/gtx1060-cuda');
         return {
           reply: pyData.content || '',
-          model: pyData.model || model || 'python-ai-routed',
-          provider: 'python-ai',
+          model: pyData.model || 'local/gtx1060-cuda',
+          provider: 'local-gpu',
+          isLocalEngine: true,
           usage: pyData.usage,
           latencyMs: Date.now() - startTime,
           context: { contactCount, dealCount, ticketCount },
         };
       }
     } catch {
-      // Graceful fallback to direct cloud providers if Python AI is unavailable
+      // Local machine engine unavailable or timed out; seamlessly proceed to secondary cloud fallback
+    }
+
+    // PRIORITY 2: SECONDARY CLOUD FALLBACK CASCADE (Groq -> Gemini -> OpenRouter)
+    const wantsGemini = provider === 'gemini' || model?.toLowerCase().includes('gemini');
+    const wantsOpenRouter = provider === 'openrouter' || model?.includes('gpt-4') || model?.includes('claude');
+
+    // Secondary 2a: If Gemini is explicitly requested
+    if (wantsGemini && geminiKey) {
+      try {
+        const result = await executeGeminiCall(geminiKey, model);
+        const tokens = result.usage?.total_tokens || 350;
+        recordMeteredUsage(tokens, 'gemini', result.model);
+        return {
+          ...result,
+          provider: 'gemini',
+          isLocalEngine: false,
+          latencyMs: Date.now() - startTime,
+          context: { contactCount, dealCount, ticketCount },
+        };
+      } catch (error: any) {
+        console.warn('[AI-Engine] Direct Gemini call failed, trying fallback:', error?.message || error);
+      }
     }
 
     // 3. Groq Fast Inference (Ultra-low latency)

@@ -42,6 +42,8 @@ class ModelRouter:
                 return provider
 
         # Prefix resolution
+        if model_id.startswith("local/") or model_id == "local" or not model_id:
+            return self.local_provider
         if model_id.startswith("groq/") and self.groq_provider.is_configured():
             return self.groq_provider
         if model_id.startswith("gemini/") and self.gemini_provider.is_configured():
@@ -51,7 +53,11 @@ class ModelRouter:
         if model_id.startswith("openai/") and self.openai_provider.is_configured():
             return self.openai_provider
 
-        # Default to configured cloud providers or local
+        # PRIORITY 1: Default to Local Machine Compute (GPU / Offline)
+        if self.local_provider.is_configured():
+            return self.local_provider
+
+        # Secondary Cloud Fallback
         if self.groq_provider.is_configured():
             return self.groq_provider
         if self.gemini_provider.is_configured():
@@ -71,14 +77,10 @@ class ModelRouter:
     ):
         """
         Route to best model based on task, quality tier, latency, and privacy constraints.
-        Section 9 Requirements:
-          - simple classification -> fast/cheap model
-          - sales reasoning -> high-quality model
-          - offline/private inference -> local model
-          - document OCR / vision -> vision model
+        PRIORITY 1: Always default to local models for agent reasoning and automation.
         """
-        if require_local:
-            local_models = [m for m in model_registry.list_models() if m.provider == "local"]
+        local_models = [m for m in model_registry.list_models() if m.provider == "local"]
+        if require_local or local_models:
             return local_models[0] if local_models else None
 
         task_lower = (task or "").lower()
@@ -98,13 +100,13 @@ class ModelRouter:
     async def route_and_generate(self, request: GenerateRequest) -> GenerateResponse:
         """
         Executes request using primary provider with automatic multi-tier fallback:
-        Primary -> Secondary -> Third -> Fail Safely.
+        Primary -> Local (if not primary) -> Groq -> Gemini -> OpenRouter -> Fail Safely.
         """
         primary = self.resolve_provider_for_model(request.model)
 
         fallback_chain: List[BaseModelProvider] = [primary]
-        for candidate in [self.groq_provider, self.gemini_provider, self.openrouter_provider, self.openai_provider, self.local_provider]:
-            if candidate != primary and candidate.is_configured():
+        for candidate in [self.local_provider, self.groq_provider, self.gemini_provider, self.openrouter_provider, self.openai_provider]:
+            if candidate != primary and candidate.is_configured() and candidate not in fallback_chain:
                 fallback_chain.append(candidate)
 
         last_error = None

@@ -27,6 +27,7 @@ import {
   Bot
 } from 'lucide-react';
 import { InvoiceDispatchModal } from './InvoiceDispatchModal';
+import { DirectSettlementModal } from './DirectSettlementModal';
 import { createInvoice, updateInvoiceStatus, deleteInvoice } from '../../app/actions';
 import { useRouter } from 'next/navigation';
 import { openAgentModal } from '../ai/ContextualAgentModal';
@@ -36,6 +37,8 @@ export interface InvoiceItem {
   id: string;
   invoiceNum?: string;
   amount: number | string;
+  paidAmount?: number | string;
+  balanceDue?: number | string;
   status: 'PAID' | 'SENT' | 'OVERDUE' | 'DRAFT' | string;
   dueDate?: string;
   createdAt?: string | Date;
@@ -43,6 +46,7 @@ export interface InvoiceItem {
   clientEmail?: string;
   vendorName?: string;
   items?: any[];
+  currency?: string;
 }
 
 interface CommercialInvoicesManagerProps {
@@ -56,6 +60,7 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<InvoiceItem | null>(null);
+  const [settlementInvoice, setSettlementInvoice] = useState<InvoiceItem | null>(null);
   const [vaultInvoice, setVaultInvoice] = useState<InvoiceItem | null>(null);
   const [dispatchTab, setDispatchTab] = useState<'email' | 'receipt'>('email');
   const [mounted, setMounted] = useState(false);
@@ -471,6 +476,16 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
                         </button>
                       )}
 
+                      {/* Direct Bill Settlement: Pay or Receive Amount */}
+                      <button
+                        onClick={() => setSettlementInvoice(inv)}
+                        className="px-2.5 py-1 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/10 hover:from-emerald-500/35 hover:to-teal-500/35 border border-emerald-500/40 text-emerald-300 hover:text-white rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1 cursor-pointer shadow-xs active:scale-[0.98]"
+                        title="Direct Settlement: Pay this bill or record collected payment"
+                      >
+                        <DollarSign size={12} className="text-emerald-400 stroke-[2.5]" />
+                        <span>Pay / Settle</span>
+                      </button>
+
                       <button
                         onClick={() => openDispatch(inv, 'email')}
                         className="px-2.5 py-1 botanical-glass-inset hover:border-emerald-500/50 text-slate-300 hover:text-emerald-300 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1 cursor-pointer"
@@ -666,6 +681,30 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
           onClose={() => setIsDispatchModalOpen(false)}
           initialTab={dispatchTab}
           invoice={formattedSelectedInvoice}
+        />
+      )}
+
+      {/* ========================================================= */}
+      {/* 6b. DIRECT BILL SETTLEMENT & PAYMENT MODAL               */}
+      {/* ========================================================= */}
+      {settlementInvoice && (
+        <DirectSettlementModal
+          isOpen={Boolean(settlementInvoice)}
+          onClose={() => setSettlementInvoice(null)}
+          invoice={settlementInvoice}
+          onSettlementComplete={(updated, payment) => {
+            setInvoices((prev) =>
+              prev.map((i) => (i.id === updated.id ? { ...i, ...updated } : i))
+            );
+            setAlert({
+              message: `✅ Settlement for invoice ${updated.invoiceNum || updated.id.slice(0, 8)} (${payment?.direction === 'INBOUND' ? 'Received' : 'Paid'} $${Number(payment?.amount || updated.amount).toFixed(2)}) successfully recorded to General Ledger!`,
+              type: 'success',
+            });
+            setTimeout(() => setAlert(null), 5500);
+            startTransition(() => {
+              router.refresh();
+            });
+          }}
         />
       )}
 

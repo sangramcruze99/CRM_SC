@@ -246,7 +246,7 @@ export const MASTER_NAV_ITEMS: NavItemConfig[] = [
 
   // --- Projects & Tasks ---
   { id: 'proj-board', label: 'Sprint Kanban Board', href: '/projects', iconName: 'LayoutGrid', domain: 'projects', terminologyKey: 'projects', keywords: ['projects', 'tasks', 'sprints', 'kanban', 'milestones'] },
-  { id: 'proj-todo', label: 'To-Do & Task List', href: '/projects?view=list', iconName: 'CheckSquare', domain: 'projects', terminologyKey: 'projects', keywords: ['to-do', 'tasks', 'todo', 'task list', 'checklist', 'milestones'] },
+  { id: 'proj-todo', label: 'To-Do & Task List', href: '/projects?view=list', iconName: 'CheckSquare', domain: 'projects', keywords: ['to-do', 'tasks', 'todo', 'task list', 'checklist', 'milestones'] },
 
   // --- People & HR ---
   { id: 'hr-directory', label: 'Employee Directory & Org Tree', href: '/directory', iconName: 'Contact', badge: 'Org', domain: 'people', keywords: ['people', 'hr', 'employees', 'directory', 'org tree', 'hierarchy', 'staff'] },
@@ -260,7 +260,7 @@ export const MASTER_NAV_ITEMS: NavItemConfig[] = [
   { id: 'doc-s3', label: 'Cloud Direct Storage', href: '/s3-uploads', iconName: 'CloudUpload', domain: 'documents', keywords: ['documents', 's3', 'cloud', 'uploads', 'storage'] },
 
   // --- Analytics & BI ---
-  { id: 'analytics-reports', label: 'Business Reports & BI', href: '/reports', iconName: 'Activity', domain: 'analytics', keywords: ['analytics', 'reports', 'bi', 'metrics', 'exports'] },
+  { id: 'analytics-reports', label: 'Business Journal & Reports', href: '/reports', iconName: 'Activity', badge: 'Journal', domain: 'analytics', keywords: ['business journal', 'journal', 'daily journal', 'analytics', 'reports', 'bi', 'metrics', 'exports', 'calendar', 'periods'] },
   { id: 'analytics-observability', label: 'Platform Observability', href: '/observability', iconName: 'Activity', badge: 'Mesh', domain: 'analytics', keywords: ['analytics', 'observability', 'traces', 'telemetry', 'health'] },
   { id: 'analytics-leaderboard', label: 'Sales Leaderboards', href: '/leaderboard', iconName: 'Trophy', badge: 'Reps', domain: 'analytics', keywords: ['analytics', 'leaderboard', 'sales', 'reps', 'gamification'] },
 
@@ -544,7 +544,7 @@ export function resolveNavigationSections({
       if (domainId === 'sales_crm') {
         domainItems = domainItems.filter((i) => ['/dashboard', '/contacts', '/deals', '/customer-360', '/lead-prospector'].includes(i.href));
       } else if (domainId === 'finance') {
-        domainItems = domainItems.filter((i) => ['/invoices', '/quotes', '/price-books', '/banking', '/qr-payments', '/payment-links', '/subscriptions'].includes(i.href));
+        domainItems = domainItems.filter((i) => ['/invoices', '/ocr-invoice', '/quotes', '/price-books', '/banking', '/qr-payments', '/payment-links', '/subscriptions', '/finance-department', '/taxes'].includes(i.href));
       } else if (domainId === 'marketing') {
         domainItems = domainItems.filter((i) => ['/email-marketing', '/social', '/platform/templates/email', '/site-builder'].includes(i.href));
       } else if (domainId === 'customer_service') {

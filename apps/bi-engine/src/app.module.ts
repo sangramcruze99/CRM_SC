@@ -6,22 +6,25 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MetricsModule } from './metrics/metrics.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { ReportTemplateController } from './reports/reports.controller';
-import { ReportTemplateService } from './reports/reports.service';
+import { JournalModule } from './journal/journal.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
     JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
     MetricsModule,
     PrismaModule,
+    JournalModule,
+    AnalyticsModule,
+    ReportsModule,
   ],
-  controllers: [ReportTemplateController, AppController],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    ReportTemplateService,
     AppService,
   ],
 })

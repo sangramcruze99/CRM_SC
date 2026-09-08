@@ -51,6 +51,11 @@ model Tenant {
   journalEntries        JournalEntry[]
   financialPeriods      FinancialPeriod[]
   expenses              Expense[]
+  businessPeriods       BusinessPeriod[]
+  dailyBusinessRecords  DailyBusinessRecord[]
+  businessJournalEvents BusinessJournalEvent[]
+  reportRuns            ReportRun[]
+  reportSchedules       ReportSchedule[]
 }
 
 model User {
@@ -1808,3 +1813,136 @@ model BrowserSession {
 
   @@index([tenantId, status])
 }
+
+// ============================================================================
+// ENTERPRISE BUSINESS REPORTING & TIME-BASED BUSINESS JOURNAL
+// ============================================================================
+
+model BusinessPeriod {
+  id          String    @id @default(cuid())
+  tenantId    String
+  periodType  String    // DAY, WEEK, MONTH, QUARTER, YEAR
+  periodKey   String    // e.g., '2026-09-08', '2026-W36', '2026-09', '2026-Q3', '2026'
+  startDate   DateTime
+  endDate     DateTime
+  status      String    @default("OPEN") // OPEN, CALCULATING, FINALIZED, LOCKED
+  finalizedAt DateTime?
+  lockedAt    DateTime?
+  lockedBy    String?
+  version     Int       @default(1)
+  metadata    String    @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, periodType, periodKey])
+  @@index([tenantId, startDate, endDate])
+  @@index([tenantId, status])
+}
+
+model DailyBusinessRecord {
+  id                String    @id @default(cuid())
+  tenantId          String
+  date              String    // YYYY-MM-DD
+  timezone          String    @default("UTC")
+  status            String    @default("OPEN") // OPEN, CALCULATING, FINALIZED, LOCKED
+  
+  // Department Aggregated Metrics (JSON strings containing structured KPIs)
+  salesMetrics      String    @default("{}")
+  financeMetrics    String    @default("{}")
+  crmMetrics        String    @default("{}")
+  projectMetrics    String    @default("{}")
+  hrMetrics         String    @default("{}")
+  helpdeskMetrics   String    @default("{}")
+  inventoryMetrics  String    @default("{}")
+  marketingMetrics  String    @default("{}")
+  aiMetrics         String    @default("{}")
+  
+  auditEventsCount  Int       @default(0)
+  healthScore       Float     @default(100.0)
+  
+  // Traceable entity references for instant zero-latency drilldown to source records
+  sourceReferences  String    @default("{}")
+  
+  recalculatedAt    DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@index([tenantId, date])
+  @@index([tenantId, status])
+}
+
+model BusinessJournalEvent {
+  id              String    @id @default(cuid())
+  tenantId        String
+  date            String    // YYYY-MM-DD
+  timestamp       DateTime  @default(now())
+  service         String    // crm, sales, finance, projects, helpdesk, hr, inventory, marketing, ai
+  eventType       String    // e.g. sales.deal.closed_won, finance.payment.settled
+  entityType      String    // Deal, Payment, Ticket, Task, etc.
+  entityId        String
+  title           String
+  amount          Float?    @default(0)
+  actor           String?
+  idempotencyKey  String?   @unique
+  metadata        String    @default("{}")
+  createdAt       DateTime  @default(now())
+
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, date, timestamp])
+  @@index([tenantId, service, eventType])
+}
+
+model ReportRun {
+  id                String    @id @default(cuid())
+  tenantId          String
+  title             String
+  periodType        String    // DAY, WEEK, MONTH, QUARTER, YEAR, CUSTOM
+  periodKey         String    // e.g. 2026-09, 2026-Q3
+  startDate         DateTime
+  endDate           DateTime
+  format            String    @default("JSON") // JSON, PDF, XLSX, CSV
+  status            String    @default("COMPLETED") // QUEUED, GENERATING, COMPLETED, FAILED
+  documentVaultId   String?
+  vaultStorageKey   String?
+  executiveSummary  String?
+  anomalies         String    @default("[]")
+  metricsSnapshot   String    @default("{}")
+  comparisons       String    @default("{}")
+  sourceAuditLogId  String?
+  version           Int       @default(1)
+  generatedBy       String    @default("System")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, periodType, periodKey])
+  @@index([tenantId, status])
+}
+
+model ReportSchedule {
+  id                String    @id @default(cuid())
+  tenantId          String
+  name              String
+  periodType        String    // DAY, WEEK, MONTH, QUARTER, YEAR
+  cronExpression    String
+  format            String    @default("PDF") // PDF, XLSX, CSV
+  recipients        String    @default("[]")
+  autoArchiveVault  Boolean   @default(true)
+  isActive          Boolean   @default(true)
+  lastRunAt         DateTime?
+  nextRunAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, isActive])
+}
+

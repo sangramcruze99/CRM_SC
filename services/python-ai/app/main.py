@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .config import settings, compute
-from .routers import health, inference, embeddings, training, evaluation, agents, ocr
+from .routers import health, inference, embeddings, training, evaluation, agents, ocr, agent_decision
 from .datasets.generator import dataset_generator
 
 logging.basicConfig(
@@ -73,6 +73,7 @@ app.include_router(embeddings.router)
 app.include_router(training.router)
 app.include_router(evaluation.router)
 app.include_router(agents.router)
+app.include_router(agent_decision.router)
 
 
 if __name__ == "__main__":

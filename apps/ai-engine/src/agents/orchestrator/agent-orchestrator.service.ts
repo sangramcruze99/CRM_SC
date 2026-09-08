@@ -181,12 +181,39 @@ export class AgentOrchestratorService {
       triggerPayload: payload,
     });
 
-    // 3. Plan System: Generate structured plan
+    // 3. Local GPU Decision Engine: Query Python AI (:3030) for autonomous reasoning
+    let localDecision: any = null;
+    try {
+      const pyUrl = process.env.PYTHON_AI_URL || 'http://localhost:3030';
+      const pyKey = process.env.PYTHON_AI_API_KEY || 'business-os-internal-ai-key-secret';
+      const pyDecisionRes = await fetch(`${pyUrl}/v1/agents/${targetAgent.agentId}/decide`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-tenant-id': tenantId,
+          'x-service-key': pyKey,
+        },
+        body: JSON.stringify({
+          tenant_id: tenantId,
+          context: { ...contextPackage.primaryEntity, ...payload },
+          entity_type: targetAgent.targetEntity,
+          entity_id: targetAgent.targetId,
+          event_type: eventType,
+        }),
+        signal: AbortSignal.timeout(5000),
+      });
+      if (pyDecisionRes.ok) {
+        localDecision = await pyDecisionRes.json();
+      }
+    } catch {
+      // Gracefully continue with policy engine if Python AI is unavailable
+    }
+
     const planSteps = this.determineInitialPlanSteps(targetAgent, contextPackage);
     const plan = this.planService.createPlan({
       agentId: targetAgent.agentId,
       tenantId,
-      goal: `${targetAgent.primaryAction} for ${targetAgent.targetEntity} ${targetAgent.targetId}`,
+      goal: localDecision?.decision || `${targetAgent.primaryAction} for ${targetAgent.targetEntity} ${targetAgent.targetId}`,
       steps: planSteps,
     });
 
