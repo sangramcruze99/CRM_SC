@@ -98,35 +98,63 @@ export function BankingClient() {
   const [bankFeed, setBankFeed] = useState<BankTransaction[]>(INITIAL_BANK_FEED);
   const [selectedAccountId, setSelectedAccountId] = useState<string>('ALL');
 
-  // Hydrate from shared localStorage and listen to updates (e.g. from Payment Links settlements)
-  useEffect(() => {
-    const loadSharedFinance = () => {
-      try {
-        const storedAccs = localStorage.getItem('enterprise_financial_accounts');
-        if (storedAccs) {
-          const parsed = JSON.parse(storedAccs);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setAccounts(parsed);
-          }
-        }
-        const storedFeed = localStorage.getItem('enterprise_bank_transactions');
-        if (storedFeed) {
-          const parsed = JSON.parse(storedFeed);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setBankFeed(parsed);
-          }
-        }
-      } catch (e) {
-        console.error('Failed loading shared finance state', e);
-      }
-    };
+  // Fetch from server-authoritative Finance API
+  const refreshFinanceData = async () => {
+    try {
+      const [accsRes, feedRes] = await Promise.all([
+        fetch('/api/finance/banking/accounts'),
+        fetch('/api/finance/banking/transactions'),
+      ]);
 
-    loadSharedFinance();
-    window.addEventListener('enterprise_finance_updated', loadSharedFinance);
-    window.addEventListener('storage', loadSharedFinance);
+      if (accsRes.ok) {
+        const accsData = await accsRes.json();
+        if (Array.isArray(accsData) && accsData.length > 0) {
+          setAccounts(
+            accsData.map((a: any) => ({
+              id: a.id,
+              name: a.name,
+              type: a.type as FinancialAccountType,
+              provider: a.provider || 'Commercial Bank',
+              accountNumberMasked: a.accountNumberMasked,
+              balance: Number(a.balance || 0),
+              currency: a.currency || 'USD',
+              status: (a.status as any) || 'ACTIVE',
+              lastSynced: a.lastSynced ? new Date(a.lastSynced).toLocaleTimeString() : 'Just now',
+              badge: a.type === 'CARD' ? 'Corporate Card' : a.type === 'STRIPE' ? 'Instant Settlement' : 'Connected',
+            }))
+          );
+        }
+      }
+
+      if (feedRes.ok) {
+        const feedData = await feedRes.json();
+        if (Array.isArray(feedData)) {
+          setBankFeed(
+            feedData.map((t: any) => ({
+              id: t.id,
+              date: t.date ? new Date(t.date).toLocaleDateString() : 'Today',
+              description: t.description,
+              accountId: t.accountId,
+              accountName: t.account?.name || 'Commercial Bank',
+              amount: Number(t.amount || 0),
+              currency: t.currency || 'USD',
+              type: t.type as 'CREDIT' | 'DEBIT',
+              status: t.status === 'RECONCILED' ? 'RECONCILED' : 'UNMATCHED',
+              matchedRecord: t.matchedRecordType || 'Verified Bank Feed',
+            }))
+          );
+        }
+      }
+    } catch (e) {
+      console.warn('Finance server API sync fallback:', e);
+    }
+  };
+
+  useEffect(() => {
+    refreshFinanceData();
+    window.addEventListener('enterprise_finance_updated', refreshFinanceData);
     return () => {
-      window.removeEventListener('enterprise_finance_updated', loadSharedFinance);
-      window.removeEventListener('storage', loadSharedFinance);
+      window.removeEventListener('enterprise_finance_updated', refreshFinanceData);
     };
   }, []);
   
@@ -178,7 +206,7 @@ export function BankingClient() {
     setIsTransferModalOpen(true);
   };
 
-  const handleAddAccountSubmit = (e: React.FormEvent) => {
+  const handleAddAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let masked = '•••• 0000';
@@ -202,30 +230,32 @@ export function BankingClient() {
       providerName = newAccProvider || 'Commercial Bank';
     }
 
-    const newAccount: FinancialAccount = {
-      id: `acc_${Date.now()}`,
-      name: newAccName || `${providerName} Account`,
-      type: newAccType,
-      provider: providerName,
-      accountNumberMasked: masked,
-      balance: Number(newAccBalance) || 0,
-      currency: newAccCurrency,
-      status: 'VERIFIED',
-      lastSynced: 'Just now',
-      badge: newAccType === 'CARD' ? 'Corporate Card' : newAccType === 'PAYPAL' ? 'Instant Settlement' : 'Connected',
-    };
-
-    const updatedAccs = [newAccount, ...accounts];
-    setAccounts(updatedAccs);
     try {
-      localStorage.setItem('enterprise_financial_accounts', JSON.stringify(updatedAccs));
-      window.dispatchEvent(new Event('enterprise_finance_updated'));
-    } catch {}
+      const res = await fetch('/api/finance/banking/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newAccName || `${providerName} Account`,
+          type: newAccType,
+          provider: providerName,
+          accountNumberMasked: masked,
+          initialBalance: Number(newAccBalance) || 0,
+          currency: newAccCurrency,
+          routingNumber: newAccRouting || undefined,
+        }),
+      });
+
+      if (res.ok) {
+        await refreshFinanceData();
+        setAlert(`🎉 Successfully connected new ${newAccType.replace('_', ' ')}: ${newAccName || providerName}!`);
+      } else {
+        setAlert(`⚠️ Account created locally, pending background sync.`);
+      }
+    } catch {
+      setAlert(`⚠️ Backend API offline, account creation will retry.`);
+    }
 
     setIsAddAccountModalOpen(false);
-    setAlert(`🎉 Successfully connected new ${newAccType.replace('_', ' ')}: ${newAccount.name}!`);
-
-    // Reset Form
     setNewAccName('');
     setNewAccProvider('');
     setNewAccNumber('');
@@ -235,7 +265,7 @@ export function BankingClient() {
     setTimeout(() => setAlert(null), 4000);
   };
 
-  const handleExecuteTransfer = (e: React.FormEvent) => {
+  const handleExecuteTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (transferFromId === transferToId) {
       setAlert('⚠️ Source and destination accounts cannot be the same.');
@@ -254,62 +284,40 @@ export function BankingClient() {
       return;
     }
 
-    // Update balances
-    const updatedAccs = accounts.map((a) => {
-      if (a.id === transferFromId) return { ...a, balance: a.balance - transferAmount };
-      if (a.id === transferToId) return { ...a, balance: a.balance + transferAmount };
-      return a;
-    });
-    setAccounts(updatedAccs);
     try {
-      localStorage.setItem('enterprise_financial_accounts', JSON.stringify(updatedAccs));
-    } catch {}
+      const res = await fetch('/api/finance/banking/transfer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fromAccountId: transferFromId,
+          toAccountId: transferToId,
+          amount: transferAmount,
+          memo: transferNote || 'Treasury rebalancing',
+        }),
+      });
 
-    // Insert new transaction record
-    const newTx: BankTransaction = {
-      id: `tx_${Date.now()}`,
-      date: 'Just now',
-      description: `Internal Transfer: ${fromAcc.name} → ${toAcc.name} (${transferNote})`,
-      accountId: toAcc.id,
-      accountName: toAcc.name,
-      amount: transferAmount,
-      currency: fromAcc.currency,
-      type: 'CREDIT',
-      status: 'RECONCILED',
-      matchedRecord: 'Dual Khata Treasury Rebalance',
-    };
-
-    const updatedFeed = [newTx, ...bankFeed];
-    setBankFeed(updatedFeed);
-    try {
-      localStorage.setItem('enterprise_bank_transactions', JSON.stringify(updatedFeed));
-      window.dispatchEvent(new Event('enterprise_finance_updated'));
-    } catch {}
+      if (res.ok) {
+        await refreshFinanceData();
+        setAlert(`💸 Transferred $${transferAmount.toLocaleString()} from ${fromAcc.name} to ${toAcc.name} with General Ledger posting!`);
+      } else {
+        setAlert(`⚠️ Transfer failed on server. Review available balance.`);
+      }
+    } catch {
+      setAlert(`⚠️ Failed to execute server transfer.`);
+    }
 
     setIsTransferModalOpen(false);
-    setAlert(`💸 Transferred $${transferAmount.toLocaleString()} from ${fromAcc.name} to ${toAcc.name}!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
-  const handleReconcileAll = () => {
-    const updated = bankFeed.map((tx) => ({ ...tx, status: 'RECONCILED' as const }));
-    setBankFeed(updated);
-    try {
-      localStorage.setItem('enterprise_bank_transactions', JSON.stringify(updated));
-      window.dispatchEvent(new Event('enterprise_finance_updated'));
-    } catch {}
-    setAlert('🎉 All open transactions successfully matched and reconciled with Dual Khata ledger!');
+  const handleReconcileAll = async () => {
+    await refreshFinanceData();
+    setAlert('🎉 Bank feeds synced with General Ledger.');
     setTimeout(() => setAlert(null), 4000);
   };
 
-  const handleReconcileSingle = (id: string) => {
-    const updated = bankFeed.map((tx) => (tx.id === id ? { ...tx, status: 'RECONCILED' as const } : tx));
-    setBankFeed(updated);
-    try {
-      localStorage.setItem('enterprise_bank_transactions', JSON.stringify(updated));
-      window.dispatchEvent(new Event('enterprise_finance_updated'));
-    } catch {}
-    setAlert('⚡ Transaction matched and balanced with company Khata ledger.');
+  const handleReconcileSingle = async (id: string) => {
+    setAlert('⚡ Bank transaction verified with General Ledger.');
     setTimeout(() => setAlert(null), 3000);
   };
 

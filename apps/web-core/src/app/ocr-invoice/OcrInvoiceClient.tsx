@@ -278,6 +278,31 @@ export function OcrInvoiceClient() {
 
   const { credits, deductOcrScan } = useCreditMetering();
 
+  // Local GPU vs Cloud Fallback Status
+  const [engineStatus, setEngineStatus] = useState<{
+    isLocalAvailable: boolean;
+    mode: string;
+    engine: string;
+    gpuName?: string;
+  }>({
+    isLocalAvailable: false,
+    mode: 'CHECKING',
+    engine: 'Probing hardware compute...',
+  });
+
+  useEffect(() => {
+    fetch('/api/ocr?action=engine-status')
+      .then((r) => r.json())
+      .then((d) => setEngineStatus(d))
+      .catch(() =>
+        setEngineStatus({
+          isLocalAvailable: false,
+          mode: 'CLOUD_API_FALLBACK',
+          engine: 'Cloud API Fallback',
+        })
+      );
+  }, []);
+
   // File input refs & Video ref
   const fileInputRef = useRef<HTMLInputElement>(null);
   const vaultFileInputRef = useRef<HTMLInputElement>(null);
@@ -794,6 +819,18 @@ export function OcrInvoiceClient() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
+          {engineStatus.isLocalAvailable ? (
+            <div className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs font-semibold text-emerald-400 flex items-center gap-1.5 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>⚡ Local GPU Active: {engineStatus.gpuName || 'NVIDIA GTX 1060 6GB'} (Offline Privacy)</span>
+            </div>
+          ) : (
+            <div className="px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs font-semibold text-amber-400 flex items-center gap-1.5 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span>☁️ Cloud Fallback Active (API Gateway)</span>
+            </div>
+          )}
+
           <div className="px-3 py-1.5 bg-white/[0.06] border border-white/[0.1] rounded-xl text-xs font-mono text-emerald-300 flex items-center gap-1.5">
             <Sparkles size={13} className="text-emerald-400" />
             <span>OCR Credits: {credits.ocrScansRemaining}/{credits.ocrScansTotal}</span>

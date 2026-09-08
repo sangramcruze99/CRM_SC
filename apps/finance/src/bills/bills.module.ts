@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { InvoicesService } from './invoices.service';
-import { InvoicesController } from './invoices.controller';
+import { BillsService } from './bills.service';
+import { BillsController } from './bills.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AccountingModule } from '../accounting/accounting.module';
 import { OutboxModule } from '../outbox/outbox.module';
 
 @Module({
   imports: [PrismaModule, AccountingModule, OutboxModule],
-  controllers: [InvoicesController],
-  providers: [InvoicesService],
-  exports: [InvoicesService],
+  controllers: [BillsController],
+  providers: [BillsService],
+  exports: [BillsService],
 })
-export class InvoicesModule {}
+export class BillsModule {}

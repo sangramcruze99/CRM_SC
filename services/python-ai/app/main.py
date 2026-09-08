@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .config import settings, compute
-from .routers import health, inference, embeddings, training, evaluation, agents
+from .routers import health, inference, embeddings, training, evaluation, agents, ocr
 from .datasets.generator import dataset_generator
 
 logging.basicConfig(
@@ -67,6 +67,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 # Mount Routers
 app.include_router(health.router)
+app.include_router(ocr.router)
 app.include_router(inference.router)
 app.include_router(embeddings.router)
 app.include_router(training.router)

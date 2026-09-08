@@ -16,11 +16,29 @@ import { QuoteService } from './quotes/quotes.service';
 import { SubscriptionController } from './subscriptions/subscriptions.controller';
 import { SubscriptionService } from './subscriptions/subscriptions.service';
 
+// Enterprise Finance Subsystem Modules
+import { AccountingModule } from './accounting/accounting.module';
+import { BillsModule } from './bills/bills.module';
+import { PaymentsModule } from './payments/payments.module';
+import { BankingModule } from './banking/banking.module';
+import { ReconciliationModule } from './reconciliation/reconciliation.module';
+import { ExpensesModule } from './expenses/expenses.module';
+import { FinanceToolsModule } from './ai-tools/finance-tools.module';
+import { OutboxModule } from './outbox/outbox.module';
+
 @Module({
   imports: [
     JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
-    InvoicesModule,
     PrismaModule,
+    OutboxModule,
+    AccountingModule,
+    InvoicesModule,
+    BillsModule,
+    PaymentsModule,
+    BankingModule,
+    ReconciliationModule,
+    ExpensesModule,
+    FinanceToolsModule,
     KhataModule,
   ],
   controllers: [

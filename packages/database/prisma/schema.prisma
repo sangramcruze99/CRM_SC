@@ -43,6 +43,14 @@ model Tenant {
   activities            Activity[]
   landingPages          LandingPage[]
   installedMarketplaceItems InstalledMarketplaceItem[]
+  bills                 Bill[]
+  payments              Payment[]
+  bankAccounts          BankAccount[]
+  bankTransactions      BankTransaction[]
+  chartOfAccounts       ChartOfAccount[]
+  journalEntries        JournalEntry[]
+  financialPeriods      FinancialPeriod[]
+  expenses              Expense[]
 }
 
 model User {
@@ -303,33 +311,317 @@ model KnowledgeBaseDocument {
 }
 
 // ----------------------------------------------------------------------------
-// FINANCE MODULE (PHASE 3)
+// ENTERPRISE FINANCE SUBSYSTEM
 // ----------------------------------------------------------------------------
 
 model Invoice {
-  id          String   @id @default(cuid())
-  tenantId    String
-  invoiceNum  String
-  amount      Float
-  status      String   // e.g., 'DRAFT', 'SENT', 'PAID', 'OVERDUE'
-  dueDate     DateTime
+  id                  String            @id @default(cuid())
+  tenantId            String
+  invoiceNum          String
+  customerId          String?
+  customerName        String?
+  customerEmail       String?
+  billingAddress      String?
+  shippingAddress     String?
+  currency            String            @default("USD")
+  subtotal            Float             @default(0)
+  tax                 Float             @default(0)
+  taxRate             Float             @default(0)
+  discount            Float             @default(0)
+  discountType        String            @default("amount")
+  shipping            Float             @default(0)
+  fees                Float             @default(0)
+  amount              Float             // Grand Total
+  paidAmount          Float             @default(0)
+  balanceDue          Float             @default(0)
+  depositDue          Float?
+  status              String            @default("DRAFT") // 'DRAFT', 'FINALIZED', 'SENT', 'OPEN', 'PARTIALLY_PAID', 'PAID', 'OVERDUE', 'RECONCILED', 'CLOSED', 'VOID', 'CANCELLED', 'DISPUTED', 'WRITTEN_OFF'
+  dueDate             DateTime
+  issueDate           DateTime          @default(now())
+  paidAt              DateTime?
+  reconciledAt        DateTime?
+  paymentTerms        String?
+  paymentInstructions String?
+  notes               String?
+  externalReference   String?
+  metadata            String?           @default("{}")
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
 
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  lineItems   InvoiceLineItem[]
+  tenant              Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lineItems           InvoiceLineItem[]
+  allocations         PaymentAllocation[]
 }
 
 model InvoiceLineItem {
   id          String   @id @default(cuid())
   invoiceId   String
   description String
-  quantity    Int
-  unitPrice   Float
-  total       Float
+  quantity    Int      @default(1)
+  unitPrice   Float    @default(0)
+  discount    Float    @default(0)
+  tax         Float    @default(0)
+  total       Float    @default(0)
 
   invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Bill {
+  id              String            @id @default(cuid())
+  tenantId        String
+  billNumber      String
+  vendorId        String?
+  vendorName      String
+  vendorEmail     String?
+  vendorAddress   String?
+  poNumber        String?
+  referenceNumber String?
+  currency        String            @default("USD")
+  subtotal        Float             @default(0)
+  tax             Float             @default(0)
+  taxRate         Float             @default(0)
+  discount        Float             @default(0)
+  total           Float             @default(0)
+  paidAmount      Float             @default(0)
+  balanceDue      Float             @default(0)
+  status          String            @default("DRAFT") // 'DRAFT', 'PENDING_VALIDATION', 'VALIDATED', 'PENDING_APPROVAL', 'APPROVED', 'SCHEDULED', 'PAYMENT_PROCESSING', 'PARTIALLY_PAID', 'PAID', 'RECONCILED', 'CLOSED', 'REJECTED', 'ON_HOLD', 'DISPUTED', 'VOID'
+  approvalStatus  String            @default("NONE") // 'NONE', 'PENDING', 'APPROVED', 'REJECTED'
+  approvedBy      String?
+  approvedAt      DateTime?
+  issueDate       DateTime          @default(now())
+  dueDate         DateTime
+  paidAt          DateTime?
+  reconciledAt    DateTime?
+  notes           String?
+  metadata        String?           @default("{}")
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  tenant          Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lineItems       BillLineItem[]
+  allocations     PaymentAllocation[]
+}
+
+model BillLineItem {
+  id          String   @id @default(cuid())
+  billId      String
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float    @default(0)
+  total       Float    @default(0)
+
+  bill        Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id                    String              @id @default(cuid())
+  tenantId              String
+  paymentNumber         String
+  direction             String              @default("INBOUND") // 'INBOUND' (Customer AR) or 'OUTBOUND' (Vendor AP)
+  amount                Float
+  currency              String              @default("USD")
+  method                String              @default("CARD") // 'CASH', 'CARD', 'BANK_TRANSFER', 'ACH', 'WIRE', 'CHECK', 'CRYPTO', 'OTHER'
+  status                String              @default("PENDING_REVIEW") // 'PENDING_REVIEW', 'PENDING_APPROVAL', 'APPROVED', 'SCHEDULED', 'PROCESSING', 'SETTLED', 'RECONCILED', 'FAILED', 'CANCELLED', 'UNKNOWN_CONFIRMATION'
+  payerName             String?
+  payerEmail            String?
+  payeeName             String?
+  destinationReference  String?
+  provider              String              @default("manual") // 'stripe', 'plaid', 'bank', 'manual', 'crypto'
+  providerTransactionId String?
+  externalReference     String?
+  idempotencyKey        String?             @unique
+  allocatedAmount       Float               @default(0)
+  unallocatedAmount     Float               @default(0)
+  failureReason         String?
+  notes                 String?
+  metadata              String?             @default("{}")
+
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  settledAt             DateTime?
+  reconciledAt          DateTime?
+
+  tenant                Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  allocations           PaymentAllocation[]
+}
+
+model PaymentAllocation {
+  id          String    @id @default(cuid())
+  tenantId    String
+  paymentId   String
+  invoiceId   String?
+  billId      String?
+  amount      Float
+  allocatedAt DateTime  @default(now())
+  notes       String?
+
+  payment     Payment   @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  invoice     Invoice?  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  bill        Bill?     @relation(fields: [billId], references: [id], onDelete: Cascade)
+}
+
+model BankAccount {
+  id                  String            @id @default(cuid())
+  tenantId            String
+  name                String
+  type                String            @default("BANK_ACCOUNT") // 'BANK_ACCOUNT', 'CARD', 'PAYPAL', 'STRIPE', 'CRYPTO_VAULT', 'CASH_DRAWER'
+  provider            String            @default("Manual Bank")
+  accountNumberMasked String
+  routingNumber       String?
+  currency            String            @default("USD")
+  balance             Float             @default(0)
+  status              String            @default("ACTIVE") // 'PRIMARY', 'ACTIVE', 'VERIFIED', 'FROZEN'
+  lastSynced          DateTime          @default(now())
+  metadata            String?           @default("{}")
+
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  tenant              Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  transactions        BankTransaction[]
+}
+
+model BankTransaction {
+  id                String      @id @default(cuid())
+  tenantId          String
+  accountId         String
+  date              DateTime    @default(now())
+  description       String
+  amount            Float
+  currency          String      @default("USD")
+  type              String      // 'CREDIT' or 'DEBIT'
+  status            String      @default("UNMATCHED") // 'UNMATCHED', 'MATCH_CANDIDATE', 'MATCHED', 'PARTIALLY_MATCHED', 'RECONCILED', 'EXCEPTION'
+  matchedPaymentId  String?
+  matchedRecordType String?     // 'PAYMENT', 'INVOICE', 'BILL', 'EXPENSE'
+  matchedRecordId   String?
+  reconciledAt      DateTime?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  account           BankAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  tenant            Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model ChartOfAccount {
+  id           String            @id @default(cuid())
+  tenantId     String
+  code         String            // e.g. "1010", "1200", "2000", "4000", "5000"
+  name         String            // e.g. "Cash & Equivalents", "Accounts Receivable", "Accounts Payable", "Sales Revenue", "Operating Expenses"
+  type         String            // 'ASSET', 'LIABILITY', 'EQUITY', 'REVENUE', 'EXPENSE'
+  currency     String            @default("USD")
+  balance      Float             @default(0)
+  isActive     Boolean           @default(true)
+
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  tenant       Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  journalLines JournalLineItem[]
+}
+
+model JournalEntry {
+  id          String            @id @default(cuid())
+  tenantId    String
+  entryNumber String
+  date        DateTime          @default(now())
+  memo        String
+  sourceType  String            @default("MANUAL") // 'INVOICE', 'BILL', 'PAYMENT', 'TRANSFER', 'MANUAL', 'ADJUSTMENT'
+  sourceId    String?
+  status      String            @default("POSTED") // 'DRAFT', 'POSTED', 'REVERSED'
+  postedAt    DateTime          @default(now())
+  reversedAt  DateTime?
+  reversedById String?
+
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  lines       JournalLineItem[]
+}
+
+model JournalLineItem {
+  id             String         @id @default(cuid())
+  journalEntryId String
+  accountId      String
+  debit          Float          @default(0)
+  credit         Float          @default(0)
+  description    String?
+
+  journalEntry   JournalEntry   @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  account        ChartOfAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+}
+
+model FinancialPeriod {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String   // e.g. "2026-Q1", "2026-09"
+  startDate DateTime
+  endDate   DateTime
+  status    String   @default("OPEN") // 'OPEN', 'CLOSING', 'CLOSED'
+  closedAt  DateTime?
+  closedBy  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Expense {
+  id                 String    @id @default(cuid())
+  tenantId           String
+  expenseNumber      String
+  category           String    // 'TRAVEL', 'SOFTWARE', 'OFFICE', 'MARKETING', 'EQUIPMENT', 'OTHER'
+  employeeId         String?
+  vendorName         String?
+  amount             Float
+  tax                Float     @default(0)
+  currency           String    @default("USD")
+  status             String    @default("PENDING_APPROVAL") // 'DRAFT', 'PENDING_APPROVAL', 'APPROVED', 'REIMBURSED', 'REJECTED'
+  receiptDocumentId  String?
+  date               DateTime  @default(now())
+  approvedBy         String?
+  approvedAt         DateTime?
+  notes              String?
+
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  tenant             Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model FinancialOutboxEvent {
+  id           String    @id @default(cuid())
+  tenantId     String
+  eventType    String    // 'invoice.created', 'invoice.paid', 'bill.approved', 'payment.settled', 'reconciliation.exception'
+  entityType   String
+  entityId     String
+  payload      String    // JSON
+  status       String    @default("PENDING") // 'PENDING', 'PUBLISHED', 'FAILED'
+  retryCount   Int       @default(0)
+  errorMessage String?
+
+  createdAt    DateTime  @default(now())
+  publishedAt  DateTime?
+}
+
+model FinancialAuditTrail {
+  id            String   @id @default(cuid())
+  tenantId      String
+  action        String   // 'INVOICE_CREATE', 'INVOICE_PAY', 'BILL_APPROVE', 'PAYMENT_DISPATCH', 'JOURNAL_POST', 'PERIOD_CLOSE'
+  entityType    String
+  entityId      String
+  actorId       String?
+  actorType     String   @default("USER") // 'USER', 'SYSTEM', 'AI_MIDAS'
+  beforeState   String?  // JSON
+  afterState    String?  // JSON
+  correlationId String?
+  ipAddress     String?
+
+  createdAt     DateTime @default(now())
 }
 
 model Transaction {

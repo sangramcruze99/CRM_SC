@@ -28,7 +28,27 @@ export const DOCUMENT_SERVICE_REGISTRY: Record<string, ServiceDocumentConfig> = 
       invoices: {
         allowedCategories: ['input', 'receipt', 'output'],
         defaultCategory: 'input',
-        description: 'Vendor bills, client invoices, and payment receipts',
+        description: 'Customer invoices, credit notes, sales contracts',
+      },
+      bills: {
+        allowedCategories: ['input', 'receipt', 'output'],
+        defaultCategory: 'input',
+        description: 'Vendor bills, purchase orders, delivery notes, and vendor contracts',
+      },
+      payments: {
+        allowedCategories: ['receipt', 'output'],
+        defaultCategory: 'receipt',
+        description: 'Payment receipts, remittance advice, wire confirmations, and settlement evidence',
+      },
+      banking: {
+        allowedCategories: ['input', 'output'],
+        defaultCategory: 'input',
+        description: 'Bank statements, account verification letters, and reconciliation files',
+      },
+      accounting: {
+        allowedCategories: ['upload', 'output'],
+        defaultCategory: 'output',
+        description: 'General ledger exports, period close packets, and tax filings',
       },
       expenses: {
         allowedCategories: ['input', 'receipt', 'output'],

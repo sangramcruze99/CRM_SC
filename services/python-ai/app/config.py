@@ -39,6 +39,31 @@ def detect_compute() -> ComputeCapabilities:
     except Exception:
         pass
 
+    # Hardware query fallback via nvidia-smi
+    try:
+        import subprocess
+        result = subprocess.run(
+            ["nvidia-smi", "--query-gpu=name,memory.total,driver_version", "--format=csv,noheader,nounits"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=3,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            parts = [p.strip() for p in result.stdout.strip().split(",")]
+            if len(parts) >= 2:
+                gpu_name = parts[0]
+                vram_mb = float(parts[1])
+                return ComputeCapabilities(
+                    device="cuda",
+                    cuda_available=True,
+                    gpu_name=gpu_name,
+                    gpu_count=1,
+                    total_vram_gb=round(vram_mb / 1024, 2),
+                )
+    except Exception:
+        pass
+
     return ComputeCapabilities(
         device="cpu",
         cuda_available=False,
