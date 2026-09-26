@@ -32,6 +32,7 @@ interface ClientDeliverable {
 export function AgencyClient() {
   const { activeServiceIds } = useIndustry();
   const [deliverables, setDeliverables] = useState<ClientDeliverable[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [role, setRole] = useState('admin');
   const [mode, setMode] = useState<'OPERATIONS' | 'ANALYTICS'>('OPERATIONS');
   const [toast, setToast] = useState<string | null>(null);
@@ -60,8 +61,12 @@ export function AgencyClient() {
               status: d.status || 'IN_PRODUCTION',
               dueDate: d.dueDate || '2026-10-15',
               leadDesigner: d.leadDesigner || 'Creative Lead',
+              retainerAmount: Number(d.retainerAmount || 0),
             }))
           );
+        }
+        if (json.auditLogs) {
+          setAuditLogs(json.auditLogs);
         }
       }
     } catch (err) {
@@ -118,6 +123,8 @@ export function AgencyClient() {
     setTimeout(() => setToast(null), 4000);
   };
 
+  const totalRetainerValue = deliverables.reduce((acc, d: any) => acc + (d.retainerAmount || 0), 0);
+
   const dashboardConfig = getDashboardConfig(
     'agency',
     role,
@@ -126,9 +133,10 @@ export function AgencyClient() {
       data: { deliverables },
       metrics: {
         activeSprintsCount: deliverables.length,
-        totalRetainerValue: 66500,
+        totalRetainerValue,
         inReviewDeliverables: deliverables.filter((d) => d.status === 'CLIENT_REVIEW').length,
       },
+      auditLogs,
     },
     {
       onGeneralAction: (actionName: string) => {

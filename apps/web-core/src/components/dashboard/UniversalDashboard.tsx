@@ -578,20 +578,26 @@ export function UniversalDashboard({
           </h2>
 
           <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-3.5 space-y-2">
-            {config.recentActivity.slice(0, 4).map((act, idx) => (
-              <div
-                key={`${act.id}-${idx}`}
-                className="flex items-start justify-between gap-3 text-xs pb-2 border-b border-white/[0.04] last:border-b-0 last:pb-0"
-              >
-                <div className="space-y-0.5">
-                  <div className="font-bold text-white text-[11px]">{act.title}</div>
-                  <p className="text-[10px] text-slate-400 leading-snug">{act.description}</p>
+            {config.recentActivity && config.recentActivity.length > 0 ? (
+              config.recentActivity.slice(0, 4).map((act, idx) => (
+                <div
+                  key={`${act.id}-${idx}`}
+                  className="flex items-start justify-between gap-3 text-xs pb-2 border-b border-white/[0.04] last:border-b-0 last:pb-0"
+                >
+                  <div className="space-y-0.5">
+                    <div className="font-bold text-white text-[11px]">{act.title}</div>
+                    <p className="text-[10px] text-slate-400 leading-snug">{act.description}</p>
+                  </div>
+                  <span className="text-[10px] font-mono text-slate-500 whitespace-nowrap">
+                    {act.timestamp}
+                  </span>
                 </div>
-                <span className="text-[10px] font-mono text-slate-500 whitespace-nowrap">
-                  {act.timestamp}
-                </span>
+              ))
+            ) : (
+              <div className="py-6 text-center text-xs text-slate-500 font-medium">
+                No recent activity logged yet. Operations and audit events will appear here in real time.
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

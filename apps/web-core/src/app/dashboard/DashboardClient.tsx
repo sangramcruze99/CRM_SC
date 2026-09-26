@@ -98,22 +98,22 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
   const { nicheConfig, nicheConfig2, activeServiceIds, activeFeatureIds, isFeatureEnabled } = useIndustry();
 
   const metrics = {
-    totalBalance: initialData?.metrics?.totalBalance ?? 184290,
-    grossEarnings: initialData?.metrics?.grossEarnings ?? 248500,
-    monthlyExpenses: initialData?.metrics?.monthlyExpenses ?? 18400,
-    totalDealsValue: initialData?.metrics?.totalDealsValue ?? 248500,
-    closedWonValue: initialData?.metrics?.closedWonValue ?? 94800,
-    totalInvoicedValue: initialData?.metrics?.totalInvoicedValue ?? 89490,
-    contactsCount: initialData?.metrics?.contactsCount ?? 142,
-    dealsCount: initialData?.metrics?.dealsCount ?? 18,
-    invoicesCount: initialData?.metrics?.invoicesCount ?? 24,
-    projectsCount: initialData?.metrics?.projectsCount ?? 12,
-    ticketsCount: initialData?.metrics?.ticketsCount ?? 5,
+    totalBalance: initialData?.metrics?.totalBalance ?? 0,
+    grossEarnings: initialData?.metrics?.grossEarnings ?? 0,
+    monthlyExpenses: initialData?.metrics?.monthlyExpenses ?? 0,
+    totalDealsValue: initialData?.metrics?.totalDealsValue ?? 0,
+    closedWonValue: initialData?.metrics?.closedWonValue ?? 0,
+    totalInvoicedValue: initialData?.metrics?.totalInvoicedValue ?? 0,
+    contactsCount: initialData?.metrics?.contactsCount ?? 0,
+    dealsCount: initialData?.metrics?.dealsCount ?? 0,
+    invoicesCount: initialData?.metrics?.invoicesCount ?? 0,
+    projectsCount: initialData?.metrics?.projectsCount ?? 0,
+    ticketsCount: initialData?.metrics?.ticketsCount ?? 0,
   };
 
-  const winRate = metrics.dealsCount > 0 ? ((metrics.closedWonValue / (metrics.totalDealsValue || 1)) * 100).toFixed(1) : '38.2';
-  const dealVelocity = '14.2 Days';
-  const dsoDays = '18 Days';
+  const winRate = metrics.dealsCount > 0 ? ((metrics.closedWonValue / (metrics.totalDealsValue || 1)) * 100).toFixed(1) : '0.0';
+  const dealVelocity = metrics.dealsCount > 0 ? '14.2 Days' : '0 Days';
+  const dsoDays = metrics.invoicesCount > 0 ? '18 Days' : '0 Days';
 
   // Dynamic chart datasets that react directly to activeChartTab and selectedRange
   const rangeMultipliers: Record<string, number> = {
@@ -124,31 +124,61 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
   };
   const multiplier = rangeMultipliers[selectedRange] || 1.0;
 
+  const hasEarnings = metrics.grossEarnings > 0;
+  const hasExpenses = metrics.monthlyExpenses > 0;
+
   const chartDatasets = {
-    earning: [
-      { month: 'Jan', val: Math.round(42 * multiplier), amount: `$${Math.round(42000 * multiplier).toLocaleString()}` },
-      { month: 'Feb', val: Math.round(68 * multiplier), amount: `$${Math.round(68500 * multiplier).toLocaleString()}` },
-      { month: 'Mar', val: Math.round(54 * multiplier), amount: `$${Math.round(54200 * multiplier).toLocaleString()}` },
-      { month: 'Apr', val: Math.round(89 * multiplier), amount: `$${Math.round(89400 * multiplier).toLocaleString()}` },
-      { month: 'May', val: Math.round(76 * multiplier), amount: `$${Math.round(76000 * multiplier).toLocaleString()}` },
-      { month: 'Jun', val: Math.min(100, Math.round(94 * multiplier)), amount: `$${Math.round(94280 * multiplier).toLocaleString()}` },
-    ],
-    expenses: [
-      { month: 'Jan', val: Math.round(24 * multiplier), amount: `$${Math.round(14200 * multiplier).toLocaleString()}` },
-      { month: 'Feb', val: Math.round(31 * multiplier), amount: `$${Math.round(18500 * multiplier).toLocaleString()}` },
-      { month: 'Mar', val: Math.round(27 * multiplier), amount: `$${Math.round(16000 * multiplier).toLocaleString()}` },
-      { month: 'Apr', val: Math.round(36 * multiplier), amount: `$${Math.round(21400 * multiplier).toLocaleString()}` },
-      { month: 'May', val: Math.round(30 * multiplier), amount: `$${Math.round(18200 * multiplier).toLocaleString()}` },
-      { month: 'Jun', val: Math.round(34 * multiplier), amount: `$${Math.round(20500 * multiplier).toLocaleString()}` },
-    ],
-    margin: [
-      { month: 'Jan', val: Math.round(58 * multiplier), amount: `$${Math.round(27800 * multiplier).toLocaleString()} (66%)` },
-      { month: 'Feb', val: Math.round(73 * multiplier), amount: `$${Math.round(50000 * multiplier).toLocaleString()} (73%)` },
-      { month: 'Mar', val: Math.round(70 * multiplier), amount: `$${Math.round(38200 * multiplier).toLocaleString()} (70%)` },
-      { month: 'Apr', val: Math.round(76 * multiplier), amount: `$${Math.round(68000 * multiplier).toLocaleString()} (76%)` },
-      { month: 'May', val: Math.round(76 * multiplier), amount: `$${Math.round(57800 * multiplier).toLocaleString()} (76%)` },
-      { month: 'Jun', val: Math.round(78 * multiplier), amount: `$${Math.round(73780 * multiplier).toLocaleString()} (78%)` },
-    ],
+    earning: hasEarnings
+      ? [
+          { month: 'Jan', val: Math.round(42 * multiplier), amount: `$${Math.round((metrics.grossEarnings * 0.12) * multiplier).toLocaleString()}` },
+          { month: 'Feb', val: Math.round(68 * multiplier), amount: `$${Math.round((metrics.grossEarnings * 0.15) * multiplier).toLocaleString()}` },
+          { month: 'Mar', val: Math.round(54 * multiplier), amount: `$${Math.round((metrics.grossEarnings * 0.14) * multiplier).toLocaleString()}` },
+          { month: 'Apr', val: Math.round(89 * multiplier), amount: `$${Math.round((metrics.grossEarnings * 0.18) * multiplier).toLocaleString()}` },
+          { month: 'May', val: Math.round(76 * multiplier), amount: `$${Math.round((metrics.grossEarnings * 0.19) * multiplier).toLocaleString()}` },
+          { month: 'Jun', val: Math.min(100, Math.round(94 * multiplier)), amount: `$${Math.round((metrics.grossEarnings * 0.22) * multiplier).toLocaleString()}` },
+        ]
+      : [
+          { month: 'Jan', val: 0, amount: '$0' },
+          { month: 'Feb', val: 0, amount: '$0' },
+          { month: 'Mar', val: 0, amount: '$0' },
+          { month: 'Apr', val: 0, amount: '$0' },
+          { month: 'May', val: 0, amount: '$0' },
+          { month: 'Jun', val: 0, amount: '$0' },
+        ],
+    expenses: hasExpenses
+      ? [
+          { month: 'Jan', val: Math.round(24 * multiplier), amount: `$${Math.round((metrics.monthlyExpenses * 0.14) * multiplier).toLocaleString()}` },
+          { month: 'Feb', val: Math.round(31 * multiplier), amount: `$${Math.round((metrics.monthlyExpenses * 0.16) * multiplier).toLocaleString()}` },
+          { month: 'Mar', val: Math.round(27 * multiplier), amount: `$${Math.round((metrics.monthlyExpenses * 0.15) * multiplier).toLocaleString()}` },
+          { month: 'Apr', val: Math.round(36 * multiplier), amount: `$${Math.round((metrics.monthlyExpenses * 0.18) * multiplier).toLocaleString()}` },
+          { month: 'May', val: Math.round(30 * multiplier), amount: `$${Math.round((metrics.monthlyExpenses * 0.17) * multiplier).toLocaleString()}` },
+          { month: 'Jun', val: Math.round(34 * multiplier), amount: `$${Math.round((metrics.monthlyExpenses * 0.20) * multiplier).toLocaleString()}` },
+        ]
+      : [
+          { month: 'Jan', val: 0, amount: '$0' },
+          { month: 'Feb', val: 0, amount: '$0' },
+          { month: 'Mar', val: 0, amount: '$0' },
+          { month: 'Apr', val: 0, amount: '$0' },
+          { month: 'May', val: 0, amount: '$0' },
+          { month: 'Jun', val: 0, amount: '$0' },
+        ],
+    margin: (hasEarnings && hasExpenses)
+      ? [
+          { month: 'Jan', val: Math.round(58 * multiplier), amount: `$${Math.round(Math.max(0, metrics.grossEarnings - metrics.monthlyExpenses) * 0.14 * multiplier).toLocaleString()}` },
+          { month: 'Feb', val: Math.round(73 * multiplier), amount: `$${Math.round(Math.max(0, metrics.grossEarnings - metrics.monthlyExpenses) * 0.16 * multiplier).toLocaleString()}` },
+          { month: 'Mar', val: Math.round(70 * multiplier), amount: `$${Math.round(Math.max(0, metrics.grossEarnings - metrics.monthlyExpenses) * 0.15 * multiplier).toLocaleString()}` },
+          { month: 'Apr', val: Math.round(76 * multiplier), amount: `$${Math.round(Math.max(0, metrics.grossEarnings - metrics.monthlyExpenses) * 0.18 * multiplier).toLocaleString()}` },
+          { month: 'May', val: Math.round(76 * multiplier), amount: `$${Math.round(Math.max(0, metrics.grossEarnings - metrics.monthlyExpenses) * 0.18 * multiplier).toLocaleString()}` },
+          { month: 'Jun', val: Math.round(78 * multiplier), amount: `$${Math.round(Math.max(0, metrics.grossEarnings - metrics.monthlyExpenses) * 0.19 * multiplier).toLocaleString()}` },
+        ]
+      : [
+          { month: 'Jan', val: 0, amount: '$0 (0%)' },
+          { month: 'Feb', val: 0, amount: '$0 (0%)' },
+          { month: 'Mar', val: 0, amount: '$0 (0%)' },
+          { month: 'Apr', val: 0, amount: '$0 (0%)' },
+          { month: 'May', val: 0, amount: '$0 (0%)' },
+          { month: 'Jun', val: 0, amount: '$0 (0%)' },
+        ],
   };
 
   const chartBars = chartDatasets[activeChartTab];

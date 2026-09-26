@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-09-26T18:38:30.327Z",
+  "mode": "dry-run",
+  "mockPatternsFound": [],
+  "duplicateRoutes": [
+    {
+      "canonical": "/automation",
+      "duplicates": [
+        "/automations"
+      ]
+    }
+  ],
+  "orphanedRecords": [],
+  "duplicateRecords": [
+    {
+      "type": "Hospital Patient",
+      "key": "sarah connor",
+      "count": 3,
+      "ids": [
+        "PT-6584641",
+        "PT-4380635",
+        "PT-7348170"
+      ]
+    },
+    {
+      "type": "Real Estate Property",
+      "key": "oceanfront villa malibu",
+      "count": 3,
+      "ids": [
+        "PROP-717",
+        "PROP-733",
+        "PROP-750"
+      ]
+    }
+  ],
+  "summary": {
+    "totalMockPatterns": 0,
+    "totalDuplicateRoutes": 1,
+    "totalOrphanedRecords": 0,
+    "totalDuplicateRecords": 2,
+    "safeRemovalsPossible": 2
+  }
+}

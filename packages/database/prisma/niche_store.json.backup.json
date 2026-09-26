@@ -1,0 +1,3482 @@
+{
+  "hospital": {
+    "totalBeds": 165,
+    "patients": [
+      {
+        "id": "PT-6584641",
+        "tenantId": "med_center_1790447366547",
+        "name": "Sarah Connor",
+        "age": 38,
+        "gender": "Female",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. John Watson",
+        "triageLevel": "URGENT",
+        "roomNumber": "ICU-104",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-4380635",
+        "tenantId": "med_center_1790447344337",
+        "name": "Sarah Connor",
+        "age": 38,
+        "gender": "Female",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. John Watson",
+        "triageLevel": "URGENT",
+        "roomNumber": "ICU-104",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-7348170",
+        "tenantId": "med_center_1790447287319",
+        "name": "Sarah Connor",
+        "age": 38,
+        "gender": "Female",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. John Watson",
+        "triageLevel": "URGENT",
+        "roomNumber": "ICU-104",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-0920980",
+        "tenantId": "tenant_alpha",
+        "name": "TenantA_Patient_1790447230823",
+        "age": 45,
+        "gender": "Other",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-1850432",
+        "name": "TenantA_Patient_1790447081733",
+        "age": 45,
+        "gender": "Other",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-5774851",
+        "name": "TenantA_Patient_1790446905697",
+        "age": 45,
+        "gender": "Other",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-1248652",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-0627523",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-1566219",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8017510",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-7644506",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8993",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8957",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8958",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8976",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8973",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8972",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8984",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8971",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8977",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8969",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8977-11",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8971-12",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8953",
+        "name": "Victoria Hawthorne",
+        "age": 36,
+        "gender": "Female",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 4B - Bed 01",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-8941",
+        "name": "Elena Rostova",
+        "age": 42,
+        "gender": "Female",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. Sarah Lin, MD",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward 3C - Bed 04",
+        "admitDate": "2026-09-24",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Post-op observation, vitals stable"
+      },
+      {
+        "id": "PT-8942",
+        "name": "Marcus Vance",
+        "age": 58,
+        "gender": "Male",
+        "department": "Orthopedics",
+        "attendingPhysician": "Dr. David Hayes, MD",
+        "triageLevel": "STABLE",
+        "roomNumber": "Ward 2A - Bed 12",
+        "admitDate": "2026-09-25",
+        "insuranceStatus": "VERIFIED"
+      },
+      {
+        "id": "PT-8943",
+        "name": "Aisha Al-Mansoor",
+        "age": 31,
+        "gender": "Female",
+        "department": "Emergency Medicine",
+        "attendingPhysician": "Dr. Robert Chen, MD",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ER Bay 02",
+        "admitDate": "2026-09-26",
+        "insuranceStatus": "PENDING"
+      }
+    ],
+    "appointments": [
+      {
+        "id": "APT-6623880",
+        "tenantId": "med_center_1790447366547",
+        "patient": "Sarah Connor",
+        "time": "02:30 PM",
+        "doctor": "Dr. John Watson",
+        "type": "Echocardiogram Review",
+        "status": "CONFIRMED"
+      },
+      {
+        "id": "APT-4422301",
+        "tenantId": "med_center_1790447344337",
+        "patient": "Sarah Connor",
+        "time": "02:30 PM",
+        "doctor": "Dr. John Watson",
+        "type": "Echocardiogram Review",
+        "status": "CONFIRMED"
+      },
+      {
+        "id": "APT-7377360",
+        "tenantId": "med_center_1790447287319",
+        "patient": "Sarah Connor",
+        "time": "02:30 PM",
+        "doctor": "Dr. John Watson",
+        "type": "Echocardiogram Review",
+        "status": "CONFIRMED"
+      },
+      {
+        "id": "APT-101",
+        "patient": "Elena Rostova",
+        "time": "09:30 AM",
+        "doctor": "Dr. Sarah Lin",
+        "type": "Echocardiogram Review",
+        "status": "CONFIRMED"
+      },
+      {
+        "id": "APT-102",
+        "patient": "Liam O'Connor",
+        "time": "11:15 AM",
+        "doctor": "Dr. Robert Chen",
+        "type": "Post-Trauma Wound Care",
+        "status": "CONFIRMED"
+      },
+      {
+        "id": "APT-103",
+        "patient": "Amara Okafor",
+        "time": "02:00 PM",
+        "doctor": "Dr. Lisa Patel",
+        "type": "Endocrine Panel Consultation",
+        "status": "IN_CONSULTATION"
+      }
+    ],
+    "prescriptions": [
+      {
+        "id": "RX-4410",
+        "tenantId": "med_center_1790447366547",
+        "patientName": "Sarah Connor",
+        "ehrRecordId": "EHR-99210",
+        "diagnosis": "Acute Cardiac Arrhythmia",
+        "medications": [
+          {
+            "drug": "Metoprolol",
+            "dosage": "50mg",
+            "frequency": "Twice daily"
+          }
+        ],
+        "date": "2026-09-26",
+        "prescribedBy": "Dr. John Watson"
+      },
+      {
+        "id": "RX-3000",
+        "tenantId": "med_center_1790447344337",
+        "patientName": "Sarah Connor",
+        "ehrRecordId": "EHR-99210",
+        "diagnosis": "Acute Cardiac Arrhythmia",
+        "medications": [
+          {
+            "drug": "Metoprolol",
+            "dosage": "50mg",
+            "frequency": "Twice daily"
+          }
+        ],
+        "date": "2026-09-26",
+        "prescribedBy": "Dr. John Watson"
+      },
+      {
+        "id": "RX-6871",
+        "tenantId": "med_center_1790447287319",
+        "patientName": "Sarah Connor",
+        "ehrRecordId": "EHR-99210",
+        "diagnosis": "Acute Cardiac Arrhythmia",
+        "medications": [
+          {
+            "drug": "Metoprolol",
+            "dosage": "50mg",
+            "frequency": "Twice daily"
+          }
+        ],
+        "date": "2026-09-26",
+        "prescribedBy": "Dr. John Watson"
+      },
+      {
+        "id": "RX-901",
+        "patientName": "Elena Rostova",
+        "ehrRecordId": "EHR-88902",
+        "diagnosis": "Acute Bronchitis & Secondary Bacterial Infection",
+        "medications": [
+          {
+            "drug": "Amoxicillin-Clavulanate",
+            "dosage": "875/125 mg",
+            "frequency": "Twice daily with meals for 10 days"
+          },
+          {
+            "drug": "Fluticasone Propionate",
+            "dosage": "50 mcg/actuation",
+            "frequency": "2 sprays per nostril once daily"
+          }
+        ],
+        "date": "2026-09-26",
+        "prescribedBy": "Dr. Julian Vane, MD (Chief Resident)"
+      }
+    ]
+  },
+  "realestate": {
+    "properties": [
+      {
+        "id": "PROP-717",
+        "tenantId": "brokerage_1790447366715",
+        "title": "Oceanfront Villa Malibu",
+        "address": "24000 Pacific Coast Hwy",
+        "price": 3800000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 5200,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 16,
+        "agent": "Elena Rostova"
+      },
+      {
+        "id": "PROP-733",
+        "tenantId": "tenant_alpha_1790447366389",
+        "title": "Alpha Exclusive Penthouse 1790447366389",
+        "address": "Beverly Hills, CA",
+        "price": 4500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 3,
+        "baths": 2,
+        "sqft": 2500,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 8,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-733",
+        "tenantId": "brokerage_1790447344491",
+        "title": "Oceanfront Villa Malibu",
+        "address": "24000 Pacific Coast Hwy",
+        "price": 3800000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 5200,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 17,
+        "agent": "Elena Rostova"
+      },
+      {
+        "id": "PROP-750",
+        "tenantId": "tenant_alpha_1790447344198",
+        "title": "Alpha Exclusive Penthouse 1790447344199",
+        "address": "Beverly Hills, CA",
+        "price": 4500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 3,
+        "baths": 2,
+        "sqft": 2500,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 6,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-750",
+        "tenantId": "brokerage_1790447287436",
+        "title": "Oceanfront Villa Malibu",
+        "address": "24000 Pacific Coast Hwy",
+        "price": 3800000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 5200,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 15,
+        "agent": "Elena Rostova"
+      },
+      {
+        "id": "PROP-732",
+        "tenantId": "tenant_alpha_1790447287187",
+        "title": "Alpha Exclusive Penthouse 1790447287187",
+        "address": "Beverly Hills, CA",
+        "price": 4500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 3,
+        "baths": 2,
+        "sqft": 2500,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 9,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-709",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 5,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-707",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 4,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-754",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 17,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-731",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 6,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-739",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 14,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-753",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 4,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-710",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 16,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-740",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 6,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-709",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 9,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-731",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 6,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-742",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 8,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-723",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 13,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-706",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 18,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-715",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 7,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-746",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 15,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-720",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 8,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-751",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 10,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-714",
+        "title": "Malibu Oceanfront Villa",
+        "address": "24800 Pacific Coast Hwy, Malibu, CA",
+        "price": 8500000,
+        "type": "SINGLE_FAMILY",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 6800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 18,
+        "agent": "Broker On Duty"
+      },
+      {
+        "id": "PROP-725",
+        "title": "TriBeCa Sky Penthouse",
+        "address": "111 Franklin St, New York, NY",
+        "price": 18500000,
+        "type": "PENTHOUSE",
+        "beds": 5,
+        "baths": 6,
+        "sqft": 7200,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 5,
+        "agent": "Sangram Cruze"
+      },
+      {
+        "id": "PROP-701",
+        "title": "The Bel-Air Glass Pavilion",
+        "address": "10480 Bellagio Road, Bel-Air, CA 90077",
+        "price": 14850000,
+        "type": "PENTHOUSE",
+        "beds": 6,
+        "baths": 8.5,
+        "sqft": 9800,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 14,
+        "agent": "Sangram Cruze"
+      },
+      {
+        "id": "PROP-702",
+        "title": "Architectural Malibu Crest Villa",
+        "address": "31244 Pacific Coast Hwy, Malibu, CA 90265",
+        "price": 8950000,
+        "type": "SINGLE_FAMILY",
+        "beds": 4,
+        "baths": 5,
+        "sqft": 5200,
+        "status": "PENDING",
+        "imageUrl": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 8,
+        "agent": "Elena Vance"
+      },
+      {
+        "id": "PROP-703",
+        "title": "SoHo Cast-Iron Designer Loft",
+        "address": "92 Prince Street #4B, New York, NY 10012",
+        "price": 4650000,
+        "type": "CONDO",
+        "beds": 3,
+        "baths": 3,
+        "sqft": 3100,
+        "status": "ACTIVE",
+        "imageUrl": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80",
+        "matchedBuyers": 19,
+        "agent": "David Miller"
+      }
+    ],
+    "showings": [
+      {
+        "id": "SHOW-36",
+        "tenantId": "brokerage_1790447366715",
+        "propertyId": "PROP-717",
+        "propertyTitle": "Oceanfront Villa Malibu",
+        "buyerName": "Arthur Dent",
+        "date": "2026-10-12",
+        "time": "11:00 AM",
+        "status": "SCHEDULED"
+      },
+      {
+        "id": "SHOW-37",
+        "tenantId": "brokerage_1790447344491",
+        "propertyId": "PROP-733",
+        "propertyTitle": "Oceanfront Villa Malibu",
+        "buyerName": "Arthur Dent",
+        "date": "2026-10-12",
+        "time": "11:00 AM",
+        "status": "SCHEDULED"
+      },
+      {
+        "id": "SHOW-56",
+        "tenantId": "brokerage_1790447287436",
+        "propertyId": "PROP-750",
+        "propertyTitle": "Oceanfront Villa Malibu",
+        "buyerName": "Arthur Dent",
+        "date": "2026-10-12",
+        "time": "11:00 AM",
+        "status": "SCHEDULED"
+      },
+      {
+        "id": "SHOW-11",
+        "propertyId": "PROP-701",
+        "propertyTitle": "The Bel-Air Glass Pavilion",
+        "buyerName": "Harrison Sterling",
+        "date": "2026-09-27",
+        "time": "14:00",
+        "status": "SCHEDULED"
+      },
+      {
+        "id": "SHOW-12",
+        "propertyId": "PROP-702",
+        "propertyTitle": "Architectural Malibu Crest Villa",
+        "buyerName": "Claire Montgomery",
+        "date": "2026-09-28",
+        "time": "10:30",
+        "status": "SCHEDULED"
+      }
+    ],
+    "deals": [
+      {
+        "id": "ESC-457",
+        "tenantId": "brokerage_1790447366715",
+        "propertyTitle": "Oceanfront Villa Malibu",
+        "buyerName": "Arthur Dent",
+        "offerAmount": 3750000,
+        "stage": "IN_ESCROW",
+        "closingDate": "2026-11-15",
+        "commissionAmount": 112500
+      },
+      {
+        "id": "ESC-456",
+        "tenantId": "brokerage_1790447344491",
+        "propertyTitle": "Oceanfront Villa Malibu",
+        "buyerName": "Arthur Dent",
+        "offerAmount": 3750000,
+        "stage": "IN_ESCROW",
+        "closingDate": "2026-11-15",
+        "commissionAmount": 112500
+      },
+      {
+        "id": "ESC-461",
+        "tenantId": "brokerage_1790447287436",
+        "propertyTitle": "Oceanfront Villa Malibu",
+        "buyerName": "Arthur Dent",
+        "offerAmount": 3750000,
+        "stage": "IN_ESCROW",
+        "closingDate": "2026-11-15",
+        "commissionAmount": 112500
+      },
+      {
+        "id": "ESC-401",
+        "propertyTitle": "Architectural Malibu Crest Villa",
+        "buyerName": "Claire Montgomery",
+        "offerAmount": 8800000,
+        "stage": "IN_ESCROW",
+        "closingDate": "2026-10-15",
+        "commissionAmount": 264000
+      }
+    ]
+  },
+  "restaurant": {
+    "tables": [
+      {
+        "id": "T-01",
+        "number": "Table 1",
+        "capacity": 2,
+        "status": "OCCUPIED",
+        "billTotal": 212,
+        "guestName": "Chef Gordon Table",
+        "tenantId": "bistro_1790447366856",
+        "server": "Marco Pierre",
+        "seatedTime": "12:29 AM"
+      },
+      {
+        "id": "T-02",
+        "number": "Table 2",
+        "capacity": 4,
+        "status": "OCCUPIED",
+        "guestName": "Somerville Party",
+        "server": "Marco",
+        "seatedTime": "19:15",
+        "billTotal": 148.5
+      },
+      {
+        "id": "T-03",
+        "number": "Table 3",
+        "capacity": 4,
+        "status": "OCCUPIED",
+        "guestName": "Dr. Zhang",
+        "server": "Chloe",
+        "seatedTime": "19:40",
+        "billTotal": 84
+      },
+      {
+        "id": "T-04",
+        "number": "Table 4",
+        "capacity": 6,
+        "status": "RESERVED",
+        "guestName": "Techstars Dinner (20:30)",
+        "billTotal": 0
+      },
+      {
+        "id": "T-05",
+        "number": "Table 5",
+        "capacity": 8,
+        "status": "DIRTY",
+        "billTotal": 0
+      },
+      {
+        "id": "T-06",
+        "number": "Table 6 (Patio)",
+        "capacity": 4,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-07",
+        "number": "Table 7 (Patio)",
+        "capacity": 4,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-08",
+        "number": "Table 8 (Chef Booth)",
+        "capacity": 6,
+        "status": "OCCUPIED",
+        "guestName": "VIP Table - Amb. Dupont",
+        "server": "Jean-Luc",
+        "seatedTime": "18:50",
+        "billTotal": 342
+      }
+    ],
+    "kitchenOrders": [
+      {
+        "id": "KOT-6913295",
+        "tenantId": "bistro_1790447366856",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Wagyu Ribeye",
+            "qty": 2,
+            "price": 85
+          },
+          {
+            "name": "Truffle Risotto",
+            "qty": 1,
+            "price": 42
+          }
+        ],
+        "placedTime": "12:29 AM",
+        "status": "READY",
+        "waiter": "Marco Pierre"
+      },
+      {
+        "id": "KOT-4668233",
+        "tenantId": "bistro_1790447344620",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Wagyu Ribeye",
+            "qty": 2,
+            "price": 85
+          },
+          {
+            "name": "Truffle Risotto",
+            "qty": 1,
+            "price": 42
+          }
+        ],
+        "placedTime": "12:29 AM",
+        "status": "READY",
+        "waiter": "Marco Pierre"
+      },
+      {
+        "id": "KOT-7619758",
+        "tenantId": "bistro_1790447287558",
+        "tableId": "t1",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Wagyu Ribeye",
+            "qty": 2,
+            "price": 85
+          },
+          {
+            "name": "Truffle Risotto",
+            "qty": 1,
+            "price": 42
+          }
+        ],
+        "placedTime": "12:28 AM",
+        "status": "READY",
+        "waiter": "Marco Pierre"
+      },
+      {
+        "id": "KOT-1428117",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "11:30 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-0820955",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "11:19 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-1712892",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "11:18 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-8157410",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "11:06 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-7783577",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "11:04 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-2517651",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "10:32 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-8699496",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "10:31 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-3097419",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "10:22 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-2302506",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "10:17 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-3434707",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:57 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-5115563",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:53 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-9533331",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:43 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-0830226",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:36 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-3457789",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:20 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-4450111",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:15 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-368",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:10 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-303",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:10 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-377",
+        "tableId": "T-01",
+        "tableNumber": "Table 1",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye",
+            "qty": 2,
+            "price": 65
+          }
+        ],
+        "placedTime": "09:09 PM",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-301",
+        "tableId": "T-02",
+        "tableNumber": "Table 2",
+        "items": [
+          {
+            "name": "Dry-Aged Ribeye (Medium Rare)",
+            "qty": 2
+          },
+          {
+            "name": "Truffle Mashed Potatoes",
+            "qty": 1
+          }
+        ],
+        "placedTime": "19:22",
+        "status": "PREPARING",
+        "waiter": "Marco"
+      },
+      {
+        "id": "KOT-302",
+        "tableId": "T-08",
+        "tableNumber": "Table 8",
+        "items": [
+          {
+            "name": "Pan-Seared Chilean Sea Bass",
+            "qty": 3
+          },
+          {
+            "name": "Lobster Bisque",
+            "qty": 3
+          },
+          {
+            "name": "Domaine de la Romanee-Conti",
+            "qty": 1
+          }
+        ],
+        "placedTime": "19:05",
+        "status": "READY",
+        "waiter": "Jean-Luc"
+      }
+    ],
+    "menuItems": [
+      {
+        "id": "MENU-1",
+        "name": "Dry-Aged Ribeye 14oz",
+        "category": "Mains",
+        "price": 68,
+        "cost": 24.5,
+        "currentStock": 18,
+        "parLevel": 10
+      },
+      {
+        "id": "MENU-2",
+        "name": "Pan-Seared Chilean Sea Bass",
+        "category": "Mains",
+        "price": 54,
+        "cost": 18.2,
+        "currentStock": 12,
+        "parLevel": 8
+      },
+      {
+        "id": "MENU-3",
+        "name": "White Truffle Tagliolini",
+        "category": "Pasta",
+        "price": 38,
+        "cost": 9.8,
+        "currentStock": 25,
+        "parLevel": 15
+      },
+      {
+        "id": "MENU-4",
+        "name": "Truffle Oil 500ml",
+        "category": "Pantry Par",
+        "price": 85,
+        "cost": 42,
+        "currentStock": 2,
+        "parLevel": 6
+      }
+    ]
+  },
+  "retail": {
+    "catalogProducts": [
+      {
+        "id": "PROD-101",
+        "barcode": "8901030456123",
+        "name": "Organic Almond Milk 1L",
+        "category": "Dairy & Alternatives",
+        "price": 4.8,
+        "stock": 0
+      },
+      {
+        "id": "PROD-102",
+        "barcode": "8901030789456",
+        "name": "Artisanal Sourdough Loaf",
+        "category": "Bakery",
+        "price": 6.5,
+        "stock": 22
+      },
+      {
+        "id": "PROD-103",
+        "barcode": "8901030112233",
+        "name": "Single Origin Espresso Beans 500g",
+        "category": "Coffee",
+        "price": 18,
+        "stock": 14
+      },
+      {
+        "id": "PROD-104",
+        "barcode": "8901030998877",
+        "name": "Greek Extra Virgin Olive Oil 750ml",
+        "category": "Pantry",
+        "price": 24,
+        "stock": 9
+      }
+    ],
+    "sales": [
+      {
+        "id": "POS-950",
+        "tenantId": "retail_mart_1790447366978",
+        "receiptNumber": "REC-2026-6085",
+        "timestamp": "2026-09-26T18:29:27.109Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 3,
+            "price": 4.99
+          }
+        ],
+        "totalAmount": 14.97,
+        "paymentMethod": "CARD",
+        "customerName": "Alice Buyer"
+      },
+      {
+        "id": "POS-989",
+        "tenantId": "retail_mart_1790447344736",
+        "receiptNumber": "REC-2026-6525",
+        "timestamp": "2026-09-26T18:29:04.796Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 3,
+            "price": 4.99
+          }
+        ],
+        "totalAmount": 14.97,
+        "paymentMethod": "CARD",
+        "customerName": "Alice Buyer"
+      },
+      {
+        "id": "POS-939",
+        "tenantId": "retail_mart_1790447287684",
+        "receiptNumber": "REC-2026-2631",
+        "timestamp": "2026-09-26T18:28:07.742Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 3,
+            "price": 4.99
+          }
+        ],
+        "totalAmount": 14.97,
+        "paymentMethod": "CARD",
+        "customerName": "Alice Buyer"
+      },
+      {
+        "id": "POS-985",
+        "receiptNumber": "REC-2026-2591",
+        "timestamp": "2026-09-26T17:30:41.473Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-967",
+        "receiptNumber": "REC-2026-4599",
+        "timestamp": "2026-09-26T17:19:40.879Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-983",
+        "receiptNumber": "REC-2026-4915",
+        "timestamp": "2026-09-26T17:18:11.749Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-945",
+        "receiptNumber": "REC-2026-9195",
+        "timestamp": "2026-09-26T17:06:18.198Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-978",
+        "receiptNumber": "REC-2026-2869",
+        "timestamp": "2026-09-26T17:04:07.825Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-910",
+        "receiptNumber": "REC-2026-7752",
+        "timestamp": "2026-09-26T16:32:12.555Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-901",
+        "receiptNumber": "REC-2026-2419",
+        "timestamp": "2026-09-26T16:31:08.752Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-894",
+        "receiptNumber": "REC-2026-4890",
+        "timestamp": "2026-09-26T16:22:53.145Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-952",
+        "receiptNumber": "REC-2026-2191",
+        "timestamp": "2026-09-26T16:17:52.342Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-983",
+        "receiptNumber": "REC-2026-5029",
+        "timestamp": "2026-09-26T15:57:03.472Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-923",
+        "receiptNumber": "REC-2026-6364",
+        "timestamp": "2026-09-26T15:53:55.153Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-931",
+        "receiptNumber": "REC-2026-3732",
+        "timestamp": "2026-09-26T15:43:19.570Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-931",
+        "receiptNumber": "REC-2026-7685",
+        "timestamp": "2026-09-26T15:36:50.880Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-922",
+        "receiptNumber": "REC-2026-2668",
+        "timestamp": "2026-09-26T15:20:53.495Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-975",
+        "receiptNumber": "REC-2026-3653",
+        "timestamp": "2026-09-26T15:15:54.489Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-988",
+        "receiptNumber": "REC-2026-2857",
+        "timestamp": "2026-09-26T15:10:51.506Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-948",
+        "receiptNumber": "REC-2026-9288",
+        "timestamp": "2026-09-26T15:10:38.127Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-903",
+        "receiptNumber": "REC-2026-7694",
+        "timestamp": "2026-09-26T15:09:46.700Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          }
+        ],
+        "totalAmount": 9.6,
+        "paymentMethod": "KHATA_CREDIT",
+        "customerName": "Walk-In Customer"
+      },
+      {
+        "id": "POS-891",
+        "receiptNumber": "REC-2026-0926-01",
+        "timestamp": "2026-09-26T18:45:00Z",
+        "items": [
+          {
+            "name": "Organic Almond Milk 1L",
+            "qty": 2,
+            "price": 4.8
+          },
+          {
+            "name": "Artisanal Sourdough Loaf",
+            "qty": 1,
+            "price": 6.5
+          }
+        ],
+        "totalAmount": 16.1,
+        "paymentMethod": "CARD",
+        "customerName": "Walk-In Customer"
+      }
+    ],
+    "khataCustomers": [
+      {
+        "id": "KHATA-01",
+        "name": "Sharma Traders & Grocery",
+        "phone": "+1 310-555-0144",
+        "totalCreditDue": 1892.7999999999984,
+        "lastPurchaseDate": "2026-09-26",
+        "creditLimit": 2500,
+        "tenantId": "retail_mart_1790447366978"
+      },
+      {
+        "id": "KHATA-02",
+        "name": "Al-Madina Mini Market",
+        "phone": "+1 310-555-0189",
+        "totalCreditDue": 890,
+        "lastPurchaseDate": "2026-09-24",
+        "creditLimit": 1500
+      },
+      {
+        "id": "KHATA-03",
+        "name": "Green Valley Cafe Supplies",
+        "phone": "+1 310-555-0211",
+        "totalCreditDue": 340,
+        "lastPurchaseDate": "2026-09-26",
+        "creditLimit": 1000
+      }
+    ]
+  },
+  "sme": {
+    "subscriptions": [
+      {
+        "id": "SUB-563",
+        "tenantId": "saas_corp_1790447367152",
+        "customerName": "Stripe Global Ltd",
+        "plan": "Enterprise Scale",
+        "mrr": 6500,
+        "status": "ACTIVE",
+        "renewalDate": "2026-12-31",
+        "seats": 75
+      },
+      {
+        "id": "SUB-594",
+        "tenantId": "saas_corp_1790447344832",
+        "customerName": "Stripe Global Ltd",
+        "plan": "Enterprise Scale",
+        "mrr": 6500,
+        "status": "ACTIVE",
+        "renewalDate": "2026-12-31",
+        "seats": 75
+      },
+      {
+        "id": "SUB-551",
+        "tenantId": "saas_corp_1790447287775",
+        "customerName": "Stripe Global Ltd",
+        "plan": "Enterprise Scale",
+        "mrr": 6500,
+        "status": "ACTIVE",
+        "renewalDate": "2026-12-31",
+        "seats": 75
+      },
+      {
+        "id": "SUB-512",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-563",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-532",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-517",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-526",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-557",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-519",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-537",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-531",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-598",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-520",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-530",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-599",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-529",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-591",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-553",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-518",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-520",
+        "customerName": "Quantum AI Systems",
+        "plan": "Dedicated Cluster",
+        "mrr": 15000,
+        "status": "ACTIVE",
+        "renewalDate": "2027-01-01",
+        "seats": 150
+      },
+      {
+        "id": "SUB-501",
+        "customerName": "Stripe Global Inc",
+        "plan": "Enterprise Scale",
+        "mrr": 14500,
+        "status": "ACTIVE",
+        "renewalDate": "2026-12-31",
+        "seats": 250
+      },
+      {
+        "id": "SUB-502",
+        "customerName": "Retool Devops Hub",
+        "plan": "Growth Tier",
+        "mrr": 4200,
+        "status": "ACTIVE",
+        "renewalDate": "2026-11-15",
+        "seats": 45
+      },
+      {
+        "id": "SUB-503",
+        "customerName": "Nordic AI Studio",
+        "plan": "Pro Team",
+        "mrr": 1800,
+        "status": "TRIAL",
+        "renewalDate": "2026-10-05",
+        "seats": 15
+      }
+    ]
+  },
+  "agency": {
+    "deliverables": [
+      {
+        "id": "DEL-249",
+        "tenantId": "agency_1790447367238",
+        "clientName": "Nike EMEA",
+        "projectTitle": "Global Brand Refresh 2026",
+        "milestone": "Interactive 3D Lookbook",
+        "dueDate": "2026-10-15",
+        "status": "APPROVED",
+        "retainerAmount": 28000
+      },
+      {
+        "id": "DEL-289",
+        "tenantId": "agency_1790447344919",
+        "clientName": "Nike EMEA",
+        "projectTitle": "Global Brand Refresh 2026",
+        "milestone": "Interactive 3D Lookbook",
+        "dueDate": "2026-10-15",
+        "status": "APPROVED",
+        "retainerAmount": 28000
+      },
+      {
+        "id": "DEL-275",
+        "tenantId": "agency_1790447287867",
+        "clientName": "Nike EMEA",
+        "projectTitle": "Global Brand Refresh 2026",
+        "milestone": "Interactive 3D Lookbook",
+        "dueDate": "2026-10-15",
+        "status": "APPROVED",
+        "retainerAmount": 28000
+      },
+      {
+        "id": "DEL-255",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-218",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-268",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-273",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-271",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-205",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-236",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-240",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-251",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-200",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-235",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-224",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-235",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-299",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-264",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-223",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-204",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-268",
+        "clientName": "AeroDynamics EV",
+        "projectTitle": "Global TV Commercial",
+        "milestone": "3D VFX Final Render",
+        "dueDate": "2026-10-20",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 32000
+      },
+      {
+        "id": "DEL-201",
+        "clientName": "Monolith Financial",
+        "projectTitle": "Mobile Neobank Redesign",
+        "milestone": "Figma Design System V2",
+        "dueDate": "2026-09-30",
+        "status": "IN_REVIEW",
+        "retainerAmount": 24000
+      },
+      {
+        "id": "DEL-202",
+        "clientName": "Veloce Supercars",
+        "projectTitle": "Luxury Configurator 3D",
+        "milestone": "Three.js Asset Pipeline",
+        "dueDate": "2026-10-12",
+        "status": "IN_PROGRESS",
+        "retainerAmount": 38000
+      }
+    ]
+  },
+  "auditLogs": [
+    {
+      "id": "aud_1790447367356_w0cfq",
+      "timestamp": "2026-09-26T18:29:27.356Z",
+      "tenantId": "custom_org_1790447367298",
+      "niche": "biotech_lab",
+      "action": "UPDATE_STATUS",
+      "entityType": "Record",
+      "entityId": "rec_biotech_lab_1790447367329",
+      "details": "Advanced status of CRISPR Sequence Batch #892 to SEQUENCED"
+    },
+    {
+      "id": "aud_1790447367329_elh7l",
+      "timestamp": "2026-09-26T18:29:27.329Z",
+      "tenantId": "custom_org_1790447367298",
+      "niche": "biotech_lab",
+      "action": "CREATE_RECORD",
+      "entityType": "Record",
+      "entityId": "rec_biotech_lab_1790447367329",
+      "details": "Created CRISPR Sequence Batch #892 in biotech_lab"
+    },
+    {
+      "id": "aud_1790447367295_3rv42",
+      "timestamp": "2026-09-26T18:29:27.295Z",
+      "tenantId": "agency_1790447367238",
+      "niche": "agency",
+      "action": "APPROVE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-249",
+      "details": "Client approved milestone: Interactive 3D Lookbook for Nike EMEA"
+    },
+    {
+      "id": "aud_1790447367262_1z5m2",
+      "timestamp": "2026-09-26T18:29:27.262Z",
+      "tenantId": "agency_1790447367238",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-249",
+      "details": "Created deliverable Interactive 3D Lookbook for Nike EMEA"
+    },
+    {
+      "id": "aud_1790447367206_5isba",
+      "timestamp": "2026-09-26T18:29:27.206Z",
+      "tenantId": "saas_corp_1790447367152",
+      "niche": "sme",
+      "action": "UPGRADE_SUBSCRIPTION",
+      "entityType": "Subscription",
+      "entityId": "SUB-563",
+      "details": "Upgraded subscription for Stripe Global Ltd: +$2000 MRR, +25 seats"
+    },
+    {
+      "id": "aud_1790447366943_87ie8",
+      "timestamp": "2026-09-26T18:29:26.943Z",
+      "tenantId": "bistro_1790447366856",
+      "niche": "restaurant",
+      "action": "ORDER_READY",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-6913295",
+      "details": "Marked order KOT-6913295 for Table 1 as READY"
+    },
+    {
+      "id": "aud_1790447366913_e5soq",
+      "timestamp": "2026-09-26T18:29:26.913Z",
+      "tenantId": "bistro_1790447366856",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-6913295",
+      "details": "Sent 2 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790447366792_6scdu",
+      "timestamp": "2026-09-26T18:29:26.792Z",
+      "tenantId": "brokerage_1790447366715",
+      "niche": "realestate",
+      "action": "BOOK_SHOWING",
+      "entityType": "Showing",
+      "entityId": "SHOW-36",
+      "details": "Scheduled showing for Arthur Dent"
+    },
+    {
+      "id": "aud_1790447366655_j1pzl",
+      "timestamp": "2026-09-26T18:29:26.655Z",
+      "tenantId": "med_center_1790447366547",
+      "niche": "hospital",
+      "action": "ISSUE_PRESCRIPTION",
+      "entityType": "Prescription",
+      "entityId": "RX-4410",
+      "details": "Signed prescription for Sarah Connor"
+    },
+    {
+      "id": "aud_1790447366623_n7d6z",
+      "timestamp": "2026-09-26T18:29:26.623Z",
+      "tenantId": "med_center_1790447366547",
+      "niche": "hospital",
+      "action": "SCHEDULE_APPOINTMENT",
+      "entityType": "Appointment",
+      "entityId": "APT-6623880",
+      "details": "Scheduled consultation for Sarah Connor"
+    },
+    {
+      "id": "aud_1790447366584_wn7l5",
+      "timestamp": "2026-09-26T18:29:26.584Z",
+      "tenantId": "med_center_1790447366547",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-6584641",
+      "details": "Admitted patient Sarah Connor to ICU-104"
+    },
+    {
+      "id": "aud_1790447345025_7pyhs",
+      "timestamp": "2026-09-26T18:29:05.025Z",
+      "tenantId": "custom_org_1790447344965",
+      "niche": "biotech_lab",
+      "action": "UPDATE_STATUS",
+      "entityType": "Record",
+      "entityId": "rec_biotech_lab_1790447344993",
+      "details": "Advanced status of CRISPR Sequence Batch #892 to SEQUENCED"
+    },
+    {
+      "id": "aud_1790447344993_ap4fz",
+      "timestamp": "2026-09-26T18:29:04.993Z",
+      "tenantId": "custom_org_1790447344965",
+      "niche": "biotech_lab",
+      "action": "CREATE_RECORD",
+      "entityType": "Record",
+      "entityId": "rec_biotech_lab_1790447344993",
+      "details": "Created CRISPR Sequence Batch #892 in biotech_lab"
+    },
+    {
+      "id": "aud_1790447344963_015wm",
+      "timestamp": "2026-09-26T18:29:04.963Z",
+      "tenantId": "agency_1790447344919",
+      "niche": "agency",
+      "action": "APPROVE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-289",
+      "details": "Client approved milestone: Interactive 3D Lookbook for Nike EMEA"
+    },
+    {
+      "id": "aud_1790447344937_gh3od",
+      "timestamp": "2026-09-26T18:29:04.937Z",
+      "tenantId": "agency_1790447344919",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-289",
+      "details": "Created deliverable Interactive 3D Lookbook for Nike EMEA"
+    },
+    {
+      "id": "aud_1790447344887_iou4r",
+      "timestamp": "2026-09-26T18:29:04.887Z",
+      "tenantId": "saas_corp_1790447344832",
+      "niche": "sme",
+      "action": "UPGRADE_SUBSCRIPTION",
+      "entityType": "Subscription",
+      "entityId": "SUB-594",
+      "details": "Upgraded subscription for Stripe Global Ltd: +$2000 MRR, +25 seats"
+    },
+    {
+      "id": "aud_1790447344706_u2gbg",
+      "timestamp": "2026-09-26T18:29:04.706Z",
+      "tenantId": "bistro_1790447344620",
+      "niche": "restaurant",
+      "action": "ORDER_READY",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-4668233",
+      "details": "Marked order KOT-4668233 for Table 1 as READY"
+    },
+    {
+      "id": "aud_1790447344668_w4ngt",
+      "timestamp": "2026-09-26T18:29:04.668Z",
+      "tenantId": "bistro_1790447344620",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-4668233",
+      "details": "Sent 2 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790447344555_yfz62",
+      "timestamp": "2026-09-26T18:29:04.555Z",
+      "tenantId": "brokerage_1790447344491",
+      "niche": "realestate",
+      "action": "BOOK_SHOWING",
+      "entityType": "Showing",
+      "entityId": "SHOW-37",
+      "details": "Scheduled showing for Arthur Dent"
+    },
+    {
+      "id": "aud_1790447344460_q8942",
+      "timestamp": "2026-09-26T18:29:04.460Z",
+      "tenantId": "med_center_1790447344337",
+      "niche": "hospital",
+      "action": "ISSUE_PRESCRIPTION",
+      "entityType": "Prescription",
+      "entityId": "RX-3000",
+      "details": "Signed prescription for Sarah Connor"
+    },
+    {
+      "id": "aud_1790447344422_o89v8",
+      "timestamp": "2026-09-26T18:29:04.422Z",
+      "tenantId": "med_center_1790447344337",
+      "niche": "hospital",
+      "action": "SCHEDULE_APPOINTMENT",
+      "entityType": "Appointment",
+      "entityId": "APT-4422301",
+      "details": "Scheduled consultation for Sarah Connor"
+    },
+    {
+      "id": "aud_1790447344380_et3r8",
+      "timestamp": "2026-09-26T18:29:04.380Z",
+      "tenantId": "med_center_1790447344337",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-4380635",
+      "details": "Admitted patient Sarah Connor to ICU-104"
+    },
+    {
+      "id": "aud_1790447287973_3lzrg",
+      "timestamp": "2026-09-26T18:28:07.973Z",
+      "tenantId": "custom_org_1790447287930",
+      "niche": "biotech_lab",
+      "action": "UPDATE_STATUS",
+      "entityType": "Record",
+      "entityId": "rec_biotech_lab_1790447287950",
+      "details": "Advanced status of CRISPR Sequence Batch #892 to SEQUENCED"
+    },
+    {
+      "id": "aud_1790447287950_bo047",
+      "timestamp": "2026-09-26T18:28:07.950Z",
+      "tenantId": "custom_org_1790447287930",
+      "niche": "biotech_lab",
+      "action": "CREATE_RECORD",
+      "entityType": "Record",
+      "entityId": "rec_biotech_lab_1790447287950",
+      "details": "Created CRISPR Sequence Batch #892 in biotech_lab"
+    },
+    {
+      "id": "aud_1790447287928_g7v4u",
+      "timestamp": "2026-09-26T18:28:07.928Z",
+      "tenantId": "agency_1790447287867",
+      "niche": "agency",
+      "action": "APPROVE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-275",
+      "details": "Client approved milestone: Interactive 3D Lookbook for Nike EMEA"
+    },
+    {
+      "id": "aud_1790447287899_a6539",
+      "timestamp": "2026-09-26T18:28:07.899Z",
+      "tenantId": "agency_1790447287867",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-275",
+      "details": "Created deliverable Interactive 3D Lookbook for Nike EMEA"
+    },
+    {
+      "id": "aud_1790447287837_tr7js",
+      "timestamp": "2026-09-26T18:28:07.837Z",
+      "tenantId": "saas_corp_1790447287775",
+      "niche": "sme",
+      "action": "UPGRADE_SUBSCRIPTION",
+      "entityType": "Subscription",
+      "entityId": "SUB-551",
+      "details": "Upgraded subscription for Stripe Global Ltd: +$2000 MRR, +25 seats"
+    },
+    {
+      "id": "aud_1790447287650_4hoh5",
+      "timestamp": "2026-09-26T18:28:07.650Z",
+      "tenantId": "bistro_1790447287558",
+      "niche": "restaurant",
+      "action": "ORDER_READY",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-7619758",
+      "details": "Marked order KOT-7619758 for Table 1 as READY"
+    },
+    {
+      "id": "aud_1790447287619_qn59m",
+      "timestamp": "2026-09-26T18:28:07.619Z",
+      "tenantId": "bistro_1790447287558",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-7619758",
+      "details": "Sent 2 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790447287494_4igk9",
+      "timestamp": "2026-09-26T18:28:07.494Z",
+      "tenantId": "brokerage_1790447287436",
+      "niche": "realestate",
+      "action": "BOOK_SHOWING",
+      "entityType": "Showing",
+      "entityId": "SHOW-56",
+      "details": "Scheduled showing for Arthur Dent"
+    },
+    {
+      "id": "aud_1790447287398_fhrrq",
+      "timestamp": "2026-09-26T18:28:07.398Z",
+      "tenantId": "med_center_1790447287319",
+      "niche": "hospital",
+      "action": "ISSUE_PRESCRIPTION",
+      "entityType": "Prescription",
+      "entityId": "RX-6871",
+      "details": "Signed prescription for Sarah Connor"
+    },
+    {
+      "id": "aud_1790447287377_ywu1j",
+      "timestamp": "2026-09-26T18:28:07.377Z",
+      "tenantId": "med_center_1790447287319",
+      "niche": "hospital",
+      "action": "SCHEDULE_APPOINTMENT",
+      "entityType": "Appointment",
+      "entityId": "APT-7377360",
+      "details": "Scheduled consultation for Sarah Connor"
+    },
+    {
+      "id": "aud_1790447287348_os5z1",
+      "timestamp": "2026-09-26T18:28:07.348Z",
+      "tenantId": "med_center_1790447287319",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-7348170",
+      "details": "Admitted patient Sarah Connor to ICU-104"
+    },
+    {
+      "id": "aud_1790447230920_a6t07",
+      "timestamp": "2026-09-26T18:27:10.920Z",
+      "tenantId": "tenant_alpha",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-0920980",
+      "details": "Admitted patient TenantA_Patient_1790447230823 to Ward Bed 01"
+    },
+    {
+      "id": "aud_1790447081850_jlj81",
+      "timestamp": "2026-09-26T18:24:41.850Z",
+      "tenantId": "tenant_alpha",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-1850432",
+      "details": "Admitted patient TenantA_Patient_1790447081733 to Ward Bed 01"
+    },
+    {
+      "id": "aud_1790446905774_f9p5w",
+      "timestamp": "2026-09-26T18:21:45.774Z",
+      "tenantId": "tenant_alpha",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-5774851",
+      "details": "Admitted patient TenantA_Patient_1790446905697 to Ward Bed 01"
+    },
+    {
+      "id": "aud_1790443841607_nlgud",
+      "timestamp": "2026-09-26T17:30:41.607Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-255",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790443841428_oi9a4",
+      "timestamp": "2026-09-26T17:30:41.428Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-1428117",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790443841249_d69ic",
+      "timestamp": "2026-09-26T17:30:41.249Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-1248652",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790443181021_h1bbg",
+      "timestamp": "2026-09-26T17:19:41.021Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-218",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790443180820_2ween",
+      "timestamp": "2026-09-26T17:19:40.820Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-0820955",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790443180627_z84p6",
+      "timestamp": "2026-09-26T17:19:40.627Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-0627523",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790443091873_53q6z",
+      "timestamp": "2026-09-26T17:18:11.873Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-268",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790443091712_982qh",
+      "timestamp": "2026-09-26T17:18:11.712Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-1712892",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790443091566_j3q1f",
+      "timestamp": "2026-09-26T17:18:11.566Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-1566219",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790442378304_enzj8",
+      "timestamp": "2026-09-26T17:06:18.304Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-273",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790442378158_twl3l",
+      "timestamp": "2026-09-26T17:06:18.158Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-8157410",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790442378017_zkn8i",
+      "timestamp": "2026-09-26T17:06:18.017Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8017510",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790442247940_a22re",
+      "timestamp": "2026-09-26T17:04:07.940Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-271",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790442247784_2lr6i",
+      "timestamp": "2026-09-26T17:04:07.784Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-7783577",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790442247644_aejq5",
+      "timestamp": "2026-09-26T17:04:07.644Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-7644506",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790440332672_s213i",
+      "timestamp": "2026-09-26T16:32:12.672Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-205",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790440332518_y8027",
+      "timestamp": "2026-09-26T16:32:12.518Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-2517651",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790440332366_wqilq",
+      "timestamp": "2026-09-26T16:32:12.366Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8993",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790440268969_g7hp4",
+      "timestamp": "2026-09-26T16:31:08.969Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-236",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790440268699_jrmg0",
+      "timestamp": "2026-09-26T16:31:08.699Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-8699496",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790440268527_jynog",
+      "timestamp": "2026-09-26T16:31:08.527Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8957",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790440262866_hx0vf",
+      "timestamp": "2026-09-26T16:31:02.866Z",
+      "tenantId": "default-tenant",
+      "niche": "automotive",
+      "action": "UPDATE_STATUS",
+      "entityType": "Record",
+      "entityId": "rec_automotive_1790440262836",
+      "details": "Advanced status of Live Verified AUTOMOTIVE Record to Completed"
+    },
+    {
+      "id": "aud_1790440262836_4ywvm",
+      "timestamp": "2026-09-26T16:31:02.836Z",
+      "tenantId": "default-tenant",
+      "niche": "automotive",
+      "action": "CREATE_RECORD",
+      "entityType": "Record",
+      "entityId": "rec_automotive_1790440262836",
+      "details": "Created Live Verified AUTOMOTIVE Record in automotive"
+    },
+    {
+      "id": "aud_1790440262779_q45mb",
+      "timestamp": "2026-09-26T16:31:02.779Z",
+      "tenantId": "default-tenant",
+      "niche": "fitness",
+      "action": "UPDATE_STATUS",
+      "entityType": "Record",
+      "entityId": "rec_fitness_1790440262759",
+      "details": "Advanced status of Live Verified FITNESS Record to Completed"
+    },
+    {
+      "id": "aud_1790440262759_xef9v",
+      "timestamp": "2026-09-26T16:31:02.759Z",
+      "tenantId": "default-tenant",
+      "niche": "fitness",
+      "action": "CREATE_RECORD",
+      "entityType": "Record",
+      "entityId": "rec_fitness_1790440262759",
+      "details": "Created Live Verified FITNESS Record in fitness"
+    },
+    {
+      "id": "aud_1790440262703_15cn7",
+      "timestamp": "2026-09-26T16:31:02.703Z",
+      "tenantId": "default-tenant",
+      "niche": "logistics",
+      "action": "UPDATE_STATUS",
+      "entityType": "Record",
+      "entityId": "rec_logistics_1790440262666",
+      "details": "Advanced status of Live Verified LOGISTICS Record to Completed"
+    },
+    {
+      "id": "aud_1790440262666_qpew7",
+      "timestamp": "2026-09-26T16:31:02.666Z",
+      "tenantId": "default-tenant",
+      "niche": "logistics",
+      "action": "CREATE_RECORD",
+      "entityType": "Record",
+      "entityId": "rec_logistics_1790440262666",
+      "details": "Created Live Verified LOGISTICS Record in logistics"
+    },
+    {
+      "id": "aud_1790440262596_hpfid",
+      "timestamp": "2026-09-26T16:31:02.596Z",
+      "tenantId": "default-tenant",
+      "niche": "legal",
+      "action": "UPDATE_STATUS",
+      "entityType": "Record",
+      "entityId": "rec_legal_1790440262567",
+      "details": "Advanced status of Live Verified LEGAL Record to Completed"
+    },
+    {
+      "id": "aud_1790440262567_q8948",
+      "timestamp": "2026-09-26T16:31:02.567Z",
+      "tenantId": "default-tenant",
+      "niche": "legal",
+      "action": "CREATE_RECORD",
+      "entityType": "Record",
+      "entityId": "rec_legal_1790440262567",
+      "details": "Created Live Verified LEGAL Record in legal"
+    },
+    {
+      "id": "aud_1790440262503_wvxo5",
+      "timestamp": "2026-09-26T16:31:02.503Z",
+      "tenantId": "default-tenant",
+      "niche": "construction",
+      "action": "UPDATE_STATUS",
+      "entityType": "Record",
+      "entityId": "rec_construction_1790440262476",
+      "details": "Advanced status of Live Verified CONSTRUCTION Record to Completed"
+    },
+    {
+      "id": "aud_1790440262476_om71s",
+      "timestamp": "2026-09-26T16:31:02.476Z",
+      "tenantId": "default-tenant",
+      "niche": "construction",
+      "action": "CREATE_RECORD",
+      "entityType": "Record",
+      "entityId": "rec_construction_1790440262476",
+      "details": "Created Live Verified CONSTRUCTION Record in construction"
+    },
+    {
+      "id": "aud_1790439773385_tuxva",
+      "timestamp": "2026-09-26T16:22:53.385Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-240",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790439773097_sjnad",
+      "timestamp": "2026-09-26T16:22:53.097Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-3097419",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790439772916_nejkb",
+      "timestamp": "2026-09-26T16:22:52.916Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8958",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790439472470_ldrwb",
+      "timestamp": "2026-09-26T16:17:52.470Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-251",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790439472303_cl63c",
+      "timestamp": "2026-09-26T16:17:52.303Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-2302506",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790439472152_iqbue",
+      "timestamp": "2026-09-26T16:17:52.152Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8976",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790438223589_hc0vo",
+      "timestamp": "2026-09-26T15:57:03.589Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-200",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790438223434_r7pmg",
+      "timestamp": "2026-09-26T15:57:03.434Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-3434707",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790438223290_9l5oh",
+      "timestamp": "2026-09-26T15:57:03.290Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8973",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790438035266_z2sc4",
+      "timestamp": "2026-09-26T15:53:55.266Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-235",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790438035115_3chrd",
+      "timestamp": "2026-09-26T15:53:55.115Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-5115563",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790438034963_5efcq",
+      "timestamp": "2026-09-26T15:53:54.963Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8972",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790437399693_0dsxx",
+      "timestamp": "2026-09-26T15:43:19.693Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-224",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790437399533_0b0sx",
+      "timestamp": "2026-09-26T15:43:19.533Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-9533331",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790437399386_5wnys",
+      "timestamp": "2026-09-26T15:43:19.386Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8984",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790437011003_4r9zk",
+      "timestamp": "2026-09-26T15:36:51.003Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-235",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790437010831_y0qsq",
+      "timestamp": "2026-09-26T15:36:50.831Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-0830226",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790437010683_rffxn",
+      "timestamp": "2026-09-26T15:36:50.683Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8971",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790436053607_x8827",
+      "timestamp": "2026-09-26T15:20:53.607Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-299",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790436053457_d41i9",
+      "timestamp": "2026-09-26T15:20:53.457Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-3457789",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790436053316_r1m0j",
+      "timestamp": "2026-09-26T15:20:53.316Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8977",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790435754599_p1jrl",
+      "timestamp": "2026-09-26T15:15:54.599Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-264",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790435754450_pvrum",
+      "timestamp": "2026-09-26T15:15:54.450Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-4450111",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790435754303_gtfws",
+      "timestamp": "2026-09-26T15:15:54.303Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8969",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790435451631_vlgzk",
+      "timestamp": "2026-09-26T15:10:51.631Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-223",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790435451466_vgjom",
+      "timestamp": "2026-09-26T15:10:51.466Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-368",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790435451307_tk36t",
+      "timestamp": "2026-09-26T15:10:51.307Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8977",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_1790435438239_9rtpp",
+      "timestamp": "2026-09-26T15:10:38.239Z",
+      "tenantId": "acme-tenant",
+      "niche": "agency",
+      "action": "CREATE_DELIVERABLE",
+      "entityType": "Deliverable",
+      "entityId": "DEL-204",
+      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
+    },
+    {
+      "id": "aud_1790435438090_61p4f",
+      "timestamp": "2026-09-26T15:10:38.090Z",
+      "tenantId": "acme-tenant",
+      "niche": "restaurant",
+      "action": "CREATE_KOT",
+      "entityType": "KitchenOrder",
+      "entityId": "KOT-302",
+      "details": "Sent 1 items to kitchen for Table 1"
+    },
+    {
+      "id": "aud_1790435437911_arzv0",
+      "timestamp": "2026-09-26T15:10:37.911Z",
+      "tenantId": "acme-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-8971",
+      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+    },
+    {
+      "id": "aud_init_01",
+      "timestamp": "2026-09-26T14:57:22.393Z",
+      "tenantId": "default-tenant",
+      "niche": "system",
+      "action": "BOOTSTRAP",
+      "entityType": "Store",
+      "entityId": "global",
+      "details": "Niche Storage Engine bootstrapped with realistic tenant architecture"
+    }
+  ],
+  "nicheRecords": {
+    "construction": [
+      {
+        "id": "rec_construction_1790440262476",
+        "name": "Live Verified CONSTRUCTION Record",
+        "status": "Completed",
+        "statusColor": "#10b981",
+        "primaryField": "Ref: #VERIFY-01",
+        "secondaryField": "Tested via Connection Suite",
+        "amount": ",000",
+        "date": "Just now"
+      },
+      {
+        "id": "rec_const_1",
+        "name": "Skyline Tower Phase 2",
+        "status": "In-Progress",
+        "statusColor": "#f59e0b",
+        "primaryField": "Ref: #C-9042",
+        "secondaryField": "Subcontractor: Apex Steel",
+        "amount": "$450,000",
+        "date": "Today"
+      },
+      {
+        "id": "rec_const_2",
+        "name": "Harbor Logistics Bay 4",
+        "status": "Completed",
+        "statusColor": "#10b981",
+        "primaryField": "Ref: #C-8812",
+        "secondaryField": "Signed off & Inspected",
+        "amount": "$280,000",
+        "date": "3 days ago"
+      }
+    ],
+    "legal": [
+      {
+        "id": "rec_legal_1790440262567",
+        "name": "Live Verified LEGAL Record",
+        "status": "Completed",
+        "statusColor": "#10b981",
+        "primaryField": "Ref: #VERIFY-01",
+        "secondaryField": "Tested via Connection Suite",
+        "amount": ",000",
+        "date": "Just now"
+      },
+      {
+        "id": "rec_leg_1",
+        "name": "Merger & Acquisition Alpha",
+        "status": "In-Review",
+        "statusColor": "#38bdf8",
+        "primaryField": "Matter: #L-1044",
+        "secondaryField": "Partner: Eleanor Vance",
+        "amount": "$125,000",
+        "date": "Yesterday"
+      },
+      {
+        "id": "rec_leg_2",
+        "name": "IP Patent Filing TechCorp",
+        "status": "Drafting",
+        "statusColor": "#f59e0b",
+        "primaryField": "Matter: #L-1089",
+        "secondaryField": "Associate: D. Sterling",
+        "amount": "$45,000",
+        "date": "Today"
+      }
+    ],
+    "logistics": [
+      {
+        "id": "rec_logistics_1790440262666",
+        "name": "Live Verified LOGISTICS Record",
+        "status": "Completed",
+        "statusColor": "#10b981",
+        "primaryField": "Ref: #VERIFY-01",
+        "secondaryField": "Tested via Connection Suite",
+        "amount": ",000",
+        "date": "Just now"
+      },
+      {
+        "id": "rec_log_1",
+        "name": "Cross-Dock Shipment Alpha",
+        "status": "In-Transit",
+        "statusColor": "#38bdf8",
+        "primaryField": "Waybill: #WB-9912",
+        "secondaryField": "Carrier: SwiftFreight Fleet 9",
+        "amount": "$18,400",
+        "date": "Today"
+      },
+      {
+        "id": "rec_log_2",
+        "name": "Cold Chain Pharma Express",
+        "status": "Delivered",
+        "statusColor": "#10b981",
+        "primaryField": "Waybill: #WB-8821",
+        "secondaryField": "Signed at Dock 3",
+        "amount": "$34,000",
+        "date": "Yesterday"
+      }
+    ],
+    "fitness": [
+      {
+        "id": "rec_fitness_1790440262759",
+        "name": "Live Verified FITNESS Record",
+        "status": "Completed",
+        "statusColor": "#10b981",
+        "primaryField": "Ref: #VERIFY-01",
+        "secondaryField": "Tested via Connection Suite",
+        "amount": ",000",
+        "date": "Just now"
+      },
+      {
+        "id": "rec_fit_1",
+        "name": "Marcus Sterling VIP Profile",
+        "status": "Active",
+        "statusColor": "#10b981",
+        "primaryField": "Barcode: #FIT-00492",
+        "secondaryField": "Trainer: Sarah Jenkins",
+        "amount": "$180/mo",
+        "date": "Today"
+      },
+      {
+        "id": "rec_fit_2",
+        "name": "Elena Rostova Platinum",
+        "status": "Active",
+        "statusColor": "#10b981",
+        "primaryField": "Barcode: #FIT-00821",
+        "secondaryField": "Tier: All-Access VIP",
+        "amount": "$220/mo",
+        "date": "2 days ago"
+      }
+    ],
+    "automotive": [
+      {
+        "id": "rec_automotive_1790440262836",
+        "name": "Live Verified AUTOMOTIVE Record",
+        "status": "Completed",
+        "statusColor": "#10b981",
+        "primaryField": "Ref: #VERIFY-01",
+        "secondaryField": "Tested via Connection Suite",
+        "amount": ",000",
+        "date": "Just now"
+      },
+      {
+        "id": "rec_auto_1",
+        "name": "RO #8820 - Porsche 911 GT3",
+        "status": "In-Service",
+        "statusColor": "#f59e0b",
+        "primaryField": "VIN: ...WP0AB2A9",
+        "secondaryField": "Tech: Master Tech Mike",
+        "amount": "$3,450",
+        "date": "Today"
+      },
+      {
+        "id": "rec_auto_2",
+        "name": "RO #8815 - BMW M4 Competition",
+        "status": "Ready",
+        "statusColor": "#10b981",
+        "primaryField": "VIN: ...WBS43AZ0",
+        "secondaryField": "Inspection Passed",
+        "amount": "$1,890",
+        "date": "Yesterday"
+      }
+    ],
+    "biotech_lab": [
+      {
+        "id": "rec_biotech_lab_1790447367329",
+        "tenantId": "custom_org_1790447367298",
+        "name": "CRISPR Sequence Batch #892",
+        "status": "SEQUENCED",
+        "statusColor": "#10b981",
+        "primaryField": "Polymerase Target Beta",
+        "secondaryField": "Purity 99.4%",
+        "amount": "$45,000",
+        "date": "Just now"
+      },
+      {
+        "id": "rec_biotech_lab_1790447344993",
+        "tenantId": "custom_org_1790447344965",
+        "name": "CRISPR Sequence Batch #892",
+        "status": "SEQUENCED",
+        "statusColor": "#10b981",
+        "primaryField": "Polymerase Target Beta",
+        "secondaryField": "Purity 99.4%",
+        "amount": "$45,000",
+        "date": "Just now"
+      },
+      {
+        "id": "rec_biotech_lab_1790447287950",
+        "tenantId": "custom_org_1790447287930",
+        "name": "CRISPR Sequence Batch #892",
+        "status": "SEQUENCED",
+        "statusColor": "#10b981",
+        "primaryField": "Polymerase Target Beta",
+        "secondaryField": "Purity 99.4%",
+        "amount": "$45,000",
+        "date": "Just now"
+      }
+    ]
+  }
+}

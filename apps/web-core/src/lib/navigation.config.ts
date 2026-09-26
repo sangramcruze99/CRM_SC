@@ -276,7 +276,7 @@ export const MASTER_NAV_ITEMS: NavItemConfig[] = [
   { id: 'auto-agents', label: 'AI Agent Swarms', href: '/automation/agents', iconName: 'Bot', domain: 'automation', keywords: ['agents', 'swarms', 'bots', 'runtimes'] },
   { id: 'auto-agent-tree', label: 'AI Agent Swarm Tree', href: '/automation/agents/tree', iconName: 'Network', badge: 'Tree', domain: 'automation', keywords: ['agent tree', 'hierarchy', 'swarms', 'delegation', 'athena', 'agents'] },
   { id: 'auto-executions', label: 'AI Result Center & Executions', href: '/automation/executions', iconName: 'Activity', badge: 'Results', domain: 'automation', keywords: ['results', 'executions', 'outputs', 'audit', 'runs', 'log'] },
-  { id: 'auto-engine', label: 'Automations Engine & Rules', href: '/automations', iconName: 'Workflow', badge: 'Zapier', domain: 'automation', keywords: ['automation', 'automations', 'triggers', 'connectors', 'webhooks'] },
+  { id: 'auto-engine', label: 'Workflows & Rules', href: '/automation/workflows', iconName: 'Workflow', badge: 'Active', domain: 'automation', keywords: ['automation', 'workflows', 'triggers', 'connectors', 'webhooks'] },
   { id: 'auto-sync', label: 'Cross-Service Data Sync Mesh', href: '/data-sync', iconName: 'ArrowRightLeft', badge: 'Mesh', domain: 'automation', keywords: ['automation', 'sync', 'integration', 'mesh', 'etl'] },
 
   // --- Operations & Comms ---
@@ -364,7 +364,7 @@ export const MASTER_AI_AUTOMATION_ITEMS: NavItemConfig[] = [
   // --- AI Automation OS AI Automation ---
   { id: 'auto-hermes', label: 'Hermes — Workflow Conductor', href: '/automation?agent=hermes', iconName: 'Bot', badge: 'Agent', domain: 'automation', isAiAutomation: true, agentId: 'hermes', keywords: ['automation', 'hermes', 'workflows', 'dag', 'conductor'] },
   { id: 'auto-flow-builder', label: 'Workflow Flow Builder AI', href: '/automation#builder', iconName: 'Sparkles', badge: 'Auto', domain: 'automation', isAiAutomation: true, keywords: ['automation', 'builder', 'generator'] },
-  { id: 'auto-trigger-sentinel', label: 'Event Trigger Sentinel', href: '/automations#triggers', iconName: 'Zap', badge: 'Sentinel', domain: 'automation', isAiAutomation: true, keywords: ['automation', 'triggers', 'sentinel'] },
+  { id: 'auto-trigger-sentinel', label: 'Event Trigger Sentinel', href: '/automation/workflows', iconName: 'Zap', badge: 'Sentinel', domain: 'automation', isAiAutomation: true, keywords: ['automation', 'triggers', 'sentinel'] },
 
   // --- Operations & Comms AI Automation ---
   { id: 'ops-voice-copilot', label: 'Softphone Voice Copilot', href: '/voice?agent=copilot', iconName: 'Bot', badge: 'AI', domain: 'operations', isAiAutomation: true, keywords: ['operations', 'voice', 'copilot', 'telephony'] },
@@ -700,8 +700,7 @@ export function resolveNavigationSections({
             || item.href === '/lead-prospector' && fId === 'feat_lead_prospector'
             || item.href === '/documents' && fId === 'feat_document_vault'
             || item.href === '/directory' && fId === 'feat_employee_org_tree'
-            || item.href === '/automation' && (fId === 'feat_automations' || fId === 'feat_operations')
-            || item.href === '/automations' && (fId === 'feat_automations' || fId === 'feat_operations')
+            || (item.href === '/automation' || item.href === '/automation/workflows') && (fId === 'feat_automations' || fId === 'feat_operations')
             || item.href === '/data-sync' && (fId === 'feat_automations' || fId === 'feat_operations');
         });
       });
@@ -721,7 +720,7 @@ export function resolveNavigationSections({
       } else if (domainId === 'operations') {
         domainItems = domainItems.filter((i) => ['/voice', '/sim-gateway', '/portal'].includes(i.href));
       } else if (domainId === 'automation') {
-        domainItems = domainItems.filter((i) => ['/automation', '/automations', '/data-sync'].includes(i.href));
+        domainItems = domainItems.filter((i) => ['/automation', '/automation/workflows', '/data-sync'].includes(i.href));
       } else if (domainId === 'developer') {
         domainItems = domainItems.filter((i) => ['/developer', '/platform/schema'].includes(i.href));
       } else if (domainId === 'administration') {
@@ -757,7 +756,7 @@ export function resolveNavigationSections({
         '/onboarding',
         '/voice',
         '/automation',
-        '/automations',
+        '/automation/workflows',
         '/reports',
         '/documents',
         '/contacts',
@@ -857,7 +856,7 @@ export function resolveBreadcrumbs(
   if (cleanPath.startsWith('/automation')) {
     return {
       domainTitle: BUSINESS_DOMAINS.automation.title,
-      pageTitle: cleanPath === '/automations' ? 'Automations Engine' : 'AI Automation OS Studio',
+      pageTitle: cleanPath === '/automation/workflows' ? 'Workflows & Rules' : 'AI Automation OS Studio',
       domainHref: '/automation',
     };
   }

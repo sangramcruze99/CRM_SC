@@ -47,6 +47,8 @@ export function RealEstateClient() {
   const [newBaths, setNewBaths] = useState('3.5');
   const [newSqft, setNewSqft] = useState('3200');
 
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+
   const fetchRealEstateData = async () => {
     try {
       const res = await fetch('/api/niche/realestate');
@@ -55,6 +57,7 @@ export function RealEstateClient() {
         if (json.data?.properties) setProperties(json.data.properties);
         if (json.data?.showings) setShowings(json.data.showings);
         if (json.metrics) setMetrics(json.metrics);
+        if (json.auditLogs) setAuditLogs(json.auditLogs);
       }
     } catch (e) {
       console.error('Failed to fetch real estate data:', e);
@@ -119,6 +122,7 @@ export function RealEstateClient() {
     {
       data: { properties, showings, deals: metrics.deals || [] },
       metrics,
+      auditLogs,
     },
     {
       onGeneralAction: (action) => {

@@ -44,6 +44,7 @@ export function RetailPosClient() {
   const [sales, setSales] = useState<any[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [khataCustomers, setKhataCustomers] = useState<any[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [searchProduct, setSearchProduct] = useState('');
   const [role, setRole] = useState('admin');
   const [mode, setMode] = useState<'OPERATIONS' | 'ANALYTICS'>('OPERATIONS');
@@ -70,6 +71,9 @@ export function RetailPosClient() {
           if (json.data.catalogProducts) setCatalogProducts(json.data.catalogProducts);
           if (json.data.sales) setSales(json.data.sales);
           if (json.data.khataCustomers) setKhataCustomers(json.data.khataCustomers);
+        }
+        if (json.auditLogs) {
+          setAuditLogs(json.auditLogs);
         }
       }
     } catch (err) {
@@ -153,7 +157,7 @@ export function RetailPosClient() {
     setTimeout(() => setAlert(null), 4000);
   };
 
-  const handleAddProduct = (e: React.FormEvent) => {
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProdName || !newProdPrice) return;
 
@@ -173,6 +177,20 @@ export function RetailPosClient() {
     setNewProdStock('');
     setAlert(`Added product "${newProd.name}" to inventory catalog.`);
     setTimeout(() => setAlert(null), 4000);
+
+    try {
+      await fetch('/api/niche/retail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'add_product',
+          payload: newProd,
+        }),
+      });
+      fetchRetailData();
+    } catch (err) {
+      console.error('Failed to persist product:', err);
+    }
   };
 
   const dashboardConfig = getDashboardConfig(
@@ -192,6 +210,7 @@ export function RetailPosClient() {
         khataOutstandingDues: khataCustomers.reduce((acc, c) => acc + (c.totalCreditDue || c.balanceDue || 0), 0),
         lowStockSkus: catalogProducts.filter((p) => p.stock < 15).length,
       },
+      auditLogs,
     },
     {
       onGeneralAction: (actionName: string) => {

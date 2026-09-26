@@ -34,6 +34,7 @@ interface SubscriptionRecord {
 export function SmeClient() {
   const { activeServiceIds } = useIndustry();
   const [subscriptions, setSubscriptions] = useState<SubscriptionRecord[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [role, setRole] = useState('admin');
   const [mode, setMode] = useState<'OPERATIONS' | 'ANALYTICS'>('OPERATIONS');
   const [toast, setToast] = useState<string | null>(null);
@@ -57,14 +58,17 @@ export function SmeClient() {
               id: s.id,
               account: s.account || s.customerName || 'Enterprise Account',
               plan: s.plan || 'Scale Enterprise',
-              mrr: s.mrr || 5000,
-              seats: s.seats || 25,
-              healthScore: s.healthScore || 88,
+              mrr: Number(s.mrr || 0),
+              seats: Number(s.seats || 0),
+              healthScore: Number(s.healthScore || 100),
               status: s.status || 'ACTIVE',
-              renewalDate: s.renewalDate || '2026-11-30',
-              csmOwner: s.csmOwner || 'Sarah Chen',
+              renewalDate: s.renewalDate || 'Upcoming',
+              csmOwner: s.csmOwner || 'Account Rep',
             }))
           );
+        }
+        if (json.auditLogs) {
+          setAuditLogs(json.auditLogs);
         }
       }
     } catch (err) {
@@ -85,12 +89,12 @@ export function SmeClient() {
       id: `sub_${Date.now()}`,
       account: newAccount,
       plan: newPlan,
-      mrr: parseInt(newMrr) || 5000,
-      seats: parseInt(newSeats) || 20,
-      healthScore: 95,
+      mrr: parseInt(newMrr) || 0,
+      seats: parseInt(newSeats) || 0,
+      healthScore: 100,
       status: 'ACTIVE',
       renewalDate: '2027-01-15',
-      csmOwner: 'Sarah Chen',
+      csmOwner: 'Customer Success',
     };
 
     setSubscriptions([newSub, ...subscriptions]);
@@ -111,6 +115,7 @@ export function SmeClient() {
         totalMrr: subscriptions.reduce((acc, s) => acc + s.mrr, 0),
         annualizedRunRate: subscriptions.reduce((acc, s) => acc + s.mrr, 0) * 12,
       },
+      auditLogs,
     },
     {
       onGeneralAction: (actionName: string) => {

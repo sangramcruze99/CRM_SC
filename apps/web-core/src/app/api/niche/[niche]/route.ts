@@ -1,6 +1,14 @@
 // apps/web-core/src/app/api/niche/[niche]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { readStore, writeStore, logNicheAudit, emitNicheAutomationEvent, NicheStoreData } from '@/lib/nicheStorage';
+import {
+  readStore,
+  writeStore,
+  logNicheAudit,
+  emitNicheAutomationEvent,
+  getScopedNicheData,
+  getScopedAuditLogs,
+  NicheStoreData,
+} from '@/lib/nicheStorage';
 
 export async function GET(
   req: NextRequest,
@@ -8,14 +16,16 @@ export async function GET(
 ) {
   const { niche } = await params;
   const store = readStore();
-  const tenantId = req.headers.get('x-tenant-id') || 'default-tenant';
+  const tenantId = req.headers.get('x-tenant-id') || req.nextUrl.searchParams.get('tenantId') || 'default-tenant';
+  const scopedData = getScopedNicheData(niche, tenantId);
+  const auditLogs = getScopedAuditLogs(tenantId);
 
   if (niche === 'hospital') {
-    const data = store.hospital;
+    const data = scopedData || store.hospital;
     const occupiedBeds = data.patients.length;
     const totalBeds = data.totalBeds || 165;
     const occupancyRate = ((occupiedBeds / totalBeds) * 100).toFixed(1);
-    const criticalPatients = data.patients.filter((p) => p.triageLevel === 'CRITICAL').length;
+    const criticalPatients = data.patients.filter((p: any) => p.triageLevel === 'CRITICAL').length;
 
     return NextResponse.json({
       success: true,
@@ -30,14 +40,15 @@ export async function GET(
         todayAppointments: data.appointments.length,
         prescriptionsIssued: data.prescriptions.length,
       },
+      auditLogs,
     });
   }
 
   if (niche === 'realestate') {
-    const data = store.realestate;
-    const totalVolume = data.properties.reduce((acc, p) => acc + (p.price || 0), 0);
-    const pendingDealsVolume = data.deals.reduce((acc, d) => acc + (d.offerAmount || 0), 0);
-    const totalCommissions = data.deals.reduce((acc, d) => acc + (d.commissionAmount || 0), 0);
+    const data = scopedData || store.realestate;
+    const totalVolume = data.properties.reduce((acc: number, p: any) => acc + (p.price || 0), 0);
+    const pendingDealsVolume = data.deals.reduce((acc: number, d: any) => acc + (d.offerAmount || 0), 0);
+    const totalCommissions = data.deals.reduce((acc: number, d: any) => acc + (d.commissionAmount || 0), 0);
 
     return NextResponse.json({
       success: true,
@@ -52,14 +63,15 @@ export async function GET(
         totalCommissions,
         scheduledShowings: data.showings.length,
       },
+      auditLogs,
     });
   }
 
   if (niche === 'restaurant') {
-    const data = store.restaurant;
-    const occupiedTables = data.tables.filter((t) => t.status === 'OCCUPIED');
-    const grossSales = occupiedTables.reduce((acc, t) => acc + (t.billTotal || 0), 0);
-    const pendingOrders = data.kitchenOrders.filter((k) => k.status === 'PREPARING').length;
+    const data = scopedData || store.restaurant;
+    const occupiedTables = data.tables.filter((t: any) => t.status === 'OCCUPIED');
+    const grossSales = occupiedTables.reduce((acc: number, t: any) => acc + (t.billTotal || 0), 0);
+    const pendingOrders = data.kitchenOrders.filter((k: any) => k.status === 'PREPARING').length;
 
     return NextResponse.json({
       success: true,
@@ -71,15 +83,16 @@ export async function GET(
         occupiedTablesCount: occupiedTables.length,
         liveGrossSales: grossSales,
         pendingKitchenTickets: pendingOrders,
-        lowParStockItems: data.menuItems.filter((m) => m.currentStock <= m.parLevel).length,
+        lowParStockItems: data.menuItems.filter((m: any) => m.currentStock <= m.parLevel).length,
       },
+      auditLogs,
     });
   }
 
   if (niche === 'retail') {
-    const data = store.retail;
-    const totalSalesRevenue = data.sales.reduce((acc, s) => acc + (s.totalAmount || 0), 0);
-    const totalKhataOutstanding = data.khataCustomers.reduce((acc, c) => acc + (c.totalCreditDue || 0), 0);
+    const data = scopedData || store.retail;
+    const totalSalesRevenue = data.sales.reduce((acc: number, s: any) => acc + (s.totalAmount || 0), 0);
+    const totalKhataOutstanding = data.khataCustomers.reduce((acc: number, c: any) => acc + (c.totalCreditDue || 0), 0);
 
     return NextResponse.json({
       success: true,
@@ -91,14 +104,15 @@ export async function GET(
         todayReceiptsCount: data.sales.length,
         totalSalesRevenue,
         khataOutstandingDues: totalKhataOutstanding,
-        lowStockSkus: data.catalogProducts.filter((p) => p.stock < 15).length,
+        lowStockSkus: data.catalogProducts.filter((p: any) => p.stock < 15).length,
       },
+      auditLogs,
     });
   }
 
   if (niche === 'sme') {
-    const data = store.sme;
-    const totalMrr = data.subscriptions.reduce((acc, s) => acc + (s.mrr || 0), 0);
+    const data = scopedData || store.sme;
+    const totalMrr = data.subscriptions.reduce((acc: number, s: any) => acc + (s.mrr || 0), 0);
 
     return NextResponse.json({
       success: true,
@@ -110,12 +124,13 @@ export async function GET(
         totalMrr,
         annualizedRunRate: totalMrr * 12,
       },
+      auditLogs,
     });
   }
 
   if (niche === 'agency') {
-    const data = store.agency;
-    const totalRetainers = data.deliverables.reduce((acc, d) => acc + (d.retainerAmount || 0), 0);
+    const data = scopedData || store.agency;
+    const totalRetainers = data.deliverables.reduce((acc: number, d: any) => acc + (d.retainerAmount || 0), 0);
 
     return NextResponse.json({
       success: true,
@@ -125,13 +140,14 @@ export async function GET(
       metrics: {
         activeSprintsCount: data.deliverables.length,
         totalRetainerValue: totalRetainers,
-        inReviewDeliverables: data.deliverables.filter((d) => d.status === 'IN_REVIEW').length,
+        inReviewDeliverables: data.deliverables.filter((d: any) => d.status === 'IN_REVIEW').length,
       },
+      auditLogs,
     });
   }
 
-  if (store.nicheRecords && store.nicheRecords[niche]) {
-    const records = store.nicheRecords[niche];
+  if (scopedData && scopedData.records) {
+    const records = scopedData.records;
     return NextResponse.json({
       success: true,
       niche,
@@ -141,9 +157,9 @@ export async function GET(
       },
       metrics: {
         totalRecords: records.length,
-        activeRecords: records.filter((r) => !['Completed', 'Delivered', 'Ready', 'Cancelled'].includes(r.status)).length,
+        activeRecords: records.filter((r: any) => !['Completed', 'Delivered', 'Ready', 'Cancelled'].includes(r.status)).length,
       },
-      auditLogs: store.auditLogs.slice(0, 30),
+      auditLogs,
     });
   }
 
@@ -151,8 +167,8 @@ export async function GET(
     success: true,
     niche,
     tenantId,
-    data: store,
-    auditLogs: store.auditLogs.slice(0, 30),
+    data: scopedData || store,
+    auditLogs,
   });
 }
 
@@ -173,6 +189,7 @@ export async function POST(
       if (action === 'admit_patient') {
         const newPatient = {
           id: payload.id || `PT-${Date.now().toString().slice(-4)}${Math.floor(100 + Math.random() * 900)}`,
+          tenantId,
           name: payload.name,
           age: parseInt(payload.age) || 30,
           gender: payload.gender || 'Other',
@@ -194,6 +211,7 @@ export async function POST(
       if (action === 'book_appointment') {
         const newAppt = {
           id: payload.id || `APT-${Date.now().toString().slice(-4)}${Math.floor(100 + Math.random() * 900)}`,
+          tenantId,
           patient: payload.patient,
           time: payload.time || '10:00 AM',
           doctor: payload.doctor || 'Dr. Specialist',
@@ -209,6 +227,7 @@ export async function POST(
       if (action === 'issue_prescription') {
         const newRx = {
           id: `RX-${Math.floor(1000 + Math.random() * 9000)}`,
+          tenantId,
           patientName: payload.patientName,
           ehrRecordId: payload.ehrRecordId || 'EHR-88902',
           diagnosis: payload.diagnosis || 'Clinical Diagnosis',
@@ -228,6 +247,7 @@ export async function POST(
       if (action === 'create_property') {
         const newProp = {
           id: `PROP-${Math.floor(705 + Math.random() * 50)}`,
+          tenantId,
           title: payload.title,
           address: payload.address || 'Beverly Hills, CA',
           price: parseFloat(payload.price) || 1500000,
@@ -250,6 +270,7 @@ export async function POST(
       if (action === 'book_showing') {
         const newShowing = {
           id: `SHOW-${Math.floor(10 + Math.random() * 90)}`,
+          tenantId,
           propertyId: payload.propertyId || 'PROP-701',
           propertyTitle: payload.propertyTitle || 'Property Showing',
           buyerName: payload.buyerName || 'Prospective Buyer',
@@ -267,6 +288,7 @@ export async function POST(
       if (action === 'open_escrow') {
         const newDeal = {
           id: `ESC-${Math.floor(400 + Math.random() * 100)}`,
+          tenantId,
           propertyTitle: payload.propertyTitle,
           buyerName: payload.buyerName,
           offerAmount: parseFloat(payload.offerAmount) || 2000000,
@@ -289,6 +311,7 @@ export async function POST(
         if (tableIndex !== -1) {
           store.restaurant.tables[tableIndex] = {
             ...store.restaurant.tables[tableIndex],
+            tenantId,
             status: 'OCCUPIED',
             guestName: payload.guestName || 'Walk-In Guests',
             server: payload.server || 'Floor Captain',
@@ -304,6 +327,7 @@ export async function POST(
       if (action === 'create_kitchen_order') {
         const newKOT = {
           id: `KOT-${Date.now().toString().slice(-4)}${Math.floor(100 + Math.random() * 900)}`,
+          tenantId,
           tableId: payload.tableId,
           tableNumber: payload.tableNumber,
           items: payload.items || [],
@@ -317,6 +341,7 @@ export async function POST(
         const table = store.restaurant.tables.find((t) => t.id === payload.tableId);
         if (table) {
           table.billTotal += orderTotal;
+          table.tenantId = tenantId;
         }
         logNicheAudit(tenantId, 'restaurant', 'CREATE_KOT', 'KitchenOrder', newKOT.id, `Sent ${newKOT.items.length} items to kitchen for ${newKOT.tableNumber}`, store);
         writeStore(store);
@@ -329,6 +354,7 @@ export async function POST(
         if (tableIndex !== -1) {
           store.restaurant.tables[tableIndex] = {
             ...store.restaurant.tables[tableIndex],
+            tenantId,
             status: payload.status,
             guestName: payload.guestName !== undefined ? payload.guestName : store.restaurant.tables[tableIndex].guestName,
             billTotal: payload.currentBill !== undefined ? payload.currentBill : store.restaurant.tables[tableIndex].billTotal,
@@ -357,6 +383,7 @@ export async function POST(
       if (action === 'pos_checkout') {
         const newSale = {
           id: `POS-${Math.floor(890 + Math.random() * 100)}`,
+          tenantId,
           receiptNumber: `REC-2026-${Math.floor(1000 + Math.random() * 9000)}`,
           timestamp: new Date().toISOString(),
           items: payload.items || [],
@@ -378,6 +405,7 @@ export async function POST(
         if (payload.paymentMethod === 'KHATA_CREDIT' && payload.customerId) {
           const khataCust = store.retail.khataCustomers.find((c) => c.id === payload.customerId);
           if (khataCust) {
+            khataCust.tenantId = tenantId;
             khataCust.totalCreditDue += newSale.totalAmount;
             khataCust.lastPurchaseDate = new Date().toISOString().split('T')[0];
           }
@@ -393,6 +421,7 @@ export async function POST(
         const customer = store.retail.khataCustomers.find((c) => c.id === payload.customerId);
         if (customer) {
           const amount = parseFloat(payload.amount) || 0;
+          customer.tenantId = tenantId;
           customer.totalCreditDue += amount;
           customer.lastPurchaseDate = new Date().toISOString().split('T')[0];
           logNicheAudit(tenantId, 'retail', 'KHATA_CREDIT', 'KhataCustomer', customer.id, `Added $${amount.toFixed(2)} credit to khata ledger for ${customer.name}`);
@@ -401,6 +430,40 @@ export async function POST(
           return NextResponse.json({ success: true, record: customer });
         }
       }
+
+      if (action === 'add_product') {
+        const newProduct = {
+          id: payload.id || `sku_${Date.now()}`,
+          tenantId,
+          name: payload.name,
+          category: payload.category || 'General',
+          price: parseFloat(payload.price) || 0,
+          stock: parseInt(payload.stock) || 0,
+          barcode: payload.barcode || `890${Math.floor(100000000 + Math.random() * 900000000)}`,
+        };
+        store.retail.catalogProducts.unshift(newProduct);
+        logNicheAudit(tenantId, 'retail', 'ADD_PRODUCT', 'Product', newProduct.id, `Added ${newProduct.name} to catalog ($${newProduct.price})`, store);
+        writeStore(store);
+        emitNicheAutomationEvent('retail', 'ADD_PRODUCT', newProduct, tenantId);
+        return NextResponse.json({ success: true, record: newProduct });
+      }
+
+      if (action === 'create_khata_customer') {
+        const newCustomer = {
+          id: payload.id || `khata_${Date.now().toString().slice(-4)}`,
+          tenantId,
+          name: payload.name,
+          phone: payload.phone || '+1 555-0199',
+          totalCreditDue: parseFloat(payload.totalCreditDue) || 0,
+          lastPurchaseDate: new Date().toISOString().split('T')[0],
+          creditLimit: parseFloat(payload.creditLimit) || 500,
+        };
+        store.retail.khataCustomers.unshift(newCustomer);
+        logNicheAudit(tenantId, 'retail', 'CREATE_KHATA_CUSTOMER', 'KhataCustomer', newCustomer.id, `Created khata customer ${newCustomer.name}`, store);
+        writeStore(store);
+        emitNicheAutomationEvent('retail', 'CREATE_KHATA_CUSTOMER', newCustomer, tenantId);
+        return NextResponse.json({ success: true, record: newCustomer });
+      }
     }
 
     // 5. SME & TECH B2B ACTIONS
@@ -408,6 +471,7 @@ export async function POST(
       if (action === 'create_subscription') {
         const newSub = {
           id: `SUB-${Math.floor(500 + Math.random() * 100)}`,
+          tenantId,
           customerName: payload.customerName,
           plan: payload.plan || 'Pro Team',
           mrr: parseFloat(payload.mrr) || 1200,
@@ -440,6 +504,7 @@ export async function POST(
       if (action === 'create_deliverable') {
         const newDel = {
           id: `DEL-${Math.floor(200 + Math.random() * 100)}`,
+          tenantId,
           clientName: payload.clientName,
           projectTitle: payload.projectTitle,
           milestone: payload.milestone || 'Project Deliverable',
@@ -473,6 +538,7 @@ export async function POST(
 
       const newRecord = {
         id: payload.id || `rec_${niche}_${Date.now()}`,
+        tenantId,
         name: payload.name || 'Untitled Record',
         status: payload.status || 'Active',
         statusColor: payload.statusColor || '#38bdf8',

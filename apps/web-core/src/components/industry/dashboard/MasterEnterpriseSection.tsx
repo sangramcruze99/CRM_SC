@@ -1,29 +1,39 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Activity,
   ArrowRight,
-  TrendingUp,
   Database,
-  Scan,
   Users,
   ShieldCheck,
-  DollarSign,
-  Workflow,
-  Sparkles,
   Bot,
-  ExternalLink,
   Layers,
 } from 'lucide-react';
 
 export function MasterEnterpriseSection() {
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [recordsCount, setRecordsCount] = useState<number>(0);
+
+  useEffect(() => {
+    fetch('/api/niche/all')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.auditLogs && Array.isArray(json.auditLogs)) {
+          setAuditLogs(json.auditLogs);
+        }
+        if (json.data?.records && Array.isArray(json.data.records)) {
+          setRecordsCount(json.data.records.length);
+        }
+      })
+      .catch((err) => console.error('Failed to load enterprise section data:', err));
+  }, []);
+
   return (
     <div className="space-y-4">
       {/* 1. Main Bento Grid */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        
         {/* Spotlight Hero Card: Conglomerate Throughput */}
         <div className="md:col-span-12 lg:col-span-7 workstation-card p-5 space-y-4 flex flex-col justify-between">
           <div className="flex items-start justify-between gap-3">
@@ -48,31 +58,31 @@ export function MasterEnterpriseSection() {
           {/* Metric Highlights */}
           <div className="grid grid-cols-3 gap-3 py-3 border-y border-slate-200 dark:border-white/[0.08] text-center">
             <div>
-              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Active Pipeline</span>
-              <div className="text-xl font-mono font-extrabold text-emerald-500 dark:text-emerald-400 mt-0.5">$24.8M</div>
-              <span className="text-[10px] text-zinc-500 font-mono">18 Enterprise Closings</span>
+              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Operating Divisions</span>
+              <div className="text-xl font-mono font-extrabold text-emerald-500 dark:text-emerald-400 mt-0.5">8 Niches</div>
+              <span className="text-[10px] text-zinc-500 font-mono">Healthcare, Retail, Tech</span>
             </div>
             <div className="border-x border-slate-200 dark:border-white/[0.08]">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Treasury Audited</span>
-              <div className="text-xl font-mono font-extrabold text-slate-900 dark:text-white mt-0.5">$1.42M</div>
-              <span className="text-[10px] text-emerald-400 font-mono">0 Fraud Escapes</span>
+              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Enterprise Records</span>
+              <div className="text-xl font-mono font-extrabold text-slate-900 dark:text-white mt-0.5">{recordsCount} Items</div>
+              <span className="text-[10px] text-emerald-400 font-mono">Mesh Synced</span>
             </div>
             <div>
-              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Autonomous Yield</span>
-              <div className="text-xl font-mono font-extrabold text-teal-400 mt-0.5">$248.5k/mo</div>
-              <span className="text-[10px] text-zinc-500 font-mono">1,420 hrs saved</span>
+              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Audit Trail</span>
+              <div className="text-xl font-mono font-extrabold text-teal-400 mt-0.5">{auditLogs.length} Events</div>
+              <span className="text-[10px] text-zinc-500 font-mono">Immutable Stream</span>
             </div>
           </div>
 
           <div className="flex items-center justify-between pt-1">
             <span className="text-xs font-mono text-zinc-500">
-              Live telemetry aggregated across all 67 modular enterprise microservices
+              Live telemetry aggregated across all connected enterprise business units
             </span>
             <Link
-              href="/automation/agents/tree"
+              href="/observability"
               className="text-xs font-mono font-bold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition"
             >
-              <span>Inspect Swarm Tree</span>
+              <span>Inspect Audit Logs</span>
               <ArrowRight size={13} />
             </Link>
           </div>
@@ -80,7 +90,6 @@ export function MasterEnterpriseSection() {
 
         {/* Right 5 Cols: Quick Mission Critical Micro-Tiles */}
         <div className="md:col-span-12 lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-          
           {/* Tile 1: Dual Khata Reconciler */}
           <div className="workstation-card p-4 space-y-2 flex flex-col justify-between">
             <div className="flex items-center justify-between">
@@ -93,74 +102,73 @@ export function MasterEnterpriseSection() {
               </span>
             </div>
             <div>
-              <span className="text-base font-mono font-black text-slate-900 dark:text-white block">$148,290.00</span>
-              <span className="text-[10px] font-mono text-zinc-400">Total Receivables In Flight</span>
+              <span className="text-base font-mono font-black text-slate-900 dark:text-white block">Active</span>
+              <span className="text-[10px] font-mono text-zinc-400">Receivables Ledger Synced</span>
             </div>
             <Link href="/banking" className="text-xs font-mono text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">
               <span>Reconcile Accounts</span> <ArrowRight size={11} />
             </Link>
           </div>
 
-          {/* Tile 2: Neural OCR Engine */}
+          {/* Tile 2: AI Sentinels Roster */}
           <div className="workstation-card p-4 space-y-2 flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Scan size={15} className="text-teal-400" />
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Neural OCR IDP</h4>
+                <Bot size={15} className="text-teal-400" />
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">AI Fleet</h4>
               </div>
               <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-teal-500/15 text-teal-300 border border-teal-500/30">
-                99.4% Acc
+                5 Sentinels
               </span>
             </div>
             <div>
-              <span className="text-xs font-mono text-zinc-300 block">Instant Line Extraction</span>
-              <span className="text-[10px] font-mono text-zinc-500">Invoices &amp; Legal PDFs</span>
+              <span className="text-xs font-mono text-zinc-300 block">Autonomous Teammates</span>
+              <span className="text-[10px] font-mono text-zinc-500">Continuous dropzone ingestion</span>
             </div>
-            <Link href="/ocr-invoice" className="text-xs font-mono text-teal-400 hover:text-teal-300 font-bold flex items-center gap-1">
-              <span>Scan Document</span> <ArrowRight size={11} />
+            <Link href="/ai-agents" className="text-xs font-mono text-teal-400 hover:text-teal-300 font-bold flex items-center gap-1">
+              <span>Fleet Manager</span> <ArrowRight size={11} />
             </Link>
           </div>
 
-          {/* Tile 3: AI Lead Prospector */}
+          {/* Tile 3: SOC2 & Compliance Gate */}
           <div className="workstation-card p-4 space-y-2 flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users size={15} className="text-emerald-400" />
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white">B2B Prospector</h4>
+                <ShieldCheck size={15} className="text-blue-400" />
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Security &amp; SOC2</h4>
               </div>
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                275M+
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-blue-500/15 text-blue-300 border border-blue-500/30">
+                Passing
               </span>
             </div>
             <div>
-              <span className="text-xs font-mono text-zinc-300 block">Verified B2B Decision Makers</span>
-              <span className="text-[10px] font-mono text-zinc-500">Autonomous Outbound Cadence</span>
+              <span className="text-xs font-mono text-zinc-300 block">Zero Critical Flags</span>
+              <span className="text-[10px] font-mono text-zinc-500">Immutable Hash Chains</span>
             </div>
-            <Link href="/lead-prospector" className="text-xs font-mono text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">
-              <span>Find Prospects</span> <ArrowRight size={11} />
+            <Link href="/observability" className="text-xs font-mono text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1">
+              <span>Security Hub</span> <ArrowRight size={11} />
             </Link>
           </div>
 
-          {/* Tile 4: Automation Mesh */}
+          {/* Tile 4: Workspace Architecture */}
           <div className="workstation-card p-4 space-y-2 flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Workflow size={15} className="text-cyan-400" />
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Workflow Mesh</h4>
+                <Layers size={15} className="text-cyan-400" />
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">Service Architecture</h4>
               </div>
               <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-                20 Active
+                Universal
               </span>
             </div>
             <div>
-              <span className="text-xs font-mono text-zinc-300 block">Event-Driven Automation</span>
-              <span className="text-[10px] font-mono text-zinc-500">Zero-Code Intent Studio</span>
+              <span className="text-xs font-mono text-zinc-300 block">Microservices Connected</span>
+              <span className="text-[10px] font-mono text-zinc-500">Isolated Tenant Tenancy</span>
             </div>
-            <Link href="/automation/workflows" className="text-xs font-mono text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1">
-              <span>View Library</span> <ArrowRight size={11} />
+            <Link href="/industry" className="text-xs font-mono text-cyan-400 hover:text-cyan-300 font-bold flex items-center gap-1">
+              <span>Niche Switcher</span> <ArrowRight size={11} />
             </Link>
           </div>
-
         </div>
       </div>
     </div>

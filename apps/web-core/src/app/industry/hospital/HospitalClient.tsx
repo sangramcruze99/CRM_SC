@@ -39,16 +39,17 @@ export function HospitalClient() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [metrics, setMetrics] = useState<any>({
     totalBeds: 165,
-    occupiedBeds: 78,
-    occupancyRate: '47.2%',
-    activeErQueue: 1,
-    todayAppointments: 8,
-    prescriptionsIssued: 4,
+    occupiedBeds: 0,
+    occupancyRate: '0.0%',
+    activeErQueue: 0,
+    todayAppointments: 0,
+    prescriptionsIssued: 0,
   });
   const [role, setRole] = useState('admin');
   const [mode, setMode] = useState<'OPERATIONS' | 'ANALYTICS'>('OPERATIONS');
   const [isAdmitModalOpen, setIsAdmitModalOpen] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
   const [newName, setNewName] = useState('');
   const [newAge, setNewAge] = useState('');
@@ -64,6 +65,7 @@ export function HospitalClient() {
         if (json.data?.patients) setPatients(json.data.patients);
         if (json.data?.appointments) setAppointments(json.data.appointments);
         if (json.metrics) setMetrics(json.metrics);
+        if (json.auditLogs) setAuditLogs(json.auditLogs);
       }
     } catch (e) {
       console.error('Failed to fetch hospital data:', e);
@@ -125,6 +127,7 @@ export function HospitalClient() {
     {
       data: { patients, appointments },
       metrics,
+      auditLogs,
     },
     {
       onAdmit: () => setIsAdmitModalOpen(true),

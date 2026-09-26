@@ -35,6 +35,7 @@ export function RestaurantClient() {
   const [mounted, setMounted] = useState(false);
   const [tables, setTables] = useState<DiningTable[]>([]);
   const [kitchenOrders, setKitchenOrders] = useState<KitchenOrder[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [role, setRole] = useState('admin');
   const [mode, setMode] = useState<'OPERATIONS' | 'ANALYTICS'>('OPERATIONS');
   const [loading, setLoading] = useState(true);
@@ -83,6 +84,9 @@ export function RestaurantClient() {
             );
           }
         }
+        if (json.auditLogs) {
+          setAuditLogs(json.auditLogs);
+        }
       }
     } catch (err) {
       console.error('Failed to load restaurant floor:', err);
@@ -99,7 +103,7 @@ export function RestaurantClient() {
   const handleTableStatusChange = async (tableId: string, newStatus: DiningTable['status']) => {
     const table = tables.find((t) => t.id === tableId);
     const guestName = newStatus === 'AVAILABLE' ? undefined : table?.guestName || 'Walk-in Guests';
-    const currentBill = newStatus === 'AVAILABLE' ? 0 : table?.currentBill || 55.0;
+    const currentBill = newStatus === 'AVAILABLE' ? 0 : table?.currentBill || 0;
 
     setTables((prev) =>
       prev.map((t) =>
@@ -146,6 +150,7 @@ export function RestaurantClient() {
     mode,
     {
       data: { tables, kitchenOrders },
+      auditLogs,
     },
     {
       onGeneralAction: (action) => {

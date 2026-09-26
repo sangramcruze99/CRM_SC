@@ -33,6 +33,7 @@ export function DynamicNicheWorkspace({ nicheKey }: { nicheKey: IndustryNiche })
   const { effectiveBlueprint, selectIndustryAndType } = useBlueprint();
   const [mounted, setMounted] = useState(false);
   const [records, setRecords] = useState<DynamicRecordItem[]>([]);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [role, setRole] = useState('admin');
   const [mode, setMode] = useState<'OPERATIONS' | 'ANALYTICS'>('OPERATIONS');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -54,8 +55,13 @@ export function DynamicNicheWorkspace({ nicheKey }: { nicheKey: IndustryNiche })
     fetch(`/api/niche/${nicheKey}`)
       .then((res) => res.json())
       .then((json) => {
-        if (json?.data?.records && Array.isArray(json.data.records) && json.data.records.length > 0) {
+        if (json?.data?.records && Array.isArray(json.data.records)) {
           setRecords(json.data.records);
+        } else {
+          setRecords([]);
+        }
+        if (json?.auditLogs) {
+          setAuditLogs(json.auditLogs);
         }
       })
       .catch((err) => console.error('Error fetching niche data:', err));
@@ -88,7 +94,7 @@ export function DynamicNicheWorkspace({ nicheKey }: { nicheKey: IndustryNiche })
       statusColor: defaultStatus.color,
       primaryField: newRecordDetail || 'Custom Entry',
       secondaryField: 'Created by Operator',
-      amount: '$12,000',
+      amount: 'Operational Unit',
       date: 'Just now',
     };
 
@@ -124,6 +130,7 @@ export function DynamicNicheWorkspace({ nicheKey }: { nicheKey: IndustryNiche })
     mode,
     {
       data: { records },
+      auditLogs,
     },
     {
       onGeneralAction: (action) => {
