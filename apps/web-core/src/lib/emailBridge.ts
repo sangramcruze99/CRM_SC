@@ -69,7 +69,7 @@ export function convertBlocksToSections(blocks: any[]): any[] {
           videoTitle: b.title || 'Product Video Walkthrough',
           videoThumbnail: b.videoThumbnail || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
           videoUrl: b.videoUrl || 'https://youtube.com/watch?v=demo',
-          badge: b.badge || '▶ Watch Demo',
+          badge: b.badge || ' Watch Demo',
         };
 
       case 'BUTTON_CTA':
@@ -77,7 +77,7 @@ export function convertBlocksToSections(blocks: any[]): any[] {
         return {
           id: newId,
           type: 'BUTTON_CTA',
-          buttonText: b.buttonText || (b.type === 'MEETING_SCHEDULER' ? '📅 Book Intro Call' : 'Learn More'),
+          buttonText: b.buttonText || (b.type === 'MEETING_SCHEDULER' ? ' Book Intro Call' : 'Learn More'),
           buttonUrl: b.buttonUrl || 'https://businessos.io',
         };
 
@@ -158,7 +158,7 @@ export function convertSectionsToBlocks(sections: any[]): any[] {
           title: s.videoTitle || 'Featured Video',
           videoThumbnail: s.videoThumbnail || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
           videoUrl: s.videoUrl || 'https://youtube.com/watch?v=demo',
-          badge: s.badge || '▶ Watch Demo',
+          badge: s.badge || ' Watch Demo',
         };
 
       case 'BUTTON_CTA':

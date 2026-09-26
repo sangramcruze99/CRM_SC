@@ -90,7 +90,7 @@ export class AgentFrameworkController {
         return {
           id: memoryItem.id,
           agent: memoryItem.agentName,
-          model: 'groq/llama-3.3-70b-versatile',
+          model: 'groq/gemma2-9b-it',
           trigger: 'Autonomous Pipeline Velocity Scan',
           action: memoryItem.actionType,
           risk: memoryItem.riskLevel,
@@ -120,7 +120,7 @@ export class AgentFrameworkController {
     return {
       id: item.id,
       agent: item.agent?.name || 'Autonomous Agent',
-      model: item.agent?.model || 'groq/llama-3.3-70b-versatile',
+      model: item.agent?.model || 'groq/gemma2-9b-it',
       trigger: payloadData.contextSummary || `${item.actionType} triggered by Business OS`,
       action: item.actionType,
       risk: item.riskLevel,

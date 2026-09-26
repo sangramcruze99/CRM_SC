@@ -71,7 +71,7 @@ export function ActivityTimeline({ entityType, entityId }: { entityType: 'contac
     switch(type) {
       case 'EMAIL': return <MailIcon className="w-3.5 h-3.5 text-sky-400" />;
       case 'CALL': return <PhoneIcon className="w-3.5 h-3.5 text-emerald-400" />;
-      case 'MEETING': return <CalendarIcon className="w-3.5 h-3.5 text-purple-400" />;
+      case 'MEETING': return <CalendarIcon className="w-3.5 h-3.5 text-emerald-400" />;
       default: return <StickyNoteIcon className="w-3.5 h-3.5 text-emerald-400" />;
     }
   };

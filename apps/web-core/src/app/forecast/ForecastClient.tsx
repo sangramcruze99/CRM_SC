@@ -166,7 +166,7 @@ export function ForecastClient() {
 
   const handleExportDeck = () => {
     window.print();
-    setAlert('📊 Boardroom Presentation Slide Deck exported to PDF.');
+    setAlert(' Boardroom Presentation Slide Deck exported to PDF.');
     setTimeout(() => setAlert(null), 4000);
   };
 

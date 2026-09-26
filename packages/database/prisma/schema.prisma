@@ -56,6 +56,12 @@ model Tenant {
   businessJournalEvents BusinessJournalEvent[]
   reportRuns            ReportRun[]
   reportSchedules       ReportSchedule[]
+  products              Product[]
+  categories            Category[]
+  suppliers             Supplier[]
+  stockMovements        StockMovement[]
+  screeningProfiles     ScreeningProfile[]
+  screeningResults      CandidateScreeningResult[]
 }
 
 model User {
@@ -173,9 +179,12 @@ model Workflow {
   tenantId          String
   name              String
   description       String?
+  category          String?  @default("General")
+  type              String   @default("USER_WORKFLOW") // USER_WORKFLOW, TEMPLATE, SYSTEM_WORKFLOW
+  isSystem          Boolean  @default(false)
   isActive          Boolean  @default(false)
   version           Int      @default(1)
-  status            String   @default("ACTIVE") // DRAFT, ACTIVE, PAUSED, ARCHIVED
+  status            String   @default("ACTIVE") // DRAFT, ACTIVE, PUBLISHED, PAUSED, ARCHIVED
   triggerType       String   // e.g., 'ON_RECORD_CREATE', 'SCHEDULED', 'WEBHOOK'
   triggerData       String?  @default("{}") // Specific configuration for the trigger
   nodes             String?  @default("[]") // JSON array of WorkflowNode
@@ -191,6 +200,7 @@ model Workflow {
   tenant            Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   actions           WorkflowAction[]
   versions          WorkflowVersion[]
+  artifacts         WorkflowArtifact[]
 }
 
 model WorkflowVersion {
@@ -1603,6 +1613,25 @@ model WorkflowTemplate {
   updatedAt           DateTime @updatedAt
 }
 
+model WorkflowArtifact {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  workflowId          String
+  executionId         String?
+  name                String
+  type                String   // DOCUMENT, REPORT, CSV, JSON, SUMMARY, EXPORT
+  location            String?
+  data                String?  @default("{}")
+  metadata            String?  @default("{}")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  workflow            Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, workflowId])
+  @@index([tenantId, executionId])
+}
+
 model Agent {
   id                  String   @id @default(cuid())
   tenantId            String
@@ -1654,17 +1683,27 @@ model AgentExecution {
   workflowExecutionId String?
   triggerEvent        String
   status              String   @default("SUCCESS")
+  outcomeCode         String?
+  outcomeSummary      String?
+  decisionReason      String?
+  targetEntityType    String?
+  targetId            String?
   inputPrompt         String
   reasoningLog        String   @default("[]")
   toolCalls           String   @default("[]")
+  actionsData         String?  @default("[]")
+  outputsData         String?  @default("[]")
+  resultData          String?
   finalResponse       String?
   tokensUsed          Int      @default(0)
   latencyMs           Int      @default(0)
   createdAt           DateTime @default(now())
+  completedAt         DateTime?
 
   agent               Agent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, agentId])
+  @@index([tenantId, status])
 }
 
 model ApprovalRequest {
@@ -1725,6 +1764,257 @@ model ToolExecution {
 
   @@index([tenantId, toolName])
 }
+
+// ============================================================================
+// STAGE 7: AI AGENT TRAINING, EVALUATION & MODEL OPERATIONS PLATFORM
+// ============================================================================
+
+model AgentRegistryEntry {
+  id                  String   @id @default(cuid())
+  agentId             String   @unique
+  name                String
+  description         String
+  version             String   @default("1.0.0")
+  status              String   @default("ACTIVE") // ACTIVE, PAUSED, EVALUATING, STAGED, RETIRED
+  lifecycleStage      String   @default("CONFIGURED") // CONFIGURED, EVALUATED, FINE_TUNED, STAGED, PRODUCTION
+  domain              String   // SALES, FINANCE, HR, OPERATIONS, SUPPORT, REALESTATE, ECOMMERCE, MARKETING, LEADS
+  service             String   @default("ai-engine")
+  modelProvider       String   @default("ollama") // groq, openrouter, ollama, openai
+  model               String   @default("ollama/gemma4:e4b")
+  systemInstructions  String
+  businessRules       String   @default("[]") // JSON array of business rule strings
+  allowedTools        String   @default("[]") // JSON array of tool names
+  knowledgeSources    String   @default("[]") // JSON array of document/rag collection IDs
+  memoryPolicy        String   @default("{}") // JSON config
+  approvalPolicy      String   @default("{}") // JSON config
+  resultSchema        String   @default("{}") // JSON schema
+  evaluationProfile   String   @default("{}") // JSON benchmark targets & metric thresholds
+  trainingProfile     String   @default("{}") // JSON SFT/LoRA config & criteria
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  versions            AgentVersion[]
+  datasets            AgentDataset[]
+  evaluations         AgentEvaluationRun[]
+  goldenScenarios     AgentGoldenScenario[]
+  feedback            AgentResultFeedback[]
+
+  @@index([domain, status])
+}
+
+model AgentVersion {
+  id                  String   @id @default(cuid())
+  agentId             String
+  version             String   // e.g. "1.0.0", "1.1.0"
+  changelog           String?
+  systemInstructions  String
+  businessRules       String   @default("[]")
+  allowedTools        String   @default("[]")
+  model               String
+  modelProvider       String
+  modelArtifactId     String?
+  promptVersion       String   @default("v1")
+  toolsVersion        String   @default("v1")
+  ragConfig           String   @default("{}")
+  policiesConfig      String   @default("{}")
+  status              String   @default("EXPERIMENTAL") // EXPERIMENTAL, EVALUATED, STAGING, PRODUCTION, ARCHIVED
+  isCurrentProduction Boolean  @default(false)
+  approvedBy          String?
+  approvedAt          DateTime?
+  evaluationSummary   String?  @default("{}") // snapshot of 12 metrics
+  createdAt           DateTime @default(now())
+
+  agent               AgentRegistryEntry @relation(fields: [agentId], references: [agentId], onDelete: Cascade)
+
+  @@unique([agentId, version])
+  @@index([agentId, isCurrentProduction])
+}
+
+model AgentDataset {
+  id                  String   @id @default(cuid())
+  datasetId           String   @unique
+  tenantId            String?  // null for global benchmark/regression datasets, tenantId for isolated evaluation
+  agentId             String
+  version             String   @default("1.0.0")
+  name                String
+  purpose             String   // TRAINING, VALIDATION, EVALUATION, REGRESSION, SAFETY, TOOL_USAGE, EDGE_CASE
+  sampleCount         Int      @default(0)
+  isSanitized         Boolean  @default(true)
+  piiMasked           Boolean  @default(true)
+  status              String   @default("READY") // DRAFT, SANITIZING, READY, ARCHIVED
+  storagePath         String?
+  createdBy           String   @default("SYSTEM")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  agent               AgentRegistryEntry @relation(fields: [agentId], references: [agentId], onDelete: Cascade)
+  examples            DatasetExample[]
+
+  @@index([agentId, purpose])
+  @@index([tenantId, agentId])
+}
+
+model DatasetExample {
+  id                  String   @id @default(cuid())
+  datasetId           String
+  exampleId           String
+  agentId             String
+  input               String
+  context             String   @default("{}") // JSON context
+  expectedBehavior    String   @default("{}") // JSON behavior descriptor
+  expectedToolCalls   String   @default("[]") // JSON array of tool names/params
+  expectedResult      String   @default("{}") // JSON expected result object
+  riskLevel           String   @default("LOW") // LOW, MEDIUM, HIGH, CRITICAL
+  tags                String   @default("[]") // JSON array of tag strings
+  isEdgeCase          Boolean  @default(false)
+  isFailureCase       Boolean  @default(false)
+  createdAt           DateTime @default(now())
+
+  dataset             AgentDataset @relation(fields: [datasetId], references: [datasetId], onDelete: Cascade)
+
+  @@index([datasetId, riskLevel])
+  @@index([agentId])
+}
+
+model AgentGoldenScenario {
+  id                  String   @id @default(cuid())
+  scenarioId          String   @unique // e.g. "MIDAS-GOLDEN-001"
+  agentId             String
+  title               String
+  description         String
+  domain              String
+  input               String
+  context             String   @default("{}")
+  expectedDecision    String   @default("{}")
+  expectedTools       String   @default("[]")
+  expectedResult      String   @default("{}")
+  assertions          String   @default("[]") // Deterministic validation rules
+  riskLevel           String   @default("LOW")
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  agent               AgentRegistryEntry @relation(fields: [agentId], references: [agentId], onDelete: Cascade)
+
+  @@index([agentId, isActive])
+}
+
+model AgentEvaluationRun {
+  id                  String   @id @default(cuid())
+  runId               String   @unique
+  tenantId            String?
+  agentId             String
+  agentVersion        String
+  datasetId           String?
+  modelTested         String
+  status              String   @default("COMPLETED") // RUNNING, COMPLETED, FAILED
+
+  // 12 Individual Evaluation Metrics (0.0 to 1.0 or exact measurement)
+  taskCorrectness     Float    @default(0)
+  groundingScore      Float    @default(0)
+  toolSelectionScore  Float    @default(0)
+  toolArgumentsScore  Float    @default(0)
+  outputStructureScore Float   @default(0)
+  businessRuleCompliance Float @default(0)
+  safetyScore         Float    @default(0)
+  hallucinationRate   Float    @default(0) // lower is better
+  resultCompleteness  Float    @default(0)
+  avgLatencyMs        Float    @default(0)
+  costPerDecisionUsd  Float    @default(0)
+  reliabilityRate     Float    @default(0)
+
+  goldenPassed        Boolean  @default(false)
+  regressionPassed    Boolean  @default(false)
+  passedOverall       Boolean  @default(false)
+  gateEligible        Boolean  @default(false)
+
+  detailedResults     String   @default("[]") // JSON breakdown per example
+  executedBy          String   @default("SYSTEM")
+  createdAt           DateTime @default(now())
+
+  agent               AgentRegistryEntry @relation(fields: [agentId], references: [agentId], onDelete: Cascade)
+
+  @@index([agentId, createdAt])
+  @@index([tenantId, agentId])
+}
+
+model AgentRegressionRun {
+  id                  String   @id @default(cuid())
+  regressionId        String   @unique
+  agentId             String
+  baselineVersion     String
+  candidateVersion    String
+  datasetId           String
+  totalScenarios      Int      @default(0)
+  passedScenarios     Int      @default(0)
+  failedScenarios     Int      @default(0)
+  regressedScenarios  Int      @default(0)
+  improvedScenarios   Int      @default(0)
+  isApproved          Boolean  @default(false)
+  diffReport          String   @default("{}") // JSON delta
+  executedAt          DateTime @default(now())
+
+  @@index([agentId, baselineVersion, candidateVersion])
+}
+
+model ModelRegistry {
+  id                  String   @id @default(cuid())
+  modelId             String   @unique // e.g. "midas-lora-v1.3"
+  baseModel           String   // e.g. "Qwen/Qwen2.5-7B-Instruct" or "ollama/gemma4:e4b"
+  provider            String   // ollama, groq, openrouter, huggingface
+  version             String
+  agentId             String
+  trainingDatasetId   String?
+  evaluationDatasetId String?
+  metricsSnapshot     String   @default("{}")
+  status              String   @default("EXPERIMENTAL") // EXPERIMENTAL, EVALUATED, APPROVED, STAGING, PRODUCTION, RETIRED
+  approvedBy          String?
+  approvedAt          DateTime?
+  deploymentStatus    String   @default("IDLE") // IDLE, DEPLOYING, ACTIVE, ROLLED_BACK
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([agentId, status])
+}
+
+model AgentExperiment {
+  id                  String   @id @default(cuid())
+  experimentId        String   @unique
+  name                String
+  agentId             String
+  model               String
+  promptVersion       String
+  datasetId           String
+  hyperparameters     String   @default("{}")
+  metricsSummary      String   @default("{}")
+  notes               String?
+  status              String   @default("CANDIDATE") // CANDIDATE, REJECTED, PROMOTED
+  createdAt           DateTime @default(now())
+
+  @@index([agentId, createdAt])
+}
+
+model AgentResultFeedback {
+  id                  String   @id @default(cuid())
+  tenantId            String
+  executionId         String   // references AgentExecution.id
+  agentId             String
+  userRating          String   // CORRECT, INCORRECT, NEEDS_CORRECTION
+  errorCategory       String?  // AMOUNT, VENDOR, DATE, PAYMENT_STATUS, WRONG_TOOL, MISSING_INFO, HALLUCINATION, OTHER
+  correctionValue     String?
+  userNotes           String?
+  submittedBy         String   @default("USER")
+  isCandidateForDataset Boolean @default(false)
+  isSanitized         Boolean  @default(false)
+  promotedToDatasetId String?
+  createdAt           DateTime @default(now())
+
+  agent               AgentRegistryEntry @relation(fields: [agentId], references: [agentId], onDelete: Cascade)
+
+  @@index([tenantId, agentId])
+  @@index([agentId, isCandidateForDataset])
+}
+
 
 model Connector {
   id                  String   @id @default(cuid())
@@ -1944,5 +2234,165 @@ model ReportSchedule {
   tenant            Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, isActive])
+}
+
+// ============================================================================
+// INVENTORY & SUPPLY CHAIN ENGINE
+// ============================================================================
+
+model Product {
+  id            String   @id @default(cuid())
+  tenantId      String
+  name          String
+  sku           String
+  description   String?
+  price         Float    @default(0)
+  costPrice     Float    @default(0)
+  quantity      Int      @default(0)
+  reorderPoint  Int      @default(10)
+  unit          String   @default("pcs")
+  status        String   @default("ACTIVE") // 'ACTIVE', 'LOW_STOCK', 'OUT_OF_STOCK', 'DISCONTINUED'
+  categoryId    String?
+  supplierId    String?
+  barcode       String?
+  location      String?
+  metadata      String?  @default("{}")
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category      Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  supplier      Supplier? @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  movements     StockMovement[]
+
+  @@unique([tenantId, sku])
+  @@index([tenantId, status])
+  @@index([tenantId, categoryId])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String
+  description String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products    Product[]
+
+  @@unique([tenantId, name])
+}
+
+model Supplier {
+  id            String    @id @default(cuid())
+  tenantId      String
+  name          String
+  contactPerson String?
+  email         String?
+  phone         String?
+  address       String?
+  status        String    @default("ACTIVE") // 'ACTIVE', 'INACTIVE'
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products      Product[]
+
+  @@index([tenantId, status])
+}
+
+model StockMovement {
+  id          String   @id @default(cuid())
+  tenantId    String
+  productId   String
+  type        String   // 'IN', 'OUT', 'ADJUSTMENT'
+  quantity    Int
+  previousQty Int      @default(0)
+  newQty      Int      @default(0)
+  reason      String?  // 'PURCHASE', 'SALE', 'DAMAGE', 'AUDIT', 'RETURN'
+  reference   String?  // PO#, SO#, or adjustment note
+  actor       String?  // user or system
+  notes       String?
+
+  createdAt   DateTime @default(now())
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, productId])
+  @@index([tenantId, createdAt])
+}
+
+// ----------------------------------------------------------------------------
+// RECRUITER SCREENING PLATFORM (RECRUITER-FIRST LAYER)
+// ----------------------------------------------------------------------------
+
+model ScreeningProfile {
+  id                    String   @id @default(cuid())
+  tenantId              String
+  name                  String
+  jobTitle              String
+  description           String?
+  educationCriteria     String?  @default("[]") // JSON: [{ degree, minCgpa, fieldOfStudy, priority }]
+  experienceCriteria    String?  @default("{}") // JSON: { minYears, maxYears, domain, priority }
+  skillCriteria         String?  @default("{}") // JSON: { mode: "AT_LEAST_N_OF", minCount: 5, skills: [...], priority }
+  certificationCriteria String?  @default("[]") // JSON: [...]
+  languageCriteria      String?  @default("[]") // JSON: [...]
+  locationCriteria      String?  @default("{}") // JSON: {...}
+  customCriteria        String?  @default("[]") // JSON: [{ instruction, interpretation, expectedEvidence, priority }]
+  mustHaveCriteria      String?  @default("[]") // JSON summary of must-haves
+  preferredCriteria     String?  @default("[]") // JSON summary of preferred items
+  niceToHaveCriteria    String?  @default("[]") // JSON summary of nice-to-haves
+  rawNaturalLanguage    String?  // Original recruiter prompt
+  version               Int      @default(1)
+  status                String   @default("READY") // 'DRAFT', 'READY', 'ARCHIVED'
+  createdBy             String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  tenant                Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  results               CandidateScreeningResult[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, jobTitle])
+}
+
+model CandidateScreeningResult {
+  id                    String            @id @default(cuid())
+  tenantId              String
+  screeningProfileId    String?
+  candidateId           String?
+  candidateName         String
+  candidateEmail        String?
+  roleTitle             String
+  status                String            @default("PENDING_REVIEW") // 'SHORTLISTED', 'PENDING_REVIEW', 'REJECTED', 'APPROVED_FOR_INTERVIEW', 'INFO_REQUESTED'
+  mandatoryMatched      Int               @default(0)
+  mandatoryTotal        Int               @default(0)
+  preferredMatched      Int               @default(0)
+  preferredTotal        Int               @default(0)
+  fitScore              Int               @default(0) // Decision support score (0-100)
+  matchedCriteria       String            @default("[]") // JSON: [{ title, evidence, citation, status }]
+  missingCriteria       String            @default("[]") // JSON: [{ title, expected, status: "NOT_FOUND" }]
+  unclearCriteria       String            @default("[]") // JSON: [{ title, reason, status: "UNCLEAR" }]
+  evidence              String            @default("[]") // JSON: string[] direct quotes
+  summary               String
+  warnings              String?           @default("[]") // JSON: string[]
+  recommendedNextStep   String            @default("HUMAN_REVIEW")
+  recruiterNotes        String?
+  reviewedBy            String?
+  reviewedAt            DateTime?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+
+  tenant                Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  screeningProfile      ScreeningProfile? @relation(fields: [screeningProfileId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, status])
+  @@index([tenantId, screeningProfileId])
+  @@index([tenantId, candidateName])
 }
 

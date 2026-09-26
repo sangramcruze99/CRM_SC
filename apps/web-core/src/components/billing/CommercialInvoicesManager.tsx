@@ -31,6 +31,7 @@ import { DirectSettlementModal } from './DirectSettlementModal';
 import { createInvoice, updateInvoiceStatus, deleteInvoice } from '../../app/actions';
 import { useRouter } from 'next/navigation';
 import { openAgentModal } from '../ai/ContextualAgentModal';
+import { openResultDrawer } from '../ai/ResultDrawer';
 import { EntityDocumentsHub } from '../documents/EntityDocumentsHub';
 
 export interface InvoiceItem {
@@ -109,7 +110,7 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
     );
 
     setAlert({
-      message: `✨ Invoice ${inv.invoiceNum || inv.id.slice(0, 8)} marked as ${newStatus}`,
+      message: `Invoice ${inv.invoiceNum || inv.id.slice(0, 8)} marked as ${newStatus}`,
       type: 'success',
     });
     setTimeout(() => setAlert(null), 3000);
@@ -144,7 +145,7 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
     setIsCreateModalOpen(false);
 
     setAlert({
-      message: `✅ Created commercial invoice for ${clientName} ($${amount.toLocaleString()})`,
+      message: `Created commercial invoice for ${clientName} ($${amount.toLocaleString()})`,
       type: 'success',
     });
     setTimeout(() => setAlert(null), 3000);
@@ -220,116 +221,156 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
       )}
 
       {/* ========================================================= */}
-      {/* 1. EXECUTIVE HEADER & ACTIONS BAR                         */}
+      {/* 1. EXECUTIVE COCKPIT HEADER CHASSIS                       */}
       {/* ========================================================= */}
-      <div className="botanical-glass-card p-4 px-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shrink-0">
-        <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-emerald-500/25 border border-emerald-300/30 shrink-0">
-            <Receipt size={22} />
-          </div>
-          <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg font-black text-white tracking-tight">Commercial Invoices & Billing</h1>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                {invoices.length} Invoices
-              </span>
+      <div className="botanical-glass-card p-5 sm:p-6 rounded-2xl space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-400 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-emerald-500/20 border border-emerald-300/30 shrink-0">
+              <Receipt size={22} className="stroke-[2.2]" />
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Accounts receivable, customer ledgers, and automated payment reconciliation.
-            </p>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-black text-white tracking-tight">Commercial Invoices &amp; Billing</h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  REAL-TIME SYNC
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/[0.06] text-slate-300 border border-white/10">
+                  {invoices.length} Invoices
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Accounts receivable, client billing ledgers, and automated reconciliation powered by the Midas Sentinel.
+              </p>
+            </div>
+          </div>
+
+          {/* Top Actions */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              type="button"
+              onClick={() => openAgentModal('midas')}
+              className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 hover:text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+              title="Finance Assistant (Midas) — Overdue AR, Payment Reminders, and Risk Insights"
+            >
+              <Bot size={14} className="text-amber-400" />
+              <span>Ask Finance Copilot</span>
+              {overdueCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 text-amber-200 text-[10px] font-mono font-bold">
+                  {overdueCount} Overdue
+                </span>
+              )}
+            </button>
+
+            <Link
+              href="/ocr-invoice"
+              className="px-3.5 py-2 bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold text-teal-300 hover:text-white rounded-xl transition-all border border-white/10 flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+              title="Scan physical receipt or invoice via Neural OCR"
+            >
+              <Scan size={14} className="text-teal-400" />
+              <span>Neural OCR Scanner</span>
+            </Link>
+
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+            >
+              <Plus size={15} />
+              <span>+ New Invoice</span>
+            </button>
           </div>
         </div>
 
-        {/* Top Actions */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <button
-            type="button"
-            onClick={() => openAgentModal('midas')}
-            className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 hover:text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all cursor-pointer shadow-sm shadow-amber-500/10"
-            title="Open Midas — Finance AI for Overdue AR, Reminders, and Risk Detection"
-          >
-            <Bot size={14} className="text-amber-400 animate-pulse" />
-            <span>Ask Midas (Finance AI)</span>
-            {overdueCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-amber-500/30 text-amber-200 text-[10px] font-mono font-bold">
-                {overdueCount} Overdue
-              </span>
-            )}
-          </button>
-
-          <Link
-            href="/ocr-invoice"
-            className="px-3.5 py-2 botanical-pill hover:border-teal-500/50 text-xs font-bold text-teal-300 flex items-center gap-1.5 transition-all cursor-pointer"
-            title="Scan physical receipt or invoice via Neural OCR"
-          >
-            <Scan size={14} className="text-teal-400" />
-            <span>AI OCR Scanner</span>
-          </Link>
-
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold text-xs rounded-xl shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
-          >
-            <Plus size={15} className="stroke-[3]" />
-            <span>New Commercial Invoice</span>
-          </button>
+        {/* Midas Sentinel Automated Strip */}
+        <div className="pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="px-2.5 py-1 rounded-lg bg-black/40 border border-emerald-500/30 flex items-center gap-2 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-white">Midas</span>
+              <span className="text-[10px] text-slate-400">FinOps Automated Reconciliation</span>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+              vault/documents/invoices_scanned/
+            </span>
+          </div>
+          <span className="text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1.5">
+            <Sparkles size={11} />
+            <span>Automated Audit Active</span>
+          </span>
         </div>
       </div>
 
       {/* ========================================================= */}
-      {/* 2. 3 HIGH-DENSITY FINANCIAL KPI CARDS                     */}
+      {/* 2. 3 HIGH-DENSITY COCKPIT TELEMETRY CARDS                 */}
       {/* ========================================================= */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Total Outstanding */}
-        <div className="botanical-glass-card p-5 space-y-2 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
+        <div className="botanical-glass-card p-5 space-y-2 flex flex-col justify-between rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-xs text-slate-300 font-mono font-bold uppercase tracking-wider">
             <span>Total Outstanding</span>
-            <span className="text-emerald-400 font-mono font-bold">
+            <span className="text-emerald-400 font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
               {invoices.filter((i) => i.status !== 'PAID').length} Unpaid
             </span>
           </div>
-          <div className="text-3xl font-black font-mono text-white tracking-tight">
+          <div className="text-2xl sm:text-3xl font-black font-mono text-white tracking-tight">
             ${totalOutstanding.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-          <div className="flex items-center gap-2 pt-2 border-t border-white/[0.08] text-xs text-emerald-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[11px] text-slate-300 font-medium">Awaiting customer wire transfer</span>
+          <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span>Receivables Ledger</span>
+            </span>
+            <span className="text-emerald-400 font-mono font-bold">Optimal</span>
           </div>
         </div>
 
         {/* Overdue */}
-        <div className="botanical-glass-card p-5 space-y-2 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
-            <span>Overdue Invoices</span>
-            <span className={`font-mono font-bold ${overdueCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+        <div className="botanical-glass-card p-5 space-y-2 flex flex-col justify-between rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-xs text-slate-300 font-mono font-bold uppercase tracking-wider">
+            <span>Overdue Exposure</span>
+            <span className={`font-mono font-bold px-2 py-0.5 rounded border ${overdueCount > 0 ? 'bg-rose-500/15 text-rose-300 border-rose-500/30' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
               {overdueCount} Accounts
             </span>
           </div>
-          <div className={`text-3xl font-black font-mono tracking-tight ${overdueCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+          <div className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${overdueCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
             ${overdueTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-          <div className="flex items-center gap-2 pt-2 border-t border-white/[0.08] text-xs">
-            <span className={`w-2 h-2 rounded-full ${overdueCount > 0 ? 'bg-rose-400' : 'bg-emerald-400'}`} />
-            <span className="text-[11px] text-slate-300 font-medium">
-              {overdueCount > 0 ? 'Delinquent accounts requiring follow-up' : 'Zero delinquent accounts'}
+          <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400 flex items-center gap-1.5">
+              <span className={`w-1.5 h-1.5 rounded-full ${overdueCount > 0 ? 'bg-rose-400' : 'bg-emerald-400'}`} />
+              <span>{overdueCount > 0 ? 'Delinquent follow-up needed' : 'Zero delinquent risk'}</span>
             </span>
+            {overdueCount > 0 && (
+              <button
+                type="button"
+                onClick={() => openAgentModal('midas')}
+                className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 transition-colors cursor-pointer"
+              >
+                <span>Follow Up</span>
+                <span>&rarr;</span>
+              </button>
+            )}
           </div>
         </div>
 
         {/* Paid (Last 30 Days) */}
-        <div className="botanical-glass-card p-5 space-y-2 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-xs text-slate-400 font-bold uppercase tracking-wider">
-            <span>Paid Revenue (Settled)</span>
-            <span className="text-teal-400 font-mono font-bold">
+        <div className="botanical-glass-card p-5 space-y-2 flex flex-col justify-between rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-xs text-slate-300 font-mono font-bold uppercase tracking-wider">
+            <span>Settled Revenue</span>
+            <span className="text-teal-300 font-mono font-bold px-2 py-0.5 rounded bg-teal-500/10 border border-teal-500/20">
               {invoices.filter((i) => i.status === 'PAID').length} Settled
             </span>
           </div>
-          <div className="text-3xl font-black font-mono text-emerald-400 tracking-tight">
+          <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-400 tracking-tight">
             ${totalPaid.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </div>
-          <div className="flex items-center gap-2 pt-2 border-t border-white/[0.08] text-xs text-teal-400">
-            <span className="w-2 h-2 rounded-full bg-teal-400" />
-            <span className="text-[11px] text-slate-300 font-medium">Auto-reconciled with bank ledger</span>
+          <div className="flex items-center justify-between pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+              <span>Auto-reconciled with bank ledger</span>
+            </span>
+            <span className="text-teal-400 font-mono font-bold">100% Synced</span>
           </div>
         </div>
       </div>
@@ -469,10 +510,10 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
                           type="button"
                           onClick={() => openAgentModal('midas')}
                           className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1 cursor-pointer shadow-xs shadow-amber-500/10"
-                          title="Ask Midas to prepare payment reminder and follow-up"
+                          title="Ask Finance Assistant to prepare payment reminder and follow-up"
                         >
-                          <Bot size={12} className="text-amber-400 animate-pulse" />
-                          <span>Ask Midas</span>
+                          <Bot size={12} className="text-amber-400" />
+                          <span>Ask Assistant</span>
                         </button>
                       )}
 
@@ -515,6 +556,16 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
                       </button>
 
                       <button
+                        type="button"
+                        onClick={() => openResultDrawer({})}
+                        className="px-2.5 py-1 botanical-glass-inset hover:border-emerald-500/50 text-slate-300 hover:text-emerald-300 rounded-lg text-xs font-semibold transition-all inline-flex items-center gap-1 cursor-pointer"
+                        title="View AI Agent Results & Generated Outputs"
+                      >
+                        <Sparkles size={12} className="text-emerald-400" />
+                        <span>AI Outputs</span>
+                      </button>
+
+                      <button
                         onClick={() => handleDelete(inv.id, inv.invoiceNum)}
                         className="p-1.5 text-slate-500 hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-colors cursor-pointer"
                         title="Delete invoice record"
@@ -535,8 +586,7 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
                       </div>
                       <div>
                         <h4 className="text-sm font-bold text-white">No invoice records found</h4>
-                        <p className="text-xs text-slate-400 mt-1">
-                          Create your first commercial invoice or scan paper receipts using the AI Vision Scanner.
+                        <p className="text-xs text-slate-400 mt-1"> Create your first commercial invoice or scan paper receipts using the AI Vision Scanner.
                         </p>
                       </div>
                       <div className="flex items-center justify-center gap-2.5 pt-2">
@@ -697,7 +747,7 @@ export function CommercialInvoicesManager({ initialInvoices }: CommercialInvoice
               prev.map((i) => (i.id === updated.id ? { ...i, ...updated } : i))
             );
             setAlert({
-              message: `✅ Settlement for invoice ${updated.invoiceNum || updated.id.slice(0, 8)} (${payment?.direction === 'INBOUND' ? 'Received' : 'Paid'} $${Number(payment?.amount || updated.amount).toFixed(2)}) successfully recorded to General Ledger!`,
+              message: ` Settlement for invoice ${updated.invoiceNum || updated.id.slice(0, 8)} (${payment?.direction === 'INBOUND' ? 'Received' : 'Paid'} $${Number(payment?.amount || updated.amount).toFixed(2)}) successfully recorded to General Ledger!`,
               type: 'success',
             });
             setTimeout(() => setAlert(null), 5500);

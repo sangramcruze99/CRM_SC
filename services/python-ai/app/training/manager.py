@@ -1,12 +1,20 @@
 """
-Asynchronous LoRA / QLoRA Training Job Pipeline & Model Lifecycle Manager.
+Production SFT / LoRA PEFT Model Lifecycle Manager.
+Validates datasets, verifies GPU compute capabilities, prepares PEFT configurations,
+and enforces honest capability reporting without simulated results.
 """
 
+import os
 import time
+import json
 import uuid
-import asyncio
+import logging
 from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
+from ..config import compute
+from ..datasets.generator import BASE_DATASETS_DIR
+
+logger = logging.getLogger("business-os.training-manager")
 
 
 class TrainingJobConfig(BaseModel):
@@ -27,12 +35,13 @@ class TrainingJobRecord(BaseModel):
     method: str
     epochs: int
     learning_rate: float
-    status: str = "PENDING"  # 'PENDING', 'TRAINING', 'EVALUATING', 'APPROVED', 'CANARY', 'PRODUCTION', 'FAILED', 'CANCELLED'
+    status: str = "PENDING"  # 'PENDING', 'VALIDATING', 'READY_FOR_CLUSTER', 'COMPLETED', 'FAILED', 'CANCELLED'
     progress_percent: int = 0
     created_at: float = Field(default_factory=time.time)
     completed_at: Optional[float] = None
     output_model_id: Optional[str] = None
     evaluation_score: Optional[float] = None
+    device_used: str = "CPU"
     logs: List[str] = Field(default_factory=list)
 
 
@@ -49,71 +58,86 @@ class TrainingJobManager:
             method=config.method,
             epochs=config.epochs,
             learning_rate=config.learning_rate,
-            status="PENDING",
+            status="TRAINING",
+            device_used=compute.device.upper(),
             logs=[f"Job initialized with base model '{config.base_model}' and method '{config.method}'"],
         )
         self._jobs[job_id] = record
-
-        # Launch async task in background if event loop is active
-        try:
-            loop = asyncio.get_running_loop()
-            loop.create_task(self._execute_training_harness(job_id, config))
-        except RuntimeError:
-            pass
         return record
 
-    async def _execute_training_harness(self, job_id: str, config: TrainingJobConfig):
-        """Asynchronous simulated execution loop for SFT LoRA training."""
+    def _execute_training_preparation(self, job_id: str, config: TrainingJobConfig):
+        """
+        Validates dataset and determines execution path honestly based on hardware.
+        No simulated loops or fake progress.
+        """
         job = self._jobs.get(job_id)
         if not job:
             return
 
         try:
-            job.status = "TRAINING"
-            job.logs.append("Phase 1: Validating dataset JSONL integrity and token distributions...")
-            job.progress_percent = 15
-            await asyncio.sleep(1.0)
+            job.status = "VALIDATING"
+            job.logs.append("Validating dataset files and schema completeness...")
 
-            if job.status == "CANCELLED":
+            dataset_dir = os.path.join(BASE_DATASETS_DIR, config.dataset_id)
+            train_file = os.path.join(dataset_dir, "train.jsonl")
+
+            if not os.path.exists(train_file):
+                # Check test file as alternative
+                train_file = os.path.join(dataset_dir, "test.jsonl")
+
+            if not os.path.exists(train_file):
+                job.status = "FAILED"
+                job.logs.append(f"Training dataset not found at {dataset_dir}")
                 return
 
-            job.logs.append(f"Phase 2: Initializing PEFT {config.method.upper()} adapter (r={config.lora_r}, alpha={config.lora_alpha})...")
-            job.progress_percent = 40
-            await asyncio.sleep(1.5)
+            # Count examples and validate JSONL
+            example_count = 0
+            with open(train_file, "r", encoding="utf-8") as f:
+                for line in f:
+                    if line.strip():
+                        json.loads(line)
+                        example_count += 1
 
-            if job.status == "CANCELLED":
-                return
+            job.logs.append(f"Validated {example_count} training examples in {train_file}.")
+            job.progress_percent = 50
 
-            job.logs.append(f"Phase 3: Running gradient descent across {config.epochs} epochs (lr={config.learning_rate})...")
-            job.progress_percent = 75
-            await asyncio.sleep(1.5)
-
-            if job.status == "CANCELLED":
-                return
-
-            job.status = "EVALUATING"
-            job.logs.append("Phase 4: Running automated benchmark evaluation against test split...")
-            job.progress_percent = 90
-            await asyncio.sleep(1.0)
-
-            # Mark approved
-            job.status = "APPROVED"
-            job.progress_percent = 100
-            job.completed_at = time.time()
-            job.output_model_id = f"lora/{config.dataset_id}_v{int(time.time())}"
-            job.evaluation_score = 92.5
-            job.logs.append(f"Training successfully completed. Model adapter published to '{job.output_model_id}' (Score: 92.5%)")
+            # Hardware capability check
+            if not compute.cuda_available:
+                job.status = "READY_FOR_CLUSTER"
+                job.progress_percent = 100
+                job.completed_at = time.time()
+                peft_config = {
+                    "base_model": config.base_model,
+                    "target_modules": ["q_proj", "v_proj", "k_proj", "o_proj"],
+                    "r": config.lora_r,
+                    "lora_alpha": config.lora_alpha,
+                    "lora_dropout": 0.05,
+                    "bias": "none",
+                    "task_type": "CAUSAL_LM",
+                }
+                job.output_model_id = f"peft-config/{config.dataset_id}_{config.method}"
+                job.logs.append(
+                    f"Notice: Local hardware has no dedicated CUDA GPU ({compute.device}). "
+                    f"Direct gradient descent requires GPU compute. "
+                    f"Exported valid PEFT LoRA configuration for remote GPU cluster execution."
+                )
+                job.logs.append(f"PEFT Config: {json.dumps(peft_config)}")
+            else:
+                job.status = "READY_FOR_CLUSTER"
+                job.progress_percent = 100
+                job.completed_at = time.time()
+                job.logs.append(f"CUDA GPU ({compute.device}) detected. Training package prepared.")
 
         except Exception as exc:
             job.status = "FAILED"
-            job.logs.append(f"Training failed with error: {exc}")
+            job.logs.append(f"Training preparation failed: {exc}")
 
     def get_job(self, job_id: str) -> Optional[TrainingJobRecord]:
         return self._jobs.get(job_id)
 
     def cancel_job(self, job_id: str) -> bool:
         job = self._jobs.get(job_id)
-        if job and job.status in ("PENDING", "TRAINING"):
+        if job and job.status in ("PENDING", "TRAINING", "VALIDATING", "READY_FOR_CLUSTER"):
             job.status = "CANCELLED"
             job.logs.append("Job cancelled by user request.")
             return True

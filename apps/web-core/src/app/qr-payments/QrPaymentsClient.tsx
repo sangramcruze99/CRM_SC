@@ -274,7 +274,7 @@ export function QrPaymentsClient() {
     setFormName('');
     setFormAmount(150);
     setFormNote('');
-    setAlert(`🎉 QR Payment code "${newQr.name}" generated with direct settlement to ${selectedDestAccount.name}!`);
+    setAlert(` QR Payment code "${newQr.name}" generated with direct settlement to ${selectedDestAccount.name}!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -727,8 +727,7 @@ export function QrPaymentsClient() {
                   <QrCode size={30} />
                 </div>
                 <h3 className="text-lg font-black text-white">No QR Stations Deployed</h3>
-                <p className="text-xs text-slate-400 max-w-md mt-1.5 mb-6">
-                  Create a printable countertop standee for your reception desk or an instant point-of-sale checkout code. Payments clear directly into your connected treasury bank accounts.
+                <p className="text-xs text-slate-400 max-w-md mt-1.5 mb-6"> Create a printable countertop standee for your reception desk or an instant point-of-sale checkout code. Payments clear directly into your connected treasury bank accounts.
                 </p>
                 <button
                   type="button"

@@ -378,7 +378,7 @@ export function DirectSettlementModal({
                   </span>
                 </span>
                 <span className={`font-bold font-mono ${willBeFullyPaid ? 'text-emerald-400' : 'text-amber-400'}`}>
-                  {willBeFullyPaid ? '✓ Will Mark as Settled in Full' : '⚠️ Partial Payment Remaining'}
+                  {willBeFullyPaid ? ' Will Mark as Settled in Full' : ' Partial Payment Remaining'}
                 </span>
               </div>
             </div>
@@ -394,12 +394,12 @@ export function DirectSettlementModal({
                   onChange={(e: any) => setMethod(e.target.value)}
                   className="w-full px-3 py-2 bg-black/40 border border-white/[0.15] focus:border-emerald-400 rounded-xl text-xs font-bold font-mono text-white focus:outline-none cursor-pointer"
                 >
-                  <option value="BANK_TRANSFER" className="bg-slate-900 text-white">🏦 Bank Wire / Transfer</option>
-                  <option value="CARD" className="bg-slate-900 text-white">💳 Credit / Debit Card</option>
-                  <option value="ACH" className="bg-slate-900 text-white">⚡ ACH Direct Debit</option>
-                  <option value="CHECK" className="bg-slate-900 text-white">📜 Commercial Cheque</option>
-                  <option value="CASH" className="bg-slate-900 text-white">💵 Cash Settlement</option>
-                  <option value="KHATA" className="bg-slate-900 text-white">⚖️ Khata Ledger Settlement</option>
+                  <option value="BANK_TRANSFER" className="bg-slate-900 text-white"> Bank Wire / Transfer</option>
+                  <option value="CARD" className="bg-slate-900 text-white"> Credit / Debit Card</option>
+                  <option value="ACH" className="bg-slate-900 text-white"> ACH Direct Debit</option>
+                  <option value="CHECK" className="bg-slate-900 text-white"> Commercial Cheque</option>
+                  <option value="CASH" className="bg-slate-900 text-white"> Cash Settlement</option>
+                  <option value="KHATA" className="bg-slate-900 text-white"> Khata Ledger Settlement</option>
                 </select>
               </div>
 

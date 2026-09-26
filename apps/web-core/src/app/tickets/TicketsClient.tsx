@@ -17,7 +17,11 @@ import {
   Tag,
   X,
   MessageSquare,
+  Bot,
 } from 'lucide-react';
+
+import { openAgentModal } from '@/components/ai/ContextualAgentModal';
+
 
 interface SupportTicket {
   id: string;
@@ -158,7 +162,7 @@ export function TicketsClient() {
       if (res.ok) {
         await fetchTickets();
         setReplyText('');
-        setAlert(`💬 Reply dispatched to ${selectedTicket.customerName}!`);
+        setAlert(` Reply dispatched to ${selectedTicket.customerName}!`);
         setTimeout(() => setAlert(null), 3000);
         return;
       }
@@ -184,7 +188,7 @@ export function TicketsClient() {
     setSelectedTicket(updated);
     setTickets(tickets.map((t) => (t.id === updated.id ? updated : t)));
     setReplyText('');
-    setAlert(`💬 Reply dispatched to ${selectedTicket.customerName}!`);
+    setAlert(` Reply dispatched to ${selectedTicket.customerName}!`);
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -196,7 +200,7 @@ export function TicketsClient() {
   };
 
   const handleInsertKB = (articleTitle: string) => {
-    setReplyText((prev) => `${prev}\n\n📚 Helpful Guide: ${articleTitle}`);
+    setReplyText((prev) => `${prev}\n\n Helpful Guide: ${articleTitle}`);
   };
 
   const handleUpdateStatus = async (status: SupportTicket['status']) => {
@@ -240,7 +244,7 @@ export function TicketsClient() {
         setNewTitle('');
         setNewCustomer('');
         setNewEmail('');
-        setAlert(`🎟️ Ticket created and saved to Helpdesk service!`);
+        setAlert(` Ticket created and saved to Helpdesk service!`);
         setTimeout(() => setAlert(null), 3500);
         return;
       }
@@ -281,7 +285,7 @@ export function TicketsClient() {
     setNewTitle('');
     setNewCustomer('');
     setNewEmail('');
-    setAlert(`🎟️ Ticket ${newTkt.ticketNumber} created!`);
+    setAlert(` Ticket ${newTkt.ticketNumber} created!`);
     setTimeout(() => setAlert(null), 3500);
   };
 
@@ -295,65 +299,130 @@ export function TicketsClient() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Ticket className="text-emerald-400" size={24} />
-            Customer Support & Service Command Center
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Omnichannel ticket triage, real-time SLA countdowns, AI response generation, and 360° relationship history.
-          </p>
+      {/* 1. TOP EXECUTIVE COCKPIT HEADER CHASSIS */}
+      <div className="botanical-glass-card p-5 sm:p-6 rounded-2xl space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center text-xl font-bold shadow-lg shadow-emerald-500/20 border border-emerald-300/30 shrink-0">
+              <Ticket size={22} className="stroke-[2.2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-black text-white tracking-tight">
+                  Support &amp; Customer Success
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  REAL-TIME SYNC
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/[0.06] text-slate-300 border border-white/10">
+                  {tickets.length} Inquiries
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Customer inquiries, automated incident routing, and SLA compliance driven by the Vesta Sentinel.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              type="button"
+              onClick={() => openAgentModal('support')}
+              className="px-3.5 py-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 hover:text-white text-xs font-bold rounded-xl flex items-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+              title="Support Assistant (Echo) — Ticket summarization, automated draft replies, and knowledge search"
+            >
+              <Bot size={15} className="text-amber-400" />
+              <span>Ask Support Copilot</span>
+            </button>
+
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 flex items-center gap-1.5 cursor-pointer"
+            >
+              <Plus size={15} />
+              <span>+ New Ticket</span>
+            </button>
+          </div>
         </div>
 
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 flex items-center gap-1.5 cursor-pointer"
-        >
-          <Plus size={14} />
-          <span>New Incident Ticket</span>
-        </button>
+        {/* Sentinel Automated Pulse Strip */}
+        <div className="pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="px-2.5 py-1 rounded-lg bg-black/40 border border-emerald-500/30 flex items-center gap-2 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-white">Vesta</span>
+              <span className="text-[10px] text-slate-400">Client Success &amp; Support Sentinel</span>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+              vault/telephony/call_recordings/
+            </span>
+          </div>
+          <span className="text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1.5">
+            <Sparkles size={11} />
+            <span>Omnichannel Helpdesk Active</span>
+          </span>
+        </div>
       </div>
 
-      {/* KPI Support Telemetry */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+      {/* 2. COCKPIT TELEMETRY METRICS GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Open Ticket Queue</span>
-            <AlertCircle size={18} className="text-rose-400" />
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">Open Queue</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <AlertCircle size={15} />
+            </div>
           </div>
-          <div className="text-3xl font-extrabold text-white font-mono">
-            {tickets.filter((t) => t.status !== 'RESOLVED').length} Active
+          <div className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+            {tickets.filter((t) => t.status !== 'RESOLVED').length} <span className="text-sm font-sans font-normal text-slate-400">active</span>
           </div>
-          <div className="text-xs text-rose-400 mt-2 font-bold">1 Urgent P1 SLA countdown active</div>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">P1 SLA Monitoring</span>
+            <span className="text-emerald-400 font-mono font-bold">In-Bounds</span>
+          </div>
         </div>
 
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Avg First Response SLA</span>
-            <Clock size={18} className="text-emerald-400" />
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">First Response SLA</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Clock size={15} />
+            </div>
           </div>
-          <div className="text-3xl font-extrabold text-emerald-400 font-mono">4.2 min</div>
-          <div className="text-xs text-emerald-400 mt-2 font-bold">99.2% SLA adherence rate</div>
+          <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tight">4.2 min</div>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Response Speed</span>
+            <span className="text-emerald-400 font-mono font-bold">99.2% SLA</span>
+          </div>
         </div>
 
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Customer CSAT Score</span>
-            <ThumbsUp size={18} className="text-emerald-400" />
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">CSAT Score</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <ThumbsUp size={15} />
+            </div>
           </div>
-          <div className="text-3xl font-extrabold text-emerald-400 font-mono">98.5%</div>
-          <div className="text-xs text-slate-400 mt-2 font-medium">Across 180+ resolved incidents</div>
+          <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tight">98.5%</div>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Customer Satisfaction</span>
+            <span className="text-teal-400 font-mono font-bold">Top Quartile</span>
+          </div>
         </div>
 
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
           <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">AI Copilot Deflection</span>
-            <Sparkles size={18} className="text-emerald-400" />
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">AI Deflection</span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/10 flex items-center justify-center text-slate-300">
+              <Sparkles size={15} />
+            </div>
           </div>
-          <div className="text-3xl font-extrabold text-white font-mono">42.8%</div>
-          <div className="text-xs text-slate-400 mt-2 font-medium">Self-resolved via KB & Chatbot</div>
+          <div className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">42.8%</div>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Self-Service Resolution</span>
+            <span className="text-slate-300 font-mono font-bold">Autonomous</span>
+          </div>
         </div>
       </div>
 
@@ -439,9 +508,10 @@ export function TicketsClient() {
             })}
             {filteredTickets.length === 0 && (
               <div className="p-8 text-center text-xs font-medium text-slate-500 border-2 border-dashed border-white/[0.08] rounded-2xl">
-                No tickets found. Click <span className="text-emerald-400 font-bold">"New Incident Ticket"</span> to log an issue.
+                No tickets found. Click <span className="text-emerald-400 font-bold">"New Ticket"</span> to log an inquiry.
               </div>
             )}
+
           </div>
         </div>
 
@@ -468,7 +538,7 @@ export function TicketsClient() {
                         onClick={() => handleUpdateStatus('RESOLVED')}
                         className="px-2.5 py-1 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 rounded-xl text-[11px] font-bold border border-emerald-500/30 transition-colors cursor-pointer"
                       >
-                        ✓ Resolve
+                         Resolve
                       </button>
                     ) : (
                       <button
@@ -543,8 +613,7 @@ export function TicketsClient() {
               <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-500">
                 <Ticket size={40} className="text-slate-600 mb-2" />
                 <p className="text-xs font-bold text-slate-300">No Active Ticket Selected</p>
-                <p className="text-[11px] text-slate-500 mt-1 max-w-xs">
-                  Create a new ticket or select an existing incident from the queue to start conversation triage.
+                <p className="text-[11px] text-slate-500 mt-1 max-w-xs"> Create a new ticket or select an existing incident from the queue to start conversation triage.
                 </p>
               </div>
             )}

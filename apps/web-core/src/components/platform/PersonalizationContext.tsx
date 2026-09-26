@@ -104,7 +104,7 @@ export const COLOR_PLATES: ColorPlate[] = [
     badgeBg: 'bg-blue-500/15',
     badgeText: 'text-blue-700 dark:text-blue-300',
     badgeBorder: 'border-blue-500/30',
-    accentGradient: 'from-blue-500 via-indigo-500 to-blue-600',
+    accentGradient: 'from-blue-500 via-teal-500 to-blue-600',
     shades: {
       50: '#eff6ff',
       100: '#dbeafe',
@@ -127,10 +127,10 @@ export const COLOR_PLATES: ColorPlate[] = [
     ring: '#a855f7',
     glowHex: 'rgba(168, 85, 247, 0.55)',
     secondaryGlowHex: 'rgba(192, 132, 252, 0.25)',
-    badgeBg: 'bg-purple-500/15',
-    badgeText: 'text-purple-700 dark:text-purple-300',
-    badgeBorder: 'border-purple-500/30',
-    accentGradient: 'from-purple-500 via-violet-500 to-indigo-600',
+    badgeBg: 'bg-emerald-500/15',
+    badgeText: 'text-emerald-700 dark:text-emerald-300',
+    badgeBorder: 'border-emerald-500/30',
+    accentGradient: 'from-emerald-500 via-emerald-500 to-teal-600',
     shades: {
       50: '#faf5ff',
       100: '#f3e8ff',

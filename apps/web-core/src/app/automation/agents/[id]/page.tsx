@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import {
   Bot,
   ArrowLeft,
@@ -59,10 +59,18 @@ const DEFAULT_TOOLS: ToolItem[] = [
   { id: 'browser_sandboxed_job', name: 'execute_browser_action', description: 'Run sandboxed headless browser session for web extraction', riskLevel: 'CRITICAL', enabled: false, requiresApproval: true },
 ];
 
-export default function AgentDetailPage() {
+function AgentDetailPageContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
   const agentId = params?.id as string;
-  const [activeTab, setActiveTab] = useState<string>('overview');
+  const [activeTab, setActiveTab] = useState<string>(tabParam || 'overview');
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   // Agent State
   const [name, setName] = useState<string>('Apex SDR Outbound Agent');
@@ -77,7 +85,7 @@ Rules:
 3. If the deal value exceeds $25,000, trigger a Human-in-the-Loop approval before sending contract terms.
 4. Always record activities and lead scores directly in the CRM.`
   );
-  const [model, setModel] = useState<string>('groq/llama-3.3-70b-versatile');
+  const [model, setModel] = useState<string>('groq/gemma2-9b-it');
   const [temperature, setTemperature] = useState<number>(0.2);
   const [maxIterations, setMaxIterations] = useState<number>(8);
   const [tokenBudget, setTokenBudget] = useState<number>(4096);
@@ -137,7 +145,7 @@ Rules:
       const res = await fetch(`/api/ai/agents/${agentId}/run`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input: userText }),
+        body: JSON.stringify({ input: userText, inputPrompt: userText }),
       });
 
       if (res.ok) {
@@ -172,7 +180,7 @@ Rules:
           {
             role: 'agent',
             text: `Agent reasoning completed: Evaluated "${userText}" and generated qualified CRM lead recommendation.`,
-            thoughtTrace: `Thought: Analyzing prompt with Groq Llama 3.3.\nTool: crm_search_contacts -> Status OK`,
+            thoughtTrace: `Thought: Analyzing prompt with Groq Gemma 2 9B.\nTool: crm_search_contacts -> Status OK`,
           },
         ]);
         setIsInferring(false);
@@ -200,9 +208,9 @@ Rules:
   ];
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <div className="space-y-6 text-white font-sans">
       {/* Top Breadcrumb & Actions Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div className="botanical-glass-card rounded-2xl p-4 border border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center space-x-3">
           <Link
             href="/automation/agents"
@@ -318,8 +326,9 @@ Rules:
                   onChange={(e) => setModel(e.target.value)}
                   className="w-full bg-slate-950 border border-white/10 rounded-lg p-2.5 text-white focus:outline-none focus:border-emerald-500"
                 >
-                  <option value="groq/llama-3.3-70b-versatile">Groq: LLaMA 3.3 70B Versatile (Ultra-fast ReAct)</option>
-                  <option value="groq/llama-3.1-8b-instant">Groq: LLaMA 3.1 8B Instant (Low-latency Triage)</option>
+                  <option value="groq/gemma2-9b-it">Groq: Gemma 2 9B IT (Ultra-fast ReAct)</option>
+                  <option value="groq/gemma-7b-it">Groq: Gemma 7B IT (Low-latency Triage)</option>
+                  <option value="openrouter/google/gemma-2-27b-it">OpenRouter: Gemma 2 27B IT (Deep Reasoning)</option>
                   <option value="openrouter/anthropic/claude-3.5-sonnet">OpenRouter: Claude 3.5 Sonnet (Complex Reasoning)</option>
                   <option value="openrouter/openai/gpt-4o">OpenRouter: OpenAI GPT-4o (Multimodal & Function Calling)</option>
                 </select>
@@ -402,7 +411,7 @@ Rules:
             </div>
 
             <div className="p-4 rounded-lg bg-slate-950 border border-white/10 space-y-2">
-              <span className="font-bold text-violet-400 block">Customer Memory (CRM 360)</span>
+              <span className="font-bold text-emerald-400 block">Customer Memory (CRM 360)</span>
               <p className="text-slate-300 text-[11px]">
                 Past ticket resolutions, SLA agreements, deal stages, and omnichannel message history.
               </p>
@@ -509,7 +518,7 @@ Rules:
               <span className="text-xs font-bold text-white">Live ReAct Execution Playground</span>
             </div>
             <span className="text-[11px] font-mono text-slate-400">
-              Model: {((model || 'groq/llama-3.3').split('/')[1] || model || 'llama-3.3')}
+              Model: {((model || 'groq/gemma2-9b-it').split('/')[1] || model || 'gemma2-9b-it')}
             </span>
           </div>
 
@@ -571,5 +580,13 @@ Rules:
         </div>
       )}
     </div>
+  );
+}
+
+export default function AgentDetailPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-zinc-400 font-mono text-xs">Loading Agent Control Studio...</div>}>
+      <AgentDetailPageContent />
+    </Suspense>
   );
 }

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Plus, X, Loader2, UserPlus, User, Mail, Phone, Sparkles } from 'lucide-react';
+import { Plus, X, Loader2, UserPlus, User, Mail, Phone, Sparkles, Folder } from 'lucide-react';
 import { createContact } from '../app/actions';
 import { useRouter } from 'next/navigation';
 
@@ -158,6 +158,22 @@ export function CreateContactModal() {
                     type="tel" 
                     className="w-full pl-9.5 pr-3.5 py-2.5 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.12] rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" 
                     placeholder="+1 (555) 000-0000" 
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                  <Folder size={12} className="text-emerald-600 dark:text-emerald-400" />
+                  <span>Folder / Category (Optional)</span>
+                </label>
+                <div className="relative">
+                  <Folder size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                  <input 
+                    name="folderName" 
+                    type="text" 
+                    className="w-full pl-9.5 pr-3.5 py-2.5 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/[0.12] rounded-xl text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium" 
+                    placeholder="e.g. Inbound Q3, VIP Accounts, Manual" 
                   />
                 </div>
               </div>

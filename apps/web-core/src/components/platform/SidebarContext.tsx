@@ -23,7 +23,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // ⌘ + B or Ctrl + B to toggle sidebar
+      //  + B or Ctrl + B to toggle sidebar
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'b') {
         e.preventDefault();
         setIsCollapsed((prev) => {

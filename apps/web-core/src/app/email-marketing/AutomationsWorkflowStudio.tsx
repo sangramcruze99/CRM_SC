@@ -170,10 +170,10 @@ export interface AutomationWorkflow {
   };
 }
 
-// 👑 Flagship Workflow: Exact match to the enterprise Email Automation Flowchart
+//  Flagship Workflow: Exact match to the enterprise Email Automation Flowchart
 const FLAGSHIP_WORKFLOW: AutomationWorkflow = {
   id: 'wf_flagship_enterprise',
-  name: '👑 Enterprise Omnichannel Nurture & Decision Tree',
+  name: ' Enterprise Omnichannel Nurture & Decision Tree',
   description: 'Behavioral decision tree matching industry best practice: Anonymous Tracking → Trigger → Email 1 with AI Send Time → 24h Telemetry Wait → Branch on Click (YES: Hot Leads +10 Score → 24h → Email 2A vs NO: 5d → Email 2B) → Score >= 50 Qualification Gate → Ongoing 5-Step Nurture to Customer Conversion.',
   category: 'B2B Nurture',
   status: 'ACTIVE',
@@ -399,7 +399,7 @@ const PRESET_WORKFLOWS: AutomationWorkflow[] = [
   FLAGSHIP_WORKFLOW,
   {
     id: 'wf_cart_recovery',
-    name: '🛒 SaaS Trial Drop-off & Cart Recovery',
+    name: ' SaaS Trial Drop-off & Cart Recovery',
     description: 'Autonomous 3-step reactivation sequence: Triggers on abandoned checkout > Injects personalized 15% discount > Schedules rep task if high deal value.',
     category: 'Cart & Trial Recovery',
     status: 'ACTIVE',
@@ -436,7 +436,7 @@ const PRESET_WORKFLOWS: AutomationWorkflow[] = [
   },
   {
     id: 'wf_healthcare_intake',
-    name: '🏥 Healthcare Patient Intake & Clinical Triage',
+    name: ' Healthcare Patient Intake & Clinical Triage',
     description: 'Patient appointment triage: Triggers on booking > Verifies insurance pre-auth > Sends preparation instructions > Alerts attending physician.',
     category: 'B2B Nurture',
     status: 'ACTIVE',
@@ -655,7 +655,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'TRIGGER',
-          title: '⚡ Custom Trigger: Event Occurred',
+          title: ' Custom Trigger: Event Occurred',
           subtitle: 'Fires when contact triggers form, page visit, or CRM webhook',
           config: { triggerEvent: 'FORM_SUBMITTED', triggerDetail: 'Website Demo Request' },
         };
@@ -663,7 +663,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'SEND_EMAIL',
-          title: '📩 Send Custom Email',
+          title: ' Send Custom Email',
           subtitle: 'Personalized email dispatch with dynamic CRM variable interpolation',
           config: {
             emailSubject: 'Business OS Overview & Capabilities',
@@ -677,7 +677,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'DELAY',
-          title: '⏱️ Wait / Delay (24 Hours)',
+          title: ' Wait / Delay (24 Hours)',
           subtitle: 'Strategic pause to observe engagement telemetry',
           config: { delayDuration: 24, delayUnit: 'HOURS' },
         };
@@ -685,7 +685,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'CONDITION',
-          title: '🔀 Decision: If / Else Branch',
+          title: ' Decision: If / Else Branch',
           subtitle: 'Evaluates if contact opened email, clicked link, or visited page',
           config: {
             conditionType: 'CLICKED_LINK',
@@ -697,7 +697,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'UPDATE_LEAD_SCORE',
-          title: '📈 +10 Lead Score Applied',
+          title: ' +10 Lead Score Applied',
           subtitle: 'Adjusts buyer intent score in universal CRM profile',
           config: { scoreChange: 10, scoreReason: 'Engaged with campaign content' },
         };
@@ -705,7 +705,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'ADD_TAG',
-          title: '🏷️ Add Tag: "Hot Lead"',
+          title: ' Add Tag: "Hot Lead"',
           subtitle: 'Labels contact profile in CRM',
           config: { tag: 'Hot Lead' },
         };
@@ -713,7 +713,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'REMOVE_TAG',
-          title: '🏷️ Remove Tag: "Unengaged"',
+          title: ' Remove Tag: "Unengaged"',
           subtitle: 'Strips inactive label from CRM contact',
           config: { tag: 'Unengaged' },
         };
@@ -721,7 +721,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'ADD_TO_LIST',
-          title: '📋 Add to "VIP Pipeline" List',
+          title: ' Add to "VIP Pipeline" List',
           subtitle: 'Enrolls prospect into high-value marketing list',
           config: { listName: 'VIP Pipeline' },
         };
@@ -729,7 +729,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'REMOVE_FROM_LIST',
-          title: '📋 Remove from "Cold Nurture" List',
+          title: ' Remove from "Cold Nurture" List',
           subtitle: 'Removes prospect from general marketing blast',
           config: { listName: 'Cold Nurture' },
         };
@@ -737,7 +737,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'NOTIFY_SALES',
-          title: '📞 Notify Sales: Account Executive Alert',
+          title: ' Notify Sales: Account Executive Alert',
           subtitle: 'Pushes priority Slack notification and WebRTC softphone battlecard',
           config: { assignedRep: 'Account Executive', notificationChannel: 'SLACK' },
         };
@@ -745,7 +745,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'CREATE_CRM_TASK',
-          title: '✅ Create CRM Task: Call Prospect',
+          title: ' Create CRM Task: Call Prospect',
           subtitle: 'Auto-schedules high priority task in universal CRM taskboard',
           config: { taskTitle: 'Schedule 15-min Architecture Review', taskPriority: 'HIGH', taskDueIn: 'Within 24 Hours' },
         };
@@ -753,7 +753,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'UPDATE_CONTACT',
-          title: '👤 Update CRM Contact Field',
+          title: ' Update CRM Contact Field',
           subtitle: 'Advances lifecycle stage to Sales Qualified Lead',
           config: { contactField: 'lifecycleStage', contactValue: 'Sales Qualified Lead' },
         };
@@ -761,7 +761,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'WEBHOOK',
-          title: '🌐 Outbound Webhook Dispatch',
+          title: ' Outbound Webhook Dispatch',
           subtitle: 'Dispatches payload to external endpoint or Zapier/Make',
           config: { webhookUrl: 'https://api.external-crm.com/v1/event', webhookMethod: 'POST' },
         };
@@ -769,7 +769,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'EXIT_WORKFLOW',
-          title: '🏁 Goal Achieved: Exit Sequence',
+          title: ' Goal Achieved: Exit Sequence',
           subtitle: 'Account converted or booked demo; exits marketing sequence',
           config: { goalType: 'CONVERTED' },
         };
@@ -777,7 +777,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         return {
           id,
           type: 'MOVE_TO_WORKFLOW',
-          title: '🔀 Move to Workflow',
+          title: ' Move to Workflow',
           subtitle: 'Transfers enrolled contact into another automation sequence',
           config: { targetWorkflowId: 'wf_cart_recovery' },
         };
@@ -1127,7 +1127,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
   // Run simulation
   const handleRunSimulation = async () => {
     setIsSimulating(true);
-    setSimulationLog([`🏁 Initializing AI Decision Tree simulation with persona: ${simulationPersona}...`]);
+    setSimulationLog([` Initializing AI Decision Tree simulation with persona: ${simulationPersona}...`]);
 
     const isClicked = simulationPersona !== 'Marcus (Unresponsive)';
     const industry = simulationPersona === 'Dr. Gregory (Healthcare)' ? 'Healthcare' : 'Enterprise SaaS';
@@ -1139,14 +1139,14 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
     setTimeout(() => {
       setSimulationLog((prev) => [
         ...prev,
-        `📍 Step 1 [Trigger]: Form capture event detected for "${name} (${role}, ${company})". Anonymous telemetry bound to CRM.`,
+        ` Step 1 [Trigger]: Form capture event detected for "${name} (${role}, ${company})". Anonymous telemetry bound to CRM.`,
       ]);
     }, 500);
 
     setTimeout(async () => {
       setSimulationLog((prev) => [
         ...prev,
-        `✉️ Step 2 [Email 1]: Synthesizing personalized briefing with Groq Turbo. Case study injected for "${industry}". Optimal Send Time: Tuesday at 10:15 AM EST.`,
+        ` Step 2 [Email 1]: Synthesizing personalized briefing with Groq Turbo. Case study injected for "${industry}". Optimal Send Time: Tuesday at 10:15 AM EST.`,
       ]);
 
       try {
@@ -1185,7 +1185,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
       setTimeout(() => {
         setSimulationLog((prev) => [
           ...prev,
-          '⏱️ Step 3 [Delay Gate]: 24h wait window elapsed. Evaluating link click telemetry...',
+          ' Step 3 [Delay Gate]: 24h wait window elapsed. Evaluating link click telemetry...',
         ]);
       }, 1000);
 
@@ -1193,18 +1193,18 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         if (isClicked) {
           setSimulationLog((prev) => [
             ...prev,
-            '🔀 Step 4 [Branch Decision]: Click detected! Following [YES: Hot Leads] branch.',
-            '⭐ Step 5 [Action]: Added to "Hot Leads List" • Added +10 Lead Score (New Total: 55 pts).',
-            '📞 Step 6 [Score Gate]: Score 55 >= 50! Dispatched Sales Alert & Created CRM Task!',
-            '✅ Simulation Completed successfully with live CRM Activity sync.',
+            ' Step 4 [Branch Decision]: Click detected! Following [YES: Hot Leads] branch.',
+            ' Step 5 [Action]: Added to "Hot Leads List" • Added +10 Lead Score (New Total: 55 pts).',
+            ' Step 6 [Score Gate]: Score 55 >= 50! Dispatched Sales Alert & Created CRM Task!',
+            'Simulation Completed successfully with live CRM Activity sync.',
           ]);
         } else {
           setSimulationLog((prev) => [
             ...prev,
-            '🔀 Step 4 [Branch Decision]: 0 clicks detected. Following [NO: Alternative Value] branch.',
-            '🏷️ Step 5 [Action]: Removed from Hot Leads • 5-day delay scheduled.',
-            '📩 Step 6 [Ongoing Nurture]: Scheduled Email 2B (Lightweight question).',
-            '✅ Simulation Completed.',
+            ' Step 4 [Branch Decision]: 0 clicks detected. Following [NO: Alternative Value] branch.',
+            ' Step 5 [Action]: Removed from Hot Leads • 5-day delay scheduled.',
+            ' Step 6 [Ongoing Nurture]: Scheduled Email 2B (Lightweight question).',
+            'Simulation Completed.',
           ]);
         }
         fetchExecutions(activeWorkflow.id);
@@ -1245,11 +1245,11 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         };
       case 'SEND_EMAIL':
         return {
-          badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/40',
-          border: 'border-indigo-500/40 hover:border-indigo-300',
+          badge: 'bg-teal-500/20 text-teal-300 border-teal-500/40',
+          border: 'border-teal-500/40 hover:border-teal-300',
           glow: 'shadow-[0_0_20px_rgba(99,102,241,0.15)]',
-          bg: 'from-indigo-950/40 via-slate-900/90 to-slate-950/95',
-          icon: 'text-indigo-400',
+          bg: 'from-teal-950/40 via-slate-900/90 to-slate-950/95',
+          icon: 'text-teal-400',
         };
       case 'DELAY':
         return {
@@ -1261,11 +1261,11 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
         };
       case 'CONDITION':
         return {
-          badge: 'bg-purple-500/20 text-purple-300 border-purple-500/40',
-          border: 'border-purple-500/40 hover:border-purple-300',
+          badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40',
+          border: 'border-emerald-500/40 hover:border-emerald-300',
           glow: 'shadow-[0_0_20px_rgba(168,85,247,0.15)]',
-          bg: 'from-purple-950/40 via-slate-900/90 to-slate-950/95',
-          icon: 'text-purple-400',
+          bg: 'from-emerald-950/40 via-slate-900/90 to-slate-950/95',
+          icon: 'text-emerald-400',
         };
       case 'UPDATE_LEAD_SCORE':
         return {
@@ -1419,7 +1419,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
               {node.branch ? `${node.branch} • ` : ''}{node.type.replace('_', ' ')}
             </span>
             {node.config?.optimalSendTime && (
-              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
                 <Sparkles size={9} /> AI Send Time
               </span>
             )}
@@ -1706,18 +1706,18 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
           <div className="flex items-center gap-2 overflow-x-auto pb-2 pr-2">
             {[
               { type: 'TRIGGER' as const, label: 'Trigger Event', icon: Zap, color: 'border-cyan-500/40 text-cyan-300 bg-cyan-500/10' },
-              { type: 'SEND_EMAIL' as const, label: 'Send Email', icon: Mail, color: 'border-indigo-500/40 text-indigo-300 bg-indigo-500/10' },
+              { type: 'SEND_EMAIL' as const, label: 'Send Email', icon: Mail, color: 'border-teal-500/40 text-teal-300 bg-teal-500/10' },
               { type: 'DELAY' as const, label: 'Wait / Delay', icon: Clock, color: 'border-slate-500/40 text-slate-300 bg-slate-500/10' },
-              { type: 'CONDITION' as const, label: 'If / Else Branch', icon: Split, color: 'border-purple-500/40 text-purple-300 bg-purple-500/10' },
+              { type: 'CONDITION' as const, label: 'If / Else Branch', icon: Split, color: 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' },
               { type: 'UPDATE_LEAD_SCORE' as const, label: 'Lead Score (+/-)', icon: Flame, color: 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' },
               { type: 'ADD_TAG' as const, label: 'Add Tag', icon: Tag, color: 'border-teal-500/40 text-teal-300 bg-teal-500/10' },
               { type: 'REMOVE_TAG' as const, label: 'Remove Tag', icon: Tag, color: 'border-rose-500/40 text-rose-300 bg-rose-500/10' },
               { type: 'ADD_TO_LIST' as const, label: 'Add to List', icon: ListOrdered, color: 'border-blue-500/40 text-blue-300 bg-blue-500/10' },
               { type: 'REMOVE_FROM_LIST' as const, label: 'Remove List', icon: ListOrdered, color: 'border-slate-500/40 text-slate-300 bg-slate-500/10' },
-              { type: 'NOTIFY_SALES' as const, label: 'Notify Sales Rep', icon: PhoneCall, color: 'border-purple-500/40 text-purple-300 bg-purple-500/10' },
+              { type: 'NOTIFY_SALES' as const, label: 'Notify Sales Rep', icon: PhoneCall, color: 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' },
               { type: 'CREATE_CRM_TASK' as const, label: 'Create CRM Task', icon: CheckSquare, color: 'border-emerald-500/40 text-emerald-300 bg-emerald-500/10' },
               { type: 'UPDATE_CONTACT' as const, label: 'Update Contact', icon: UserPlus, color: 'border-cyan-500/40 text-cyan-300 bg-cyan-500/10' },
-              { type: 'WEBHOOK' as const, label: 'Webhook', icon: Send, color: 'border-indigo-500/40 text-indigo-300 bg-indigo-500/10' },
+              { type: 'WEBHOOK' as const, label: 'Webhook', icon: Send, color: 'border-teal-500/40 text-teal-300 bg-teal-500/10' },
               { type: 'EXIT_WORKFLOW' as const, label: 'Exit / Goal', icon: Award, color: 'border-amber-500/40 text-amber-300 bg-amber-500/10' },
               { type: 'MOVE_TO_WORKFLOW' as const, label: 'Move Flow', icon: ArrowRight, color: 'border-cyan-500/40 text-cyan-300 bg-cyan-500/10' },
             ].map((item) => {
@@ -1851,7 +1851,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
             className="px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
           >
             <Sparkles size={14} className="text-emerald-400" />
-            <span>✨ AI Sequence Architect</span>
+            <span> AI Sequence Architect</span>
           </button>
         </div>
 
@@ -1927,7 +1927,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
               {(activeWorkflow.yesNodes?.length > 0 || activeWorkflow.noNodes?.length > 0) ? (
                 <div className="space-y-2 pt-3">
                   <div className="flex items-center justify-between">
-                    <div className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-mono font-bold flex items-center gap-1.5 shadow-md">
+                    <div className="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold flex items-center gap-1.5 shadow-md">
                       <Split size={12} />
                       <span>IF / ELSE DECISION FORK</span>
                     </div>
@@ -2013,7 +2013,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
                         noNodes: [createDefaultNode('DELAY', 'NO')],
                       }));
                     }}
-                    className="px-4 py-2 rounded-2xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-xs font-bold flex items-center gap-2 cursor-pointer transition-all hover:scale-105 shadow-lg"
+                    className="px-4 py-2 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-2 cursor-pointer transition-all hover:scale-105 shadow-lg"
                   >
                     <Split size={14} />
                     <span>+ Add Decision Branch (YES / NO Lanes)</span>
@@ -2025,7 +2025,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
               {activeWorkflow.scoreGateNodes && (activeWorkflow.scoreGateNodes.yesPath.length > 0 || activeWorkflow.scoreGateNodes.noPath.length > 0) ? (
                 <>
                   <div className="pt-5 pb-1 flex flex-col items-center">
-                    <div className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] font-mono font-bold flex items-center gap-1.5 shadow-md">
+                    <div className="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-mono font-bold flex items-center gap-1.5 shadow-md">
                       <ShieldCheck size={12} />
                       <span>LEAD SCORE QUALIFICATION GATE (Score &gt;= 50?)</span>
                     </div>
@@ -2208,7 +2208,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
       </div>
 
       {/* ========================================================================= */}
-      {/* 🛠️ SLIDE-OVER INSPECTOR: CONFIGURE ALL 14 NODE TYPES */}
+      {/*  SLIDE-OVER INSPECTOR: CONFIGURE ALL 14 NODE TYPES */}
       {/* ========================================================================= */}
       {isInspectorOpen && selectedNode && (
         <div className="fixed inset-y-0 right-0 z-[9999] w-full max-w-md bg-slate-950/95 backdrop-blur-2xl border-l border-white/10 shadow-2xl p-6 flex flex-col justify-between animate-in slide-in-from-right duration-300">
@@ -2523,7 +2523,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
               {/* 4. Condition Config */}
               {selectedNode.node.type === 'CONDITION' && (
                 <div className="space-y-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] uppercase font-bold text-purple-400 block">Condition Rules &amp; Branch Labels</span>
+                  <span className="text-[10px] uppercase font-bold text-emerald-400 block">Condition Rules &amp; Branch Labels</span>
                   <div>
                     <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Evaluation Rule</label>
                     <select
@@ -2756,7 +2756,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
               {/* 8. Notify Sales Config */}
               {selectedNode.node.type === 'NOTIFY_SALES' && (
                 <div className="space-y-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] uppercase font-bold text-purple-400 block">Sales Notification Alert</span>
+                  <span className="text-[10px] uppercase font-bold text-emerald-400 block">Sales Notification Alert</span>
                   <div>
                     <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Assigned Sales Role / Rep</label>
                     <input
@@ -2928,7 +2928,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
               {/* 11. Webhook Config */}
               {selectedNode.node.type === 'WEBHOOK' && (
                 <div className="space-y-3 p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06]">
-                  <span className="text-[10px] uppercase font-bold text-indigo-400 block">Outbound Webhook Settings</span>
+                  <span className="text-[10px] uppercase font-bold text-teal-400 block">Outbound Webhook Settings</span>
                   <div>
                     <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">Endpoint URL</label>
                     <input
@@ -3060,7 +3060,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
       )}
 
       {/* ========================================================================= */}
-      {/* 📊 DRAWER / MODAL: WORKFLOW EXECUTION & AUDIT TRAIL */}
+      {/*  DRAWER / MODAL: WORKFLOW EXECUTION & AUDIT TRAIL */}
       {/* ========================================================================= */}
       {isExecutionLogsOpen && (
         <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xl flex justify-end animate-in fade-in duration-200">
@@ -3229,8 +3229,8 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
                         <span>{new Date(run.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
                         <div className="flex items-center gap-1.5">
                           {isDuplicate && (
-                            <span className="text-purple-400 font-bold" title="Idempotency Guard: duplicate send protected">
-                              🛡️ Deduped
+                            <span className="text-emerald-400 font-bold" title="Idempotency Guard: duplicate send protected">
+                               Deduped
                             </span>
                           )}
                           <span className="font-mono text-emerald-400 font-bold">
@@ -3282,7 +3282,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
                             key={step.stepId || idx}
                             className={`p-3 rounded-xl border space-y-1.5 text-xs ${
                               isProtected
-                                ? 'bg-purple-950/20 border-purple-500/40'
+                                ? 'bg-emerald-950/20 border-emerald-500/40'
                                 : 'bg-white/[0.02] border-white/[0.06]'
                             }`}
                           >
@@ -3294,7 +3294,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
                               <span
                                 className={`px-2 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase border ${
                                   isProtected
-                                    ? 'bg-purple-500/20 text-purple-300 border-purple-500/30'
+                                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                                     : step.status === 'SUCCESS'
                                     ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
                                     : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30'
@@ -3308,7 +3308,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
                             {step.output && (
                               <div className="text-[11px] text-slate-300 space-y-1 bg-black/30 p-2 rounded-lg font-mono">
                                 {step.output.optimalSendTime && (
-                                  <div className="text-purple-300 flex items-center gap-1">
+                                  <div className="text-emerald-300 flex items-center gap-1">
                                     <Sparkles size={11} />
                                     <span>AI Send Time: {step.output.optimalSendTime}</span>
                                   </div>
@@ -3369,7 +3369,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
       )}
 
       {/* ========================================================================= */}
-      {/* 📋 MODAL: CREATE BRAND NEW WORKFLOW WITH TEMPLATE CHOOSER */}
+      {/*  MODAL: CREATE BRAND NEW WORKFLOW WITH TEMPLATE CHOOSER */}
       {/* ========================================================================= */}
       {isNewWorkflowModalOpen && (
         <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -3395,25 +3395,25 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
                   {[
                     {
                       id: 'blank',
-                      name: '🌟 Blank Canvas',
+                      name: ' Blank Canvas',
                       badge: 'Custom Builder',
                       desc: 'Clean slate with 1 trigger step. Drag & drop any enterprise steps you desire.',
                     },
                     {
                       id: 'flagship',
-                      name: '👑 Enterprise Nurture Tree',
+                      name: ' Enterprise Nurture Tree',
                       badge: 'Decision Tree',
                       desc: 'Exact match to enterprise flowchart: Trigger > Email 1 > Click Branch > Score Gate.',
                     },
                     {
                       id: 'saas_onboarding',
-                      name: '🚀 SaaS User Onboarding',
+                      name: ' SaaS User Onboarding',
                       badge: 'Activation',
                       desc: 'Signup welcome > 24h wait > Team invite condition > Senior AE sales alert.',
                     },
                     {
                       id: 'cart_recovery',
-                      name: '🛒 Abandoned Checkout',
+                      name: ' Abandoned Checkout',
                       badge: 'E-commerce',
                       desc: 'Drop-off trigger > 2h delay > Discount offer > Sales qualification.',
                     },
@@ -3503,8 +3503,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
                 type="button"
                 onClick={handleCreateNewWorkflow}
                 className="px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/20 cursor-pointer"
-              >
-                Create Workflow
+              > Create Workflow
               </button>
             </div>
           </div>
@@ -3512,7 +3511,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
       )}
 
       {/* ========================================================================= */}
-      {/* ⚙️ MODAL: EDIT ACTIVE WORKFLOW SETTINGS */}
+      {/*  MODAL: EDIT ACTIVE WORKFLOW SETTINGS */}
       {/* ========================================================================= */}
       {isFlowSettingsOpen && (
         <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -3611,7 +3610,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
       )}
 
       {/* ========================================================================= */}
-      {/* ✉️ MODAL: INSPECT REAL AI-GENERATED OUTREACH EMAIL */}
+      {/*  MODAL: INSPECT REAL AI-GENERATED OUTREACH EMAIL */}
       {/* ========================================================================= */}
       {isAiEmailModalOpen && liveGeneratedEmail && (
         <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -3681,7 +3680,7 @@ export function AutomationsWorkflowStudio({ onOpenEmailDesigner }: AutomationsWo
       )}
 
       {/* ========================================================================= */}
-      {/* 🤖 MODAL: AI SEQUENCE ARCHITECT (Prompt Groq Turbo to build custom flow) */}
+      {/*  MODAL: AI SEQUENCE ARCHITECT (Prompt Groq Turbo to build custom flow) */}
       {/* ========================================================================= */}
       {isAiArchitectOpen && (
         <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
@@ -3826,3 +3825,4 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
     </div>
   );
 }
+

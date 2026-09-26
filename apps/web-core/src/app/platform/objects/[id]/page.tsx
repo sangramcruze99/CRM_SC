@@ -47,7 +47,7 @@ export default async function CustomObjectDetailPage({
     return (
       <div className="flex flex-col items-center justify-center h-full space-y-4">
         <h2 className="text-xl font-medium text-slate-800">Object Not Found</h2>
-        <Link href="/platform/schema" className="text-indigo-600 hover:text-indigo-500">
+        <Link href="/platform/schema" className="text-teal-600 hover:text-teal-500">
           Return to Schema Builder
         </Link>
       </div>

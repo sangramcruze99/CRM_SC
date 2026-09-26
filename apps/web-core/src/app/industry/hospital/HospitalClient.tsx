@@ -1,26 +1,23 @@
+// apps/web-core/src/app/industry/hospital/HospitalClient.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import {
   Stethoscope,
-  Plus,
-  Bed,
-  HeartPulse,
-  Calendar,
-  ShieldCheck,
-  Search,
-  CheckCircle2,
-  Clock,
-  Sparkles,
   X,
   User,
   Hash,
-  Activity,
   Building,
-  Home,
+  Bed,
+  Sparkles,
+  CheckCircle2,
 } from 'lucide-react';
 import { DigitalRxPrescriptionMaker } from '@/components/industry/DigitalRxPrescriptionMaker';
+import { UniversalDashboard } from '@/components/dashboard/UniversalDashboard';
+import { getDashboardConfig } from '@/components/dashboard/dashboardConfig';
+import { DashboardAttentionItem } from '@/components/dashboard/dashboard.types';
+import { useIndustry } from '@/components/industry/IndustryContext';
 
 interface Patient {
   id: string;
@@ -35,17 +32,21 @@ interface Patient {
   insuranceStatus: 'VERIFIED' | 'SELF_PAY' | 'PENDING';
 }
 
-const initialPatients: Patient[] = [];
-
-const initialAppointments: Array<{ id: string; patient: string; time: string; doctor: string; type: string; status: string }> = [];
-
 export function HospitalClient() {
+  const { activeServiceIds } = useIndustry();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  const [patients, setPatients] = useState<Patient[]>(initialPatients);
-  const [appointments, setAppointments] = useState(initialAppointments);
-  const [search, setSearch] = useState('');
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState<any>({
+    totalBeds: 165,
+    occupiedBeds: 78,
+    occupancyRate: '47.2%',
+    activeErQueue: 1,
+    todayAppointments: 8,
+    prescriptionsIssued: 4,
+  });
+  const [role, setRole] = useState('admin');
+  const [mode, setMode] = useState<'OPERATIONS' | 'ANALYTICS'>('OPERATIONS');
   const [isAdmitModalOpen, setIsAdmitModalOpen] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
 
@@ -55,355 +56,239 @@ export function HospitalClient() {
   const [newTriage, setNewTriage] = useState<'CRITICAL' | 'URGENT' | 'STABLE'>('URGENT');
   const [newRoom, setNewRoom] = useState('Ward 3C - Bed 01');
 
-  const filteredPatients = patients.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.id.toLowerCase().includes(search.toLowerCase()) ||
-      p.department.toLowerCase().includes(search.toLowerCase())
-  );
+  const fetchHospitalData = async () => {
+    try {
+      const res = await fetch('/api/niche/hospital');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data?.patients) setPatients(json.data.patients);
+        if (json.data?.appointments) setAppointments(json.data.appointments);
+        if (json.metrics) setMetrics(json.metrics);
+      }
+    } catch (e) {
+      console.error('Failed to fetch hospital data:', e);
+    }
+  };
 
-  const handleAdmitPatient = (e: React.FormEvent) => {
+  useEffect(() => {
+    setMounted(true);
+    fetchHospitalData();
+  }, []);
+
+  const handleAdmitPatient = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName || !newAge) return;
 
-    const newPatient: Patient = {
-      id: `PT-${Math.floor(8950 + Math.random() * 50)}`,
-      name: newName,
-      age: parseInt(newAge) || 30,
-      gender: 'Other',
-      department: newDept,
-      attendingPhysician: 'Dr. On-Duty Specialist',
-      triageLevel: newTriage,
-      roomNumber: newRoom,
-      admitDate: new Date().toISOString().split('T')[0],
-      insuranceStatus: 'VERIFIED',
-    };
+    try {
+      const res = await fetch('/api/niche/hospital', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'admit_patient',
+          payload: {
+            name: newName,
+            age: parseInt(newAge) || 30,
+            department: newDept,
+            triageLevel: newTriage,
+            roomNumber: newRoom,
+          },
+        }),
+      });
 
-    setPatients([newPatient, ...patients]);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.record) {
+          setPatients((prev) => [json.record, ...prev]);
+        }
+        fetchHospitalData();
+      }
+    } catch (err) {
+      console.error('Admit patient failed:', err);
+    }
+
     setIsAdmitModalOpen(false);
     setNewName('');
     setNewAge('');
-    setAlert(`🏥 Inpatient ${newName} admitted to ${newDept} (${newRoom}) successfully!`);
+    setAlert(`Inpatient ${newName} admitted to ${newDept} (${newRoom}) successfully! Record persisted to EHR.`);
     setTimeout(() => setAlert(null), 4000);
   };
 
+  const handleAttentionAction = (item: DashboardAttentionItem) => {
+    setAlert(`Action triggered for attention item: "${item.title}". Directing to workflow.`);
+    setTimeout(() => setAlert(null), 4000);
+  };
+
+  const dashboardConfig = getDashboardConfig(
+    'hospital',
+    role,
+    mode,
+    {
+      data: { patients, appointments },
+      metrics,
+    },
+    {
+      onAdmit: () => setIsAdmitModalOpen(true),
+      onAppointment: () => setIsAdmitModalOpen(true),
+      onRx: () => {
+        // DigitalRx maker trigger
+        const rxEl = document.getElementById('digital-rx-trigger');
+        if (rxEl) rxEl.click();
+      },
+    },
+    activeServiceIds
+  );
+
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-white">
-      {/* Alert Banner */}
-      {alert && (
-        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-emerald-400" />
-          <span>{alert}</span>
-        </div>
-      )}
+    <>
+      <UniversalDashboard
+        config={dashboardConfig}
+        onRoleChange={setRole}
+        onModeChange={setMode}
+        onAttentionAction={handleAttentionAction}
+        headerSlot={
+          alert ? (
+            <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+              <CheckCircle2 size={16} className="text-emerald-400" />
+              <span>{alert}</span>
+            </div>
+          ) : null
+        }
+        customModals={
+          <>
+            {/* Admit Inpatient Modal via Portal */}
+            {mounted &&
+              isAdmitModalOpen &&
+              createPortal(
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+                  <div className="relative w-full max-w-lg bg-slate-950/90 border border-white/[0.12] rounded-3xl p-6 shadow-2xl space-y-5 backdrop-blur-2xl">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
-              HEALTHCARE & HOSPITAL ERP
-            </span>
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5 mt-1">
-            <Stethoscope className="text-rose-400" size={24} />
-            Clinical Operations & Patient Care Center
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Real-time ER bed management, EHR patient records, clinical consultation triage, and HIPAA-compliant audit logs.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setIsAdmitModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-400 hover:to-pink-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-rose-500/25 active:scale-[0.98] border border-rose-400/40 flex items-center gap-2 cursor-pointer"
-        >
-          <Plus size={15} />
-          <span>Admit Inpatient</span>
-        </button>
-      </div>
-
-      {/* Hospital KPI Telemetry Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Bed Occupancy Rate</span>
-            <Bed size={18} className="text-rose-400" />
-          </div>
-          <div className="text-3xl font-extrabold text-white font-mono">86.4%</div>
-          <div className="text-xs text-rose-400 mt-2 font-bold">142 of 165 Beds Occupied</div>
-        </div>
-
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Active ER Triage Queue</span>
-            <HeartPulse size={18} className="text-emerald-400" />
-          </div>
-          <div className="text-3xl font-extrabold text-emerald-400 font-mono">{patients.length} Active</div>
-          <div className="text-xs text-slate-400 mt-2 font-medium">Avg wait time: 14 mins</div>
-        </div>
-
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">Consultations Today</span>
-            <Calendar size={18} className="text-slate-300" />
-          </div>
-          <div className="text-3xl font-extrabold text-white font-mono">48 Appts</div>
-          <div className="text-xs text-emerald-400 mt-2 font-bold">Across 8 Medical Specialties</div>
-        </div>
-
-        <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider">HIPAA Audit Compliance</span>
-            <ShieldCheck size={18} className="text-emerald-400" />
-          </div>
-          <div className="text-3xl font-extrabold text-emerald-400 font-mono">100% SECURE</div>
-          <div className="text-xs text-slate-400 mt-2 font-medium">End-to-End EHR Encrypted</div>
-        </div>
-      </div>
-
-      {/* Main Grid: Patient Registry & Appointment Queue */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column: Inpatients & Triage Registry (8 cols) */}
-        <div className="lg:col-span-8 space-y-4">
-          <div className="relative max-w-sm">
-            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
-            <input
-              type="text"
-              placeholder="Search by patient name, ID, department..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:bg-white/[0.08] font-medium"
-            />
-          </div>
-
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-white/[0.02] text-slate-400 text-xs uppercase tracking-wider font-semibold border-b border-white/[0.08]">
-                <tr>
-                  <th className="px-6 py-4">Patient EHR ID & Name</th>
-                  <th className="px-6 py-4">Department & Doctor</th>
-                  <th className="px-6 py-4">Triage Level</th>
-                  <th className="px-6 py-4">Room / Ward</th>
-                  <th className="px-6 py-4 text-right">Insurance</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/[0.05]">
-                {filteredPatients.map((p) => (
-                  <tr key={p.id} className="hover:bg-white/[0.04] transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-bold text-xs text-white">{p.name}</div>
-                      <div className="text-[11px] font-mono text-rose-400 font-semibold">{p.id} · {p.age}y</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-xs font-semibold text-white">{p.department}</div>
-                      <div className="text-[11px] text-slate-400 font-medium">{p.attendingPhysician}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                          p.triageLevel === 'CRITICAL'
-                            ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
-                            : p.triageLevel === 'URGENT'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                            : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                        }`}
+                    {/* Header */}
+                    <div className="flex items-start justify-between pb-4 border-b border-white/[0.08]">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-teal-500/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                          <Stethoscope size={20} />
+                        </div>
+                        <div>
+                          <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-black tracking-widest text-emerald-300 uppercase">
+                            HOSPITAL ADMISSIONS TRIAGE
+                          </span>
+                          <h2 className="text-base font-bold text-white tracking-tight mt-0.5">Admit Inpatient to Center</h2>
+                          <p className="text-xs text-slate-400 font-medium">Record patient triage level, ward assignment & bed allocation</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setIsAdmitModalOpen(false)}
+                        className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all cursor-pointer"
                       >
-                        {p.triageLevel}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 font-mono text-xs font-semibold text-slate-300">
-                      {p.roomNumber}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-white/[0.08] text-slate-300 border border-white/10">
-                        {p.insuranceStatus}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-                {filteredPatients.length === 0 && (
-                  <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
-                      No inpatients admitted in hospital directory. Click <span className="text-rose-400 font-bold">"+ Admit New Inpatient"</span> to admit a patient.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                        <X size={16} />
+                      </button>
+                    </div>
 
-        {/* Right Column: Today's Appointments & Consultations (4 cols) */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center justify-between border-b border-white/[0.06] pb-3">
-              <span className="flex items-center gap-1.5">
-                <Clock size={14} className="text-rose-400" />
-                <span>Today's Consultation Schedule</span>
-              </span>
-              <span className="text-[10px] font-mono text-slate-500">Live Sync</span>
-            </h3>
+                    <form onSubmit={handleAdmitPatient} className="space-y-4 text-xs">
+                      <div className="space-y-1.5">
+                        <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Patient Full Name</label>
+                        <div className="relative">
+                          <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. Jonathan Morris"
+                            value={newName}
+                            onChange={(e) => setNewName(e.target.value)}
+                            className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
+                          />
+                        </div>
+                      </div>
 
-            <div className="space-y-3">
-              {appointments.map((apt) => (
-                <div
-                  key={apt.id}
-                  className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-2xl space-y-1.5 hover:bg-white/[0.06] transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">{apt.patient}</span>
-                    <span className="font-mono text-[11px] font-bold text-rose-300 bg-rose-500/20 px-2 py-0.5 rounded border border-rose-500/40">
-                      {apt.time}
-                    </span>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Age</label>
+                          <div className="relative">
+                            <Hash size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                            <input
+                              type="number"
+                              required
+                              placeholder="42"
+                              value={newAge}
+                              onChange={(e) => setNewAge(e.target.value)}
+                              className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Triage Priority</label>
+                          <select
+                            value={newTriage}
+                            onChange={(e: any) => setNewTriage(e.target.value)}
+                            className="w-full px-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
+                          >
+                            <option value="STABLE">Stable (Routine)</option>
+                            <option value="URGENT">Urgent (Priority)</option>
+                            <option value="CRITICAL">Critical (ICU / STAT)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Department</label>
+                          <div className="relative">
+                            <Building size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                            <select
+                              value={newDept}
+                              onChange={(e) => setNewDept(e.target.value)}
+                              className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
+                            >
+                              <option value="Cardiology">Cardiology</option>
+                              <option value="Orthopedics">Orthopedics</option>
+                              <option value="Neurology">Neurology</option>
+                              <option value="Emergency Care">Emergency Care</option>
+                              <option value="Pediatrics">Pediatrics</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Assigned Ward / Bed</label>
+                          <div className="relative">
+                            <Bed size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+                            <input
+                              type="text"
+                              value={newRoom}
+                              onChange={(e) => setNewRoom(e.target.value)}
+                              className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono font-medium text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsAdmitModalOpen(false)}
+                          className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/[0.08] text-xs font-semibold transition-all cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 transition-all cursor-pointer flex items-center gap-1.5"
+                        >
+                          <Sparkles size={13} />
+                          <span>Confirm Admission</span>
+                        </button>
+                      </div>
+                    </form>
                   </div>
-                  <p className="text-[11px] text-slate-300 font-medium">{apt.type}</p>
-                  <div className="flex items-center justify-between pt-1 text-[10px] text-slate-400 border-t border-white/[0.06]">
-                    <span>{apt.doctor}</span>
-                    <span className="font-bold text-emerald-400">{apt.status}</span>
-                  </div>
-                </div>
-              ))}
-              {appointments.length === 0 && (
-                <div className="py-8 text-center text-slate-500 text-xs font-medium">
-                  No medical consultations scheduled for today.
-                </div>
+                </div>,
+                document.body
               )}
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Remodeled Luxury Glass Portal Modal */}
-      {isAdmitModalOpen && mounted && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-slate-950/80 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-lg bg-gradient-to-b from-slate-900/95 via-slate-950/98 to-slate-950/99 border border-white/[0.14] rounded-3xl p-6 sm:p-7 shadow-[0_25px_70px_rgba(0,0,0,0.85),0_0_0_1px_rgba(16,185,129,0.15)] backdrop-blur-2xl text-white space-y-5 animate-in zoom-in-95 duration-200 overflow-hidden">
-            {/* Top Specular Flare */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent pointer-events-none" />
-            <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-80 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
-
-            {/* Header with category badge */}
-            <div className="flex items-start justify-between pb-4 border-b border-white/[0.08] relative z-10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400/20 to-teal-500/10 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-                  <Stethoscope size={20} />
-                </div>
-                <div>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-black tracking-widest text-emerald-300 uppercase">
-                    HOSPITAL ADMISSIONS TRIAGE
-                  </span>
-                  <h2 className="text-base font-bold text-white tracking-tight mt-0.5">Admit Inpatient to Center</h2>
-                  <p className="text-xs text-slate-400 font-medium">Record patient triage level, ward assignment & bed allocation</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsAdmitModalOpen(false)}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.08] transition-all cursor-pointer"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <form onSubmit={handleAdmitPatient} className="space-y-4 text-xs relative z-10">
-              <div className="space-y-1.5">
-                <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Patient Full Name</label>
-                <div className="relative">
-                  <User size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Jonathan Morris"
-                    value={newName}
-                    onChange={(e) => setNewName(e.target.value)}
-                    className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Age</label>
-                  <div className="relative">
-                    <Hash size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                    <input
-                      type="number"
-                      required
-                      placeholder="42"
-                      value={newAge}
-                      onChange={(e) => setNewAge(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Triage Priority</label>
-                  <select
-                    value={newTriage}
-                    onChange={(e: any) => setNewTriage(e.target.value)}
-                    className="w-full px-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
-                  >
-                    <option value="STABLE">Stable (Routine)</option>
-                    <option value="URGENT">Urgent (Priority)</option>
-                    <option value="CRITICAL">Critical (ICU / STAT)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Department</label>
-                  <div className="relative">
-                    <Building size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                    <select
-                      value={newDept}
-                      onChange={(e) => setNewDept(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-medium text-xs"
-                    >
-                      <option value="Cardiology">Cardiology</option>
-                      <option value="Orthopedics">Orthopedics</option>
-                      <option value="Neurology">Neurology</option>
-                      <option value="Emergency Care">Emergency Care</option>
-                      <option value="Pediatrics">Pediatrics</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="block text-[10px] uppercase font-black tracking-wider text-slate-400">Assigned Ward / Bed</label>
-                  <div className="relative">
-                    <Bed size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-                    <input
-                      type="text"
-                      value={newRoom}
-                      onChange={(e) => setNewRoom(e.target.value)}
-                      className="w-full pl-9 pr-3.5 py-2.5 bg-black/40 border border-white/[0.12] rounded-xl text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/20 transition-all font-mono font-medium text-xs"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-white/[0.08] flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setIsAdmitModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 hover:text-white border border-white/[0.08] text-xs font-semibold transition-all cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 transition-all cursor-pointer flex items-center gap-1.5"
-                >
-                  <Sparkles size={13} />
-                  <span>Confirm Admission</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>,
-        document.body
-      )}
-      {/* Digital Prescription Maker & Drug Interaction Engine */}
-      <DigitalRxPrescriptionMaker />
-    </div>
+            {/* Digital Prescription Maker & Drug Interaction Engine */}
+            <DigitalRxPrescriptionMaker />
+          </>
+        }
+      />
+    </>
   );
 }

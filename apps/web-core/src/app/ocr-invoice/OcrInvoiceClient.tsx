@@ -390,14 +390,14 @@ export function OcrInvoiceClient() {
             (acc: number, item: any) => acc + (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
             0
           );
-          setAlert(`✨ Extracted "${name || json.document?.name || 'Vault Document'}" ($${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}) with ${json.data.confidenceScore || 98.6}% accuracy!`);
+          setAlert(` Extracted "${name || json.document?.name || 'Vault Document'}" ($${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}) with ${json.data.confidenceScore || 98.6}% accuracy!`);
         }
       }
     } catch (e) {
       clearInterval(interval);
       setIsScanning(false);
       console.error('Vault scan error', e);
-      setAlert('⚠️ Could not load document from Vault.');
+      setAlert(' Could not load document from Vault.');
     } finally {
       setTimeout(() => setAlert(null), 4000);
     }
@@ -433,14 +433,14 @@ export function OcrInvoiceClient() {
       if (res.ok) {
         const json = await res.json();
         setIsSavedReceipt(true);
-        setAlert(`✅ Receipt #${invoice.invoiceNumber || 'INV'} ($${grandTotal.toFixed(2)}) saved to Billing Ledger & Document Vault!`);
+        setAlert(` Receipt #${invoice.invoiceNumber || 'INV'} ($${grandTotal.toFixed(2)}) saved to Billing Ledger & Document Vault!`);
         fetchVaultDocs(); // refresh vault list
       } else {
         throw new Error('Failed to save receipt');
       }
     } catch (err: any) {
       console.error('Save receipt error:', err);
-      setAlert('⚠️ Failed to save receipt to billing ledger.');
+      setAlert(' Failed to save receipt to billing ledger.');
     } finally {
       setIsSavingReceipt(false);
       setTimeout(() => setAlert(null), 4500);
@@ -476,7 +476,7 @@ export function OcrInvoiceClient() {
 
   // Commit human correction
   const handleSavedCorrection = (fieldName: string, correctedVal: any) => {
-    setAlert(`✅ Saved correction for "${fieldName}": "${correctedVal}" (logged to evaluation dataset)`);
+    setAlert(` Saved correction for "${fieldName}": "${correctedVal}" (logged to evaluation dataset)`);
     if (fieldName === 'paidAmount' || fieldName === 'amountPaid') {
       const num = parseFloat(correctedVal) || 0;
       setInvoice((prev) => ({
@@ -603,7 +603,7 @@ export function OcrInvoiceClient() {
         ] as any);
         setRequiresReview(false);
         setReviewReasons([]);
-        setAlert('✨ AI OCR scanned and extracted preset fields with 98.4% neural accuracy! (1 Scan Credit Deducted)');
+        setAlert(' AI OCR scanned and extracted preset fields with 98.4% neural accuracy! (1 Scan Credit Deducted)');
         setTimeout(() => setAlert(null), 3500);
       }, 700);
       return;
@@ -663,7 +663,7 @@ export function OcrInvoiceClient() {
           0
         );
         setAlert(
-          `✨ AI OCR scanned and extracted ${extracted.items?.length || 0} line items ($${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}) with ${extracted.confidenceScore || 99}% accuracy!`
+          ` AI OCR scanned and extracted ${extracted.items?.length || 0} line items ($${totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}) with ${extracted.confidenceScore || 99}% accuracy!`
         );
       } else {
         throw new Error('No structured invoice data returned from OCR engine');
@@ -672,7 +672,7 @@ export function OcrInvoiceClient() {
       clearInterval(interval);
       setIsScanning(false);
       console.error('OCR processing error:', err);
-      setAlert('⚠️ OCR extraction encountered an issue. Please verify document readability.');
+      setAlert(' OCR extraction encountered an issue. Please verify document readability.');
     } finally {
       setTimeout(() => setAlert(null), 4000);
     }
@@ -731,7 +731,7 @@ export function OcrInvoiceClient() {
       }
     } catch (err) {
       console.warn('Camera access error or unsupported in environment:', err);
-      setAlert('⚠️ Camera permission denied or unsupported. Please use Image Upload or Presets.');
+      setAlert(' Camera permission denied or unsupported. Please use Image Upload or Presets.');
       setIsCameraActive(false);
     }
   };
@@ -798,7 +798,7 @@ export function OcrInvoiceClient() {
   // Trigger Human-in-the-loop Guardrail Modal
   const handleTriggerGuardrail = () => {
     if (invoice.items.length === 0) {
-      setAlert('⚠️ Please upload a document or add at least 1 line item before auditing.');
+      setAlert(' Please upload a document or add at least 1 line item before auditing.');
       setTimeout(() => setAlert(null), 3000);
       return;
     }
@@ -808,7 +808,7 @@ export function OcrInvoiceClient() {
   const handleApproveGuardrail = async () => {
     setIsGuardrailOpen(false);
     await handleSaveReceipt();
-    setAlert(`🎉 Invoice #${invoice.invoiceNumber || 'INV'} ($${grandTotal.toFixed(2)}) compliance approved and committed to Commercial Invoices & Document Vault!`);
+    setAlert(`Invoice #${invoice.invoiceNumber || 'INV'} ($${grandTotal.toFixed(2)}) compliance approved and committed to Commercial Invoices & Document Vault!`);
     setTimeout(() => setAlert(null), 5000);
   };
 
@@ -832,89 +832,150 @@ export function OcrInvoiceClient() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Scan className="text-emerald-400" size={24} />
-            AI Neural Vision OCR Invoice Maker & Scanner
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Client-side canvas preprocessing, automated OCR extraction, autonomous Dual Khata ledger posting, and human-in-the-loop compliance guardrails.
+      {/* Top Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        {/* Ambient Botanical Glow */}
+        <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                MIDAS NEURAL VISION ENGINE
+              </span>
+              <span className="text-[11px] font-mono text-zinc-500">CLIENT-SIDE & CLOUD OCR HYBRID</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              Neural OCR Invoice & Receipt Studio
+            </h1>
+            <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+              Real-time canvas preprocessing, autonomous line-item extraction, dual-khata double entry posting, and human-in-the-loop compliance guardrails.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              type="button"
+              onClick={() => {
+                if (invoice.items.length === 0) {
+                  setAlert('Please scan or add line items before sending an email invoice.');
+                  setTimeout(() => setAlert(null), 3000);
+                  return;
+                }
+                setDispatchTab('email');
+                setIsDispatchOpen(true);
+              }}
+              className="px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 hover:text-white rounded-xl text-xs font-semibold border border-white/[0.08] transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Mail size={14} className="text-emerald-400" />
+              <span>Send Invoice</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (invoice.items.length === 0) {
+                  setAlert('Please scan or add line items before printing a receipt.');
+                  setTimeout(() => setAlert(null), 3000);
+                  return;
+                }
+                setDispatchTab('receipt');
+                setIsDispatchOpen(true);
+              }}
+              className="px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 hover:text-white rounded-xl text-xs font-semibold border border-white/[0.08] transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Printer size={14} className="text-emerald-400" />
+              <span>Thermal Receipt</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleTriggerGuardrail}
+              className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 cursor-pointer"
+            >
+              <ShieldCheck size={14} />
+              <span>Audit & Post Ledger</span>
+            </button>
+
+            <Link
+              href="/invoices"
+              className="px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-xl text-xs font-mono font-bold transition-all border border-emerald-500/20 flex items-center gap-2"
+            >
+              <FileText size={14} />
+              <span>Ledger Invoices</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* Sentinel pulse status strip */}
+        <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-400">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              SENTINEL: REAL-TIME VISION INGESTION ACTIVE
+            </span>
+            <span className="hidden sm:inline text-zinc-600">|</span>
+            <span className="hidden sm:inline text-zinc-400">
+              VAULT TARGET: <code className="text-zinc-300">vault/documents/invoices_scanned/</code>
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-zinc-500 font-mono">
+              ENGINE: {engineStatus.isLocalAvailable ? 'ON-DEVICE TESSERACT GPU' : 'CLOUD VISION FALLBACK'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* High-Density Telemetry KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Vision Engine Core</span>
+            <Scan size={16} className="text-emerald-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold font-mono text-white">
+              {engineStatus.isLocalAvailable ? 'Local GPU' : 'Cloud API'}
+            </span>
+            <span className="text-xs font-mono text-emerald-400">
+              {engineStatus.isLocalAvailable ? 'Offline Privacy' : 'Active'}
+            </span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">
+            {engineStatus.gpuName || 'CUDA Accelerated'}
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {engineStatus.isLocalAvailable ? (
-            <div className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs font-semibold text-emerald-400 flex items-center gap-1.5 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>⚡ Local GPU Active: {engineStatus.gpuName || 'NVIDIA GTX 1060 6GB'} (Offline Privacy)</span>
-            </div>
-          ) : (
-            <div className="px-3 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs font-semibold text-amber-400 flex items-center gap-1.5 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-              <span>☁️ Cloud Fallback Active (API Gateway)</span>
-            </div>
-          )}
-
-          <div className="px-3 py-1.5 bg-white/[0.06] border border-white/[0.1] rounded-xl text-xs font-mono text-emerald-300 flex items-center gap-1.5">
-            <Sparkles size={13} className="text-emerald-400" />
-            <span>OCR Credits: {credits.ocrScansRemaining}/{credits.ocrScansTotal}</span>
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Scan Quota Remaining</span>
+            <Sparkles size={16} className="text-emerald-400" />
           </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold font-mono text-white">
+              {credits.ocrScansRemaining} / {credits.ocrScansTotal}
+            </span>
+            <span className="text-xs font-mono text-emerald-400">Monthly</span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">High-throughput document extraction quota</p>
+        </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              if (invoice.items.length === 0) {
-                setAlert('⚠️ Please scan or add line items before sending an email invoice.');
-                setTimeout(() => setAlert(null), 3000);
-                return;
-              }
-              setDispatchTab('email');
-              setIsDispatchOpen(true);
-            }}
-            className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-xl text-xs font-bold transition-all border border-white/[0.1] flex items-center gap-1.5 cursor-pointer shadow-sm"
-            title="Send formal invoice via email to customer"
-          >
-            <Mail size={14} className="text-emerald-400" />
-            <span>Send Email</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => {
-              if (invoice.items.length === 0) {
-                setAlert('⚠️ Please scan or add line items before printing a receipt.');
-                setTimeout(() => setAlert(null), 3000);
-                return;
-              }
-              setDispatchTab('receipt');
-              setIsDispatchOpen(true);
-            }}
-            className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-xl text-xs font-bold transition-all border border-white/[0.1] flex items-center gap-1.5 cursor-pointer shadow-sm"
-            title="Print 80mm thermal POS receipt or A4 invoice"
-          >
-            <Printer size={14} className="text-teal-400" />
-            <span>Physical Receipt</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleTriggerGuardrail}
-            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 flex items-center gap-1.5 cursor-pointer"
-          >
-            <ShieldCheck size={14} />
-            <span>Audit & Commit to Ledger</span>
-          </button>
-
-          <Link
-            href="/invoices"
-            className="px-3.5 py-2 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 hover:text-white rounded-xl text-xs font-bold transition-all border border-emerald-500/40 flex items-center gap-1.5 cursor-pointer shadow-sm"
-            title="Open Commercial Invoices Ledger"
-          >
-            <FileText size={14} className="text-emerald-400" />
-            <span>Commercial Invoices</span>
-          </Link>
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Document Valuation</span>
+            <Receipt size={16} className="text-emerald-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold font-mono text-white">
+              ${grandTotal.toFixed(2)}
+            </span>
+            <span className="text-xs font-mono text-emerald-400">{invoice.items.length} Line Items</span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">
+            Confidence: {invoice.confidenceScore || 98.2}% Accuracy
+          </p>
         </div>
       </div>
 
@@ -941,7 +1002,7 @@ export function OcrInvoiceClient() {
       )}
 
       {/* Ingestion Methods Bar */}
-      <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-4 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] flex flex-wrap items-center justify-between gap-4">
+      <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2.5 flex-wrap">
           {/* Native Local Upload */}
           <input
@@ -1220,7 +1281,7 @@ export function OcrInvoiceClient() {
 
                 {!isScanning && (
                   <div className="absolute bottom-3 left-3 right-3 p-2.5 bg-slate-950/80 backdrop-blur-md rounded-xl text-white text-[11px] font-medium flex items-center justify-between border border-white/10 z-10">
-                    <span>✨ {invoice.items.length} line items detected</span>
+                    <span> {invoice.items.length} line items detected</span>
                     <span className="font-mono text-emerald-400 font-bold">
                       {invoice.currency}
                       {grandTotal.toFixed(2)}
@@ -1738,7 +1799,7 @@ export function OcrInvoiceClient() {
                       Balance Due
                     </span>
                     <span className="text-[10px] opacity-85 block">
-                      {currentBalance > 0 ? (isInvoiceOverdue ? '⚠️ Overdue Remaining' : 'Remaining Payable') : '✓ Settled in Full'}
+                      {currentBalance > 0 ? (isInvoiceOverdue ? ' Overdue Remaining' : 'Remaining Payable') : ' Settled in Full'}
                     </span>
                     {invoice.depositDue !== undefined && invoice.depositDue !== null && Number(invoice.depositDue) > 0 && (
                       <span className="text-[10px] text-amber-300/90 font-mono block mt-0.5">
@@ -1807,7 +1868,7 @@ export function OcrInvoiceClient() {
                     <option value="PARTIALLY_PAID" className="bg-slate-900 text-amber-400">PARTIALLY PAID</option>
                     <option value="UNPAID" className="bg-slate-900 text-slate-300">UNPAID</option>
                     <option value="VOID" className="bg-slate-900 text-slate-500">VOID</option>
-                    <option value="CREDIT" className="bg-slate-900 text-purple-400">CREDIT</option>
+                    <option value="CREDIT" className="bg-slate-900 text-emerald-400">CREDIT</option>
                   </select>
                 </div>
 
@@ -1844,7 +1905,7 @@ export function OcrInvoiceClient() {
                     ) : isSavedReceipt ? (
                       <>
                         <Check size={13} className="text-emerald-300" />
-                        <span>Receipt Saved ✓</span>
+                        <span>Receipt Saved </span>
                       </>
                     ) : (
                       <>
@@ -1990,7 +2051,7 @@ export function OcrInvoiceClient() {
               amountPaid: Number(updated.paidAmount),
               balanceDue: Number(updated.balanceDue),
             });
-            setAlert(`✅ Settlement transaction ${payment?.paymentNumber || ''} ($${Number(payment?.amount || updated.amount).toFixed(2)}) recorded to General Ledger!`);
+            setAlert(` Settlement transaction ${payment?.paymentNumber || ''} ($${Number(payment?.amount || updated.amount).toFixed(2)}) recorded to General Ledger!`);
             setTimeout(() => setAlert(null), 5500);
           }}
         />
@@ -1998,3 +2059,4 @@ export function OcrInvoiceClient() {
     </div>
   );
 }
+

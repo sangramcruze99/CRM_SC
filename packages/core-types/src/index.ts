@@ -21,3 +21,5 @@ export interface Company {
 
 export * from './events';
 export * from './event-publisher';
+export * from './agent-execution';
+export * from './agent-context';

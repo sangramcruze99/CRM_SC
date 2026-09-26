@@ -49,7 +49,7 @@ export function DigitalRxPrescriptionMaker() {
 
   const handlePrintRx = () => {
     window.print();
-    setAlert('📄 Prescription dispatched to hospital pharmacy and logged to EHR ledger.');
+    setAlert(' Prescription dispatched to hospital pharmacy and logged to EHR ledger.');
     setTimeout(() => setAlert(null), 4000);
   };
 

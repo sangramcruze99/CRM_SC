@@ -74,7 +74,7 @@ export function PeriodComparisonView({
       return <DollarSign size={16} className="text-emerald-400" />;
     if (key.includes('deal')) return <Briefcase size={16} className="text-amber-400" />;
     if (key.includes('ticket') || key.includes('sla')) return <LifeBuoy size={16} className="text-blue-400" />;
-    if (key.includes('task')) return <CheckSquare size={16} className="text-purple-400" />;
+    if (key.includes('task')) return <CheckSquare size={16} className="text-emerald-400" />;
     if (key.includes('ai')) return <Bot size={16} className="text-teal-400" />;
     return <Zap size={16} className="text-slate-400" />;
   };

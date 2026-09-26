@@ -522,7 +522,7 @@ export function EmailRichTextToolbar({
             S
           </button>
 
-          {/* Hyperlink (🔗) Button & Popover */}
+          {/* Hyperlink () Button & Popover */}
           <div className="relative">
             <button
               type="button"
@@ -614,7 +614,7 @@ export function EmailRichTextToolbar({
                         }}
                         className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-medium border border-emerald-500/20 cursor-pointer"
                       >
-                        📅 Calendar Link
+                         Calendar Link
                       </button>
                       <button
                         type="button"
@@ -624,7 +624,7 @@ export function EmailRichTextToolbar({
                         }}
                         className="text-[10px] px-2 py-0.5 rounded-md bg-teal-500/10 hover:bg-teal-500/20 text-teal-600 dark:text-teal-400 font-medium border border-teal-500/20 cursor-pointer"
                       >
-                        🌐 Lead Website
+                         Lead Website
                       </button>
                       <button
                         type="button"
@@ -634,7 +634,7 @@ export function EmailRichTextToolbar({
                         }}
                         className="text-[10px] px-2 py-0.5 rounded-md bg-slate-500/10 hover:bg-slate-500/20 text-slate-600 dark:text-slate-400 font-medium border border-slate-500/20 cursor-pointer"
                       >
-                        🔕 Unsubscribe
+                         Unsubscribe
                       </button>
                     </div>
                   </div>
@@ -888,7 +888,7 @@ export function EmailRichTextToolbar({
                       onClick={() => handleAiPolish('smooth')}
                       className="w-full px-2.5 py-1.5 text-left text-xs hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200"
                     >
-                      <span>🌊</span>
+                      <span></span>
                       <div>
                         <div className="font-semibold">Make Flow Smoother</div>
                         <div className="text-[10px] text-slate-400">Natural cadence & tone</div>
@@ -900,7 +900,7 @@ export function EmailRichTextToolbar({
                       onClick={() => handleAiPolish('punchy')}
                       className="w-full px-2.5 py-1.5 text-left text-xs hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200"
                     >
-                      <span>⚡</span>
+                      <span></span>
                       <div>
                         <div className="font-semibold">Make Punchier & Concise</div>
                         <div className="text-[10px] text-slate-400">Removes fluff, high conversion</div>
@@ -912,7 +912,7 @@ export function EmailRichTextToolbar({
                       onClick={() => handleAiPolish('friendly')}
                       className="w-full px-2.5 py-1.5 text-left text-xs hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200"
                     >
-                      <span>🤝</span>
+                      <span></span>
                       <div>
                         <div className="font-semibold">Warm & Consultative</div>
                         <div className="text-[10px] text-slate-400">Approachable B2B phrasing</div>
@@ -924,7 +924,7 @@ export function EmailRichTextToolbar({
                       onClick={() => handleAiPolish('grammar')}
                       className="w-full px-2.5 py-1.5 text-left text-xs hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200"
                     >
-                      <span>✓</span>
+                      <span></span>
                       <div>
                         <div className="font-semibold">Perfect Grammar & Syntax</div>
                         <div className="text-[10px] text-slate-400">Enterprise editorial standard</div>
@@ -1045,7 +1045,7 @@ export function EmailRichTextEditor({
             style={{ minHeight: `${rows * 24}px` }}
           />
           <div className="flex items-center justify-between text-[10px] text-slate-500 mt-1 px-1">
-            <span>💡 Select text and click <b>B</b>, <i>I</i>, <u>U</u>, <s>S</s>, or <b>🔗 Link (Ctrl+K)</b></span>
+            <span> Select text and click <b>B</b>, <i>I</i>, <u>U</u>, <s>S</s>, or <b> Link (Ctrl+K)</b></span>
             <span className="text-emerald-400/80 font-mono">Live Visual WYSIWYG</span>
           </div>
         </div>

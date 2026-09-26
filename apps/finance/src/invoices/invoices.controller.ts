@@ -12,6 +12,17 @@ export class InvoicesController {
     return this.invoicesService.findAll(effectiveTenantId);
   }
 
+  @Get(':id')
+  async getInvoiceById(
+    @Headers('x-tenant-id') tenantId: string,
+    @Param('id') id: string
+  ) {
+    const effectiveTenantId = tenantId || 'default-tenant';
+    const invoice = await this.invoicesService.findOne(id, effectiveTenantId);
+    if (!invoice) throw new BadRequestException(`Invoice ${id} not found`);
+    return invoice;
+  }
+
   @Post()
   async createInvoice(
     @Headers('x-tenant-id') tenantId: string,

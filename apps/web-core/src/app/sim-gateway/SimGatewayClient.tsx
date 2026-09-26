@@ -106,14 +106,14 @@ export function SimGatewayClient() {
       setSmsLogs([newLog, ...smsLogs]);
       setIsSending(false);
       setSmsContent('');
-      setAlert(`📲 Direct Cellular SMS dispatched via SIM Slot ${selectedSim} (${simSlots[selectedSim - 1].carrierName}) to ${recipientNumber}!`);
+      setAlert(` Direct Cellular SMS dispatched via SIM Slot ${selectedSim} (${simSlots[selectedSim - 1].carrierName}) to ${recipientNumber}!`);
       setTimeout(() => setAlert(null), 4000);
     }, 800);
   };
 
   const handleRunUssd = () => {
     setUssdResponse(`Carrier Query (${ussdCode}): Balance is $48.50. Active Plan: Unlimited 5G Voice + 2,000 SMS. Valid until 30-Sep-2026.`);
-    setAlert(`⚡ Executed USSD Code ${ussdCode} over GSM baseband modem.`);
+    setAlert(` Executed USSD Code ${ussdCode} over GSM baseband modem.`);
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -197,7 +197,7 @@ export function SimGatewayClient() {
 
               <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-1">
                 <span>IMEI: {sim.imei}</span>
-                <span className="text-emerald-400 font-bold">{isSelected ? '✓ Default for Outbound' : 'Click to select'}</span>
+                <span className="text-emerald-400 font-bold">{isSelected ? ' Default for Outbound' : 'Click to select'}</span>
               </div>
             </div>
           );
@@ -370,7 +370,7 @@ export function SimGatewayClient() {
                   <td className="px-6 py-4 text-slate-400 font-mono">{log.timestamp}</td>
                   <td className="px-6 py-4 text-right">
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                      {log.status} ✓
+                      {log.status} 
                     </span>
                   </td>
                 </tr>

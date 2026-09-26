@@ -186,12 +186,12 @@ const INITIAL_SECTIONS: EmailSection[] = [
     videoTitle: 'Watch 3-Minute Walkthrough: AI Softphone & CRM Sync',
     videoThumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
     videoUrl: 'https://youtube.com/watch?v=demo',
-    badge: '▶ 3:42 Min Walkthrough',
+    badge: ' 3:42 Min Walkthrough',
   },
   {
     id: 'sec_smart_1',
     type: 'DYNAMIC_SMART_BLOCK',
-    title: '🧠 AI Smart Dynamic Case Study (Swaps per Industry/Role)',
+    title: ' AI Smart Dynamic Case Study (Swaps per Industry/Role)',
     dynamicHealthcareTitle: 'How St. Jude Health Saved 4,800 Clinical Hours with Automated OCR',
     dynamicHealthcareBody: 'By deploying Business OS HIPAA-compliant OCR and voice workflows, medical staff reduced manual intake time by 74% and accelerated patient record updates.',
     dynamicSaaSTitle: 'How Hyperion Cloud Tripled Outbound Pipeline in 30 Days',
@@ -236,7 +236,7 @@ const INITIAL_SECTIONS: EmailSection[] = [
 const initialTemplates: EmailTemplate[] = [
   {
     id: 'tmpl_product_launch',
-    name: '🚀 Multi-Media Product Launch & Feature Announcement',
+    name: ' Multi-Media Product Launch & Feature Announcement',
     category: 'Product Updates',
     subject: 'Introducing Business OS 2.0: Real-time Telemetry & Autonomous AI',
     preheader: 'Experience sub-10ms queries, OCR document inference, and automated workflows.',
@@ -244,7 +244,7 @@ const initialTemplates: EmailTemplate[] = [
   },
   {
     id: 'tmpl_newsletter',
-    name: '📰 Executive Monthly Newsletter & Video Digest',
+    name: ' Executive Monthly Newsletter & Video Digest',
     category: 'Newsletters',
     subject: 'Business OS Monthly Digest: Key Industry Insights & Video Breakdown',
     preheader: 'Latest B2B sales automation benchmarks, AI productivity metrics, and product changelogs.',
@@ -261,7 +261,7 @@ const initialTemplates: EmailTemplate[] = [
         videoTitle: 'Video: How 500+ Companies Automated Lead Qualification',
         videoThumbnail: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80',
         videoUrl: 'https://youtube.com/watch?v=briefing',
-        badge: '▶ 5:15 Min Analysis',
+        badge: ' 5:15 Min Analysis',
       },
       {
         id: 'sec_nl_cta',
@@ -351,7 +351,7 @@ export function EmailMarketingClient() {
       } else if (targetTabParam) {
         setActiveTab(targetTabParam as any);
       }
-      setAlert(`🎨 Loaded template "${transfer.templateName || transfer.subject}" from Visual Email Studio!`);
+      setAlert(`Loaded template "${transfer.templateName || transfer.subject}" from Visual Email Studio!`);
       setTimeout(() => setAlert(null), 4500);
     } else if (targetTabParam && ['builder', 'automations', 'bulk-blast', 'campaigns', 'templates', 'scoring-pixel'].includes(targetTabParam)) {
       setActiveTab(targetTabParam as any);
@@ -419,7 +419,7 @@ export function EmailMarketingClient() {
       extraLeads.forEach((l) => next.add(l.id));
       return next;
     });
-    setAlert(`📥 Parsed and ingested 3 verified leads from CSV file!`);
+    setAlert(` Parsed and ingested 3 verified leads from CSV file!`);
     setTimeout(() => setAlert(null), 3500);
   };
 
@@ -452,14 +452,14 @@ export function EmailMarketingClient() {
           videoTitle: 'Watch: Product Demo & Tutorial',
           videoThumbnail: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80',
           videoUrl: 'https://youtube.com/watch?v=demo',
-          badge: '▶ Watch Video',
+          badge: ' Watch Video',
         };
         break;
       case 'DYNAMIC_SMART_BLOCK':
         newSection = {
           id: newId,
           type: 'DYNAMIC_SMART_BLOCK',
-          title: '🧠 AI Smart Dynamic Case Study (Swaps per Industry/Role)',
+          title: ' AI Smart Dynamic Case Study (Swaps per Industry/Role)',
           dynamicHealthcareTitle: 'How St. Jude Health Saved 4,800 Clinical Hours with Automated OCR',
           dynamicHealthcareBody: 'By deploying Business OS HIPAA-compliant OCR and voice workflows, medical staff reduced manual intake time by 74% and accelerated patient record updates.',
           dynamicSaaSTitle: 'How Hyperion Cloud Tripled Outbound Pipeline in 30 Days',
@@ -554,7 +554,7 @@ export function EmailMarketingClient() {
     fileNameField?: keyof EmailSection
   ) => {
     if (file.size > 50 * 1024 * 1024) {
-      setAlert('⚠️ Selected file exceeds 50MB size limit.');
+      setAlert(' Selected file exceeds 50MB size limit.');
       setTimeout(() => setAlert(null), 3500);
       return;
     }
@@ -572,7 +572,7 @@ export function EmailMarketingClient() {
             return updated;
           })
         );
-        setAlert(`✅ Loaded "${file.name}" from your PC!`);
+        setAlert(`Loaded "${file.name}" from your PC!`);
         setTimeout(() => setAlert(null), 3000);
       }
     };
@@ -690,7 +690,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
       }
 
       setIsAiDrafterModalOpen(false);
-      setAlert('✨ AI Generated Full Newsletter Loaded Successfully!');
+      setAlert(' AI Generated Full Newsletter Loaded Successfully!');
       setTimeout(() => setAlert(null), 4000);
     } catch (e: any) {
       setAlert('Could not draft full newsletter: ' + (e?.message || 'Please try again'));
@@ -735,7 +735,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
 
       setCampaigns([newCamp, ...campaigns]);
       setActiveTab('campaigns');
-      setAlert(`🚀 Multi-Media Newsletter Blast dispatched to ${selectedCount} recipients with 0 spam flags!`);
+      setAlert(` Multi-Media Newsletter Blast dispatched to ${selectedCount} recipients with 0 spam flags!`);
       setTimeout(() => setAlert(null), 4000);
     }, 1800);
   };
@@ -746,7 +746,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
     setSections(tmpl.sections);
     setSelectedSectionId(tmpl.sections[0]?.id || null);
     setActiveTab('builder');
-    setAlert(`Template "${tmpl.name}" loaded into Visual Newsletter Builder!`);
+    setAlert(`Template "${tmpl.name}"loaded into Visual Newsletter Builder!`);
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -795,7 +795,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
             }`}
           >
             <GitBranch size={14} />
-            <span>🤖 AI Automations & Workflows</span>
+            <span> AI Automations & Workflows</span>
           </button>
 
           <button
@@ -807,7 +807,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
             }`}
           >
             <Activity size={14} />
-            <span>🎯 Tracking Pixel & Scoring</span>
+            <span> Tracking Pixel & Scoring</span>
           </button>
 
           <button
@@ -878,13 +878,13 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
             title="Open in Visual Email Builder Studio for deep block layout editing"
           >
             <Palette size={14} className="text-emerald-400" />
-            <span>🎨 Open in Visual Template Studio</span>
+            <span> Open in Visual Template Studio</span>
           </button>
         </div>
       </div>
 
       {/* ========================================================================= */}
-      {/* 🚀 TAB 1: VISUAL NEWSLETTER DESIGNER (Spacious Multi-Block Composer) */}
+      {/*  TAB 1: VISUAL NEWSLETTER DESIGNER (Spacious Multi-Block Composer) */}
       {/* ========================================================================= */}
       {activeTab === 'builder' && (
         <div className="space-y-4">
@@ -913,7 +913,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                   type="button"
                   onClick={() => {
                     setActiveTab('automations');
-                    setAlert(`✅ Saved email design for workflow step "${editingWorkflowNode.title}"!`);
+                    setAlert(` Saved email design for workflow step "${editingWorkflowNode.title}"!`);
                     setTimeout(() => setAlert(null), 3500);
                   }}
                   className="flex-1 sm:flex-none px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-500/25 cursor-pointer"
@@ -973,7 +973,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                     className="px-2 py-0.5 rounded-lg bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/30 text-[10px] font-bold text-emerald-300 flex items-center gap-1 cursor-pointer transition-all shadow-xs"
                   >
                     <Sparkles size={11} className="text-emerald-400" />
-                    <span>✨ AI Subject Copilot</span>
+                    <span> AI Subject Copilot</span>
                   </button>
                 </div>
                 <input
@@ -1008,7 +1008,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                   className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-emerald-500/40 text-[10px] font-bold text-emerald-300 flex items-center gap-1.5 cursor-pointer transition-all shadow-xs"
                 >
                   <Sparkles size={12} className="text-emerald-400" />
-                  <span>✨ Auto-Draft with AI</span>
+                  <span> Auto-Draft with AI</span>
                 </button>
               </div>
 
@@ -1017,7 +1017,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                   { type: 'TEXT_ARTICLE' as const, label: 'Article Text', icon: Layers },
                   { type: 'IMAGE_BANNER' as const, label: 'Image Gallery', icon: ImageIcon },
                   { type: 'VIDEO_EMBED' as const, label: 'Video Embed', icon: Video },
-                  { type: 'DYNAMIC_SMART_BLOCK' as const, label: '🧠 AI Smart Block', icon: Sparkles },
+                  { type: 'DYNAMIC_SMART_BLOCK' as const, label: ' AI Smart Block', icon: Sparkles },
                   { type: 'PRODUCT_CARD' as const, label: 'Product Card', icon: ShoppingBag },
                   { type: 'CALLOUT_QUOTE' as const, label: 'Quote Box', icon: Quote },
                   { type: 'BUTTON_CTA' as const, label: 'CTA Button', icon: Zap },
@@ -1144,7 +1144,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                             </label>
                             {sec.imageFileName && (
                               <span className="text-[10px] font-mono text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 truncate max-w-[200px]">
-                                📁 {sec.imageFileName}
+                                 {sec.imageFileName}
                               </span>
                             )}
                           </div>
@@ -1249,7 +1249,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                               </label>
                               {sec.videoFileName && (
                                 <span className="text-[9px] font-mono text-amber-300 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 truncate max-w-[130px]">
-                                  📁 {sec.videoFileName}
+                                   {sec.videoFileName}
                                 </span>
                               )}
                             </div>
@@ -1290,7 +1290,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                               </label>
                               {sec.thumbnailFileName && (
                                 <span className="text-[9px] font-mono text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 truncate max-w-[130px]">
-                                  📁 {sec.thumbnailFileName}
+                                   {sec.thumbnailFileName}
                                 </span>
                               )}
                             </div>
@@ -1343,7 +1343,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                         {/* Healthcare Variant */}
                         <div className="p-3 rounded-xl bg-black/40 border border-emerald-500/30 space-y-2">
                           <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-1">
-                            🏥 Healthcare Industry Variant (e.g. Hospital / Clinic executives):
+                             Healthcare Industry Variant (e.g. Hospital / Clinic executives):
                           </span>
                           <input
                             type="text"
@@ -1364,7 +1364,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                         {/* Enterprise SaaS Variant */}
                         <div className="p-3 rounded-xl bg-black/40 border border-cyan-500/30 space-y-2">
                           <span className="text-[10px] font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1">
-                            💻 Enterprise SaaS Variant (e.g. CTO / VP Ops):
+                             Enterprise SaaS Variant (e.g. CTO / VP Ops):
                           </span>
                           <input
                             type="text"
@@ -1385,7 +1385,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                         {/* Real Estate Variant */}
                         <div className="p-3 rounded-xl bg-black/40 border border-amber-500/30 space-y-2">
                           <span className="text-[10px] font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1">
-                            🏢 Real Estate Variant (e.g. Broker / Portfolio Managers):
+                             Real Estate Variant (e.g. Broker / Portfolio Managers):
                           </span>
                           <input
                             type="text"
@@ -1445,7 +1445,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                             </label>
                             {sec.imageFileName && (
                               <span className="text-[9px] font-mono text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 truncate max-w-[150px]">
-                                📁 {sec.imageFileName}
+                                 {sec.imageFileName}
                               </span>
                             )}
                           </div>
@@ -1578,7 +1578,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                             </label>
                             {sec.imageFileName && (
                               <span className="text-[9px] font-mono text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 truncate max-w-[150px]">
-                                📁 {sec.imageFileName}
+                                 {sec.imageFileName}
                               </span>
                             )}
                           </div>
@@ -1641,7 +1641,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                     type="button"
                     onClick={() => {
                       setActiveTab('automations');
-                      setAlert(`✅ Saved email template for "${editingWorkflowNode.title}" and returned to workflow!`);
+                      setAlert(` Saved email template for "${editingWorkflowNode.title}" and returned to workflow!`);
                       setTimeout(() => setAlert(null), 3500);
                     }}
                     className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
@@ -1703,9 +1703,9 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                 </div>
                 <div className="grid grid-cols-3 gap-1.5">
                   {[
-                    { id: 'Healthcare' as const, label: '🏥 Healthcare CEO' },
-                    { id: 'Enterprise SaaS' as const, label: '💻 SaaS CTO' },
-                    { id: 'Real Estate' as const, label: '🏢 Real Estate' },
+                    { id: 'Healthcare' as const, label: ' Healthcare CEO' },
+                    { id: 'Enterprise SaaS' as const, label: ' SaaS CTO' },
+                    { id: 'Real Estate' as const, label: ' Real Estate' },
                   ].map((p) => (
                     <button
                       key={p.id}
@@ -1891,7 +1891,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
     )}
 
       {/* ========================================================================= */}
-      {/* 🚀 TAB 2: BULK BLAST & AI SEND-TIME OPTIMIZATION (STO) LEAD FILTER */}
+      {/*  TAB 2: BULK BLAST & AI SEND-TIME OPTIMIZATION (STO) LEAD FILTER */}
       {/* ========================================================================= */}
       {activeTab === 'bulk-blast' && (
         <div className="space-y-6 animate-in fade-in duration-200">
@@ -2118,12 +2118,12 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                   className="px-3 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500/50 cursor-pointer"
                 >
                   <option value="ALL" className="bg-[#0b101b]">All Industries</option>
-                  <option value="Healthcare" className="bg-[#0b101b]">🏥 Healthcare</option>
-                  <option value="Enterprise SaaS" className="bg-[#0b101b]">💻 Enterprise SaaS</option>
-                  <option value="Real Estate" className="bg-[#0b101b]">🏢 Real Estate</option>
-                  <option value="Restaurant" className="bg-[#0b101b]">🍽️ Restaurant</option>
-                  <option value="Retail" className="bg-[#0b101b]">🛍️ Retail</option>
-                  <option value="Other" className="bg-[#0b101b]">🌐 Other</option>
+                  <option value="Healthcare" className="bg-[#0b101b]"> Healthcare</option>
+                  <option value="Enterprise SaaS" className="bg-[#0b101b]"> Enterprise SaaS</option>
+                  <option value="Real Estate" className="bg-[#0b101b]"> Real Estate</option>
+                  <option value="Restaurant" className="bg-[#0b101b]"> Restaurant</option>
+                  <option value="Retail" className="bg-[#0b101b]"> Retail</option>
+                  <option value="Other" className="bg-[#0b101b]"> Other</option>
                 </select>
 
                 {/* Pipeline Stage Filter */}
@@ -2133,11 +2133,11 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                   className="px-3 py-2.5 bg-white/[0.04] border border-white/10 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500/50 cursor-pointer"
                 >
                   <option value="ALL" className="bg-[#0b101b]">All Stages</option>
-                  <option value="Cold" className="bg-[#0b101b]">❄️ Cold</option>
-                  <option value="MQL" className="bg-[#0b101b]">🎯 MQL</option>
-                  <option value="SQL" className="bg-[#0b101b]">🔥 SQL</option>
-                  <option value="Negotiation" className="bg-[#0b101b]">🤝 Negotiation</option>
-                  <option value="Customer" className="bg-[#0b101b]">⭐ Customer</option>
+                  <option value="Cold" className="bg-[#0b101b]"> Cold</option>
+                  <option value="MQL" className="bg-[#0b101b]"> MQL</option>
+                  <option value="SQL" className="bg-[#0b101b]"> SQL</option>
+                  <option value="Negotiation" className="bg-[#0b101b]"> Negotiation</option>
+                  <option value="Customer" className="bg-[#0b101b]"> Customer</option>
                 </select>
 
                 {/* Region Filter */}
@@ -2405,7 +2405,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
       )}
 
       {/* ========================================================================= */}
-      {/* 🎯 TAB: BEHAVIORAL TRACKING PIXEL & DYNAMIC LEAD SCORING MATRIX */}
+      {/*  TAB: BEHAVIORAL TRACKING PIXEL & DYNAMIC LEAD SCORING MATRIX */}
       {/* ========================================================================= */}
       {activeTab === 'scoring-pixel' && <TrackingPixelAndScoringStudio />}
 
@@ -2600,7 +2600,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
                 type="button"
                 onClick={() => {
                   setIsTestModalOpen(false);
-                  setAlert(`📨 Test email sent to ${testEmailAddress}!`);
+                  setAlert(` Test email sent to ${testEmailAddress}!`);
                   setTimeout(() => setAlert(null), 3000);
                 }}
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-black tracking-wide shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 transition-all cursor-pointer flex items-center gap-1.5"
@@ -2644,9 +2644,9 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
               <label className="text-[10px] uppercase font-bold text-slate-400">Select Strategic Tone:</label>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: 'EXECUTIVE' as const, label: '👑 Executive ROI' },
-                  { id: 'URGENT' as const, label: '⚡ Direct & Action' },
-                  { id: 'STORY_CURIOSITY' as const, label: '🔍 Curiosity Hook' },
+                  { id: 'EXECUTIVE' as const, label: ' Executive ROI' },
+                  { id: 'URGENT' as const, label: ' Direct & Action' },
+                  { id: 'STORY_CURIOSITY' as const, label: ' Curiosity Hook' },
                 ].map((t) => (
                   <button
                     key={t.id}
@@ -2697,7 +2697,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
             {/* AI Generated Variations */}
             <div className="space-y-2.5">
               <span className="text-[10px] uppercase font-bold text-slate-400">
-                {dynamicAiSuggestions.length > 0 ? '✨ Live Groq Generated Suggestions (Click to Apply):' : 'AI Generated Suggestions (Click to Apply):'}
+                {dynamicAiSuggestions.length > 0 ? ' Live Groq Generated Suggestions (Click to Apply):' : 'AI Generated Suggestions (Click to Apply):'}
               </span>
 
               {(dynamicAiSuggestions.length > 0 ? dynamicAiSuggestions : [
@@ -2754,7 +2754,7 @@ Return ONLY a valid JSON object matching this structure with NO markdown backtic
       )}
 
       {/* ========================================================================= */}
-      {/* ✨ MODAL: AI FULL NEWSLETTER DRAFTER */}
+      {/*  MODAL: AI FULL NEWSLETTER DRAFTER */}
       {/* ========================================================================= */}
       {isAiDrafterModalOpen && mounted && createPortal(
         <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">

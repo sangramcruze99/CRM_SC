@@ -71,7 +71,7 @@ export function DirectoryClient() {
   const handleClearRoster = () => {
     if (confirm(`Are you sure you want to clear all team members for ${nicheConfig.name}?`)) {
       saveEmployees([]);
-      setAlert(`✨ Cleared all team records for ${nicheConfig.name}. Workspace is clean!`);
+      setAlert(` Cleared all team records for ${nicheConfig.name}. Workspace is clean!`);
       setTimeout(() => setAlert(null), 4000);
     }
   };
@@ -79,7 +79,7 @@ export function DirectoryClient() {
   const handleAddEmployee = (newEmp: EmployeeNode) => {
     const updated = [...employees, newEmp];
     saveEmployees(updated);
-    setAlert(`🎉 Successfully added ${newEmp.firstName} ${newEmp.lastName} (${newEmp.jobTitle}) to ${nicheConfig.shortName} team with connected ${newEmp.bankDetails?.bankName || 'bank account'}!`);
+    setAlert(`Successfully added ${newEmp.firstName} ${newEmp.lastName} (${newEmp.jobTitle}) to ${nicheConfig.shortName} team with connected ${newEmp.bankDetails?.bankName || 'bank account'}!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -119,7 +119,7 @@ export function DirectoryClient() {
 
           if (targetAcc) {
             if (targetAcc.balance < totalNet) {
-              setAlert(`⚠️ Insufficient funds in ${targetAcc.name}. Available: $${targetAcc.balance.toLocaleString()}, Required: $${totalNet.toLocaleString()}`);
+              setAlert(` Insufficient funds in ${targetAcc.name}. Available: $${targetAcc.balance.toLocaleString()}, Required: $${totalNet.toLocaleString()}`);
               setTimeout(() => setAlert(null), 5000);
               return;
             }
@@ -182,7 +182,7 @@ export function DirectoryClient() {
 
     saveEmployees(updated);
     setAlert(
-      `🎉 Monthly payroll batch of $${totalNet.toLocaleString()} successfully wired from Corporate Treasury! Disbursed to all ${employees.length} employees & recorded in Khata Ledger.`
+      ` Monthly payroll batch of $${totalNet.toLocaleString()} successfully wired from Corporate Treasury! Disbursed to all ${employees.length} employees & recorded in Khata Ledger.`
     );
     setTimeout(() => setAlert(null), 5000);
   };
@@ -195,7 +195,7 @@ export function DirectoryClient() {
         const targetAcc = parsedAccs.find((a) => a.id === treasuryAccountId) || parsedAccs[0];
         if (targetAcc) {
           if (targetAcc.balance < emp.salary.netMonthly) {
-            setAlert(`⚠️ Insufficient balance in ${targetAcc.name} to disburse $${emp.salary.netMonthly.toLocaleString()}`);
+            setAlert(` Insufficient balance in ${targetAcc.name} to disburse $${emp.salary.netMonthly.toLocaleString()}`);
             setTimeout(() => setAlert(null), 4000);
             return;
           }
@@ -235,7 +235,7 @@ export function DirectoryClient() {
       },
     };
     handleUpdateEmployee(updatedEmp);
-    setAlert(`🎉 Direct wire of $${emp.salary.netMonthly.toLocaleString()} executed for ${emp.firstName} ${emp.lastName}! Disbursed to ${emp.bankDetails?.bankName || 'bank account'}.`);
+    setAlert(` Direct wire of $${emp.salary.netMonthly.toLocaleString()} executed for ${emp.firstName} ${emp.lastName}! Disbursed to ${emp.bankDetails?.bankName || 'bank account'}.`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -259,7 +259,7 @@ export function DirectoryClient() {
       setSelectedEmployee(null);
       setIsPayslipOpen(false);
     }
-    setAlert(`🗑️ Successfully removed ${targetEmp.firstName} ${targetEmp.lastName} (${targetEmp.jobTitle}) from roster.`);
+    setAlert(` Successfully removed ${targetEmp.firstName} ${targetEmp.lastName} (${targetEmp.jobTitle}) from roster.`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -278,12 +278,13 @@ export function DirectoryClient() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
             <Users className="text-emerald-600 dark:text-emerald-400" size={24} />
-            Employee Management, Salary & 4-Tier Org Tree
+            People & Team Directory
           </h1>
           <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Visual 4-Tier reporting hierarchy: [Tier A: Upper Mgmt] ➔ [Tier B: Middle Mgmt] ➔ [Tier C: Operations] & [Tier D: Support Staff].
+            Organization hierarchy, team members, salary compensation, and payroll disbursements.
           </p>
         </div>
+
 
         {/* Tab Switcher & Clean Actions */}
         <div className="flex items-center gap-3 flex-wrap">

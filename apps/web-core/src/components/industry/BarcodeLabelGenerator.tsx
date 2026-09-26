@@ -40,7 +40,7 @@ export function BarcodeLabelGenerator() {
     setSku('');
     setPrice('');
     setIsAdding(false);
-    setAlert(`🏷️ Added "${newLabel.productName}" barcode tag!`);
+    setAlert(` Added "${newLabel.productName}" barcode tag!`);
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -51,7 +51,7 @@ export function BarcodeLabelGenerator() {
       return;
     }
     window.print();
-    setAlert('🏷️ Batch print dispatched to Zebra / Thermal Barcode Printer!');
+    setAlert(' Batch print dispatched to Zebra / Thermal Barcode Printer!');
     setTimeout(() => setAlert(null), 4000);
   };
 

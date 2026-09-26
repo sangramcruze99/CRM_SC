@@ -27,6 +27,7 @@ import {
   FolderOpen,
 } from 'lucide-react';
 import { DocumentVaultPickerModal, VaultDocument } from '@/components/documents/DocumentVaultPickerModal';
+import { SmartAutoArrangerModal } from '@/components/SmartAutoArrangerModal';
 import Link from 'next/link';
 import { executeBatchMigration } from '../actions';
 
@@ -152,10 +153,10 @@ const SUPPORTED_CRMS: SourceCrm[] = [
   },
   {
     id: 'custom_csv',
-    name: 'Universal CSV / Excel / JSON',
+    name: 'Universal CSV / Excel (.xlsx, .xlsm) / JSON',
     logoUrl: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?w=100&auto=format&fit=crop&q=80',
     badge: 'AI Smart Auto-Mapper',
-    description: 'Upload any spreadsheet or database export. Our neural engine auto-maps headers.',
+    description: 'Upload any CSV, Excel (.xlsx, .xlsm), or JSON export. Our neural engine auto-maps headers.',
     popularObjects: ['Any Contacts', 'Any Deals', 'Any Invoices', 'Any Ledger'],
     mockDataset: {
       contacts: [
@@ -208,11 +209,18 @@ export function MigrationClient() {
   const [alert, setAlert] = useState<string | null>(null);
   const [activeDataset, setActiveDataset] = useState<any>(SUPPORTED_CRMS[0].mockDataset);
   const [isVaultPickerOpen, setIsVaultPickerOpen] = useState(false);
+  const [isAutoArrangerOpen, setIsAutoArrangerOpen] = useState(false);
+  const [arrangerFile, setArrangerFile] = useState<File | null>(null);
+  const [folderName, setFolderName] = useState('Salesforce Migration');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Trigger Smart Auto-Arranger & Lead Ingestion modal
+    setArrangerFile(file);
+    setIsAutoArrangerOpen(true);
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -220,7 +228,7 @@ export function MigrationClient() {
       try {
         if (file.name.endsWith('.json')) {
           const json = JSON.parse(text);
-          setAlert(`📄 Successfully parsed JSON file "${file.name}"!`);
+          setAlert(`Successfully parsed JSON file "${file.name}"!`);
         } else {
           // Parse CSV headers
           const lines = text.split('\n').filter((l) => l.trim().length > 0);
@@ -244,13 +252,14 @@ export function MigrationClient() {
             }));
 
             setMappings(dynamicMappings);
-            setAlert(`📄 Successfully parsed CSV file "${file.name}" with ${lines.length - 1} rows!`);
+            setAlert(`Successfully parsed CSV file "${file.name}" with ${lines.length - 1} rows!`);
           }
         }
         setSelectedCrm(SUPPORTED_CRMS[5]); // Universal CSV
+        setFolderName(`${file.name.replace(/\.[^/.]+$/, '')} Batch`);
         setCurrentStep(2);
       } catch (err) {
-        setAlert('⚠️ Could not parse file. Please upload a valid CSV or JSON format.');
+        setAlert(' Could not parse file. Please upload a valid CSV or JSON format.');
       }
     };
     reader.readAsText(file);
@@ -260,7 +269,8 @@ export function MigrationClient() {
     setIsMigrating(true);
     setCurrentStep(3);
     setProgressPercent(0);
-    setAlert(`🚀 Initiating parallel ingestion pipeline from ${selectedCrm.name}...`);
+    const targetFolder = folderName.trim() || `${selectedCrm.name} Migration`;
+    setAlert(` Initiating parallel ingestion pipeline from ${selectedCrm.name} into folder "${targetFolder}"...`);
 
     let current = 0;
     const interval = setInterval(() => {
@@ -272,8 +282,12 @@ export function MigrationClient() {
     }, 200);
 
     try {
-      // Execute actual batch ingestion into live microservices
-      const result = await executeBatchMigration(selectedCrm.name, activeDataset || selectedCrm.mockDataset);
+      // Execute actual batch ingestion into live microservices with folder preservation
+      const result = await executeBatchMigration(
+        selectedCrm.name,
+        activeDataset || selectedCrm.mockDataset,
+        targetFolder
+      );
       setProgressPercent(100);
       setIsMigrating(false);
 
@@ -282,53 +296,121 @@ export function MigrationClient() {
         id: `mig_${Date.now()}`,
         sourceCrm: selectedCrm.name,
         recordsImported: totalIngested,
-        entities: `Contacts (${result.importedContacts || 3}), Deals (${result.importedDeals || 2}), Invoices (${result.importedInvoices || 1})`,
+        entities: `Folder: "${targetFolder}" | Contacts (${result.importedContacts || 3}), Deals (${result.importedDeals || 2}), Invoices (${result.importedInvoices || 1})`,
         completedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
         status: 'COMPLETED',
       };
 
       setHistory([newHistory, ...history]);
-      setAlert(`🎉 Migration Complete! ${totalIngested} live records from ${selectedCrm.name} successfully inserted into CRM microservices!`);
+      setAlert(` Migration Complete! ${totalIngested} live records saved to folder "${targetFolder}" and inserted into CRM!`);
     } catch (err) {
       setIsMigrating(false);
       setProgressPercent(100);
-      setAlert(`✓ Migration completed in offline resilient mode!`);
+      setAlert(` Migration completed in offline resilient mode!`);
     }
   };
 
   const handleRollback = (id: string) => {
     setHistory(history.filter((h) => h.id !== id));
-    setAlert('↩️ Successfully removed migration run from audit logs.');
+    setAlert('Successfully removed migration run from audit logs.');
     setTimeout(() => setAlert(null), 3500);
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-slate-900 dark:text-white">
+    <div className="space-y-6 max-w-7xl mx-auto text-white">
       {/* Alert Banner */}
       {alert && (
-        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
-          <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
+          <CheckCircle2 size={16} className="text-emerald-400" />
           <span>{alert}</span>
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-            <ArrowRightLeft className="text-emerald-600 dark:text-emerald-400" size={24} />
-            Legacy CRM Data Migration & Universal Auto-Mapper
-          </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Seamlessly switch from Salesforce, HubSpot, Pipedrive, Zoho, or CSV files with zero downtime and live API ingestion.
-          </p>
+      {/* Top Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        {/* Ambient Botanical Glow */}
+        <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                HERMES MIGRATION COPILOT
+              </span>
+              <span className="text-[11px] font-mono text-zinc-500">LIVE DUAL-MESH SYNC</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              CRM Data Migration & Schema Normalizer
+            </h1>
+            <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+              Zero-downtime migration pipeline for Salesforce, HubSpot, Pipedrive, Zoho, and unstructured CSV batches into verified BusinessOS entities.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <span className="px-4 py-2 rounded-xl text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-2">
+              <ShieldCheck size={14} className="text-emerald-400" />
+              <span>Mesh Active (:3001, :3005)</span>
+            </span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5 font-mono">
-            <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400" />
-            <span>Connected to CRM Mesh (:3001, :3005)</span>
-          </span>
+        {/* Sentinel pulse status strip */}
+        <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-400">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              SENTINEL: BI-DIRECTIONAL INGESTION MESH ONLINE
+            </span>
+            <span className="hidden sm:inline text-zinc-600">|</span>
+            <span className="hidden sm:inline text-zinc-400">
+              VAULT TARGET: <code className="text-zinc-300">vault/inbound/crm_migrations/</code>
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-zinc-500 font-mono">DEDUPLICATION: AUTOMATIC SHA-256</span>
+          </div>
+        </div>
+      </div>
+
+      {/* High-Density Telemetry KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Source Selected</span>
+            <Database size={16} className="text-emerald-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold font-mono text-white">{selectedCrm.name}</span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">{selectedCrm.badge}</p>
+        </div>
+
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Ingestion Pipeline</span>
+            <Layers size={16} className="text-emerald-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold font-mono text-white">Step {currentStep} of 3</span>
+            <span className="text-xs font-mono text-emerald-400">
+              {currentStep === 1 ? 'Source' : currentStep === 2 ? 'Auto-Mapping' : 'Execution'}
+            </span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">Universal field auto-mapper active</p>
+        </div>
+
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Migration Audit Logs</span>
+            <RotateCcw size={16} className="text-emerald-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold font-mono text-white">{history.length} Runs</span>
+            <span className="text-xs font-mono text-emerald-400">Historical</span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">Rollback & deduplication snapshots preserved</p>
         </div>
       </div>
 
@@ -342,21 +424,21 @@ export function MigrationClient() {
           <div
             key={item.step}
             onClick={() => !isMigrating && setCurrentStep(item.step)}
-            className={`p-4 rounded-3xl border transition-all cursor-pointer ${
+            className={`botanical-glass-card p-4 rounded-2xl border transition-all cursor-pointer ${
               currentStep === item.step
-                ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/60 ring-2 ring-emerald-500/20 shadow-lg shadow-emerald-500/15 text-slate-950 dark:text-white'
+                ? 'border-emerald-500/60 ring-1 ring-emerald-500/30 text-white bg-emerald-500/10'
                 : currentStep > item.step
-                ? 'bg-slate-100 dark:bg-white/[0.04] border-emerald-500/40 text-slate-800 dark:text-slate-300'
-                : 'bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] text-slate-500'
+                ? 'border-emerald-500/30 text-zinc-300'
+                : 'border-white/[0.06] text-zinc-500 hover:text-zinc-300'
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className="font-bold text-xs">{item.title}</span>
+              <span className="font-mono font-bold text-xs">{item.title}</span>
               {currentStep > item.step && (
-                <CheckCircle2 size={16} className="text-emerald-600 dark:text-emerald-400" />
+                <CheckCircle2 size={16} className="text-emerald-400" />
               )}
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">{item.subtitle}</p>
+            <p className="text-[11px] text-zinc-400 mt-1 font-mono">{item.subtitle}</p>
           </div>
         ))}
       </div>
@@ -375,6 +457,7 @@ export function MigrationClient() {
                   onClick={() => {
                     setSelectedCrm(crm);
                     setActiveDataset(crm.mockDataset);
+                    setFolderName(`${crm.name} Migration`);
                   }}
                   className={`p-6 rounded-3xl border backdrop-blur-2xl transition-all shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4 flex flex-col justify-between cursor-pointer ${
                     isSelected
@@ -417,7 +500,7 @@ export function MigrationClient() {
 
                   <div className="pt-3 border-t border-slate-200 dark:border-white/[0.06] flex items-center justify-between">
                     <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold">
-                      {isSelected ? '✓ Selected as Source' : 'Click to select'}
+                      {isSelected ? ' Selected as Source' : 'Click to select'}
                     </span>
                     <button
                       type="button"
@@ -425,6 +508,7 @@ export function MigrationClient() {
                         e.stopPropagation();
                         setSelectedCrm(crm);
                         setActiveDataset(crm.mockDataset);
+                        setFolderName(`${crm.name} Migration`);
                         setCurrentStep(2);
                       }}
                       className="px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs flex items-center gap-1 shadow-md cursor-pointer"
@@ -447,7 +531,7 @@ export function MigrationClient() {
               type="file"
               ref={fileInputRef}
               onChange={handleFileUpload}
-              accept=".csv, .json, .xlsx"
+              accept=".csv, .xlsx, .xlsm, .xls, .tsv, .json"
               className="hidden"
             />
             <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-md">
@@ -455,10 +539,10 @@ export function MigrationClient() {
             </div>
             <div>
               <h3 className="font-bold text-base text-slate-900 dark:text-white">
-                Drag & Drop any CSV, Excel (.xlsx), or JSON Data Export
+                Drag & Drop any CSV, Excel (.xlsx, .xlsm), or JSON Data Export
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto mt-1">
-                Upload your exported spreadsheet from any CRM, ERP, or SQL database. Our neural pipeline will parse entities automatically.
+                Upload your exported spreadsheet (.csv, .xlsx, .xlsm) from any CRM, ERP, or SQL database. Our neural pipeline will parse entities automatically.
               </p>
             </div>
             <div className="flex items-center justify-center gap-3 flex-wrap pt-2">
@@ -499,7 +583,7 @@ export function MigrationClient() {
               <div className="flex items-center gap-2">
                 <Sparkles className="text-emerald-600 dark:text-emerald-400" size={18} />
                 <h3 className="font-bold text-base text-slate-900 dark:text-white">
-                  AI Field Schema Auto-Mapper ({selectedCrm.name} ➔ Business OS)
+                  AI Field Schema Auto-Mapper ({selectedCrm.name}  Business OS)
                 </h3>
               </div>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
@@ -523,6 +607,35 @@ export function MigrationClient() {
                 <Zap size={15} />
                 <span>Confirm & Ingest Live Records</span>
               </button>
+            </div>
+          </div>
+
+          {/* Batch Folder Preservation Card */}
+          <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+                <FolderOpen size={20} />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                  <span>Save Batch As Dedicated Folder</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+                    Preserved in UI
+                  </span>
+                </h4>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
+                  All imported CRM leads will be preserved inside this folder tab on your Contacts Directory.
+                </p>
+              </div>
+            </div>
+            <div className="w-full sm:w-80">
+              <input
+                type="text"
+                value={folderName}
+                onChange={(e) => setFolderName(e.target.value)}
+                placeholder="e.g. Salesforce Q3 Migration"
+                className="w-full px-3.5 py-2 bg-white dark:bg-black/50 border border-emerald-500/40 rounded-xl text-xs font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              />
             </div>
           </div>
 
@@ -564,7 +677,7 @@ export function MigrationClient() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
-                        Auto-Matched ✓
+                        Auto-Matched 
                       </span>
                     </td>
                   </tr>
@@ -680,7 +793,7 @@ export function MigrationClient() {
                   <td className="px-6 py-4 text-slate-500 dark:text-slate-400 font-mono">{run.completedAt}</td>
                   <td className="px-6 py-4">
                     <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
-                      {run.status} ✓
+                      {run.status} 
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">
@@ -712,13 +825,28 @@ export function MigrationClient() {
         isOpen={isVaultPickerOpen}
         onClose={() => setIsVaultPickerOpen(false)}
         onSelect={(doc: VaultDocument) => {
-          setAlert(`📄 Loaded "${doc.name}" from Document Vault. Launching entity mapping...`);
+          setAlert(`Loaded "${doc.name}" from Document Vault. Launching entity mapping...`);
           setCurrentStep(2);
         }}
         title="Select Data Export from Vault"
         description="Choose any spreadsheet, CSV, or JSON database backup from the Document Vault to import."
         actionLabel="Import from Vault"
       />
+
+      {/* Smart Auto-Arranger & Lead Ingestion Modal */}
+      {isAutoArrangerOpen && (
+        <SmartAutoArrangerModal
+          isOpen={isAutoArrangerOpen}
+          initialFile={arrangerFile}
+          onClose={() => {
+            setIsAutoArrangerOpen(false);
+            setArrangerFile(null);
+          }}
+          onSuccess={(count) => {
+            setAlert(`Successfully imported ${count} arranged contacts into CRM!`);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 'use server'
 import { getTenantHeaders } from '@/lib/auth';
+import { saveContactToStore, deleteContactFromStore } from '@/lib/nicheStorage';
 
 import { revalidatePath } from 'next/cache';
 
@@ -9,18 +10,37 @@ export async function createContact(formData: FormData) {
   const email = formData.get('email');
   const phone = formData.get('phone');
   const companyId = formData.get('companyId');
+  const folderName = formData.get('folderName');
+
+  const customObj: Record<string, any> = {};
+  if (folderName && String(folderName).trim()) {
+    customObj.folderName = String(folderName).trim();
+    customObj.importedAt = new Date().toISOString();
+  }
+
+  const contactPayload = {
+    firstName: String(firstName || ''),
+    lastName: String(lastName || ''),
+    email: String(email || ''),
+    phone: String(phone || ''),
+    companyId: String(companyId || ''),
+    customData: JSON.stringify(customObj),
+  };
 
   try {
-    await fetch('http://localhost:3001/contacts', {
+    const res = await fetch('http://localhost:3001/contacts', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...(await getTenantHeaders())
       },
-      body: JSON.stringify({ firstName, lastName, email, phone, companyId })
+      body: JSON.stringify(contactPayload)
     });
+    if (!res.ok) {
+      saveContactToStore(contactPayload);
+    }
   } catch (err) {
-    console.error('Failed to create contact:', err);
+    saveContactToStore(contactPayload);
   }
 
   revalidatePath('/');
@@ -35,8 +55,9 @@ export async function deleteContact(id: string) {
       headers: await getTenantHeaders()
     });
   } catch (err) {
-    console.error('Failed to delete contact:', err);
+    deleteContactFromStore(id);
   }
+  deleteContactFromStore(id);
 
   revalidatePath('/');
   revalidatePath('/contacts');
@@ -271,11 +292,18 @@ export async function deleteTicket(id: string) {
   revalidatePath('/dashboard');
 }
 
-export async function executeBatchMigration(sourceCrm: string, records: { contacts?: any[], deals?: any[], invoices?: any[] }) {
+export async function executeBatchMigration(
+  sourceCrm: string,
+  records: { contacts?: any[], deals?: any[], invoices?: any[] },
+  folderName?: string
+) {
   const headers = {
     'Content-Type': 'application/json',
     ...(await getTenantHeaders()),
   };
+
+  const finalFolder = folderName?.trim() || `${sourceCrm} Migration`;
+  const batchId = `mig_${Date.now()}`;
 
   let importedContacts = 0;
   let importedDeals = 0;
@@ -284,10 +312,27 @@ export async function executeBatchMigration(sourceCrm: string, records: { contac
   if (records.contacts && records.contacts.length > 0) {
     for (const contact of records.contacts) {
       try {
+        let existingCustom: Record<string, any> = {};
+        if (contact.customData) {
+          try {
+            existingCustom = typeof contact.customData === 'string' ? JSON.parse(contact.customData) : contact.customData;
+          } catch {}
+        }
+        const customObj = {
+          ...existingCustom,
+          folderName: finalFolder,
+          batchId,
+          sourceCrm,
+          importedAt: new Date().toISOString(),
+        };
+
         await fetch('http://localhost:3001/contacts', {
           method: 'POST',
           headers,
-          body: JSON.stringify(contact),
+          body: JSON.stringify({
+            ...contact,
+            customData: JSON.stringify(customObj),
+          }),
         });
         importedContacts++;
       } catch (err) {
@@ -342,4 +387,261 @@ export async function executeBatchMigration(sourceCrm: string, records: { contac
     totalRecords: importedContacts + importedDeals + importedInvoices,
   };
 }
+
+export interface ArrangedLeadPayload {
+  firstName: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  companyId?: string;
+  customData?: string;
+}
+
+export async function importArrangedLeads(leads: ArrangedLeadPayload[]) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(await getTenantHeaders()),
+  };
+
+  let importedCount = 0;
+  for (const lead of leads) {
+    try {
+      const res = await fetch('http://localhost:3001/contacts', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(lead),
+      });
+      if (res.ok) {
+        importedCount++;
+      } else {
+        saveContactToStore(lead);
+        importedCount++;
+      }
+    } catch (err) {
+      saveContactToStore(lead);
+      importedCount++;
+    }
+  }
+
+  revalidatePath('/');
+  revalidatePath('/contacts');
+  revalidatePath('/dashboard');
+
+  return {
+    success: true,
+    importedCount,
+    totalAttempted: leads.length,
+  };
+}
+
+export async function deleteBatchContacts(contactIds: string[]) {
+  const headers = await getTenantHeaders();
+  let deletedCount = 0;
+  for (const id of contactIds) {
+    try {
+      await fetch(`http://localhost:3001/contacts/${id}`, {
+        method: 'DELETE',
+        headers,
+      });
+      deletedCount++;
+    } catch (err) {
+      deleteContactFromStore(id);
+      deletedCount++;
+    }
+    deleteContactFromStore(id);
+  }
+
+  revalidatePath('/');
+  revalidatePath('/contacts');
+  revalidatePath('/dashboard');
+
+  return { success: true, deletedCount };
+}
+
+export async function renameBatchFolder(oldFolderName: string, newFolderName: string) {
+  const headers = await getTenantHeaders();
+  const trimmedNew = newFolderName.trim();
+  if (!trimmedNew) return { success: false, message: 'Folder name cannot be empty' };
+
+  try {
+    const res = await fetch('http://localhost:3001/contacts', {
+      headers,
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const contacts = await res.json();
+      for (const c of contacts) {
+        let customObj: Record<string, any> = {};
+        try {
+          customObj = typeof c.customData === 'string' ? JSON.parse(c.customData || '{}') : (c.customData || {});
+        } catch {}
+
+        if (customObj.folderName === oldFolderName || (!customObj.folderName && customObj.batchFileName === oldFolderName)) {
+          customObj.folderName = trimmedNew;
+          await fetch(`http://localhost:3001/contacts/${c.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              ...headers,
+            },
+            body: JSON.stringify({
+              customData: JSON.stringify(customObj),
+            }),
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error renaming folder:', err);
+  }
+
+  revalidatePath('/');
+  revalidatePath('/contacts');
+  return { success: true, newFolderName: trimmedNew };
+}
+
+export async function moveContactsToFolder(contactIds: string[], folderName: string) {
+  const headers = await getTenantHeaders();
+  const trimmed = folderName.trim();
+  if (!trimmed) return { success: false };
+
+  for (const id of contactIds) {
+    try {
+      const getRes = await fetch(`http://localhost:3001/contacts/${id}`, { headers });
+      if (getRes.ok) {
+        const contact = await getRes.json();
+        let customObj: Record<string, any> = {};
+        try {
+          customObj = typeof contact.customData === 'string' ? JSON.parse(contact.customData || '{}') : (contact.customData || {});
+        } catch {}
+        customObj.folderName = trimmed;
+
+        await fetch(`http://localhost:3001/contacts/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            ...headers,
+          },
+          body: JSON.stringify({
+            customData: JSON.stringify(customObj),
+          }),
+        });
+      }
+    } catch (err) {
+      console.error('Error moving contact to folder:', err);
+    }
+  }
+
+  revalidatePath('/');
+  revalidatePath('/contacts');
+  return { success: true, folderName: trimmed };
+}
+
+export async function removeFolderFromContacts(contactIds: string[]) {
+  const headers = await getTenantHeaders();
+
+  for (const id of contactIds) {
+    try {
+      const getRes = await fetch(`http://localhost:3001/contacts/${id}`, { headers });
+      if (getRes.ok) {
+        const contact = await getRes.json();
+        let customObj: Record<string, any> = {};
+        try {
+          customObj = typeof contact.customData === 'string' ? JSON.parse(contact.customData || '{}') : (contact.customData || {});
+        } catch {}
+        delete customObj.folderName;
+        delete customObj.batchFileName;
+
+        await fetch(`http://localhost:3001/contacts/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            ...headers,
+          },
+          body: JSON.stringify({
+            customData: JSON.stringify(customObj),
+          }),
+        });
+      }
+    } catch (err) {
+      console.error('Error removing contact from folder:', err);
+    }
+  }
+
+  revalidatePath('/');
+  revalidatePath('/contacts');
+  return { success: true };
+}
+
+export async function deleteFolderOnly(folderName: string) {
+  const headers = await getTenantHeaders();
+  try {
+    const res = await fetch('http://localhost:3001/contacts', {
+      headers,
+      cache: 'no-store',
+    });
+    if (res.ok) {
+      const contacts = await res.json();
+      for (const c of contacts) {
+        let customObj: Record<string, any> = {};
+        try {
+          customObj = typeof c.customData === 'string' ? JSON.parse(c.customData || '{}') : (c.customData || {});
+        } catch {}
+
+        if (customObj.folderName === folderName || (!customObj.folderName && customObj.batchFileName === folderName)) {
+          delete customObj.folderName;
+          delete customObj.batchFileName;
+
+          await fetch(`http://localhost:3001/contacts/${c.id}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              ...headers,
+            },
+            body: JSON.stringify({
+              customData: JSON.stringify(customObj),
+            }),
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error deleting folder only:', err);
+  }
+
+  revalidatePath('/');
+  revalidatePath('/contacts');
+  return { success: true };
+}
+
+export async function createCrmActivity(data: {
+  type: string;
+  title: string;
+  content: string;
+  contactId?: string;
+  companyId?: string;
+  dealId?: string;
+}) {
+  try {
+    const headers = await getTenantHeaders();
+    const res = await fetch('http://localhost:3001/activities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...headers,
+      },
+      body: JSON.stringify(data),
+    });
+    if (res.ok) {
+      const created = await res.json();
+      revalidatePath('/contacts');
+      return created;
+    }
+  } catch (err) {
+    console.error('Failed to create CRM activity:', err);
+  }
+  return null;
+}
+
+
 

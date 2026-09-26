@@ -238,7 +238,7 @@ export function TieredPackagingModal({ isOpen, onClose }: TieredPackagingModalPr
                         : 'bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.1] text-slate-900 dark:text-white border border-slate-200 dark:border-white/[0.1]'
                     }`}
                   >
-                    {isCurrent ? '✓ Current Workspace' : tier.cta}
+                    {isCurrent ? ' Current Workspace' : tier.cta}
                   </button>
                 </div>
               </div>

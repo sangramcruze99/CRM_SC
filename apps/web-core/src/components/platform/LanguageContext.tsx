@@ -13,12 +13,12 @@ export interface LanguageOption {
 }
 
 export const SUPPORTED_LANGUAGES: LanguageOption[] = [
-  { code: 'en', name: 'English', nativeName: 'English (US)', flag: '🇺🇸', dir: 'ltr' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', dir: 'ltr' },
-  { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷', dir: 'ltr' },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية (RTL)', flag: '🇦🇪', dir: 'rtl' },
-  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪', dir: 'ltr' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳', dir: 'ltr' },
+  { code: 'en', name: 'English', nativeName: 'English (US)', flag: 'EN', dir: 'ltr' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: 'ES', dir: 'ltr' },
+  { code: 'fr', name: 'French', nativeName: 'Français', flag: 'FR', dir: 'ltr' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية (RTL)', flag: 'AR', dir: 'rtl' },
+  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: 'DE', dir: 'ltr' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: 'HI', dir: 'ltr' },
 ];
 
 const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
@@ -38,7 +38,7 @@ const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     totalBalance: 'Total Balance',
     grossEarnings: 'Gross Earnings',
     expenses: 'Monthly Expenses',
-    searchPlaceholder: 'Search leads, deals, or press ⌘K...',
+    searchPlaceholder: 'Search leads, deals, or press K...',
   },
   es: {
     workspace: 'Espacio de Trabajo',
@@ -56,7 +56,7 @@ const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     totalBalance: 'Balance Total',
     grossEarnings: 'Ingresos Brutos',
     expenses: 'Gastos Mensuales',
-    searchPlaceholder: 'Buscar clientes o presione ⌘K...',
+    searchPlaceholder: 'Buscar clientes o presione K...',
   },
   fr: {
     workspace: 'Espace de Travail',
@@ -74,7 +74,7 @@ const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     totalBalance: 'Solde Total',
     grossEarnings: 'Revenus Bruts',
     expenses: 'Dépenses Mensuelles',
-    searchPlaceholder: 'Rechercher des prospects ou ⌘K...',
+    searchPlaceholder: 'Rechercher des prospects ou K...',
   },
   ar: {
     workspace: 'مساحة العمل',
@@ -92,7 +92,7 @@ const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     totalBalance: 'إجمالي الرصيد',
     grossEarnings: 'إجمالي الأرباح',
     expenses: 'المصروفات الشهرية',
-    searchPlaceholder: 'ابحث عن العملاء أو اضغط ⌘K...',
+    searchPlaceholder: 'ابحث عن العملاء أو اضغط K...',
   },
   de: {
     workspace: 'Arbeitsbereich',
@@ -110,7 +110,7 @@ const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     totalBalance: 'Gesamtsaldo',
     grossEarnings: 'Bruttoeinnahmen',
     expenses: 'Monatliche Ausgaben',
-    searchPlaceholder: 'Leads oder Deals suchen mit ⌘K...',
+    searchPlaceholder: 'Leads oder Deals suchen mit K...',
   },
   hi: {
     workspace: 'कार्यक्षेत्र',
@@ -128,7 +128,7 @@ const TRANSLATIONS: Record<LanguageCode, Record<string, string>> = {
     totalBalance: 'कुल शेष राशि',
     grossEarnings: 'सकल कमाई',
     expenses: 'मासिक खर्च',
-    searchPlaceholder: 'खोजें या ⌘K दबाएं...',
+    searchPlaceholder: 'खोजें या K दबाएं...',
   },
 };
 

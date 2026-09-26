@@ -189,7 +189,7 @@ export function ReportsClient() {
         const report = await res.json();
         setIsGenerateModalOpen(false);
         setReportTitle('');
-        setNotification(`Report "${report.title}" created & archived in Document Vault!`);
+        setNotification(`Report "${report.title}"created & archived in Document Vault!`);
         setTimeout(() => setNotification(null), 4000);
         if (activeTab === 'vault') {
           // Trigger refresh if currently on vault tab
@@ -223,81 +223,106 @@ export function ReportsClient() {
         </div>
       )}
 
-      {/* Main Header & Unified Controls */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-mono font-bold uppercase tracking-wider">
-              ENTERPRISE BUSINESS REPORTING
-            </span>
-            {periodData?.status && (
-              <span
-                className={`text-xs px-2.5 py-0.5 rounded-full font-mono font-bold uppercase tracking-wider border ${
-                  periodData.status === 'LOCKED'
-                    ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
-                    : periodData.status === 'FINALIZED'
-                    ? 'bg-blue-500/15 border-blue-500/30 text-blue-300'
-                    : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
-                }`}
-              >
-                {periodData.status} • v{periodData.version || 1}
-              </span>
-            )}
+      {/* 1. TOP EXECUTIVE COCKPIT HEADER CHASSIS */}
+      <div className="botanical-glass-card p-5 sm:p-6 rounded-2xl space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center text-xl font-bold shadow-lg shadow-emerald-500/20 border border-emerald-300/30 shrink-0">
+              <Activity size={22} className="stroke-[2.2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-black text-white tracking-tight">
+                  Business Performance &amp; Daily Journal
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  REAL-TIME BI SYNC
+                </span>
+                {periodData?.status && (
+                  <span
+                    className={`text-[10px] px-2.5 py-0.5 rounded-full font-mono font-bold uppercase tracking-wider border ${
+                      periodData.status === 'LOCKED'
+                        ? 'bg-amber-500/15 border-amber-500/30 text-amber-300'
+                        : periodData.status === 'FINALIZED'
+                        ? 'bg-teal-500/15 border-teal-500/30 text-teal-300'
+                        : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                    }`}
+                  >
+                    {periodData.status} • v{periodData.version || 1}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Time-based enterprise intelligence directly connected to CRM, Sales, Finance, Projects, Support, and AI records.
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-1 flex items-center gap-2.5">
-            <Activity className="text-emerald-400" size={28} />
-            <span>{periodData?.title || 'Business Performance & Daily Journal'}</span>
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-            Time-based business intelligence directly connected to CRM, Sales, Finance, Projects, Support, and AI records.
-          </p>
+
+          {/* Global Action Buttons */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              onClick={handleRecalculatePeriod}
+              disabled={actionLoading}
+              className="px-3.5 py-2 bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all border border-white/10 flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+              title="Recalculate Period from Live Data"
+            >
+              <RefreshCw size={13} className={actionLoading ? 'animate-spin text-emerald-400' : 'text-emerald-400'} />
+              <span>Rebuild Aggregates</span>
+            </button>
+            <button
+              onClick={handleLockPeriod}
+              disabled={actionLoading}
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border flex items-center gap-1.5 cursor-pointer active:scale-[0.98] ${
+                periodData?.isLocked
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
+                  : 'bg-white/[0.05] text-slate-300 border-white/10 hover:bg-white/[0.1] hover:text-white'
+              }`}
+              title={periodData?.isLocked ? 'Unlock Period' : 'Lock Period'}
+            >
+              {periodData?.isLocked ? <Lock size={13} /> : <Unlock size={13} />}
+              <span>{periodData?.isLocked ? 'Locked' : 'Lock Period'}</span>
+            </button>
+            <button
+              onClick={() => setIsGenerateModalOpen(true)}
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/25 active:scale-[0.98] cursor-pointer"
+            >
+              <Sparkles size={14} />
+              <span>Generate Official PDF</span>
+            </button>
+          </div>
         </div>
 
-        {/* Global Action Buttons */}
-        <div className="flex items-center gap-2 w-full lg:w-auto justify-between lg:justify-end">
-          <button
-            onClick={handleRecalculatePeriod}
-            disabled={actionLoading}
-            className="px-3.5 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all border border-white/[0.08] flex items-center gap-1.5 cursor-pointer"
-            title="Recalculate Period from Live Data"
-          >
-            <RefreshCw size={13} className={actionLoading ? 'animate-spin text-emerald-400' : ''} />
-            <span>Rebuild Aggregates</span>
-          </button>
-          <button
-            onClick={handleLockPeriod}
-            disabled={actionLoading}
-            className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border flex items-center gap-1.5 cursor-pointer ${
-              periodData?.isLocked
-                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30'
-                : 'bg-white/[0.04] text-slate-300 border-white/[0.08] hover:bg-white/[0.08] hover:text-white'
-            }`}
-            title={periodData?.isLocked ? 'Unlock Period' : 'Lock Period'}
-          >
-            {periodData?.isLocked ? <Lock size={13} /> : <Unlock size={13} />}
-            <span>{periodData?.isLocked ? 'Locked' : 'Lock Period'}</span>
-          </button>
-          <button
-            onClick={() => setIsGenerateModalOpen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
-          >
-            <Sparkles size={14} />
-            <span>Official Report</span>
-          </button>
+        {/* Sentinel Automated Pulse Strip */}
+        <div className="pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="px-2.5 py-1 rounded-lg bg-black/40 border border-emerald-500/30 flex items-center gap-2 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-white">Athena</span>
+              <span className="text-[10px] text-slate-400">BI &amp; Audit Sentinel</span>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+              vault/reports/bi_snapshots/
+            </span>
+          </div>
+          <span className="text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1.5">
+            <Sparkles size={11} />
+            <span>Telemetry Ledger Active</span>
+          </span>
         </div>
       </div>
 
       {/* Time-Based Period Selector Bar */}
-      <div className="bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] rounded-2xl p-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
+      <div className="botanical-glass-card rounded-2xl p-2.5 px-4 flex flex-col sm:flex-row items-center justify-between gap-3 border border-white/[0.08]">
         {/* Hierarchy Period Switcher: DAY -> WEEK -> MONTH -> QUARTER -> YEAR */}
-        <div className="flex items-center gap-1 bg-black/40 border border-white/[0.06] p-1 rounded-xl w-full sm:w-auto overflow-x-auto">
+        <div className="flex items-center gap-1 bg-black/40 border border-white/[0.08] p-1 rounded-xl w-full sm:w-auto overflow-x-auto">
           {(['DAY', 'WEEK', 'MONTH', 'QUARTER', 'YEAR'] as const).map((type) => (
             <button
               key={type}
               onClick={() => setPeriodType(type)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 periodType === type
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
+                  ? 'bg-emerald-500 text-slate-950 font-bold shadow-md shadow-emerald-500/20'
                   : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -594,10 +619,10 @@ export function ReportsClient() {
             <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-5 space-y-3">
               <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase">
                 <span className="flex items-center gap-2">
-                  <CheckSquare size={15} className="text-purple-400" />
+                  <CheckSquare size={15} className="text-emerald-400" />
                   Projects & Support
                 </span>
-                <Link href="/projects" className="text-purple-400 hover:underline text-[11px] font-medium lowercase">
+                <Link href="/projects" className="text-emerald-400 hover:underline text-[11px] font-medium lowercase">
                   view projects →
                 </Link>
               </div>
@@ -752,3 +777,4 @@ export function ReportsClient() {
     </div>
   );
 }
+

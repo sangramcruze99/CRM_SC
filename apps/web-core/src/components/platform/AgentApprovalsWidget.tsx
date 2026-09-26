@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShieldAlert, Check, X, Sparkles, Mail, CheckCircle2, ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { ShieldAlert, Check, X, Sparkles, Mail, CheckCircle2, ChevronDown, ArrowRight, Bot } from 'lucide-react';
 
 interface ProposedAction {
   id: string;
@@ -15,7 +16,7 @@ interface ProposedAction {
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
   rationale: string;
   parameters: Record<string, any>;
-  status: 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED' | 'EXECUTED_AUTONOMOUSLY';
+  status: 'PENDING_APPROVAL' | 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXECUTED_AUTONOMOUSLY';
   createdAt: string;
 }
 
@@ -26,7 +27,7 @@ export function AgentApprovalsWidget() {
 
   const fetchApprovals = async () => {
     try {
-      const res = await fetch('http://localhost:3010/agents/approvals', {
+      const res = await fetch('/api/ai/agents/approvals', {
         headers: { 'x-tenant-id': 'default-tenant' },
       });
       if (res.ok) {
@@ -44,12 +45,12 @@ export function AgentApprovalsWidget() {
     return () => clearInterval(interval);
   }, []);
 
-  const pendingItems = approvals.filter((a) => a.status === 'PENDING_APPROVAL');
+  const pendingItems = approvals.filter((a) => a.status === 'PENDING_APPROVAL' || a.status === 'PENDING');
 
   const handleApprove = async (id: string) => {
     setProcessingId(id);
     try {
-      const res = await fetch(`http://localhost:3010/agents/approvals/${id}/approve`, {
+      const res = await fetch(`/api/ai/agents/approvals/${id}/approve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +73,7 @@ export function AgentApprovalsWidget() {
   const handleReject = async (id: string) => {
     setProcessingId(id);
     try {
-      const res = await fetch(`http://localhost:3010/agents/approvals/${id}/reject`, {
+      const res = await fetch(`/api/ai/agents/approvals/${id}/reject`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +129,7 @@ export function AgentApprovalsWidget() {
               onClick={() => setIsOpen(false)}
               className="text-slate-400 hover:text-slate-600 dark:hover:text-white text-xs"
             >
-              ✕
+              
             </button>
           </div>
 
@@ -200,6 +201,20 @@ export function AgentApprovalsWidget() {
                 </div>
               ))
             )}
+          </div>
+
+          {/* Footer Navigation */}
+          <div className="p-2.5 px-3 bg-slate-50 dark:bg-white/[0.02] border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between">
+            <Link
+              href="/ai-agents"
+              onClick={() => setIsOpen(false)}
+              className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1.5 transition-colors"
+            >
+              <Bot size={13} />
+              <span>Full Command Center &amp; Digital Teammates</span>
+              <ArrowRight size={11} />
+            </Link>
+            <span className="text-[10px] text-slate-400 font-mono">Realtime Sync</span>
           </div>
         </div>
       )}

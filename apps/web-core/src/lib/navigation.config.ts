@@ -18,135 +18,169 @@ export type BusinessDomainId =
   | 'administration'
   | 'developer';
 
+export type NavigationLayer = 'operations' | 'assistance' | 'governance';
+
 export interface BusinessDomainMetadata {
   id: BusinessDomainId;
   title: string;
+  humanTitle?: string;
   shortTitle: string;
   iconName: string;
   description: string;
   defaultExpanded?: boolean;
+  layer: NavigationLayer;
 }
 
 export const BUSINESS_DOMAINS: Record<BusinessDomainId, BusinessDomainMetadata> = {
   niche_hub: {
     id: 'niche_hub',
     title: 'Operational Command Hub',
+    humanTitle: 'Operational Command Hub',
     shortTitle: 'Operations Hub',
     iconName: 'Sparkles',
     description: 'Specialized niche command center and core workflows.',
     defaultExpanded: true,
-  },
-  ai: {
-    id: 'ai',
-    title: 'AI Intelligence',
-    shortTitle: 'AI',
-    iconName: 'Sparkles',
-    description: 'Autonomous AI agents, approvals, activity feed and usage controls.',
-    defaultExpanded: false,
-  },
-  automation: {
-    id: 'automation',
-    title: 'AI Automation OS',
-    shortTitle: 'Automation OS',
-    iconName: 'Workflow',
-    description: 'Visual DAG pipelines, trigger rules, cross-service event mesh and automated execution.',
-    defaultExpanded: false,
+    layer: 'operations',
   },
   sales_crm: {
     id: 'sales_crm',
     title: 'Sales & CRM',
-    shortTitle: 'Sales & CRM',
-    iconName: 'Briefcase',
-    description: 'Pipeline velocity, contacts, accounts, deals and prospecting.',
+    humanTitle: 'Customers & Accounts',
+    shortTitle: 'Customers & Sales',
+    iconName: 'Users',
+    description: 'All contacts, companies, deals pipeline, customer 360 relationship graph and data migration.',
     defaultExpanded: true,
+    layer: 'operations',
   },
   marketing: {
     id: 'marketing',
     title: 'Marketing & Growth',
+    humanTitle: 'Marketing & Growth',
     shortTitle: 'Marketing',
     iconName: 'TrendingUp',
     description: 'Campaigns, newsletters, visual email studio, social media and website builder.',
     defaultExpanded: false,
+    layer: 'operations',
   },
   finance: {
     id: 'finance',
     title: 'Finance & Treasury',
+    humanTitle: 'Finance & Treasury',
     shortTitle: 'Finance',
     iconName: 'Landmark',
     description: 'Commercial invoicing, OCR scanner, banking, QR payments, billing and subscriptions.',
     defaultExpanded: false,
+    layer: 'operations',
   },
   customer_service: {
     id: 'customer_service',
     title: 'Customer Service',
+    humanTitle: 'Customer Support',
     shortTitle: 'Support',
     iconName: 'Ticket',
     description: 'Helpdesk tickets, customer success, unified inbox and live chat.',
     defaultExpanded: false,
-  },
-  operations: {
-    id: 'operations',
-    title: 'Operations & Comms',
-    shortTitle: 'Operations',
-    iconName: 'Phone',
-    description: 'AI softphone, SIM gateway, telephony and client extranet portal.',
-    defaultExpanded: false,
+    layer: 'operations',
   },
   projects: {
     id: 'projects',
     title: 'Projects & Tasks',
+    humanTitle: 'Projects & Operations',
     shortTitle: 'Projects',
     iconName: 'ClipboardList',
     description: 'Sprint boards, kitchen orders queue, inspections and milestone tracking.',
     defaultExpanded: false,
+    layer: 'operations',
   },
   people: {
     id: 'people',
     title: 'People & HR',
+    humanTitle: 'People & HR',
     shortTitle: 'People',
     iconName: 'Users',
     description: 'Employee directory, leadership hierarchy tree and onboarding pipeline.',
     defaultExpanded: false,
+    layer: 'operations',
   },
-  inventory: {
-    id: 'inventory',
-    title: 'Inventory & Products',
-    shortTitle: 'Inventory',
-    iconName: 'Layers',
-    description: 'Price books, SKU barcodes, pharmacy formulary and property catalog.',
+  operations: {
+    id: 'operations',
+    title: 'Operations & Comms',
+    humanTitle: 'Communications',
+    shortTitle: 'Comms',
+    iconName: 'Phone',
+    description: 'AI softphone, SIM gateway, telephony and client extranet portal.',
     defaultExpanded: false,
+    layer: 'operations',
   },
   documents: {
     id: 'documents',
     title: 'Documents & Legal',
-    shortTitle: 'Documents',
+    humanTitle: 'Document Vault',
+    shortTitle: 'Vault',
     iconName: 'Folder',
     description: 'Centralized document vault, e-signatures, NDAs, offer letters and IDP.',
     defaultExpanded: false,
+    layer: 'operations',
   },
   analytics: {
     id: 'analytics',
     title: 'Analytics & BI',
-    shortTitle: 'Analytics',
+    humanTitle: 'Reports & Forecasts',
+    shortTitle: 'Reports',
     iconName: 'Activity',
     description: 'Revenue forecasts, rep leaderboards, system observability and reports.',
     defaultExpanded: false,
+    layer: 'operations',
+  },
+  inventory: {
+    id: 'inventory',
+    title: 'Inventory & Products',
+    humanTitle: 'Inventory & Products',
+    shortTitle: 'Inventory',
+    iconName: 'Layers',
+    description: 'Price books, SKU barcodes, pharmacy formulary and property catalog.',
+    defaultExpanded: false,
+    layer: 'operations',
+  },
+  ai: {
+    id: 'ai',
+    title: 'AI Intelligence',
+    humanTitle: 'AI Assistant Hub',
+    shortTitle: 'AI Hub',
+    iconName: 'Sparkles',
+    description: 'Assistant chat, specialized capabilities, human-in-the-loop review queue.',
+    defaultExpanded: false,
+    layer: 'assistance',
+  },
+  automation: {
+    id: 'automation',
+    title: 'AI Automation OS',
+    humanTitle: 'Automations',
+    shortTitle: 'Automations',
+    iconName: 'Workflow',
+    description: 'Active automated rules, visual workflow builder and cross-service sync mesh.',
+    defaultExpanded: false,
+    layer: 'assistance',
   },
   administration: {
     id: 'administration',
     title: 'Administration & Security',
-    shortTitle: 'Admin',
+    humanTitle: 'Governance & Access',
+    shortTitle: 'Governance',
     iconName: 'Shield',
-    description: 'Tenant management, audit logs, compliance, branding and customizer.',
+    description: 'Roles, RBAC permissions, audit trail, compliance and superadmin console.',
     defaultExpanded: false,
+    layer: 'governance',
   },
   developer: {
     id: 'developer',
     title: 'Developer & Engineering',
+    humanTitle: 'Developer & Integrations',
     shortTitle: 'Developer',
     iconName: 'Code2',
-    description: 'API keys, webhooks, schema builder, AI studio and search indexer.',
+    description: 'API keys, webhooks, schema builder, custom objects and marketplace.',
     defaultExpanded: false,
+    layer: 'governance',
   },
 };
 
@@ -180,8 +214,10 @@ export interface NavResolvedItem {
 export interface ResolvedNavSection {
   domainId: BusinessDomainId;
   sectionTitle: string;
+  humanTitle?: string;
   iconName: string;
   defaultExpanded: boolean;
+  layer: NavigationLayer;
   items: NavResolvedItem[];
   aiItems?: NavResolvedItem[];
 }
@@ -192,6 +228,7 @@ export const MASTER_NAV_ITEMS: NavItemConfig[] = [
   { id: 'ai-center', label: 'AI Command Center', href: '/ai', iconName: 'Sparkles', badge: 'Command', domain: 'ai', keywords: ['ai', 'copilot', 'assistant', 'chat'] },
   { id: 'ai-team', label: 'My AI Team', href: '/ai/team', iconName: 'Users', badge: '6 Roles', domain: 'ai', keywords: ['ai', 'team', 'agents', 'roles'] },
   { id: 'ai-approvals', label: 'AI Approvals', href: '/ai/approvals', iconName: 'CheckCircle2', badge: 'Review', domain: 'ai', keywords: ['ai', 'approvals', 'human in the loop'] },
+  { id: 'ai-results', label: 'AI Result Center & Outcomes', href: '/automation/executions', iconName: 'Activity', badge: 'Live', domain: 'ai', keywords: ['ai', 'results', 'outcomes', 'executions', 'outputs'] },
   { id: 'ai-activity', label: 'AI Activity Feed', href: '/ai/activity', iconName: 'Activity', domain: 'ai', keywords: ['ai', 'feed', 'logs', 'audit'] },
   { id: 'ai-automations', label: 'AI Automations', href: '/ai/automations', iconName: 'Workflow', badge: 'Auto', domain: 'ai', keywords: ['ai', 'automations', 'triggers'] },
   { id: 'ai-usage', label: 'AI Usage & Limits', href: '/ai/usage', iconName: 'DollarSign', domain: 'ai', keywords: ['ai', 'usage', 'tokens', 'credits', 'cost'] },
@@ -236,6 +273,9 @@ export const MASTER_NAV_ITEMS: NavItemConfig[] = [
 
   // --- AI Automation OS ---
   { id: 'auto-studio', label: 'AI Automation OS Studio', href: '/automation', iconName: 'Sparkles', badge: 'v2.5', domain: 'automation', keywords: ['automation', 'workflows', 'studio', 'dag', 'ai automation os', 'pipeline'] },
+  { id: 'auto-agents', label: 'AI Agent Swarms', href: '/automation/agents', iconName: 'Bot', domain: 'automation', keywords: ['agents', 'swarms', 'bots', 'runtimes'] },
+  { id: 'auto-agent-tree', label: 'AI Agent Swarm Tree', href: '/automation/agents/tree', iconName: 'Network', badge: 'Tree', domain: 'automation', keywords: ['agent tree', 'hierarchy', 'swarms', 'delegation', 'athena', 'agents'] },
+  { id: 'auto-executions', label: 'AI Result Center & Executions', href: '/automation/executions', iconName: 'Activity', badge: 'Results', domain: 'automation', keywords: ['results', 'executions', 'outputs', 'audit', 'runs', 'log'] },
   { id: 'auto-engine', label: 'Automations Engine & Rules', href: '/automations', iconName: 'Workflow', badge: 'Zapier', domain: 'automation', keywords: ['automation', 'automations', 'triggers', 'connectors', 'webhooks'] },
   { id: 'auto-sync', label: 'Cross-Service Data Sync Mesh', href: '/data-sync', iconName: 'ArrowRightLeft', badge: 'Mesh', domain: 'automation', keywords: ['automation', 'sync', 'integration', 'mesh', 'etl'] },
 
@@ -254,10 +294,17 @@ export const MASTER_NAV_ITEMS: NavItemConfig[] = [
 
   // --- Documents & Legal ---
   { id: 'doc-vault', label: 'Central Document Vault', href: '/documents', iconName: 'Folder', domain: 'documents', keywords: ['documents', 'vault', 'files', 'storage', 'attachments'] },
+  { id: 'doc-outputs', label: 'Generated Outputs Archive', href: '/documents?category=output', iconName: 'FileCheck', badge: 'Outputs', domain: 'documents', keywords: ['documents', 'output', 'generated', 'vault', 'files'] },
   { id: 'doc-esign', label: 'Digital E-Signatures', href: '/e-signatures', iconName: 'FileSignature', domain: 'documents', keywords: ['documents', 'e-signatures', 'sign', 'contracts'] },
   { id: 'doc-ndas', label: 'Confidentiality NDAs', href: '/ndas', iconName: 'FileCheck', domain: 'documents', keywords: ['documents', 'ndas', 'legal', 'agreements'] },
   { id: 'doc-offers', label: 'Employment Offer Letters', href: '/offer-letters', iconName: 'FileCheck', domain: 'documents', keywords: ['documents', 'offer letters', 'employment', 'hr'] },
   { id: 'doc-s3', label: 'Cloud Direct Storage', href: '/s3-uploads', iconName: 'CloudUpload', domain: 'documents', keywords: ['documents', 's3', 'cloud', 'uploads', 'storage'] },
+
+  // --- Inventory & Products ---
+  { id: 'inv-products', label: 'Inventory & Products', href: '/inventory', iconName: 'Layers', badge: 'Stock', domain: 'inventory', keywords: ['inventory', 'products', 'sku', 'stock', 'warehouse', 'catalog', 'reorder'] },
+  { id: 'inv-suppliers', label: 'Suppliers & Vendors', href: '/inventory?tab=suppliers', iconName: 'Truck', domain: 'inventory', keywords: ['suppliers', 'vendors', 'procurement', 'distributors'] },
+  { id: 'inv-movements', label: 'Stock Movement Ledger', href: '/inventory?tab=movements', iconName: 'ArrowRightLeft', domain: 'inventory', keywords: ['stock movements', 'adjustments', 'ledger', 'audit', 'dispatch', 'inbound'] },
+  { id: 'inv-categories', label: 'Product Categories', href: '/inventory?tab=categories', iconName: 'FolderTree', domain: 'inventory', keywords: ['categories', 'taxonomy', 'catalog groups'] },
 
   // --- Analytics & BI ---
   { id: 'analytics-reports', label: 'Business Journal & Reports', href: '/reports', iconName: 'Activity', badge: 'Journal', domain: 'analytics', keywords: ['business journal', 'journal', 'daily journal', 'analytics', 'reports', 'bi', 'metrics', 'exports', 'calendar', 'periods'] },
@@ -328,9 +375,13 @@ export const MASTER_AI_AUTOMATION_ITEMS: NavItemConfig[] = [
   // --- Documents & Legal AI Automation ---
   { id: 'doc-intelligence', label: 'Document Intelligence & OCR', href: '/ocr-invoice', iconName: 'Scan', badge: 'OCR', domain: 'documents', isAiAutomation: true, agentId: 'documents', keywords: ['documents', 'intelligence', 'ocr'] },
   { id: 'doc-idp-extract', label: 'Intelligent IDP Extraction', href: '/idp', iconName: 'Bot', badge: 'IDP', domain: 'documents', isAiAutomation: true, keywords: ['documents', 'idp', 'extraction'] },
+  { id: 'doc-output-ai', label: 'AI Generated Output Files', href: '/documents?category=output', iconName: 'FileCheck', badge: 'Outputs', domain: 'documents', isAiAutomation: true, keywords: ['documents', 'output', 'generated', 'scorecards'] },
 
   // --- Analytics & BI AI Automation ---
   { id: 'analytics-copilot', label: 'Analytics Copilot', href: '/reports#copilot', iconName: 'Sparkles', badge: 'AI', domain: 'analytics', isAiAutomation: true, keywords: ['analytics', 'copilot', 'bi', 'insights'] },
+
+  // --- Inventory & Supply Chain AI Automation ---
+  { id: 'inv-sentinel', label: 'Stock Level & Reorder Sentinel', href: '/inventory?agent=sentinel', iconName: 'Bot', badge: 'Auto', domain: 'inventory', isAiAutomation: true, agentId: 'sentinel', keywords: ['inventory', 'reorder', 'low stock', 'sentinel', 'replenishment'] },
 ];
 
 /**
@@ -338,24 +389,30 @@ export const MASTER_AI_AUTOMATION_ITEMS: NavItemConfig[] = [
  */
 const NICHE_COMMAND_HUBS: Record<string, { sectionTitle: string; iconName: string; items: NavItemConfig[]; aiItems?: NavItemConfig[] }> = {
   hospital: {
-    sectionTitle: 'Clinical Operations',
+    sectionTitle: 'Healthcare & Clinical Command',
     iconName: 'Stethoscope',
     items: [
       { id: 'hosp-hub', label: 'Clinical Command Hub', href: '/industry/hospital', iconName: 'Stethoscope', badge: 'Live', domain: 'niche_hub', keywords: ['hospital', 'clinical', 'command hub', 'patients'] },
       { id: 'hosp-patients', label: 'Patients Directory (EHR)', href: '/contacts', iconName: 'Users', badge: 'EHR', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['patients', 'ehr', 'records'] },
-      { id: 'hosp-appointments', label: 'Doctor Appointment Queue', href: '/industry/hospital#appointments', iconName: 'Calendar', domain: 'niche_hub', keywords: ['doctor', 'appointments', 'schedule'] },
-      { id: 'hosp-triage', label: 'Patient Triage & Inquiries', href: '/tickets', iconName: 'Ticket', domain: 'niche_hub', terminologyKey: 'tickets', keywords: ['triage', 'patient', 'inquiries', 'helpdesk'] },
+      { id: 'hosp-appointments', label: 'Doctor Appointment Queue', href: '/industry/hospital#appointments', iconName: 'Clock', badge: 'Queue', domain: 'niche_hub', keywords: ['doctor', 'appointments', 'schedule'] },
+      { id: 'hosp-wards', label: 'Ward Bed Census & Triage', href: '/industry/hospital#wards', iconName: 'Bed', badge: '84%', domain: 'niche_hub', keywords: ['wards', 'beds', 'census', 'triage'] },
+      { id: 'hosp-rx', label: 'Digital Rx & Diagnostics', href: '/industry/hospital#rx', iconName: 'HeartPulse', badge: 'Rx', domain: 'niche_hub', keywords: ['rx', 'prescriptions', 'pharmacy', 'labs'] },
+      { id: 'hosp-billing', label: 'Medical Invoices & Claims', href: '/invoices', iconName: 'Receipt', badge: 'Billing', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['medical billing', 'insurance claims', 'invoices'] },
+    ],
+    aiItems: [
+      { id: 'hosp-asclepius', label: 'Asclepius — Clinical Sentinel', href: '/industry/hospital?agent=asclepius', iconName: 'Bot', badge: 'Agent', domain: 'niche_hub', isAiAutomation: true, agentId: 'asclepius', keywords: ['hospital', 'asclepius', 'clinical', 'triage'] },
     ],
   },
   realestate: {
-    sectionTitle: 'Real Estate & Property Hub',
+    sectionTitle: 'Real Estate & Brokerage Hub',
     iconName: 'Home',
     items: [
       { id: 're-hub', label: 'Property Command Center', href: '/industry/realestate', iconName: 'Home', badge: 'MLS', domain: 'niche_hub', keywords: ['real estate', 'property', 'mls', 'brokerage'] },
-      { id: 're-buyers', label: 'Buyer & Seller Directory', href: '/contacts', iconName: 'Users', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['buyers', 'sellers', 'tenants', 'landlords'] },
-      { id: 're-deals', label: 'Sales & Escrow Pipeline', href: '/deals', iconName: 'Briefcase', domain: 'niche_hub', terminologyKey: 'deals', keywords: ['escrow', 'property deals', 'sales pipeline'] },
-      { id: 're-showings', label: 'Property Showings & Tasks', href: '/projects', iconName: 'ClipboardList', domain: 'niche_hub', terminologyKey: 'projects', keywords: ['showings', 'inspections', 'site visits'] },
-      { id: 're-listings', label: 'Property Inventory Catalog', href: '/price-books', iconName: 'Layers', domain: 'niche_hub', terminologyKey: 'products', keywords: ['property listings', 'units', 'catalog'] },
+      { id: 're-listings', label: 'Active MLS Property Portfolio', href: '/price-books', iconName: 'Home', badge: 'Portfolio', domain: 'niche_hub', terminologyKey: 'products', keywords: ['property listings', 'units', 'catalog', 'mls'] },
+      { id: 're-deals', label: 'Sales & Escrow Pipeline', href: '/deals', iconName: 'Briefcase', badge: 'Escrow', domain: 'niche_hub', terminologyKey: 'deals', keywords: ['escrow', 'property deals', 'sales pipeline'] },
+      { id: 're-buyers', label: 'Buyers, Sellers & Tenants', href: '/contacts', iconName: 'Users', badge: 'CRM', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['buyers', 'sellers', 'tenants', 'landlords'] },
+      { id: 're-rentals', label: 'Tenant Leases & Rent Ledger', href: '/industry/realestate#rentals', iconName: 'FileSignature', badge: 'Rent', domain: 'niche_hub', keywords: ['leases', 'rent', 'tenants'] },
+      { id: 're-mortgage', label: 'Mortgage Amortization Calculator', href: '/industry/realestate#calculator', iconName: 'Landmark', domain: 'niche_hub', keywords: ['mortgage', 'calculator', 'financing'] },
     ],
     aiItems: [
       { id: 're-vesta', label: 'Vesta — Property Sentinel', href: '/industry/realestate?agent=vesta', iconName: 'Bot', badge: 'Agent', domain: 'niche_hub', isAiAutomation: true, agentId: 'vesta', keywords: ['real estate', 'vesta', 'property', 'escrow'] },
@@ -365,10 +422,15 @@ const NICHE_COMMAND_HUBS: Record<string, { sectionTitle: string; iconName: strin
     sectionTitle: 'Floor & Kitchen Operations',
     iconName: 'UtensilsCrossed',
     items: [
-      { id: 'rest-hub', label: 'Table Floor Plan & Host Desk', href: '/industry/restaurant', iconName: 'UtensilsCrossed', badge: 'Live', domain: 'niche_hub', keywords: ['restaurant', 'floor plan', 'host desk', 'tables'] },
-      { id: 'rest-kitchen', label: 'Kitchen Orders Queue (KOT)', href: '/projects', iconName: 'ClipboardList', domain: 'niche_hub', terminologyKey: 'projects', keywords: ['kitchen', 'orders', 'kot', 'tickets'] },
-      { id: 'rest-guests', label: 'VIP Guests & Diners', href: '/contacts', iconName: 'Users', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['guests', 'vip', 'diners', 'customers'] },
-      { id: 'rest-menu', label: 'Food & Beverage Menu', href: '/price-books', iconName: 'Layers', domain: 'niche_hub', terminologyKey: 'products', keywords: ['menu', 'food', 'beverage', 'drinks', 'prices'] },
+      { id: 'rest-hub', label: 'Table Floor Plan & Host Desk', href: '/industry/restaurant', iconName: 'UtensilsCrossed', badge: 'Floor', domain: 'niche_hub', keywords: ['restaurant', 'floor plan', 'host desk', 'tables'] },
+      { id: 'rest-kds', label: 'Kitchen Display System (KDS)', href: '/industry/restaurant#kds', iconName: 'ClipboardList', badge: 'Live KDS', domain: 'niche_hub', keywords: ['kitchen', 'kds', 'kot', 'tickets'] },
+      { id: 'rest-guests', label: 'VIP Guests & Diners', href: '/contacts', iconName: 'Users', badge: 'Guests', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['guests', 'vip', 'diners', 'customers'] },
+      { id: 'rest-menu', label: 'Food & Beverage Menu', href: '/price-books', iconName: 'Layers', badge: 'Menu', domain: 'niche_hub', terminologyKey: 'products', keywords: ['menu', 'food', 'beverage', 'drinks', 'prices'] },
+      { id: 'rest-par', label: 'Ingredient Par Stock & Wastage', href: '/inventory', iconName: 'ShoppingBag', badge: 'Par', domain: 'niche_hub', keywords: ['inventory', 'stock', 'par level', 'ingredients'] },
+      { id: 'rest-bills', label: 'Dining Bills & Table QR Pay', href: '/invoices', iconName: 'Receipt', badge: 'POS', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['bills', 'receipts', 'dining bills', 'qr'] },
+    ],
+    aiItems: [
+      { id: 'rest-auguste', label: 'Auguste — F&B Director', href: '/industry/restaurant?agent=auguste', iconName: 'Bot', badge: 'Agent', domain: 'niche_hub', isAiAutomation: true, agentId: 'auguste', keywords: ['restaurant', 'auguste', 'chef', 'kds'] },
     ],
   },
   retail: {
@@ -376,29 +438,126 @@ const NICHE_COMMAND_HUBS: Record<string, { sectionTitle: string; iconName: strin
     iconName: 'ShoppingBag',
     items: [
       { id: 'ret-hub', label: 'Cashier POS & Register', href: '/industry/retail', iconName: 'ShoppingBag', badge: 'POS', domain: 'niche_hub', keywords: ['retail', 'pos', 'cashier', 'register', 'counter'] },
-      { id: 'ret-khata', label: 'Customer Khata Credit Book', href: '/contacts', iconName: 'Users', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['khata', 'store customers', 'credit book', 'dues'] },
-      { id: 'ret-ledger', label: 'Retail Sales Receipts', href: '/invoices', iconName: 'Receipt', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['sales', 'receipts', 'invoices', 'bills'] },
-      { id: 'ret-skus', label: 'Barcode Inventory SKUs', href: '/price-books', iconName: 'Layers', domain: 'niche_hub', terminologyKey: 'products', keywords: ['inventory', 'skus', 'barcodes', 'stock'] },
+      { id: 'ret-barcodes', label: 'Barcode Scanner & Label Print', href: '/industry/retail#barcode', iconName: 'Scan', badge: 'Print', domain: 'niche_hub', keywords: ['barcode', 'labels', 'thermal'] },
+      { id: 'ret-skus', label: 'SKU Inventory & Restock Alerts', href: '/inventory', iconName: 'Layers', badge: 'Stock', domain: 'niche_hub', keywords: ['inventory', 'skus', 'barcodes', 'stock'] },
+      { id: 'ret-khata', label: 'Customer Khata Credit Book', href: '/contacts', iconName: 'Users', badge: 'Khata', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['khata', 'store customers', 'credit book', 'dues'] },
+      { id: 'ret-receipts', label: 'Retail Sales Receipts (Z-Report)', href: '/invoices', iconName: 'Receipt', badge: 'Sales', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['sales', 'receipts', 'invoices', 'bills'] },
+    ],
+    aiItems: [
+      { id: 'ret-hermes', label: 'Hermes — Retail Merchant', href: '/industry/retail?agent=hermes', iconName: 'Bot', badge: 'Agent', domain: 'niche_hub', isAiAutomation: true, agentId: 'hermes', keywords: ['retail', 'hermes', 'pos', 'inventory'] },
     ],
   },
   sme: {
-    sectionTitle: 'Revenue & SaaS Platform',
-    iconName: 'Briefcase',
+    sectionTitle: 'SaaS Platform & Revenue Ops',
+    iconName: 'Building2',
     items: [
-      { id: 'sme-rev', label: 'Executive Revenue Dashboard', href: '/dashboard', iconName: 'LayoutDashboard', domain: 'niche_hub', keywords: ['revenue', 'dashboard', 'mrr'] },
-      { id: 'sme-contacts', label: 'Accounts & Key Contacts', href: '/contacts', iconName: 'Users', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['accounts', 'contacts', 'leads'] },
-      { id: 'sme-pipeline', label: 'Multi-Stage Deals Pipeline', href: '/deals', iconName: 'Briefcase', domain: 'niche_hub', terminologyKey: 'deals', keywords: ['deals', 'pipeline', 'sales'] },
-      { id: 'sme-subs', label: 'MRR SaaS Subscriptions', href: '/subscriptions', iconName: 'DollarSign', badge: 'MRR', domain: 'niche_hub', keywords: ['saas', 'subscriptions', 'mrr'] },
+      { id: 'sme-hub', label: 'SaaS Command & MRR HUD', href: '/industry/sme', iconName: 'Building2', badge: 'MRR', domain: 'niche_hub', keywords: ['saas', 'mrr', 'command', 'dashboard'] },
+      { id: 'sme-subs', label: 'MRR Subscriptions & Plans', href: '/subscriptions', iconName: 'DollarSign', badge: 'Plans', domain: 'niche_hub', keywords: ['saas', 'subscriptions', 'mrr', 'plans'] },
+      { id: 'sme-pipeline', label: 'Sales Opportunities & Pipeline', href: '/deals', iconName: 'Briefcase', badge: 'Pipeline', domain: 'niche_hub', terminologyKey: 'deals', keywords: ['deals', 'pipeline', 'sales'] },
+      { id: 'sme-contacts', label: 'Accounts & Key Contacts', href: '/contacts', iconName: 'Users', badge: 'B2B', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['accounts', 'contacts', 'leads'] },
+      { id: 'sme-health', label: 'Customer Health & 360 Graph', href: '/customer-360', iconName: 'Activity', badge: '360°', domain: 'niche_hub', keywords: ['health', 'customer 360', 'retention'] },
+      { id: 'sme-support', label: 'Product Support Tickets & SLA', href: '/tickets', iconName: 'Ticket', badge: 'SLA', domain: 'niche_hub', terminologyKey: 'tickets', keywords: ['support', 'tickets', 'sla'] },
+    ],
+    aiItems: [
+      { id: 'sme-athena', label: 'Athena — SaaS Revenue Advisor', href: '/industry/sme?agent=athena', iconName: 'Bot', badge: 'Agent', domain: 'niche_hub', isAiAutomation: true, agentId: 'athena', keywords: ['saas', 'athena', 'mrr', 'retention'] },
     ],
   },
   agency: {
-    sectionTitle: 'Client & Agency Operations',
-    iconName: 'Users',
+    sectionTitle: 'Creative Agency Operations',
+    iconName: 'Palette',
     items: [
-      { id: 'agn-clients', label: 'Client Accounts & Stakeholders', href: '/contacts', iconName: 'Users', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['clients', 'accounts', 'stakeholders'] },
-      { id: 'agn-pitches', label: 'Pitch & Retainer Proposals', href: '/deals', iconName: 'Briefcase', domain: 'niche_hub', terminologyKey: 'deals', keywords: ['pitches', 'retainers', 'proposals', 'deals'] },
-      { id: 'agn-deliverables', label: 'Client Sprints & Deliverables', href: '/projects', iconName: 'ClipboardList', domain: 'niche_hub', terminologyKey: 'projects', keywords: ['sprints', 'deliverables', 'tasks'] },
-      { id: 'agn-rates', label: 'Agency Service Rate Cards', href: '/price-books', iconName: 'Layers', domain: 'niche_hub', terminologyKey: 'products', keywords: ['rate cards', 'pricing', 'services'] },
+      { id: 'agn-hub', label: 'Creative Studio Command', href: '/industry/agency', iconName: 'Palette', badge: 'Studio', domain: 'niche_hub', keywords: ['agency', 'creative', 'studio', 'command'] },
+      { id: 'agn-sprints', label: 'Client Sprints & Deliverables', href: '/projects', iconName: 'ClipboardList', badge: 'Sprints', domain: 'niche_hub', terminologyKey: 'projects', keywords: ['sprints', 'deliverables', 'tasks'] },
+      { id: 'agn-proposals', label: 'Pitch & Retainer Proposals', href: '/deals', iconName: 'Briefcase', badge: 'Retainers', domain: 'niche_hub', terminologyKey: 'deals', keywords: ['pitches', 'retainers', 'proposals', 'deals'] },
+      { id: 'agn-clients', label: 'Client Accounts & Stakeholders', href: '/contacts', iconName: 'Users', badge: 'Clients', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['clients', 'accounts', 'stakeholders'] },
+      { id: 'agn-social', label: 'Multi-Network Social Studio', href: '/social', iconName: 'Share2', badge: 'Social', domain: 'niche_hub', keywords: ['social', 'content calendar', 'posts'] },
+      { id: 'agn-invoices', label: 'Milestone & Retainer Invoices', href: '/invoices', iconName: 'Receipt', badge: 'Billing', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['retainer bills', 'milestones', 'invoices'] },
+    ],
+    aiItems: [
+      { id: 'agn-muses', label: 'Muses — Agency Growth Lead', href: '/industry/agency?agent=muses', iconName: 'Bot', badge: 'Agent', domain: 'niche_hub', isAiAutomation: true, agentId: 'muses', keywords: ['agency', 'muses', 'creative', 'retainer'] },
+    ],
+  },
+  custom: {
+    sectionTitle: 'Custom Tailored Workspace',
+    iconName: 'Layers',
+    items: [
+      { id: 'cust-hub', label: 'Custom Workspace Studio', href: '/customization', iconName: 'Layers', badge: 'Studio', domain: 'niche_hub', keywords: ['custom', 'studio', 'objects'] },
+      { id: 'cust-entities', label: 'Dynamic Entity Records', href: '/contacts', iconName: 'Database', badge: 'Schemas', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['custom objects', 'entities', 'records'] },
+      { id: 'cust-automation', label: 'Universal Automation Engine', href: '/automation', iconName: 'Workflow', badge: 'Mesh', domain: 'niche_hub', keywords: ['automation', 'workflows', 'triggers'] },
+      { id: 'cust-billing', label: 'Operational Invoicing', href: '/invoices', iconName: 'Receipt', badge: 'Ledger', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['invoices', 'billing'] },
+      { id: 'cust-api', label: 'Developer API & Webhooks', href: '/developer', iconName: 'Code2', badge: 'API', domain: 'niche_hub', keywords: ['api', 'developer', 'webhooks'] },
+    ],
+    aiItems: [
+      { id: 'cust-daedalus', label: 'Daedalus — Systems Architect', href: '/customization?agent=daedalus', iconName: 'Bot', badge: 'Agent', domain: 'niche_hub', isAiAutomation: true, agentId: 'daedalus', keywords: ['custom', 'daedalus', 'architect'] },
+    ],
+  },
+  construction: {
+    sectionTitle: 'Contracting & Field Operations',
+    iconName: 'HardHat',
+    items: [
+      { id: 'con-hub', label: 'Job Site Command Center', href: '/industry/construction', iconName: 'HardHat', badge: 'Sites', domain: 'niche_hub', keywords: ['construction', 'job site', 'contracting'] },
+      { id: 'con-bids', label: 'Bids & Estimates Pipeline', href: '/deals', iconName: 'Briefcase', badge: 'Bids', domain: 'niche_hub', terminologyKey: 'deals', keywords: ['bids', 'estimates', 'proposals'] },
+      { id: 'con-projects', label: 'Active Construction Projects', href: '/projects', iconName: 'ClipboardList', badge: 'Active', domain: 'niche_hub', terminologyKey: 'projects', keywords: ['projects', 'jobs', 'phases'] },
+      { id: 'con-subs', label: 'Subcontractors & Suppliers', href: '/contacts', iconName: 'Users', badge: 'Subs', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['subcontractors', 'vendors', 'crews'] },
+      { id: 'con-draws', label: 'AIA G702 Progress Billing', href: '/invoices', iconName: 'Receipt', badge: 'Draws', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['aia', 'progress billing', 'draws'] },
+    ],
+    aiItems: [
+      { id: 'con-vulcan', label: 'Vulcan — Field Safety Sentinel', href: '/industry/construction?agent=vulcan', iconName: 'Bot', badge: 'Safety', domain: 'niche_hub', isAiAutomation: true, agentId: 'vulcan', keywords: ['construction', 'vulcan', 'osha', 'safety'] },
+    ],
+  },
+  legal: {
+    sectionTitle: 'Law Firm & Practice Operations',
+    iconName: 'Scale',
+    items: [
+      { id: 'leg-hub', label: 'Practice Command Hub', href: '/industry/legal', iconName: 'Scale', badge: 'Court', domain: 'niche_hub', keywords: ['legal', 'court', 'law firm'] },
+      { id: 'leg-matters', label: 'Case Matters & Docket', href: '/deals', iconName: 'FileText', badge: 'Matters', domain: 'niche_hub', terminologyKey: 'deals', keywords: ['matters', 'docket', 'cases'] },
+      { id: 'leg-clients', label: 'Clients & Opposing Counsel', href: '/contacts', iconName: 'Users', badge: 'Counsel', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['clients', 'counsel', 'litigants'] },
+      { id: 'leg-briefs', label: 'Legal Briefs & Pleadings', href: '/documents', iconName: 'Folder', badge: 'Briefs', domain: 'niche_hub', keywords: ['briefs', 'pleadings', 'discovery'] },
+      { id: 'leg-trust', label: 'IOLTA Trust & Fee Billing', href: '/invoices', iconName: 'Receipt', badge: 'IOLTA', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['trust', 'iolta', 'fee notes'] },
+    ],
+    aiItems: [
+      { id: 'leg-justitia', label: 'Justitia — Legal Research AI', href: '/industry/legal?agent=justitia', iconName: 'Bot', badge: 'Research', domain: 'niche_hub', isAiAutomation: true, agentId: 'justitia', keywords: ['legal', 'justitia', 'precedent', 'briefs'] },
+    ],
+  },
+  logistics: {
+    sectionTitle: 'Freight & Fleet Telematics',
+    iconName: 'Truck',
+    items: [
+      { id: 'log-hub', label: 'Dispatch Command HUD', href: '/industry/logistics', iconName: 'Truck', badge: 'Live', domain: 'niche_hub', keywords: ['logistics', 'dispatch', 'freight'] },
+      { id: 'log-loads', label: 'Active Loads & Shipments', href: '/projects', iconName: 'ClipboardList', badge: 'Loads', domain: 'niche_hub', terminologyKey: 'projects', keywords: ['loads', 'shipments', 'freight'] },
+      { id: 'log-carriers', label: 'Carrier Network & Shippers', href: '/contacts', iconName: 'Users', badge: 'Fleets', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['carriers', 'shippers', 'drivers'] },
+      { id: 'log-bol', label: 'BOL & POD Waybills', href: '/documents', iconName: 'Folder', badge: 'BOL', domain: 'niche_hub', keywords: ['bol', 'pod', 'waybills'] },
+      { id: 'log-billing', label: 'Freight Billing & Settlements', href: '/invoices', iconName: 'Receipt', badge: 'Settlement', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['freight billing', 'factoring', 'carrier pay'] },
+    ],
+    aiItems: [
+      { id: 'log-mercury', label: 'Mercury — Route Optimization', href: '/industry/logistics?agent=mercury', iconName: 'Bot', badge: 'Route', domain: 'niche_hub', isAiAutomation: true, agentId: 'mercury', keywords: ['logistics', 'mercury', 'route', 'fleet'] },
+    ],
+  },
+  fitness: {
+    sectionTitle: 'Gym & Fitness Operations',
+    iconName: 'Dumbbell',
+    items: [
+      { id: 'fit-hub', label: 'Turnstile & Front Desk', href: '/industry/fitness', iconName: 'Dumbbell', badge: 'Live', domain: 'niche_hub', keywords: ['fitness', 'gym', 'front desk'] },
+      { id: 'fit-members', label: 'Member Roster & Passes', href: '/contacts', iconName: 'Users', badge: 'Members', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['members', 'athletes', 'passes'] },
+      { id: 'fit-classes', label: 'Group Fitness Classes', href: '/projects', iconName: 'Calendar', badge: 'Classes', domain: 'niche_hub', terminologyKey: 'projects', keywords: ['classes', 'schedules', 'trainers'] },
+      { id: 'fit-dues', label: 'Membership Dues & POS', href: '/invoices', iconName: 'Receipt', badge: 'Dues', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['dues', 'memberships', 'auto-debit'] },
+    ],
+    aiItems: [
+      { id: 'fit-heracles', label: 'Heracles — Retention Coach', href: '/industry/fitness?agent=heracles', iconName: 'Bot', badge: 'Coach', domain: 'niche_hub', isAiAutomation: true, agentId: 'heracles', keywords: ['fitness', 'heracles', 'coach', 'retention'] },
+    ],
+  },
+  automotive: {
+    sectionTitle: 'Service Bay & Auto Repair',
+    iconName: 'Wrench',
+    items: [
+      { id: 'auto-hub', label: 'Service Bay Dispatch', href: '/industry/automotive', iconName: 'Wrench', badge: 'Bays', domain: 'niche_hub', keywords: ['automotive', 'service bay', 'mechanic'] },
+      { id: 'auto-ro', label: 'Active Repair Orders (RO)', href: '/projects', iconName: 'ClipboardList', badge: 'ROs', domain: 'niche_hub', terminologyKey: 'projects', keywords: ['repair orders', 'ro', 'bays'] },
+      { id: 'auto-owners', label: 'Vehicle Owners & Fleets', href: '/contacts', iconName: 'Users', badge: 'Fleets', domain: 'niche_hub', terminologyKey: 'contacts', keywords: ['vehicle owners', 'fleets', 'drivers'] },
+      { id: 'auto-parts', label: 'Parts Room Inventory', href: '/inventory', iconName: 'ShoppingBag', badge: 'Parts', domain: 'niche_hub', keywords: ['parts', 'oem', 'inventory'] },
+      { id: 'auto-invoices', label: 'Repair Invoices & Parts Bills', href: '/invoices', iconName: 'Receipt', badge: 'Invoices', domain: 'niche_hub', terminologyKey: 'invoices', keywords: ['invoices', 'repair bills', 'estimates'] },
+    ],
+    aiItems: [
+      { id: 'auto-torq', label: 'Torq — Diagnostic Specialist', href: '/industry/automotive?agent=torq', iconName: 'Bot', badge: 'OBD-II', domain: 'niche_hub', isAiAutomation: true, agentId: 'torq', keywords: ['auto', 'torq', 'diagnostics', 'vin'] },
     ],
   },
 };
@@ -482,6 +641,7 @@ export function resolveNavigationSections({
         sectionTitle: hub.sectionTitle,
         iconName: hub.iconName,
         defaultExpanded: true,
+        layer: 'operations',
         items: visibleHubItems,
         aiItems: visibleHubAiItems.length > 0 ? visibleHubAiItems : undefined,
       });
@@ -489,21 +649,30 @@ export function resolveNavigationSections({
   }
 
   // 2. Resolve Standard Business Domains
-  // Define canonical domain ordering for maximum user findability
+  // Arranged across 3 distinct human-first operational layers:
+  // LAYER 1: DAILY BUSINESS OPERATIONS
+  // LAYER 2: ASSISTANCE & AUTOMATION
+  // LAYER 3: INFRASTRUCTURE & GOVERNANCE
   const DOMAIN_ORDER: BusinessDomainId[] = [
-    'ai',
-    'automation',
-    'sales_crm',
-    'marketing',
-    'finance',
-    'customer_service',
-    'projects',
-    'people',
-    'operations',
-    'documents',
-    'analytics',
-    'administration',
-    'developer',
+    // --- LAYER 1: DAILY BUSINESS OPERATIONS ---
+    'sales_crm',        //  Customers & Accounts + Sales
+    'marketing',        //  Marketing & Growth
+    'finance',          //  Finance & Treasury
+    'customer_service', //  Customer Support
+    'projects',         //  Projects & Operations
+    'people',           //  People & HR
+    'operations',       //  Communications
+    'documents',        //  Document Vault
+    'analytics',        //  Reports & Forecasts
+    'inventory',        //  Inventory & Products
+
+    // --- LAYER 2: ASSISTANCE & AUTOMATION ---
+    'ai',               //  AI Assistant Hub
+    'automation',       //  Automations
+
+    // --- LAYER 3: INFRASTRUCTURE & GOVERNANCE ---
+    'administration',   //  Governance & Access / Org & Plans
+    'developer',        //  Developer & Integrations
   ];
 
   for (const domainId of DOMAIN_ORDER) {
@@ -621,8 +790,10 @@ export function resolveNavigationSections({
     sections.push({
       domainId,
       sectionTitle: meta.title,
+      humanTitle: meta.humanTitle || meta.title,
       iconName: meta.iconName,
       defaultExpanded: Boolean(meta.defaultExpanded || hasActiveChild(resolvedItems) || hasActiveChild(domainAiItems)),
+      layer: meta.layer,
       items: resolvedItems,
       aiItems: domainAiItems.length > 0 ? domainAiItems : undefined,
     });

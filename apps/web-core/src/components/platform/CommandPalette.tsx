@@ -126,16 +126,16 @@ export function CommandPalette() {
     },
     {
       id: 'nav-ai-hub',
-      title: '✨ AI Command Center',
+      title: ' AI Command Center',
       subtitle: 'Ask AI anything, daily briefing & proactive business recommendations',
       category: 'AI',
       icon: <Sparkles size={16} className="text-emerald-400" />,
       href: '/ai',
-      shortcut: '⌘ A',
+      shortcut: ' A',
     },
     {
       id: 'nav-ai-team',
-      title: '👥 My AI Team (Digital Employees)',
+      title: ' My AI Team (Digital Employees)',
       subtitle: 'Sales AI, CS AI, Finance AI, Support AI, Operations AI',
       category: 'AI',
       icon: <Users size={16} className="text-teal-400" />,
@@ -143,7 +143,7 @@ export function CommandPalette() {
     },
     {
       id: 'nav-ai-approvals',
-      title: '⏳ AI Human Approvals Center',
+      title: ' AI Human Approvals Center',
       subtitle: 'Review and approve staged messages, follow-ups, and financial notices',
       category: 'AI',
       icon: <ShieldCheck size={16} className="text-amber-400" />,
@@ -151,7 +151,7 @@ export function CommandPalette() {
     },
     {
       id: 'nav-ai-activity',
-      title: '📋 AI Activity Timeline',
+      title: ' AI Activity Timeline',
       subtitle: 'Chronological feed of everything AI noticed, recommended, and completed',
       category: 'AI',
       icon: <Activity size={16} className="text-cyan-400" />,
@@ -159,15 +159,15 @@ export function CommandPalette() {
     },
     {
       id: 'nav-ai-automations',
-      title: '⚡ AI Automations & Goals',
+      title: ' AI Automations & Goals',
       subtitle: 'Plain-English automation creator and 1-click enterprise templates',
       category: 'AI',
-      icon: <Workflow size={16} className="text-purple-400" />,
+      icon: <Workflow size={16} className="text-emerald-400" />,
       href: '/ai/automations',
     },
     {
       id: 'nav-ai-usage',
-      title: '📊 AI Usage & Spending Limits',
+      title: ' AI Usage & Spending Limits',
       subtitle: 'Monthly allowance, department breakdown, and quality controls',
       category: 'AI',
       icon: <CreditCard size={16} className="text-blue-400" />,
@@ -175,7 +175,7 @@ export function CommandPalette() {
     },
     {
       id: 'nav-ai-trust',
-      title: '🛡️ AI Trust & Emergency Pause',
+      title: ' AI Trust & Emergency Pause',
       subtitle: 'Safety boundaries, data isolation, and global emergency stop switch',
       category: 'AI',
       icon: <ShieldCheck size={16} className="text-emerald-400" />,
@@ -218,7 +218,7 @@ export function CommandPalette() {
       title: 'AI Automation OS: Connector Mesh',
       subtitle: '16 integrations: WhatsApp Cloud, Twilio, Gmail, Groq, Shopify',
       category: 'AI',
-      icon: <Zap size={16} className="text-indigo-400" />,
+      icon: <Zap size={16} className="text-teal-400" />,
       href: '/automation/connectors',
     },
     {
@@ -244,7 +244,7 @@ export function CommandPalette() {
       category: 'SYSTEM',
       icon: <Settings size={16} className="text-slate-400" />,
       href: '/settings',
-      shortcut: '⌘ ,',
+      shortcut: ' ,',
     },
     // Quick Actions
     {
@@ -268,9 +268,9 @@ export function CommandPalette() {
       title: theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode',
       subtitle: 'Toggle between botanical glass dark and alabaster light theme',
       category: 'SYSTEM',
-      icon: theme === 'dark' ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-indigo-400" />,
+      icon: theme === 'dark' ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-teal-400" />,
       action: () => toggleTheme(),
-      shortcut: '⌘ T',
+      shortcut: ' T',
     },
   ];
 

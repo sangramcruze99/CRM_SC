@@ -123,110 +123,153 @@ export default function Customer360DirectoryPage() {
   const totalPipeline = accounts.reduce((sum, a) => sum + a.dealValue, 0);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              Pillar 3 & 9
-            </span>
-            <span className="text-xs text-slate-400 font-semibold">Account Intelligence & Health Engine</span>
+    <div className="space-y-6 max-w-7xl mx-auto pb-16 text-white">
+      {/* 1. TOP EXECUTIVE COCKPIT HEADER CHASSIS */}
+      <div className="botanical-glass-card p-5 sm:p-6 rounded-2xl space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center text-xl font-bold shadow-lg shadow-emerald-500/20 border border-emerald-300/30 shrink-0">
+              <Users size={22} className="stroke-[2.2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-black text-white tracking-tight">
+                  Customer 360 &amp; Account Health
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  REAL-TIME SYNC
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/[0.06] text-slate-300 border border-white/10">
+                  {accounts.length} Client Accounts
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Overview of client relationships, health scores, cross-sell opportunities, and retention telemetry powered by the Vesta Sentinel.
+              </p>
+            </div>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-            <Users className="text-emerald-400" size={28} />
-            Customer 360° Account Graph
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Unified pane of glass aggregating CRM touchpoints, health indices, commercial pipeline, and churn risk.
-          </p>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              type="button"
+              onClick={() => openAgentModal('athena')}
+              className="px-3.5 py-2 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 hover:text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+              title="Open Customer Success & Retention Assistant"
+            >
+              <Bot size={14} className="text-rose-400" />
+              <span>Retention Copilot</span>
+              {atRiskCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-rose-500/30 text-rose-200 text-[10px] font-mono font-bold">
+                  {atRiskCount} At Risk
+                </span>
+              )}
+            </button>
+
+            <button
+              onClick={handleRunHealthCheck}
+              disabled={loading}
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer active:scale-[0.98] disabled:opacity-50"
+            >
+              <Sparkles size={14} />
+              <span>{loading ? 'Evaluating...' : 'Run Global Health Audit'}</span>
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <button
-            type="button"
-            onClick={() => openAgentModal('athena')}
-            className="px-3.5 py-2.5 bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 hover:text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
-            title="Open Athena — Retention Sentinel & Customer Health AI"
-          >
-            <Bot size={14} className="text-rose-400 animate-pulse" />
-            <span>Ask Athena (Retention AI)</span>
-            {atRiskCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-rose-500/30 text-rose-200 text-[10px] font-mono font-bold">
-                {atRiskCount} at risk
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={handleRunHealthCheck}
-            disabled={loading}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 text-xs font-black rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 cursor-pointer disabled:opacity-50"
-          >
-            <Sparkles size={14} />
-            <span>{loading ? 'Evaluating...' : 'Run Global Health Audit'}</span>
-          </button>
+        {/* Sentinel Automated Pulse Strip */}
+        <div className="pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="px-2.5 py-1 rounded-lg bg-black/40 border border-emerald-500/30 flex items-center gap-2 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-white">Vesta</span>
+              <span className="text-[10px] text-slate-400">Client Success &amp; Retention Sentinel</span>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+              vault/telephony/call_recordings/
+            </span>
+          </div>
+          <span className="text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1.5">
+            <Sparkles size={11} />
+            <span>Real-Time Churn Defense Active</span>
+          </span>
         </div>
       </div>
 
       {triggerAlert && (
-        <div className="p-4 bg-emerald-500/15 border border-emerald-500/30 rounded-2xl flex items-center justify-between animate-fadeIn">
-          <div className="flex items-center gap-2.5 text-emerald-300 text-sm font-semibold">
-            <CheckCircle2 size={18} className="text-emerald-400" />
+        <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl flex items-center justify-between text-xs font-semibold text-emerald-300 shadow-2xl backdrop-blur-xl animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-400" />
             <span>{triggerAlert}</span>
           </div>
-          <button onClick={() => setTriggerAlert(null)} className="text-xs text-emerald-400 hover:text-white">Dismiss</button>
+          <button onClick={() => setTriggerAlert(null)} className="text-xs text-emerald-400 hover:text-white underline cursor-pointer">Dismiss</button>
         </div>
       )}
 
-      {/* KPI Highlight Strip */}
+      {/* 2. COCKPIT TELEMETRY METRICS GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-            <span>Portfolio Health Index</span>
-            <Activity size={16} className="text-emerald-400" />
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">Portfolio Health Index</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Activity size={15} />
+            </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">{avgHealth}</span>
-            <span className="text-xs text-slate-400 font-semibold">/ 100 avg</span>
+          <div className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+            {avgHealth} <span className="text-xs font-normal text-slate-400 font-sans">/ 100</span>
           </div>
-          <p className="text-[11px] text-emerald-400 font-medium mt-1">↑ +4.2% vs previous quarter</p>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Relationship Index</span>
+            <span className="text-emerald-400 font-mono font-bold">+4.2% QoQ</span>
+          </div>
         </div>
 
-        <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-            <span>Accounts At Risk</span>
-            <AlertTriangle size={16} className="text-rose-400" />
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">Accounts At Risk</span>
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${atRiskCount > 0 ? 'bg-rose-500/15 border border-rose-500/30 text-rose-400' : 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'}`}>
+              <AlertTriangle size={15} />
+            </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-rose-400">{atRiskCount}</span>
-            <span className="text-xs text-slate-400 font-semibold">Flagged for Churn</span>
+          <div className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${atRiskCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+            {atRiskCount} <span className="text-xs font-normal text-slate-400 font-sans">flagged</span>
           </div>
-          <p className="text-[11px] text-rose-400 font-medium mt-1">Retention workflows armed</p>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Retention Workflows</span>
+            <span className={`font-mono font-bold ${atRiskCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>{atRiskCount > 0 ? 'Armed' : '0 Risk'}</span>
+          </div>
         </div>
 
-        <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-            <span>Expansion Opportunities</span>
-            <TrendingUp size={16} className="text-teal-400" />
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">Expansion Opportunities</span>
+            <div className="w-7 h-7 rounded-lg bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400">
+              <TrendingUp size={15} />
+            </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-teal-400">{expansionCount}</span>
-            <span className="text-xs text-slate-400 font-semibold">Upsell Candidates</span>
+          <div className="text-2xl sm:text-3xl font-black text-teal-300 font-mono tracking-tight">
+            {expansionCount} <span className="text-xs font-normal text-slate-400 font-sans">candidates</span>
           </div>
-          <p className="text-[11px] text-teal-400 font-medium mt-1">High engagement & NPS</p>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Upsell Pipeline</span>
+            <span className="text-teal-400 font-mono font-bold">Optimal NPS</span>
+          </div>
         </div>
 
-        <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-            <span>Managed Pipeline Value</span>
-            <Layers size={16} className="text-emerald-400" />
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">Total Account Value</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <Zap size={15} />
+            </div>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-3xl font-black text-white">${(totalPipeline / 1000).toFixed(0)}k</span>
-            <span className="text-xs text-slate-400 font-semibold">Ledger volume</span>
+          <div className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+            ${(totalPipeline / 1000).toFixed(0)}k
           </div>
-          <p className="text-[11px] text-slate-400 font-medium mt-1">{accounts.length} active client accounts</p>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Active Book of Business</span>
+            <span className="text-emerald-400 font-mono font-bold">Direct Ledger</span>
+          </div>
         </div>
       </div>
 
@@ -387,7 +430,7 @@ export default function Customer360DirectoryPage() {
                       href={`/contacts/${acc.id}`}
                       className="px-3.5 py-1.5 bg-white/[0.06] hover:bg-emerald-500 hover:text-slate-950 text-slate-200 text-xs font-bold rounded-xl transition-all border border-white/[0.08] inline-flex items-center gap-1.5"
                     >
-                      <span>Open 360°</span>
+                      <span>View Profile</span>
                       <ArrowUpRight size={13} />
                     </Link>
                   </td>

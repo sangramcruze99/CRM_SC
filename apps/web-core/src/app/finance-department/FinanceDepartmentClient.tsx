@@ -264,138 +264,150 @@ export function FinanceDepartmentClient() {
   const kpis = overview?.kpis;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 p-6 md:p-10 font-sans selection:bg-amber-500/30">
-      {/* Header Banner */}
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4 pb-8 border-b border-zinc-800/80">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-gradient-to-tr from-amber-600/30 to-amber-400/10 border border-amber-500/30 shadow-lg shadow-amber-500/5">
-              <Landmark className="w-7 h-7 text-amber-400" />
+    <div className="space-y-6 max-w-7xl mx-auto text-white font-sans">
+      {/* Top Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        {/* Ambient Botanical Glow */}
+        <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                MIDAS AR & TREASURY SENTINEL
+              </span>
+              <span className="text-[11px] font-mono text-zinc-500">STAGE 5.3 AR & DUAL KHATA ENGINE</span>
             </div>
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
-                  AI Finance Department
-                </h1>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                  Stage 5.3 Active
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Midas AR Sentinel
-                </span>
-              </div>
-              <p className="text-sm text-zinc-400 mt-1">
-                Autonomous accounts receivable engine, tone-calibrated collections copilot, and Dual Khata ledger anomaly auditor.
-              </p>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+              <Landmark className="text-emerald-400" size={32} />
+              AI Finance Department
+            </h1>
+            <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+              Autonomous accounts receivable engine, tone-calibrated collections copilot, and Dual Khata ledger anomaly auditor.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              onClick={fetchAllData}
+              disabled={refreshing}
+              className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 hover:text-white border border-white/[0.08] text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-emerald-400' : 'text-zinc-400'}`} />
+              <span>Refresh Telemetry</span>
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={fetchAllData}
-            disabled={refreshing}
-            className="flex items-center gap-2 px-3.5 py-2 text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 rounded-lg transition-colors shadow-sm"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-amber-400' : ''}`} />
-            Refresh Telemetry
-          </button>
+        {/* Sentinel pulse status strip */}
+        <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-400">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              SENTINEL: REAL-TIME DUAL-KHATA AR ENGINE ACTIVE
+            </span>
+            <span className="hidden sm:inline text-zinc-600">|</span>
+            <span className="hidden sm:inline text-zinc-400">
+              VAULT TARGET: <code className="text-zinc-300">vault/finance/ar_collections/</code>
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-zinc-500 font-mono">AUDIT MESH: REAL-TIME DOUBLE ENTRY</span>
+          </div>
         </div>
       </div>
 
-      {/* Top Level KPIs */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-8">
-        <div className="p-5 rounded-xl bg-zinc-900/80 border border-zinc-800/90 shadow-sm relative overflow-hidden group">
-          <div className="flex items-center justify-between text-zinc-400 text-xs font-medium mb-2">
+      {/* High-Density Telemetry KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider mb-2">
             <span>Outstanding AR</span>
-            <DollarSign className="w-4 h-4 text-zinc-500 group-hover:text-amber-400 transition-colors" />
+            <DollarSign className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold text-white tracking-tight">
+          <div className="text-2xl font-bold font-mono text-white tracking-tight">
             ${kpis?.totalOutstandingAr?.toLocaleString() || '68,450'}
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-amber-400/90 mt-2 font-medium">
-            <span>${kpis?.overdueAmount?.toLocaleString() || '19,200'} overdue</span>
-            <span className="text-zinc-500">({kpis?.overdueInvoicesCount || 6} invoices)</span>
+          <div className="flex items-center gap-1.5 text-xs text-zinc-400 mt-2 font-mono">
+            <span className="text-emerald-400">${kpis?.overdueAmount?.toLocaleString() || '19,200'} overdue</span>
+            <span>({kpis?.overdueInvoicesCount || 6} invoices)</span>
           </div>
         </div>
 
-        <div className="p-5 rounded-xl bg-zinc-900/80 border border-zinc-800/90 shadow-sm relative overflow-hidden group">
-          <div className="flex items-center justify-between text-zinc-400 text-xs font-medium mb-2">
-            <span>Avg Days Sales Outstanding (DSO)</span>
-            <Clock className="w-4 h-4 text-zinc-500 group-hover:text-cyan-400 transition-colors" />
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider mb-2">
+            <span>Avg Days Sales (DSO)</span>
+            <Clock className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold text-white tracking-tight">
+          <div className="text-2xl font-bold font-mono text-white tracking-tight">
             {kpis?.avgDsoDays || 34} <span className="text-sm font-normal text-zinc-400">days</span>
           </div>
-          <div className="flex items-center gap-1 text-xs text-emerald-400 mt-2 font-medium">
+          <div className="flex items-center gap-1 text-xs text-emerald-400 mt-2 font-mono">
             <TrendingDown className="w-3.5 h-3.5" />
             <span>-4.2 days vs prior period</span>
           </div>
         </div>
 
-        <div className="p-5 rounded-xl bg-zinc-900/80 border border-zinc-800/90 shadow-sm relative overflow-hidden group">
-          <div className="flex items-center justify-between text-zinc-400 text-xs font-medium mb-2">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider mb-2">
             <span>Collection Efficiency (CEI)</span>
-            <Percent className="w-4 h-4 text-zinc-500 group-hover:text-emerald-400 transition-colors" />
+            <Percent className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold text-white tracking-tight">
+          <div className="text-2xl font-bold font-mono text-white tracking-tight">
             {kpis?.collectionEfficiencyIndex || 92}%
           </div>
-          <div className="flex items-center gap-1 text-xs text-emerald-400 mt-2 font-medium">
+          <div className="flex items-center gap-1 text-xs text-emerald-400 mt-2 font-mono">
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Optimal liquidity threshold</span>
           </div>
         </div>
 
-        <div className="p-5 rounded-xl bg-zinc-900/80 border border-zinc-800/90 shadow-sm relative overflow-hidden group">
-          <div className="flex items-center justify-between text-zinc-400 text-xs font-medium mb-2">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider mb-2">
             <span>Dual Khata Anomalies</span>
-            <AlertOctagon className="w-4 h-4 text-zinc-500 group-hover:text-red-400 transition-colors" />
+            <AlertOctagon className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold text-white tracking-tight">
+          <div className="text-2xl font-bold font-mono text-white tracking-tight">
             {anomalies.filter((a) => a.status !== 'RESOLVED').length}
           </div>
-          <div className="flex items-center gap-1 text-xs text-amber-400 mt-2 font-medium">
-            <Activity className="w-3.5 h-3.5" />
+          <div className="flex items-center gap-1 text-xs text-zinc-400 mt-2 font-mono">
+            <Activity className="w-3.5 h-3.5 text-emerald-400" />
             <span>Real-time ledger audit active</span>
           </div>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="flex flex-wrap gap-2 border-b border-zinc-800 pb-2">
-          {[
-            { id: 'aging', label: 'Accounts Receivable Aging', icon: BarChart3 },
-            { id: 'collections', label: 'Collections Copilot', icon: Send },
-            { id: 'anomalies', label: 'Dual Khata Ledger Audit', icon: Scale },
-            { id: 'cashflow', label: '30/60/90d Cashflow Projections', icon: TrendingUp },
-            { id: 'disputes', label: 'RAG Dispute Resolver', icon: Brain },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveTab(tab.id as any);
-                  if (tab.id === 'collections' && !dunningRec) {
-                    loadDunningRecommendation();
-                  }
-                }}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-semibold transition-all ${
-                  isActive
-                    ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30 shadow-sm'
-                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 border border-transparent'
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-zinc-500'}`} />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+      {/* Botanical Glass Segmented Tabs Navigation */}
+      <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3 overflow-x-auto">
+        {[
+          { id: 'aging', label: 'Accounts Receivable Aging', icon: BarChart3 },
+          { id: 'collections', label: 'Collections Copilot', icon: Send },
+          { id: 'anomalies', label: 'Dual Khata Ledger Audit', icon: Scale },
+          { id: 'cashflow', label: '30/60/90d Cashflow Projections', icon: TrendingUp },
+          { id: 'disputes', label: 'RAG Dispute Resolver', icon: Brain },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id as any);
+                if (tab.id === 'collections' && !dunningRec) {
+                  loadDunningRecommendation();
+                }
+              }}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition cursor-pointer ${
+                isActive
+                  ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20'
+                  : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.06]'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* TAB 1: AR Aging Matrix */}
@@ -406,36 +418,31 @@ export function FinanceDepartmentClient() {
             {agingData?.brackets.map((b) => (
               <div
                 key={b.bracket}
-                className={`p-5 rounded-xl border ${
-                  b.bracket === 'CURRENT_0_30'
-                    ? 'bg-zinc-900/60 border-zinc-800'
-                    : b.bracket === 'WARNING_31_60'
-                    ? 'bg-amber-950/10 border-amber-800/40'
-                    : b.bracket === 'CRITICAL_61_90'
-                    ? 'bg-orange-950/15 border-orange-800/40'
-                    : 'bg-red-950/15 border-red-800/40'
-                }`}
+                className="botanical-glass-card rounded-2xl p-5 border border-white/[0.08] relative overflow-hidden flex flex-col justify-between"
               >
-                <div className="flex items-center justify-between text-xs font-semibold text-zinc-300 mb-1">
-                  <span>{b.label}</span>
-                  <span className="text-zinc-500">{b.percentageOfTotal}%</span>
+                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+                <div>
+                  <div className="flex items-center justify-between text-xs font-mono font-semibold text-zinc-400 mb-1">
+                    <span>{b.label}</span>
+                    <span className="text-zinc-500 font-mono">{b.percentageOfTotal}%</span>
+                  </div>
+                  <div className="text-xl font-bold font-mono text-white mt-1">
+                    ${b.totalAmount.toLocaleString()}
+                  </div>
+                  <div className="text-xs font-mono text-zinc-400 mt-1">
+                    {b.count} {b.count === 1 ? 'invoice' : 'invoices'}
+                  </div>
                 </div>
-                <div className="text-xl font-bold text-white mt-1">
-                  ${b.totalAmount.toLocaleString()}
-                </div>
-                <div className="text-xs text-zinc-400 mt-1">
-                  {b.count} {b.count === 1 ? 'invoice' : 'invoices'}
-                </div>
-                <div className="w-full bg-zinc-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                <div className="w-full bg-black/40 border border-white/[0.06] h-2 rounded-full mt-4 overflow-hidden p-0.5">
                   <div
                     className={`h-full rounded-full ${
                       b.bracket === 'CURRENT_0_30'
-                        ? 'bg-emerald-500'
+                        ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]'
                         : b.bracket === 'WARNING_31_60'
-                        ? 'bg-amber-500'
+                        ? 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]'
                         : b.bracket === 'CRITICAL_61_90'
-                        ? 'bg-orange-500'
-                        : 'bg-red-500'
+                        ? 'bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]'
+                        : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'
                     }`}
                     style={{ width: `${b.percentageOfTotal}%` }}
                   />
@@ -445,14 +452,17 @@ export function FinanceDepartmentClient() {
           </div>
 
           {/* Aging Invoice Roster */}
-          <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
-            <div className="p-5 border-b border-zinc-800 flex items-center justify-between">
+          <div className="botanical-glass-card rounded-2xl border border-white/[0.08] overflow-hidden relative">
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+            <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <FileText className="w-4 h-4 text-amber-400" />
-                  Overdue Accounts & Priority Dunning Queue
+                <h3 className="text-base font-bold font-mono text-white flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                    <FileText size={15} />
+                  </div>
+                  <span>Overdue Accounts & Priority Dunning Queue</span>
                 </h3>
-                <p className="text-xs text-zinc-400 mt-0.5">
+                <p className="text-xs font-mono text-zinc-400 mt-1">
                   Monitored continuously by Midas Sentinel. Invoices past due are automatically triaged by risk.
                 </p>
               </div>
@@ -533,7 +543,7 @@ export function FinanceDepartmentClient() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Recommendation Details */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-6 shadow-sm">
+            <div className="botanical-glass-card rounded-2xl border border-white/[0.08] relative overflow-hidden p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-5">
                 <div>
                   <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -554,19 +564,19 @@ export function FinanceDepartmentClient() {
               {dunningRec ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="p-3 bg-zinc-950/60 border border-zinc-800/80 rounded-lg">
+                    <div className="p-3 bg-black/40 border border-white/[0.08] rounded-lg">
                       <div className="text-[10px] text-zinc-500 font-semibold uppercase">Account</div>
                       <div className="text-xs font-bold text-white mt-1 truncate">{dunningRec.accountName}</div>
                     </div>
-                    <div className="p-3 bg-zinc-950/60 border border-zinc-800/80 rounded-lg">
+                    <div className="p-3 bg-black/40 border border-white/[0.08] rounded-lg">
                       <div className="text-[10px] text-zinc-500 font-semibold uppercase">Balance Due</div>
                       <div className="text-xs font-bold text-amber-300 mt-1">${dunningRec.amount?.toLocaleString()}</div>
                     </div>
-                    <div className="p-3 bg-zinc-950/60 border border-zinc-800/80 rounded-lg">
+                    <div className="p-3 bg-black/40 border border-white/[0.08] rounded-lg">
                       <div className="text-[10px] text-zinc-500 font-semibold uppercase">Tone</div>
                       <div className="text-xs font-bold text-cyan-300 mt-1">{dunningRec.tone}</div>
                     </div>
-                    <div className="p-3 bg-zinc-950/60 border border-zinc-800/80 rounded-lg">
+                    <div className="p-3 bg-black/40 border border-white/[0.08] rounded-lg">
                       <div className="text-[10px] text-zinc-500 font-semibold uppercase">Channel</div>
                       <div className="text-xs font-bold text-emerald-400 mt-1">{dunningRec.recommendedChannel}</div>
                     </div>
@@ -578,7 +588,7 @@ export function FinanceDepartmentClient() {
                       type="text"
                       value={dunningRec.emailSubject}
                       onChange={(e) => setDunningRec({ ...dunningRec, emailSubject: e.target.value })}
-                      className="w-full px-3.5 py-2 bg-zinc-950 border border-zinc-800 rounded-lg text-xs text-white focus:outline-none focus:border-amber-500"
+                      className="w-full px-3.5 py-2 bg-black/40 border border-white/[0.08] rounded-lg text-xs text-white focus:outline-none focus:border-amber-500"
                     />
                   </div>
 
@@ -588,7 +598,7 @@ export function FinanceDepartmentClient() {
                       rows={8}
                       value={dunningRec.emailBody}
                       onChange={(e) => setDunningRec({ ...dunningRec, emailBody: e.target.value })}
-                      className="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-lg text-xs font-mono text-zinc-200 leading-relaxed focus:outline-none focus:border-amber-500"
+                      className="w-full p-3 bg-black/40 border border-white/[0.08] rounded-lg text-xs font-mono text-zinc-200 leading-relaxed focus:outline-none focus:border-amber-500"
                     />
                   </div>
                 </div>
@@ -602,7 +612,7 @@ export function FinanceDepartmentClient() {
 
           {/* Right Column: Settlement & Actions */}
           <div className="space-y-6">
-            <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-5 shadow-sm space-y-4">
+            <div className="botanical-glass-card rounded-2xl border border-white/[0.08] relative overflow-hidden p-5 shadow-sm space-y-4">
               <h4 className="text-sm font-bold text-white flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-emerald-400" />
                 Settlement & Dispatch Controls
@@ -610,7 +620,7 @@ export function FinanceDepartmentClient() {
 
               {dunningRec && (
                 <>
-                  <div className="p-3 bg-zinc-950/80 rounded-lg border border-zinc-800 space-y-2">
+                  <div className="p-3 bg-black/40 rounded-xl border border-white/[0.08] space-y-2">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-zinc-400">Payment Link</span>
                       <span className="text-emerald-400 font-mono text-[10px]">Stripe Validated</span>
@@ -688,7 +698,7 @@ export function FinanceDepartmentClient() {
       {/* TAB 3: Dual Khata Ledger Audit */}
       {activeTab === 'anomalies' && (
         <div className="max-w-7xl mx-auto space-y-6">
-          <div className="bg-zinc-900/70 border border-zinc-800 rounded-xl p-6 shadow-sm">
+          <div className="botanical-glass-card rounded-2xl border border-white/[0.08] relative overflow-hidden p-6 shadow-sm">
             <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
@@ -821,7 +831,7 @@ export function FinanceDepartmentClient() {
       {/* TAB 5: RAG Dispute Resolver */}
       {activeTab === 'disputes' && (
         <div className="max-w-7xl mx-auto space-y-6">
-          <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-6 shadow-sm space-y-5">
+          <div className="botanical-glass-card rounded-2xl border border-white/[0.08] relative overflow-hidden p-6 shadow-sm space-y-5">
             <div>
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Brain className="w-4 h-4 text-amber-400" />
@@ -838,7 +848,7 @@ export function FinanceDepartmentClient() {
                 rows={3}
                 value={disputeInput}
                 onChange={(e) => setDisputeInput(e.target.value)}
-                className="w-full p-3 bg-zinc-950 border border-zinc-800 rounded-lg text-xs text-zinc-200 focus:outline-none focus:border-amber-500"
+                className="w-full p-3 bg-black/40 border border-white/[0.08] rounded-lg text-xs text-zinc-200 focus:outline-none focus:border-amber-500"
               />
             </div>
 
@@ -852,7 +862,7 @@ export function FinanceDepartmentClient() {
             </button>
 
             {disputeResult && (
-              <div className="mt-4 p-5 bg-zinc-950 border border-zinc-800 rounded-xl space-y-3 text-xs">
+              <div className="mt-4 p-5 bg-black/40 border border-white/[0.08] rounded-xl space-y-3 text-xs">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-zinc-500 font-semibold uppercase text-[10px]">Category</span>
@@ -891,3 +901,4 @@ export function FinanceDepartmentClient() {
     </div>
   );
 }
+

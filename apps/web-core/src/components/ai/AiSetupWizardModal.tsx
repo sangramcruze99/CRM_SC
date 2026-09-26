@@ -170,7 +170,7 @@ export function AiSetupWizardModal({
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-sm text-slate-900 dark:text-white">
-                          👀 RECOMMEND
+                           RECOMMEND
                         </span>
                         {selectedAutonomy === 'RECOMMEND' && (
                           <CheckCircle2 size={16} className="text-blue-600" />
@@ -199,7 +199,7 @@ export function AiSetupWizardModal({
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
-                          🤝 ASSIST
+                           ASSIST
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
                             Recommended
                           </span>
@@ -220,21 +220,21 @@ export function AiSetupWizardModal({
                   onClick={() => setSelectedAutonomy('AUTOPILOT')}
                   className={`p-4 rounded-xl border transition-all cursor-pointer ${
                     selectedAutonomy === 'AUTOPILOT'
-                      ? 'bg-purple-500/10 border-purple-500/40 ring-1 ring-purple-500/30 dark:bg-purple-950/20'
+                      ? 'bg-emerald-500/10 border-emerald-500/40 ring-1 ring-emerald-500/30 dark:bg-emerald-950/20'
                       : 'bg-slate-50 dark:bg-white/[0.02] border-slate-200 dark:border-white/10 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                       <Zap size={18} />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-sm text-slate-900 dark:text-white">
-                          ⚡ AUTOPILOT
+                           AUTOPILOT
                         </span>
                         {selectedAutonomy === 'AUTOPILOT' && (
-                          <CheckCircle2 size={16} className="text-purple-600" />
+                          <CheckCircle2 size={16} className="text-emerald-600" />
                         )}
                       </div>
                       <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -268,7 +268,7 @@ export function AiSetupWizardModal({
                   <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
                     {department.willDo.map((item, i) => (
                       <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-emerald-600">✓</span> {item}
+                        <span className="text-emerald-600"></span> {item}
                       </li>
                     ))}
                   </ul>
@@ -281,7 +281,7 @@ export function AiSetupWizardModal({
                   <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
                     {department.willNotDo.map((item, i) => (
                       <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-rose-600">✕</span> {item}
+                        <span className="text-rose-600"></span> {item}
                       </li>
                     ))}
                   </ul>

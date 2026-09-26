@@ -10,6 +10,10 @@ import {
   Zap,
   Palette,
   Tag,
+  Stethoscope,
+  Home,
+  Truck,
+  Box,
 } from 'lucide-react';
 
 interface CustomField {
@@ -50,9 +54,9 @@ const initialFields: CustomField[] = [
 ];
 
 const initialCustomObjects: CustomObject[] = [
-  { id: 'co_1', name: 'Patient Health Record', pluralName: 'Patients EHR', icon: '🏥', description: 'HIPAA-compliant inpatient and clinical medical history', recordCount: 142, propertiesCount: 18 },
-  { id: 'co_2', name: 'Real Estate Property', pluralName: 'MLS Properties', icon: '🏡', description: 'Residential and commercial MLS real estate listings', recordCount: 28, propertiesCount: 24 },
-  { id: 'co_3', name: 'Delivery Fleet Vehicle', pluralName: 'Fleet Vehicles', icon: '🚚', description: 'Logistics vans, maintenance logs, and fuel tracking', recordCount: 16, propertiesCount: 12 },
+  { id: 'co_1', name: 'Patient Health Record', pluralName: 'Patients EHR', icon: 'Stethoscope', description: 'HIPAA-compliant inpatient and clinical medical history', recordCount: 142, propertiesCount: 18 },
+  { id: 'co_2', name: 'Real Estate Property', pluralName: 'MLS Properties', icon: 'Home', description: 'Residential and commercial MLS real estate listings', recordCount: 28, propertiesCount: 24 },
+  { id: 'co_3', name: 'Delivery Fleet Vehicle', pluralName: 'Fleet Vehicles', icon: 'Truck', description: 'Logistics vans, maintenance logs, and fuel tracking', recordCount: 16, propertiesCount: 12 },
 ];
 
 const initialAutomations: AutomationRule[] = [
@@ -95,7 +99,7 @@ export function CustomizationClient() {
 
     setCustomFields([...customFields, newField]);
     setNewFieldName('');
-    setAlert(`✨ Custom field "${newField.fieldName}" (${newField.fieldType}) added to ${newField.targetModule}!`);
+    setAlert(` Custom field "${newField.fieldName}" (${newField.fieldType}) added to ${newField.targetModule}!`);
     setTimeout(() => setAlert(null), 3500);
   };
 
@@ -170,8 +174,7 @@ export function CustomizationClient() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Creator Form (4 cols) */}
           <div className="lg:col-span-4 bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-white/[0.06] pb-2">
-              Create New Custom Field
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-white/[0.06] pb-2"> Create New Custom Field
             </h3>
 
             <form onSubmit={handleAddField} className="space-y-3.5 text-xs font-medium">
@@ -312,8 +315,16 @@ export function CustomizationClient() {
               >
                 <div className="space-y-2.5">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl p-2 bg-white/[0.05] border border-white/[0.08] rounded-2xl shadow-2xs">
-                      {obj.icon}
+                    <span className="p-2.5 bg-emerald-500/10 border border-emerald-500/25 rounded-2xl shadow-2xs flex items-center justify-center text-emerald-400 shrink-0">
+                      {obj.icon === 'Stethoscope' ? (
+                        <Stethoscope size={20} />
+                      ) : obj.icon === 'Home' ? (
+                        <Home size={20} />
+                      ) : obj.icon === 'Truck' ? (
+                        <Truck size={20} />
+                      ) : (
+                        <Box size={20} />
+                      )}
                     </span>
                     <div>
                       <h3 className="font-bold text-sm text-white">{obj.name}</h3>
@@ -434,7 +445,7 @@ export function CustomizationClient() {
               <button
                 type="button"
                 onClick={() => {
-                  setAlert('🎨 Branding and custom domain settings updated successfully!');
+                  setAlert(' Branding and custom domain settings updated successfully!');
                   setTimeout(() => setAlert(null), 3000);
                 }}
                 className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 cursor-pointer"

@@ -44,14 +44,14 @@ export function LeaderboardClient() {
 
   const handleSyncToPayroll = () => {
     setAlert(
-      `🎉 Successfully synchronized $${totalCommissions.toLocaleString()} in sales commissions directly into Employee Salary Payslips at /directory!`
+      `Successfully synchronized $${totalCommissions.toLocaleString()} in sales commissions directly into Employee Salary Payslips at /directory!`
     );
     setTimeout(() => setAlert(null), 5000);
   };
 
   const handleCelebrate = () => {
     setShowCelebration(true);
-    setAlert('🎉 Deal Closed Won Celebration Triggered! Confetti & Leaderboard updated.');
+    setAlert(' Deal Closed Won Celebration Triggered! Confetti & Leaderboard updated.');
     setTimeout(() => {
       setShowCelebration(false);
       setAlert(null), 4000;
@@ -64,7 +64,7 @@ export function LeaderboardClient() {
       {showCelebration && (
         <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
           <div className="p-6 bg-amber-500/90 text-slate-950 rounded-3xl font-extrabold text-2xl shadow-2xl animate-bounce backdrop-blur-md">
-            🎊 NEW DEAL CLOSED WON! +$48,000 ARR 🎊
+             NEW DEAL CLOSED WON! +$48,000 ARR 
           </div>
         </div>
       )}
@@ -96,7 +96,7 @@ export function LeaderboardClient() {
             className="px-3.5 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-emerald-300 rounded-xl text-xs font-bold border border-white/[0.1] flex items-center gap-1.5 cursor-pointer"
           >
             <Sparkles size={14} className="text-emerald-400" />
-            <span>Simulate Win 🎉</span>
+            <span>Simulate Win </span>
           </button>
 
           <button
@@ -248,8 +248,7 @@ export function LeaderboardClient() {
                     <Link
                       href="/directory"
                       className="px-3 py-1.5 bg-white/[0.06] hover:bg-amber-500 hover:text-slate-950 text-slate-300 rounded-xl text-xs font-bold transition-all border border-white/[0.1] inline-block"
-                    >
-                      View in Payslip →
+                    > View in Payslip →
                     </Link>
                   </td>
                 </tr>

@@ -77,7 +77,7 @@ export function IDPClient() {
 
   const handleSimulateExtraction = (sampleName = 'New_Vendor_Invoice_Scan.pdf') => {
     setIsProcessing(true);
-    setAlert('🔍 Neural Vision & LLM extracting tabular schema & validating against QuickBooks/Xero...');
+    setAlert(' Neural Vision & LLM extracting tabular schema & validating against QuickBooks/Xero...');
 
     setTimeout(() => {
       const newDoc: ProcessedDocument = {
@@ -107,7 +107,7 @@ export function IDPClient() {
       setDocuments([newDoc, ...documents]);
       setSelectedDoc(newDoc);
       setIsProcessing(false);
-      setAlert(`🎉 Successfully parsed "${newDoc.fileName}"! Extracted 2 line items, validated zero discrepancies, and auto-matched with Dual Khata ledger.`);
+      setAlert(`Successfully parsed "${newDoc.fileName}"! Extracted 2 line items, validated zero discrepancies, and auto-matched with Dual Khata ledger.`);
       setTimeout(() => setAlert(null), 5000);
     }, 1800);
   };
@@ -121,7 +121,7 @@ export function IDPClient() {
     );
     setDocuments(updated);
     setSelectedDoc({ ...selectedDoc, accountingStatus: 'RECONCILED', quickBooksSync: 'SYNCED', discrepancies: [] });
-    setAlert(`⚡ Invoice ${selectedDoc.invoiceNumber} balanced and posted to Khata Dual Ledger!`);
+    setAlert(`Invoice ${selectedDoc.invoiceNumber} balanced and posted to Khata Dual Ledger!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -142,7 +142,7 @@ export function IDPClient() {
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
               IDP & Neural Vision
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">
               QuickBooks & Xero Auto-Reconciliation
             </span>
           </div>
@@ -444,7 +444,7 @@ export function IDPClient() {
             onClose={() => setIsVaultPickerOpen(false)}
             onSelect={(doc: VaultDocument) => {
               handleSimulateExtraction(doc.name);
-              setAlert(`✨ Ingesting "${doc.name}" from Document Vault into Neural IDP Pipeline...`);
+              setAlert(` Ingesting "${doc.name}" from Document Vault into Neural IDP Pipeline...`);
             }}
             title="Select Document from Vault"
             description="Choose any stored invoice, receipt, contract or PO from the Document Vault to extract."
@@ -514,3 +514,4 @@ export function IDPClient() {
     </div>
   );
 }
+

@@ -75,7 +75,7 @@ export function VoiceClient() {
           { speaker: 'Sarah', text: 'What are your payment terms and can you bundle Dual Khata ledger accounting?', time: '00:25' },
         ]);
         setAiSuggestions((prev) => [
-          '⚡ AI Recommended Action: Offer Net 30 terms with automated Khata ledger reconciliation and 10% annual prepay discount.',
+          ' AI Recommended Action: Offer Net 30 terms with automated Khata ledger reconciliation and 10% annual prepay discount.',
           ...prev,
         ]);
       }, 3000);
@@ -96,7 +96,7 @@ export function VoiceClient() {
 
   const handleStartCall = () => {
     setIsCalling(true);
-    setAlert('📞 Call connected via WebRTC softphone! Live speech-to-text and AI Copilot active.');
+    setAlert(' Call connected via WebRTC softphone! Live speech-to-text and AI Copilot active.');
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -113,7 +113,7 @@ export function VoiceClient() {
       timestamp: 'Just now',
     };
     setCallLogs([newLog, ...callLogs]);
-    setAlert(`🎉 Call ended (${newLog.duration}). AI call summary & action items logged to Contact Timeline!`);
+    setAlert(` Call ended (${newLog.duration}). AI call summary & action items logged to Contact Timeline!`);
     setTimeout(() => setAlert(null), 5000);
   };
 
@@ -150,7 +150,7 @@ export function VoiceClient() {
             href="/sim-gateway"
             className="px-3.5 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-emerald-300 rounded-xl text-xs font-bold border border-white/[0.1] flex items-center gap-1.5 cursor-pointer"
           >
-            <span>📱 Manage SIM Cards (Dual-SIM)</span>
+            <span> Manage SIM Cards (Dual-SIM)</span>
           </Link>
           <span className="px-3 py-1 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-full text-xs font-mono font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -183,9 +183,9 @@ export function VoiceClient() {
                 onChange={(e) => setCallRoute(e.target.value as any)}
                 className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-xl text-xs font-bold text-white focus:outline-none"
               >
-                <option value="voip">🌐 WebRTC VoIP Cloud Trunk</option>
-                <option value="sim1">📲 SIM Slot 1 (Vodafone 5G · $48.50)</option>
-                <option value="sim2">📲 SIM Slot 2 (Airtel 4G LTE · $24.00)</option>
+                <option value="voip"> WebRTC VoIP Cloud Trunk</option>
+                <option value="sim1"> SIM Slot 1 (Vodafone 5G · $48.50)</option>
+                <option value="sim2"> SIM Slot 2 (Airtel 4G LTE · $24.00)</option>
               </select>
             </div>
 

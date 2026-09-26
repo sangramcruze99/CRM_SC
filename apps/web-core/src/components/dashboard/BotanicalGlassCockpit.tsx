@@ -58,7 +58,7 @@ export function BotanicalGlassCockpit({ metrics }: BotanicalGlassCockpitProps) {
   const calculatedTotal = userCount * planRates[selectedPlan];
 
   const handleExecutePayment = () => {
-    setAlert(`⚡ Executed payment of $${calculatedTotal} via ${selectedFunding} for ${userCount} users (${selectedPlan} Plan)!`);
+    setAlert(` Executed payment of $${calculatedTotal} via ${selectedFunding} for ${userCount} users (${selectedPlan} Plan)!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -484,7 +484,7 @@ export function BotanicalGlassCockpit({ metrics }: BotanicalGlassCockpitProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center font-bold text-xs text-white">
-                    📷
+                    
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-white">Unsplash Images</h4>
@@ -529,7 +529,7 @@ export function BotanicalGlassCockpit({ metrics }: BotanicalGlassCockpitProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center font-bold text-xs text-sky-400">
-                    📦
+                    
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-white">Dropbox Storage</h4>

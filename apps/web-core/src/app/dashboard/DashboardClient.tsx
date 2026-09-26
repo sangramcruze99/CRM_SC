@@ -44,11 +44,15 @@ import {
   Landmark,
   ArrowUpDown,
   RefreshCw,
+  Bot,
+  FolderOpen,
 } from 'lucide-react';
 import Link from 'next/link';
-import { useIndustry } from '@/components/industry/IndustryContext';
+import { useIndustry, NicheIcon } from '@/components/industry/IndustryContext';
 import { NicheFeaturePickerModal } from '@/components/industry/NicheFeaturePickerModal';
 import { BotanicalGlassCockpit } from '@/components/dashboard/BotanicalGlassCockpit';
+import { NicheSectionContainer } from '@/components/industry/dashboard/NicheSectionContainer';
+import { NicheQuickActions } from '@/components/industry/NicheQuickActions';
 
 interface DashboardClientProps {
   initialData?: {
@@ -91,7 +95,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
   const [alert, setAlert] = useState<string | null>(null);
   const [isFeaturePickerOpen, setIsFeaturePickerOpen] = useState(false);
 
-  const { nicheConfig, activeFeatureIds, isFeatureEnabled } = useIndustry();
+  const { nicheConfig, nicheConfig2, activeServiceIds, activeFeatureIds, isFeatureEnabled } = useIndustry();
 
   const metrics = {
     totalBalance: initialData?.metrics?.totalBalance ?? 184290,
@@ -156,7 +160,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
   });
 
   const handleActionClick = (actionName: string) => {
-    setAlert(`⚡ Executed ${actionName} transaction workflow`);
+    setAlert(` Executed ${actionName} transaction workflow`);
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -188,7 +192,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                 : 'botanical-pill'
             }`}
           >
-            🏢 Executive Operations HUD
+             Executive Operations HUD
           </button>
           <button
             type="button"
@@ -199,7 +203,7 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
                 : 'botanical-pill'
             }`}
           >
-            🌿 Botanical Glass Cockpit
+             Botanical Glass Cockpit
           </button>
         </div>
       </div>
@@ -215,8 +219,8 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
           {/* ========================================================= */}
           <div className="workstation-card p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center text-xl font-bold shadow-lg shadow-emerald-500/20 border border-emerald-300/30 shrink-0">
-                {nicheConfig.icon}
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-emerald-300/30 shrink-0">
+                <NicheIcon niche={nicheConfig.id} size={22} className="text-slate-950" />
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -235,172 +239,127 @@ export function DashboardClient({ initialData }: DashboardClientProps) {
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
-              <button
-                type="button"
-                onClick={() => setIsFeaturePickerOpen(true)}
+              <Link
+                href="/industry"
                 className="px-4 py-2 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 border border-emerald-500/40 text-emerald-800 dark:text-emerald-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-[0.98]"
               >
                 <Sliders size={13} />
-                <span>Configure Matrix ({activeFeatureIds.length})</span>
-              </button>
+                <span>Configure Services ({activeServiceIds?.length || activeFeatureIds.length})</span>
+              </Link>
 
               <Link
                 href="/industry"
                 className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs shadow-md shadow-emerald-500/20 flex items-center gap-1 transition-all cursor-pointer"
               >
-                <span>Switch Niche</span>
+                <span>Switch Workspace</span>
                 <ArrowRight size={13} />
               </Link>
             </div>
           </div>
 
+          {/* Industry Dynamic KPIs Bar */}
+          {nicheConfig2?.dashboardKpis && nicheConfig2.dashboardKpis.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {nicheConfig2.dashboardKpis.map((kpi) => (
+                <div key={kpi.id} className="workstation-card p-3.5 rounded-xl space-y-1 bg-white/70 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-white/10">
+                  <div className="flex items-center justify-between text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                    <span className="truncate">{kpi.label}</span>
+                    <span className="text-emerald-500 font-mono font-bold text-[10px] shrink-0 ml-1">{kpi.delta}</span>
+                  </div>
+                  <div className="text-xl font-black text-slate-900 dark:text-white font-mono tracking-tight">
+                    {kpi.value}
+                  </div>
+                  <span className="text-[10px] text-slate-400 block truncate">{kpi.subtext}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Fast Actions Bar */}
+          <div className="workstation-card p-3 px-4 flex items-center justify-between flex-wrap gap-2 bg-white/60 dark:bg-zinc-900/40">
+            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+              <Zap size={12} className="text-emerald-500" />
+              <span>{nicheConfig2?.shortName || nicheConfig.shortName} Fast Actions:</span>
+            </span>
+            <NicheQuickActions variant="compact" />
+          </div>
+
           {/* ========================================================= */}
-          {/* 2. DYNAMIC OPERATIONS BENTO MATRIX (Asymmetric Layout)     */}
+          {/* 1.5 DIGITAL TEAMMATES RADAR & AUTONOMOUS PULSE           */}
           {/* ========================================================= */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-            {/* Spotlight Hero Operation Card (Span 6) */}
-            <div className="md:col-span-12 lg:col-span-6 workstation-card p-5 space-y-4 flex flex-col justify-between">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold shadow-xs">
-                    <Activity size={18} />
+          <div className="workstation-card p-5 relative overflow-hidden bg-gradient-to-r from-emerald-500/[0.07] via-teal-500/[0.04] to-slate-900/10 border border-emerald-500/25">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-xs">
+                    <Bot size={16} />
                   </div>
                   <div>
-                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
-                      Primary Operational Throughput
-                    </span>
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                      {nicheConfig.shortName} Live Pipeline
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
+                        Autonomous Digital Teammates Roster
+                      </h3>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        5 Sentinels Active
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Co-pilots continuously ingesting from Smart Vault dropzones, staging actions &amp; awaiting supervisor sign-off.
+                    </p>
                   </div>
                 </div>
 
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
-                  REAL-TIME SYNC
-                </span>
+                {/* Sentinel Pills */}
+                <div className="flex items-center gap-2 flex-wrap pt-1">
+                  {[
+                    { name: 'Ares', role: 'Revenue Lead Hunter', folder: '/vault/inbound/crm_leads/' },
+                    { name: 'Athena', role: 'Risk & Legal Sentinel', folder: '/vault/documents/contracts_incoming/' },
+                    { name: 'Midas', role: 'FinOps Reconciliation', folder: '/vault/documents/invoices_scanned/' },
+                    { name: 'Hermes', role: 'Omnichannel Dispatcher', folder: '/vault/inbound/quotes/' },
+                    { name: 'Vesta', role: 'Client Success Care', folder: '/vault/telephony/call_recordings/' },
+                  ].map((s) => (
+                    <div
+                      key={s.name}
+                      className="px-2.5 py-1 rounded-lg bg-white/60 dark:bg-black/30 border border-slate-200/80 dark:border-white/10 flex items-center gap-2 text-[11px]"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                      <span className="font-bold text-slate-800 dark:text-slate-200">{s.name}</span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400 hidden sm:inline">{s.role}</span>
+                      <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/5 flex items-center gap-1">
+                        <FolderOpen size={9} />
+                        {s.folder.replace('/vault/', '')}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Central Operational Metric Display */}
-              <div className="grid grid-cols-2 gap-4 py-2.5 border-y border-slate-200 dark:border-white/[0.06]">
-                <div>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium block">
-                    Active Volume & Assets
-                  </span>
-                  <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono tracking-tight mt-0.5">
-                    $24.8M <span className="text-xs text-emerald-500 font-bold">+18.4%</span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-mono">18 Active Closings in Flight</span>
-                </div>
-
-                <div>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium block">
-                    Operational Capacity
-                  </span>
-                  <div className="text-2xl font-black text-slate-900 dark:text-white font-mono tracking-tight mt-0.5">
-                    78.2% <span className="text-xs text-teal-500 font-bold">Optimal</span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-mono">142 / 180 Units Allocated</span>
-                </div>
-              </div>
-
-              {/* Bottom Quick Jump Action */}
-              <div className="flex items-center justify-between pt-1">
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  Direct telemetry from {nicheConfig.shortName} microservice engine
-                </span>
+              <div className="flex items-center gap-2.5 shrink-0">
                 <Link
-                  href="/deals"
-                  className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1"
+                  href="/automation/workflows/wf-enterprise-lead-triage"
+                  className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-white/[0.06] hover:bg-slate-200 dark:hover:bg-white/[0.12] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                 >
-                  <span>Launch Module</span>
-                  <ArrowRight size={13} />
+                  <FolderOpen size={13} className="text-emerald-500" />
+                  <span>Input Folders &amp; Studio</span>
                 </Link>
-              </div>
-            </div>
 
-            {/* 4 Compact Telemetry Tiles (Span 6 Grid) */}
-            <div className="md:col-span-12 lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Tile 1: Dual Khata Ledger */}
-              <div className="workstation-card p-4 space-y-2.5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Database size={15} className="text-emerald-500 dark:text-emerald-400" />
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Dual Khata Ledger</h4>
-                  </div>
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
-                    Balanced
-                  </span>
-                </div>
-                <div>
-                  <span className="text-lg font-mono font-black text-slate-900 dark:text-white block">$48,290.00</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Receivables Ledger</span>
-                </div>
-                <Link href="/banking" className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-bold flex items-center gap-1">
-                  <span>Reconcile</span> <ArrowRight size={11} />
-                </Link>
-              </div>
-
-              {/* Tile 2: Neural OCR Pipeline */}
-              <div className="workstation-card p-4 space-y-2.5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Scan size={15} className="text-teal-500 dark:text-teal-400" />
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Neural OCR</h4>
-                  </div>
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold bg-teal-500/15 text-teal-600 dark:text-teal-300 border border-teal-500/30">
-                    98.4% Acc
-                  </span>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-700 dark:text-slate-300 font-medium block">Document Vision Engine</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Zero-touch line extraction</span>
-                </div>
-                <Link href="/ocr-invoice" className="text-xs text-teal-600 dark:text-teal-400 hover:text-teal-500 font-bold flex items-center gap-1">
-                  <span>Scan Document</span> <ArrowRight size={11} />
-                </Link>
-              </div>
-
-              {/* Tile 3: B2B Lead Prospector */}
-              <div className="workstation-card p-4 space-y-2.5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users size={15} className="text-emerald-500 dark:text-emerald-400" />
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Lead Engine</h4>
-                  </div>
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
-                    275M+
-                  </span>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-700 dark:text-slate-300 font-medium block">Apollo / Zoom Integration</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">Verified B2B Decision Makers</span>
-                </div>
-                <Link href="/lead-prospector" className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 font-bold flex items-center gap-1">
-                  <span>Query Leads</span> <ArrowRight size={11} />
-                </Link>
-              </div>
-
-              {/* Tile 4: Multi-Network Social Distribution */}
-              <div className="workstation-card p-4 space-y-2.5 flex flex-col justify-between">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Share2 size={15} className="text-teal-500 dark:text-teal-400" />
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">Social Studio</h4>
-                  </div>
-                  <span className="px-1.5 py-0.2 rounded-full text-[9px] font-mono font-bold bg-teal-500/15 text-teal-600 dark:text-teal-300 border border-teal-500/30">
-                    4-Network
-                  </span>
-                </div>
-                <div>
-                  <span className="text-xs text-slate-700 dark:text-slate-300 font-medium block">Automated Social Sync</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400">𝕏 · LinkedIn · IG · FB</span>
-                </div>
-                <Link href="/social" className="text-xs text-teal-600 dark:text-teal-400 hover:text-teal-500 font-bold flex items-center gap-1">
-                  <span>Compose Post</span> <ArrowRight size={11} />
+                <Link
+                  href="/ai-agents"
+                  className="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-xl text-xs shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all cursor-pointer"
+                >
+                  <Bot size={13} />
+                  <span>Fleet Command &amp; Approvals</span>
+                  <ArrowRight size={12} />
                 </Link>
               </div>
             </div>
           </div>
+
+          {/* ========================================================= */}
+          {/* 2. DYNAMIC 8-NICHE OPERATIONS COMMAND SECTION              */}
+          {/* ========================================================= */}
+          <NicheSectionContainer />
 
           {/* ========================================================= */}
           {/* 3. MAIN DASHBOARD: FINANCIAL TELEMETRY & OPERATIONS CONSOLE */}

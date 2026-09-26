@@ -12,6 +12,7 @@ import { AgentsModule } from './agents/agents.module';
 import { SalesDepartmentModule } from './departments/sales/sales-department.module';
 import { CustomerSuccessModule } from './departments/customer-success/customer-success.module';
 import { FinanceDepartmentModule } from './departments/finance/finance-department.module';
+import { TrainingControlPlaneModule } from './training-control-plane/training-control-plane.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { FinanceDepartmentModule } from './departments/finance/finance-departmen
     SalesDepartmentModule,
     CustomerSuccessModule,
     FinanceDepartmentModule,
+    TrainingControlPlaneModule,
   ],
   controllers: [AppController],
   providers: [

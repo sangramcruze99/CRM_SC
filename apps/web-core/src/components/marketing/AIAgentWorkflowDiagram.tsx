@@ -67,7 +67,7 @@ export function AIAgentWorkflowDiagram() {
               Scanned 1,284 contacts via PostgreSQL index. Filtered 47 leads uncontacted &gt; 7 days.
             </p>
             <div className="mt-2 text-[10px] font-mono text-emerald-300 font-semibold">
-              ✓ 47 Records Isolated
+               47 Records Isolated
             </div>
           </div>
 
@@ -81,7 +81,7 @@ export function AIAgentWorkflowDiagram() {
               Grounded against tenant pricing docs and past closed-won communications.
             </p>
             <div className="mt-2 text-[10px] font-mono text-teal-300 font-semibold">
-              ✓ ICP Score Evaluated
+               ICP Score Evaluated
             </div>
           </div>
 
@@ -95,7 +95,7 @@ export function AIAgentWorkflowDiagram() {
               Drafted 12 customized proposal emails and created follow-up tasks in BullMQ.
             </p>
             <div className="mt-2 text-[10px] font-mono text-emerald-300 font-semibold">
-              ✓ Awaiting 1-Click Approval
+               Awaiting 1-Click Approval
             </div>
           </div>
         </div>

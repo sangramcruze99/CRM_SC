@@ -97,7 +97,7 @@ export const MICROSERVICES = [
 ];
 
 /** Check if a TCP port is open and accepting connections */
-function checkPort(port, host = '127.0.0.1', timeout = 1000) {
+function checkPort(port, host = 'localhost', timeout = 1000) {
   return new Promise((resolve) => {
     const socket = new net.Socket();
     let isResolved = false;
@@ -246,6 +246,25 @@ async function main() {
   process.on('SIGINT', cleanup);
   process.on('SIGTERM', cleanup);
   process.on('exit', cleanup);
+
+  // Check and start local Ollama Brain daemon if available
+  const isOllamaOnline = await checkPort(11435);
+  if (!isOllamaOnline) {
+    const hasOllamaModels = fs.existsSync('E:/ollama-models') || fs.existsSync('E:\\ollama-models');
+    if (hasOllamaModels) {
+      console.log(`${c.magenta}[ollama:11435] Starting Local Gemma 4 Brain daemon...${c.reset}`);
+      const ollamaProc = spawn('ollama', ['serve'], {
+        env: {
+          ...process.env,
+          OLLAMA_HOST: '127.0.0.1:11435',
+          OLLAMA_MODELS: 'E:/ollama-models',
+        },
+        stdio: ['ignore', 'ignore', 'ignore'],
+        detached: true,
+      });
+      activeProcesses.push(ollamaProc);
+    }
+  }
 
   // Spawn each service
   for (const [index, service] of selected.entries()) {

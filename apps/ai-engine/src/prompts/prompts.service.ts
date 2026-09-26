@@ -11,7 +11,7 @@ export class PromptsService {
         tenantId,
         name: data.name,
         prompt: data.prompt,
-        model: data.model || 'gpt-4o',
+        model: data.model || 'ollama/gemma4:e4b',
       },
     });
   }
@@ -140,10 +140,34 @@ Guidelines:
       }
     }
 
+    // ─────────────────────────────────────────────────────────────────────
+    // API key references — used ONLY as failsafe when all local engines fail
+    // ─────────────────────────────────────────────────────────────────────
     const groqKey = process.env.GROQ_API_KEY;
     const openRouterKey = process.env.OPENROUTER_API_KEY;
     const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
 
+    // Ollama config (PRIMARY brain — always Gemma local)
+    const ollamaBase = (process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11435').replace(/\/$/, '');
+    const ollamaDefaultModel = process.env.OLLAMA_DEFAULT_MODEL || 'gemma4:e4b';
+
+    // Map any provider-prefixed Gemma model string → local Ollama tag
+    const resolveOllamaModel = (requested?: string): string => {
+      if (!requested) return ollamaDefaultModel;
+      const bare = requested.split('/').pop() || ollamaDefaultModel;
+      const tagMap: Record<string, string> = {
+        'gemma2-9b-it': 'gemma4:e4b',
+        'gemma2:9b': 'gemma4:e4b',
+        'gemma-7b-it': 'gemma4:e4b',
+        'gemma-2-27b-it': 'gemma4:e4b',
+        'gemma4:e4b': 'gemma4:e4b',
+        'gemma4': 'gemma4:e4b',
+        'compound': 'gemma4:e4b',
+      };
+      return tagMap[bare] || ollamaDefaultModel;
+    };
+
+    // OpenAI-compatible call helper (used for cloud API failsafes)
     const executeCall = async (
       baseURL: string,
       apiKey: string,
@@ -151,12 +175,7 @@ Guidelines:
       headers?: Record<string, string>,
     ) => {
       const { OpenAI } = await import('openai');
-      const client = new OpenAI({
-        apiKey,
-        baseURL,
-        defaultHeaders: headers,
-      });
-
+      const client = new OpenAI({ apiKey, baseURL, defaultHeaders: headers });
       const completion = await client.chat.completions.create({
         model: modelName,
         messages: [
@@ -165,7 +184,6 @@ Guidelines:
         ],
         temperature: 0.7,
       });
-
       return {
         reply: completion.choices[0]?.message?.content || '',
         model: completion.model || modelName,
@@ -173,19 +191,15 @@ Guidelines:
       };
     };
 
+    // Google Gemini REST call helper
     const executeGeminiCall = async (apiKey: string, modelName?: string) => {
       let targetModel = modelName || 'models/gemini-3.6-flash';
-      if (!targetModel.startsWith('models/')) {
-        targetModel = `models/${targetModel}`;
-      }
-
+      if (!targetModel.startsWith('models/')) targetModel = `models/${targetModel}`;
       const candidateModels = [targetModel, 'models/gemini-3.6-flash', 'models/gemini-3-flash-preview'];
       const tested = new Set<string>();
-
       for (const m of candidateModels) {
         if (tested.has(m)) continue;
         tested.add(m);
-
         try {
           const res = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/${m}:generateContent?key=${encodeURIComponent(apiKey)}`,
@@ -200,7 +214,6 @@ Guidelines:
               signal: AbortSignal.timeout(15000),
             },
           );
-
           if (res.ok) {
             const data = (await res.json()) as any;
             const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -215,23 +228,62 @@ Guidelines:
               },
             };
           }
-        } catch {
-          // try next model
-        }
+        } catch { /* try next */ }
       }
-
-      throw new Error('Gemini API call failed across candidate models');
+      throw new Error('Gemini API call failed across all candidate models');
     };
 
-    // PRIORITY 1: LOCAL MACHINE FIRST (Python AI :3030 / NVIDIA GPU)
-    // Always attempt offline local inference on host machine with zero API cost
+    // ═══════════════════════════════════════════════════════════════════
+    // PRIORITY 0 — OLLAMA LOCAL GEMMA (primary agent brain, zero cost)
+    // Always attempted first. Resolves model tag automatically from env.
+    // ═══════════════════════════════════════════════════════════════════
+    const ollamaModel = resolveOllamaModel(model);
+    try {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 60000);
+      const ollamaRes = await fetch(`${ollamaBase}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: ollamaModel,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: query },
+          ],
+          stream: false,
+          options: { temperature: 0.7 },
+        }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(tid);
+      if (ollamaRes.ok) {
+        const d = (await ollamaRes.json()) as any;
+        const reply = d.message?.content || d.response || '';
+        const tokens = (d.eval_count || 0) + (d.prompt_eval_count || 0) || 200;
+        recordMeteredUsage(tokens, 'ollama-gemma', ollamaModel);
+        return {
+          reply,
+          model: ollamaModel,
+          provider: 'ollama-gemma',
+          isLocalEngine: true,
+          usage: { total_tokens: tokens, prompt_tokens: d.prompt_eval_count || 100, completion_tokens: d.eval_count || 100 },
+          latencyMs: Date.now() - startTime,
+          context: { contactCount, dealCount, ticketCount },
+        };
+      }
+    } catch (err: any) {
+      console.warn('[AI-Engine] Ollama Gemma unreachable, activating failsafe chain:', err?.message || err);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // PRIORITY 1 — PYTHON-AI CUDA GPU (secondary local, if Ollama down)
+    // ═══════════════════════════════════════════════════════════════════
     const pythonAiUrl = process.env.PYTHON_AI_URL || 'http://localhost:3030';
     const pythonAiKey = process.env.PYTHON_AI_API_KEY || 'business-os-internal-ai-key-secret';
-
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 7000);
-      const pyResponse = await fetch(`${pythonAiUrl}/v1/inference/generate`, {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 7000);
+      const pyRes = await fetch(`${pythonAiUrl}/v1/inference/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -239,7 +291,7 @@ Guidelines:
           'X-Service-Key': pythonAiKey,
         },
         body: JSON.stringify({
-          model: model || 'local/gtx1060-cuda',
+          model: `ollama/${ollamaModel}`,
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: query },
@@ -247,18 +299,17 @@ Guidelines:
           tenant_id: tenantId,
           temperature: 0.7,
         }),
-        signal: controller.signal,
+        signal: ctrl.signal,
       });
-      clearTimeout(timeoutId);
-
-      if (pyResponse.ok) {
-        const pyData = (await pyResponse.json()) as any;
+      clearTimeout(tid);
+      if (pyRes.ok) {
+        const pyData = (await pyRes.json()) as any;
         const tokens = pyData.usage?.total_tokens || 40;
-        recordMeteredUsage(tokens, 'local-gpu', pyData.model || 'local/gtx1060-cuda');
+        recordMeteredUsage(tokens, 'python-gpu-gemma', pyData.model || ollamaModel);
         return {
           reply: pyData.content || '',
-          model: pyData.model || 'local/gtx1060-cuda',
-          provider: 'local-gpu',
+          model: pyData.model || ollamaModel,
+          provider: 'python-gpu-gemma',
           isLocalEngine: true,
           usage: pyData.usage,
           latencyMs: Date.now() - startTime,
@@ -266,115 +317,100 @@ Guidelines:
         };
       }
     } catch {
-      // Local machine engine unavailable or timed out; seamlessly proceed to secondary cloud fallback
+      // Python-AI also unavailable; engaging API failsafe chain below
     }
 
-    // PRIORITY 2: SECONDARY CLOUD FALLBACK CASCADE (Groq -> Gemini -> OpenRouter)
-    const wantsGemini = provider === 'gemini' || model?.toLowerCase().includes('gemini');
-    const wantsOpenRouter = provider === 'openrouter' || model?.includes('gpt-4') || model?.includes('claude');
+    // ═══════════════════════════════════════════════════════════════════
+    // FAILSAFE CHAIN — API keys activate only when ALL local engines fail
+    // Order: Groq Gemma2 → Google Gemini → OpenRouter Gemma2-27B → Groq compound
+    // ═══════════════════════════════════════════════════════════════════
+    console.warn('[AI-Engine] All local Gemma engines offline — API key failsafe activated.');
 
-    // Secondary 2a: If Gemini is explicitly requested
-    if (wantsGemini && geminiKey) {
+    // FAILSAFE 1 — Groq API with Gemma2-9B (fastest cloud Gemma equivalent)
+    if (groqKey) {
       try {
-        const result = await executeGeminiCall(geminiKey, model);
+        const groqModel = 'gemma2-9b-it';
+        const result = await executeCall('https://api.groq.com/openai/v1', groqKey, groqModel);
         const tokens = result.usage?.total_tokens || 350;
-        recordMeteredUsage(tokens, 'gemini', result.model);
+        recordMeteredUsage(tokens, 'groq-gemma-failsafe', groqModel);
         return {
           ...result,
-          provider: 'gemini',
+          provider: 'groq-gemma-failsafe',
           isLocalEngine: false,
           latencyMs: Date.now() - startTime,
           context: { contactCount, dealCount, ticketCount },
         };
-      } catch (error: any) {
-        console.warn('[AI-Engine] Direct Gemini call failed, trying fallback:', error?.message || error);
+      } catch (err: any) {
+        console.warn('[AI-Engine] Groq Gemma failsafe failed:', err?.message || err);
       }
     }
 
-    // 3. Groq Fast Inference (Ultra-low latency)
-    if (!wantsOpenRouter && groqKey) {
-      try {
-        const selectedModel = model || 'groq/compound';
-        const result = await executeCall('https://api.groq.com/openai/v1', groqKey, selectedModel);
-        const tokens = result.usage?.total_tokens || 350;
-        recordMeteredUsage(tokens, 'groq', selectedModel);
-        return {
-          ...result,
-          provider: 'groq',
-          latencyMs: Date.now() - startTime,
-          context: { contactCount, dealCount, ticketCount },
-        };
-      } catch (error: any) {
-        console.warn('[AI-Engine] Groq call failed, falling back:', error?.message || error);
-      }
-    }
-
-    // 4. Google Gemini Direct Call
+    // FAILSAFE 2 — Google Gemini API
     if (geminiKey) {
       try {
         const result = await executeGeminiCall(geminiKey, model);
         const tokens = result.usage?.total_tokens || 350;
-        recordMeteredUsage(tokens, 'gemini', result.model);
+        recordMeteredUsage(tokens, 'gemini-failsafe', result.model);
         return {
           ...result,
-          provider: 'gemini',
+          provider: 'gemini-failsafe',
+          isLocalEngine: false,
           latencyMs: Date.now() - startTime,
           context: { contactCount, dealCount, ticketCount },
         };
-      } catch (error: any) {
-        console.warn('[AI-Engine] Gemini fallback call failed:', error?.message || error);
+      } catch (err: any) {
+        console.warn('[AI-Engine] Gemini failsafe failed:', err?.message || err);
       }
     }
 
-    // 5. OpenRouter Gateway Call
+    // FAILSAFE 3 — OpenRouter with Gemma 2 27B
     if (openRouterKey) {
       try {
-        const selectedModel = model || 'openai/gpt-4o-mini';
+        const orModel = 'google/gemma-2-27b-it';
         const result = await executeCall(
           'https://openrouter.ai/api/v1',
           openRouterKey,
-          selectedModel,
-          {
-            'HTTP-Referer': 'http://localhost:4000',
-            'X-Title': 'Business OS CRM',
-          },
+          orModel,
+          { 'HTTP-Referer': 'http://localhost:4000', 'X-Title': 'Business OS CRM' },
         );
         const tokens = result.usage?.total_tokens || 400;
-        recordMeteredUsage(tokens, 'openrouter', selectedModel);
+        recordMeteredUsage(tokens, 'openrouter-gemma-failsafe', orModel);
         return {
           ...result,
-          provider: 'openrouter',
+          provider: 'openrouter-gemma-failsafe',
+          isLocalEngine: false,
           latencyMs: Date.now() - startTime,
           context: { contactCount, dealCount, ticketCount },
         };
-      } catch (error: any) {
-        console.warn('[AI-Engine] OpenRouter call failed:', error?.message || error);
+      } catch (err: any) {
+        console.warn('[AI-Engine] OpenRouter Gemma failsafe failed:', err?.message || err);
       }
     }
 
-    // 6. Secondary fallback: If OpenRouter was tried first but failed, try Groq
-    if (wantsOpenRouter && groqKey) {
+    // FAILSAFE 4 — Last resort: Groq compound-beta-mini
+    if (groqKey) {
       try {
-        const result = await executeCall('https://api.groq.com/openai/v1', groqKey, 'groq/compound');
+        const result = await executeCall('https://api.groq.com/openai/v1', groqKey, 'compound-beta-mini');
         const tokens = result.usage?.total_tokens || 350;
-        recordMeteredUsage(tokens, 'groq', 'groq/compound');
+        recordMeteredUsage(tokens, 'groq-compound-last-resort', 'compound-beta-mini');
         return {
           ...result,
-          provider: 'groq (fallback)',
+          provider: 'groq-last-resort',
+          isLocalEngine: false,
           latencyMs: Date.now() - startTime,
           context: { contactCount, dealCount, ticketCount },
         };
-      } catch (error: any) {
-        console.warn('[AI-Engine] Secondary Groq call failed:', error?.message || error);
+      } catch (err: any) {
+        console.warn('[AI-Engine] Groq last-resort failed:', err?.message || err);
       }
     }
 
-    // Fallback: Local offline context-aware reply
-    recordMeteredUsage(120, 'local', 'business-os-local-context');
+    // FINAL OFFLINE FALLBACK — static context-aware reply
+    recordMeteredUsage(120, 'local', 'business-os-context-fallback');
     return {
-      reply: `[Business OS Copilot] Regarding: "${query}"\n\n- **Active Pipeline Deals**: ${dealCount}\n- **Commercial Contacts**: ${contactCount}\n- **Open Tickets**: ${ticketCount}\n\n*Note: Configure or refresh LLM API keys in .env to enable continuous cloud completions.*`,
-      model: 'business-os-local-context',
-      provider: 'local',
+      reply: `[Business OS Copilot — Offline] Regarding: "${query}"\n\n- **Active Pipeline Deals**: ${dealCount}\n- **Commercial Contacts**: ${contactCount}\n- **Open Tickets**: ${ticketCount}\n\n*Gemma (Ollama) and all API failsafes are unreachable. Ensure Ollama is running: \`ollama serve\` and that gemma4:e4b is pulled.*`,
+      model: 'business-os-context-fallback',
+      provider: 'offline',
       latencyMs: Date.now() - startTime,
       context: { contactCount, dealCount, ticketCount },
     };

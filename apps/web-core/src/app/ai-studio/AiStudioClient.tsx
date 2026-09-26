@@ -132,7 +132,7 @@ export function AiStudioClient() {
   >([
     {
       sender: 'bot',
-      text: '👋 **Welcome to Enterprise Neural Copilot.** I monitor your pipeline velocity, draft commercial battlecards, and execute autonomous actions across the Business OS. How can I assist your operations today?',
+      text: ' **Welcome to Enterprise Neural Copilot.** I monitor your pipeline velocity, draft commercial battlecards, and execute autonomous actions across the Business OS. How can I assist your operations today?',
       time: '10:00 AM',
       modelBadge: 'Groq Llama-3.3-70B',
     },
@@ -143,7 +143,7 @@ export function AiStudioClient() {
     },
     {
       sender: 'bot',
-      text: '⚠️ **Nova Global FinTech ($240,000 ARR)** is at critical risk.\n\n- **Churn Risk**: HIGH (Health Index: 42/100)\n- **Root Cause**: 2 overdue invoices and 14 days without stakeholder touchpoints.\n- **Recommended Action**: Athena CSM and Ares Sales recommend an immediate executive concierge review with a 10% commercial credit concession.',
+      text: ' **Nova Global FinTech ($240,000 ARR)** is at critical risk.\n\n- **Churn Risk**: HIGH (Health Index: 42/100)\n- **Root Cause**: 2 overdue invoices and 14 days without stakeholder touchpoints.\n- **Recommended Action**: Athena CSM and Ares Sales recommend an immediate executive concierge review with a 10% commercial credit concession.',
       time: '10:01 AM',
       modelBadge: 'Groq Llama-3.3-70B',
     },
@@ -201,14 +201,14 @@ export function AiStudioClient() {
         })
       );
       setIsEnriching(false);
-      setActionAlert(`✨ Neural enrichment completed for ${selectedContact?.name || 'contact'}! Tech stack and firmographics updated.`);
+      setActionAlert(` Neural enrichment completed for ${selectedContact?.name || 'contact'}! Tech stack and firmographics updated.`);
       setTimeout(() => setActionAlert(null), 4000);
     }, 900);
   };
 
   // Handle Next Best Action Execution
   const handleExecuteNextBestAction = (deal: IntelligentDeal) => {
-    setActionAlert(`⚡ Dispatched Next-Best-Action for ${deal.title} onto Unified Event Bus.`);
+    setActionAlert(` Dispatched Next-Best-Action for ${deal.title} onto Unified Event Bus.`);
     setDeals((prev) =>
       prev.map((d) =>
         d.id === deal.id ? { ...d, winProbability: Math.min(99, d.winProbability + 8), healthStatus: 'HEALTHY' } : d
@@ -244,7 +244,7 @@ export function AiStudioClient() {
         detectedNextStage: 'Contract & Signatures',
       });
       setIsTranscribing(false);
-      setActionAlert('🎙️ Call audio transcribed! Extracted 3 action items and advanced CRM deal stage.');
+      setActionAlert(' Call audio transcribed! Extracted 3 action items and advanced CRM deal stage.');
       setTimeout(() => setActionAlert(null), 4000);
     }, 1100);
   };
@@ -293,7 +293,7 @@ export function AiStudioClient() {
         const data = await res.json();
         const botMsg = {
           sender: 'bot' as const,
-          text: data.reply || '✨ Action processed successfully across the Business OS.',
+          text: data.reply || ' Action processed successfully across the Business OS.',
           time: 'Just now',
           modelBadge,
           bookedMeeting: query.toLowerCase().includes('book') || query.toLowerCase().includes('demo') || query.toLowerCase().includes('meeting'),
@@ -306,7 +306,7 @@ export function AiStudioClient() {
       // Intelligent fallback
       const botMsg = {
         sender: 'bot' as const,
-        text: `✨ **Intelligence Synthesis (${modelBadge})**:\n\nRegarding your inquiry: "${query}"\n\n- **Telemetry**: Monitored 4 commercial enterprise deals and 4 VIP accounts.\n- **Recommended Strategy**: Prioritize immediate touchpoint with Hyperion and Nova FinTech to lock signature before quarter-end.\n- **Autonomous Action**: Prepared executive concession memo in Managerial Approval Queue.`,
+        text: ` **Intelligence Synthesis (${modelBadge})**:\n\nRegarding your inquiry: "${query}"\n\n- **Telemetry**: Monitored 4 commercial enterprise deals and 4 VIP accounts.\n- **Recommended Strategy**: Prioritize immediate touchpoint with Hyperion and Nova FinTech to lock signature before quarter-end.\n- **Autonomous Action**: Prepared executive concession memo in Managerial Approval Queue.`,
         time: 'Just now',
         modelBadge,
       };
@@ -333,7 +333,7 @@ export function AiStudioClient() {
         aiInsight: 'Historical deal velocity indicates a 42% acceleration when multi-channel AI sequences are enabled during contract evaluation.',
       });
       setIsQueryingBI(false);
-      setActionAlert('📊 Natural language business intelligence synthesized!');
+      setActionAlert(' Natural language business intelligence synthesized!');
       setTimeout(() => setActionAlert(null), 3500);
     }, 700);
   };
@@ -357,7 +357,7 @@ export function AiStudioClient() {
       <div className="bg-slate-900/80 dark:bg-white/[0.02] backdrop-blur-2xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <div className="relative z-10">
           <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-violet-500/10 text-violet-400 border border-violet-500/20 flex items-center gap-1.5">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
               <Sparkles size={11} />
               Pillar 2: AI &amp; Neural Autonomy Suite v4.8
             </span>
@@ -367,7 +367,7 @@ export function AiStudioClient() {
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-            <Brain className="text-violet-400" size={32} />
+            <Brain className="text-emerald-400" size={32} />
             Enterprise AI &amp; Neural Intelligence Studio
           </h1>
           <p className="text-sm text-slate-400 mt-1 max-w-2xl">
@@ -383,7 +383,7 @@ export function AiStudioClient() {
         </div>
 
         {/* Ambient Glow */}
-        <div className="absolute -top-12 -right-12 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-12 -right-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       {/* 6 Core Neural Tabs */}
@@ -404,7 +404,7 @@ export function AiStudioClient() {
               onClick={() => setActiveTab(tab.id as any)}
               className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-500/20 font-black'
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/20 font-black'
                   : 'bg-white/[0.03] text-slate-400 hover:text-white'
               }`}
             >
@@ -438,13 +438,13 @@ export function AiStudioClient() {
                     onClick={() => setSelectedContact(c)}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                       isSelected
-                        ? 'border-violet-500 bg-white/[0.06] ring-2 ring-violet-500/20 shadow-lg'
+                        ? 'border-emerald-500 bg-white/[0.06] ring-2 ring-emerald-500/20 shadow-lg'
                         : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-500/20 to-indigo-500/20 text-violet-300 font-black text-xs flex items-center justify-center border border-violet-500/30">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 text-emerald-300 font-black text-xs flex items-center justify-center border border-emerald-500/30">
                           {c.avatarInitials}
                         </div>
                         <div>
@@ -487,7 +487,7 @@ export function AiStudioClient() {
               <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-xl space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/[0.08] pb-5">
                   <div className="flex items-center gap-3.5">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white font-black text-lg flex items-center justify-center shadow-lg shadow-violet-500/20">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white font-black text-lg flex items-center justify-center shadow-lg shadow-emerald-500/20">
                       {selectedContact.avatarInitials}
                     </div>
                     <div>
@@ -495,7 +495,7 @@ export function AiStudioClient() {
                         <span>{selectedContact.name}</span>
                         {selectedContact.isEnriched && (
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                            ✓ Verified Enriched
+                             Verified Enriched
                           </span>
                         )}
                       </h2>
@@ -509,7 +509,7 @@ export function AiStudioClient() {
                     type="button"
                     onClick={() => handleEnrichContact(selectedContact.id)}
                     disabled={isEnriching}
-                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-violet-500/20 disabled:opacity-50"
+                    className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-black transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-emerald-500/20 disabled:opacity-50"
                   >
                     <RefreshCw size={13} className={isEnriching ? 'animate-spin' : ''} />
                     <span>{isEnriching ? 'Scanning Registries...' : 'Run Neural Enrichment'}</span>
@@ -575,15 +575,15 @@ export function AiStudioClient() {
                 </div>
 
                 {/* 3-Bullet Executive Digest */}
-                <div className="p-5 bg-violet-950/20 border border-violet-500/30 rounded-2xl space-y-2.5">
-                  <h4 className="text-xs font-black text-violet-300 flex items-center gap-2 uppercase tracking-wider">
-                    <Sparkles size={14} className="text-violet-400" />
+                <div className="p-5 bg-emerald-950/20 border border-emerald-500/30 rounded-2xl space-y-2.5">
+                  <h4 className="text-xs font-black text-emerald-300 flex items-center gap-2 uppercase tracking-wider">
+                    <Sparkles size={14} className="text-emerald-400" />
                     <span>3-Bullet Pre-Call Executive Briefing</span>
                   </h4>
                   <div className="space-y-2 text-xs text-slate-300 leading-relaxed">
                     {selectedContact.summaryBullets.map((bullet, i) => (
                       <div key={i} className="flex items-start gap-2">
-                        <span className="text-violet-400 font-bold">•</span>
+                        <span className="text-emerald-400 font-bold">•</span>
                         <span>{bullet}</span>
                       </div>
                     ))}
@@ -592,7 +592,7 @@ export function AiStudioClient() {
               </div>
             ) : (
               <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-dashed border-slate-200 dark:border-white/[0.08] rounded-3xl p-12 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 mx-auto flex items-center justify-center border border-violet-500/20">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/20">
                   <UserCheck size={24} />
                 </div>
                 <h3 className="text-sm font-bold text-white">No Contact Selected</h3>
@@ -621,12 +621,12 @@ export function AiStudioClient() {
             {deals.map((dl) => (
               <div
                 key={dl.id}
-                className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5 flex flex-col justify-between space-y-4 shadow-xl hover:border-violet-500/40 transition-all group"
+                className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5 flex flex-col justify-between space-y-4 shadow-xl hover:border-emerald-500/40 transition-all group"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-bold text-xs text-white group-hover:text-violet-300 transition-colors">{dl.title}</h3>
+                      <h3 className="font-bold text-xs text-white group-hover:text-emerald-300 transition-colors">{dl.title}</h3>
                       <span className="text-[10px] text-slate-400 block mt-0.5">{dl.company}</span>
                     </div>
                     <span className="font-mono font-bold text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
@@ -638,7 +638,7 @@ export function AiStudioClient() {
                   <div className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.06] space-y-1.5">
                     <div className="flex justify-between text-[11px]">
                       <span className="text-slate-400">Win Probability</span>
-                      <span className="font-mono font-bold text-violet-400">{dl.winProbability}%</span>
+                      <span className="font-mono font-bold text-emerald-400">{dl.winProbability}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
                       <div
@@ -677,7 +677,7 @@ export function AiStudioClient() {
                   <button
                     type="button"
                     onClick={() => handleExecuteNextBestAction(dl)}
-                    className="w-full py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-violet-500/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Zap size={12} />
                     <span>Execute Action</span>
@@ -689,7 +689,7 @@ export function AiStudioClient() {
 
           {deals.length === 0 && (
             <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-dashed border-slate-200 dark:border-white/[0.08] rounded-3xl p-12 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 mx-auto flex items-center justify-center border border-violet-500/20">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/20">
                 <Target size={24} />
               </div>
               <h3 className="text-sm font-bold text-white">No Pipeline Deals Found</h3>
@@ -716,7 +716,7 @@ export function AiStudioClient() {
                     onClick={() => setSelectedDigestDeal(deal)}
                     className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
                       selectedDigestDeal?.id === deal.id
-                        ? 'border-violet-500 bg-white/[0.06]'
+                        ? 'border-emerald-500 bg-white/[0.06]'
                         : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
                     }`}
                   >
@@ -752,7 +752,7 @@ export function AiStudioClient() {
             {selectedDigestDeal ? (
               <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-xl space-y-5">
                 <div className="border-b border-white/[0.08] pb-4">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-violet-400 bg-violet-500/10 px-2.5 py-0.5 rounded border border-violet-500/20">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded border border-emerald-500/20">
                     Pre-Call Battlecard
                   </span>
                   <h3 className="text-base font-black text-white mt-2">{selectedDigestDeal.title}</h3>
@@ -763,15 +763,15 @@ export function AiStudioClient() {
                   <h4 className="text-xs font-bold text-white uppercase tracking-wider">Top 3 Executive Talking Points:</h4>
                   <div className="space-y-2 text-xs text-slate-300">
                     <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">1</span>
+                      <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 text-[10px] font-bold flex items-center justify-center shrink-0">1</span>
                       <span>Highlight our unified Khata multi-branch ledger which eliminates manual CSV reconciliations.</span>
                     </div>
                     <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">2</span>
+                      <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 text-[10px] font-bold flex items-center justify-center shrink-0">2</span>
                       <span>Reinforce our SOC2 Type II cryptographic event stream and sub-5ms WebRTC softphone latency.</span>
                     </div>
                     <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-lg bg-violet-500/20 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">3</span>
+                      <span className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 text-[10px] font-bold flex items-center justify-center shrink-0">3</span>
                       <span>Counter competitor HubSpot / Salesforce pricing: Zero per-seat add-on charges for AI OCR or SIM gateway.</span>
                     </div>
                   </div>
@@ -806,7 +806,7 @@ export function AiStudioClient() {
               </div>
             ) : (
               <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-2xl border border-dashed border-slate-200 dark:border-white/[0.08] rounded-3xl p-12 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-400 mx-auto flex items-center justify-center border border-violet-500/20">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/20">
                   <PhoneCall size={24} />
                 </div>
                 <h3 className="text-sm font-bold text-white">No Deal Target Selected</h3>
@@ -827,7 +827,7 @@ export function AiStudioClient() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-4">
             <div>
               <h2 className="text-base font-black text-white flex items-center gap-2">
-                <Bot className="text-violet-400" size={20} />
+                <Bot className="text-emerald-400" size={20} />
                 <span>Enterprise Conversational Copilot &amp; Booking Agent</span>
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -849,7 +849,7 @@ export function AiStudioClient() {
                   onClick={() => setSelectedModel(m.id as any)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                     selectedModel === m.id
-                      ? 'bg-violet-600 text-white shadow-md'
+                      ? 'bg-emerald-600 text-white shadow-md'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -870,7 +870,7 @@ export function AiStudioClient() {
                   className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 ${
                     msg.sender === 'user'
                       ? 'bg-emerald-500 text-slate-950'
-                      : 'bg-gradient-to-tr from-violet-600 to-indigo-600 text-white'
+                      : 'bg-gradient-to-tr from-emerald-600 to-teal-600 text-white'
                   }`}
                 >
                   {msg.sender === 'user' ? 'You' : <Bot size={15} />}
@@ -884,7 +884,7 @@ export function AiStudioClient() {
                   }`}
                 >
                   {msg.modelBadge && (
-                    <span className="text-[9px] font-mono text-violet-400 uppercase tracking-widest block mb-1">
+                    <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest block mb-1">
                       {msg.modelBadge}
                     </span>
                   )}
@@ -908,12 +908,12 @@ export function AiStudioClient() {
               value={userChatInput}
               onChange={(e) => setUserChatInput(e.target.value)}
               placeholder="Ask copilot: 'Draft VIP proposal for Hyperion' or 'Which accounts are churning?'"
-              className="flex-1 px-4 py-3 bg-white/[0.05] border border-white/10 rounded-2xl text-xs text-white focus:outline-none focus:border-violet-500"
+              className="flex-1 px-4 py-3 bg-white/[0.05] border border-white/10 rounded-2xl text-xs text-white focus:outline-none focus:border-emerald-500"
             />
             <button
               type="submit"
               disabled={isSendingChat || !userChatInput.trim()}
-              className="px-5 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs font-black rounded-2xl shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              className="px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-black rounded-2xl shadow-lg transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
             >
               <Send size={14} />
               <span>Send</span>
@@ -942,7 +942,7 @@ export function AiStudioClient() {
               rows={3}
               value={workflowPrompt}
               onChange={(e) => setWorkflowPrompt(e.target.value)}
-              className="w-full px-4 py-3 bg-white/[0.05] border border-white/10 rounded-2xl text-xs text-white focus:outline-none focus:border-violet-500 leading-relaxed font-mono"
+              className="w-full px-4 py-3 bg-white/[0.05] border border-white/10 rounded-2xl text-xs text-white focus:outline-none focus:border-emerald-500 leading-relaxed font-mono"
             />
             <button
               type="button"
@@ -955,7 +955,7 @@ export function AiStudioClient() {
                     action: 'THEN executeNeuralCopilotAction() AND notifySlackChannel("#sales-war-room")',
                   });
                   setIsGeneratingTrigger(false);
-                  setActionAlert('⚡ Automation rule synthesized and deployed to Universal Engine!');
+                  setActionAlert(' Automation rule synthesized and deployed to Universal Engine!');
                   setTimeout(() => setActionAlert(null), 3500);
                 }, 700);
               }}
@@ -974,7 +974,7 @@ export function AiStudioClient() {
               </div>
               <div className="text-emerald-400">{generatedTrigger.triggerEvent}</div>
               <div className="text-slate-300">{generatedTrigger.condition}</div>
-              <div className="text-violet-400">{generatedTrigger.action}</div>
+              <div className="text-emerald-400">{generatedTrigger.action}</div>
             </div>
           )}
         </div>
@@ -1070,7 +1070,7 @@ export function AiStudioClient() {
                       </span>
                     </div>
                     <p className="text-xs text-slate-400">{alert.riskFactor}</p>
-                    <p className="text-[11px] text-violet-400 font-semibold">{alert.recommendedAction}</p>
+                    <p className="text-[11px] text-emerald-400 font-semibold">{alert.recommendedAction}</p>
                   </div>
 
                   <button
@@ -1102,3 +1102,4 @@ export function AiStudioClient() {
     </div>
   );
 }
+

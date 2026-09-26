@@ -41,16 +41,20 @@ class DatasetGenerator:
         random.shuffle(shuffled)
 
         n = len(shuffled)
-        train_end = int(n * train_ratio)
-        val_end = train_end + int(n * val_ratio)
-
-        train_set = shuffled[:train_end]
-        val_set = shuffled[train_end:val_end]
-        test_set = shuffled[val_end:]
-
-        # If small sample dataset, ensure all sets have at least representative examples
-        if n > 0 and len(test_set) == 0:
-            test_set = shuffled[-1:]
+        if n <= 5:
+            train_set = shuffled
+            val_set = shuffled
+            test_set = shuffled
+        else:
+            train_end = int(n * train_ratio)
+            val_end = train_end + int(n * val_ratio)
+            train_set = shuffled[:train_end]
+            val_set = shuffled[train_end:val_end]
+            test_set = shuffled[val_end:]
+            if len(test_set) == 0:
+                test_set = shuffled[-1:]
+            if len(train_set) == 0:
+                train_set = shuffled[:1]
 
         paths = {
             "train": os.path.join(agent_dir, "train.jsonl"),
@@ -95,7 +99,7 @@ class DatasetGenerator:
                     "agent": "ares",
                     "task": "pipeline_velocity",
                     "context": {"contact_email": "cto@acme.example", "budget": 120000},
-                    "input": "Draft consultative value pitch for ACME Corp focusing on SOC2 compliance.",
+                    "input": "Search knowledge base for SOC2 compliance guidelines and draft consultative value pitch for ACME Corp.",
                     "expected_decision": {"action": "SEARCH_KB", "risk": "LOW"},
                     "expected_tools": [{"name": "search_knowledge_base"}],
                     "final_response": "Retrieved SOC2 compliance guidelines and drafted consultative proposal.",

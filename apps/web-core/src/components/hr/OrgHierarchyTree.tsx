@@ -173,7 +173,7 @@ export function OrgHierarchyTree({
 
     if (corpAcc.balance < debitAmountInCorpCurr) {
       setDisburseFeedback(
-        `⚠️ Insufficient treasury balance in ${corpAcc.name}. Available: ${corpAcc.currency} ${corpAcc.balance.toLocaleString()}, Needed: ${corpAcc.currency} ${Math.round(debitAmountInCorpCurr).toLocaleString()}`
+        ` Insufficient treasury balance in ${corpAcc.name}. Available: ${corpAcc.currency} ${corpAcc.balance.toLocaleString()}, Needed: ${corpAcc.currency} ${Math.round(debitAmountInCorpCurr).toLocaleString()}`
       );
       return;
     }
@@ -257,7 +257,7 @@ export function OrgHierarchyTree({
     }
 
     setDisburseFeedback(
-      `🎉 Wire transfer of ${FX_RATES[empCurrency]?.symbol || '$'}${emp.salary.netMonthly.toLocaleString()} successfully executed from ${corpAcc.name}! Status: PAID.`
+      ` Wire transfer of ${FX_RATES[empCurrency]?.symbol || '$'}${emp.salary.netMonthly.toLocaleString()} successfully executed from ${corpAcc.name}! Status: PAID.`
     );
     setTimeout(() => {
       setDisburseFeedback(null);
@@ -310,7 +310,7 @@ export function OrgHierarchyTree({
       onUpdateEmployee(updatedEmployee);
     }
 
-    setQrFeedback(`🎉 Received ${symbol}${tip} via Employee QR! Recorded in Khata ledger.`);
+    setQrFeedback(` Received ${symbol}${tip} via Employee QR! Recorded in Khata ledger.`);
     setTimeout(() => setQrFeedback(null), 3000);
   };
 
@@ -330,7 +330,7 @@ export function OrgHierarchyTree({
             ? 'border-sky-500/40 ring-1 ring-sky-500/20 hover:border-sky-400/60'
             : emp.level === 2
             ? 'border-emerald-500/40 ring-1 ring-emerald-500/20 hover:border-emerald-400/60'
-            : 'border-purple-500/40 ring-1 ring-purple-500/20 hover:border-purple-400/60'
+            : 'border-emerald-500/40 ring-1 ring-emerald-500/20 hover:border-emerald-400/60'
         } ${isCompact ? 'w-64 sm:w-72' : 'w-72 sm:w-80'}`}
       >
         {/* Tier Badge Pill & Salary + Quick Remove Action */}
@@ -547,10 +547,10 @@ export function OrgHierarchyTree({
             </span>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">
-            Structured 4-Tier hierarchy: <span className="text-amber-600 dark:text-amber-300 font-semibold">Tier A (Upper Mgmt)</span> ➔{' '}
-            <span className="text-sky-600 dark:text-sky-300 font-semibold">Tier B (Middle Mgmt)</span> ➔{' '}
+            Structured 4-Tier hierarchy: <span className="text-amber-600 dark:text-amber-300 font-semibold">Tier A (Upper Mgmt)</span> {' '}
+            <span className="text-sky-600 dark:text-sky-300 font-semibold">Tier B (Middle Mgmt)</span> {' '}
             <span className="text-emerald-700 dark:text-emerald-300 font-semibold">Tier C (Operations)</span> &{' '}
-            <span className="text-purple-700 dark:text-purple-300 font-semibold">Tier D (Support)</span>.
+            <span className="text-emerald-700 dark:text-emerald-300 font-semibold">Tier D (Support)</span>.
           </p>
         </div>
 
@@ -685,7 +685,7 @@ export function OrgHierarchyTree({
           {/* TIER A: UPPER MANAGEMENT */}
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-extrabold uppercase tracking-wider font-mono shadow-lg shadow-amber-500/10">
-              <span>👑 [ TIER A: UPPER MANAGEMENT ]</span>
+              <span> [ TIER A: UPPER MANAGEMENT ]</span>
               <span className="text-[10px] text-amber-400/80 font-normal">
                 (CEO, CFO, CTO, Managing Directors)
               </span>
@@ -703,7 +703,7 @@ export function OrgHierarchyTree({
           {/* TIER B: MIDDLE MANAGEMENT */}
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full bg-sky-500/15 border border-sky-500/40 text-sky-300 text-xs font-extrabold uppercase tracking-wider font-mono shadow-lg shadow-sky-500/10">
-              <span>👔 [ TIER B: MIDDLE MANAGEMENT ]</span>
+              <span> [ TIER B: MIDDLE MANAGEMENT ]</span>
               <span className="text-[10px] text-sky-400/80 font-normal">
                 (General Managers, Department Leads, Supervisors)
               </span>
@@ -716,10 +716,10 @@ export function OrgHierarchyTree({
           {/* Fork Connector (Branching bus line to Tier C & Tier D) */}
           <div className="flex flex-col items-center -my-3">
             <div className="w-0.5 h-6 bg-gradient-to-b from-sky-500 to-emerald-500" />
-            <div className="w-full max-w-2xl h-0.5 bg-gradient-to-r from-emerald-500 via-white/20 to-purple-500" />
+            <div className="w-full max-w-2xl h-0.5 bg-gradient-to-r from-emerald-500 via-white/20 to-emerald-500" />
             <div className="w-full max-w-2xl flex justify-between px-24">
               <div className="w-0.5 h-6 bg-emerald-500" />
-              <div className="w-0.5 h-6 bg-purple-500" />
+              <div className="w-0.5 h-6 bg-emerald-500" />
             </div>
           </div>
 
@@ -728,7 +728,7 @@ export function OrgHierarchyTree({
             {/* TIER C: OPERATIONS */}
             <div className="p-5 rounded-3xl bg-emerald-500/[0.03] border border-emerald-500/25 flex flex-col items-center">
               <div className="flex items-center gap-2 mb-4 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold uppercase tracking-wider font-mono shadow-md">
-                <span>⚙️ [ TIER C: OPERATIONS ]</span>
+                <span> [ TIER C: OPERATIONS ]</span>
                 <span className="text-[10px] text-emerald-400/80 font-normal">
                   ({tierCEmployees.length} Staff)
                 </span>
@@ -742,10 +742,10 @@ export function OrgHierarchyTree({
             </div>
 
             {/* TIER D: SUPPORT STAFF */}
-            <div className="p-5 rounded-3xl bg-purple-500/[0.03] border border-purple-500/25 flex flex-col items-center">
-              <div className="flex items-center gap-2 mb-4 px-3.5 py-1.5 rounded-full bg-purple-500/15 border border-purple-500/40 text-purple-300 text-xs font-extrabold uppercase tracking-wider font-mono shadow-md">
-                <span>🛠️ [ TIER D: SUPPORT ]</span>
-                <span className="text-[10px] text-purple-400/80 font-normal">
+            <div className="p-5 rounded-3xl bg-emerald-500/[0.03] border border-emerald-500/25 flex flex-col items-center">
+              <div className="flex items-center gap-2 mb-4 px-3.5 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-extrabold uppercase tracking-wider font-mono shadow-md">
+                <span> [ TIER D: SUPPORT ]</span>
+                <span className="text-[10px] text-emerald-400/80 font-normal">
                   ({tierDEmployees.length} Staff)
                 </span>
               </div>
@@ -804,7 +804,7 @@ export function OrgHierarchyTree({
             {/* Feedback Alert Banner */}
             {disburseFeedback && (
               <div className={`p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                disburseFeedback.includes('⚠️')
+                disburseFeedback.includes('')
                   ? 'bg-amber-500/15 border border-amber-500/30 text-amber-300'
                   : 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-300'
               }`}>

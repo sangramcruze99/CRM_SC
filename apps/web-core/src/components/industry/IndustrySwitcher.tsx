@@ -1,21 +1,54 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import { useIndustry, IndustryNiche } from './IndustryContext';
+import { useBlueprint } from '@/components/blueprint/BlueprintContext';
+import { NICHE_TO_BLUEPRINT_CONFIGS } from '@/lib/blueprint/blueprintEngine';
 import {
-  Sparkles,
   ChevronDown,
   Check,
   CheckCircle2,
-  Sliders,
+  Globe,
+  Stethoscope,
+  Home,
+  UtensilsCrossed,
+  ShoppingBag,
+  Building2,
+  Palette,
+  Layers,
+  HardHat,
+  Scale,
+  Truck,
+  Dumbbell,
+  Wrench,
 } from 'lucide-react';
-import Link from 'next/link';
+
+const NICHE_ICON_MAP: Record<string, any> = {
+  all: Globe,
+  hospital: Stethoscope,
+  realestate: Home,
+  restaurant: UtensilsCrossed,
+  retail: ShoppingBag,
+  sme: Building2,
+  agency: Palette,
+  custom: Layers,
+  construction: HardHat,
+  legal: Scale,
+  logistics: Truck,
+  fitness: Dumbbell,
+  automotive: Wrench,
+};
 
 export function IndustrySwitcher() {
+  const router = useRouter();
+  const pathname = usePathname();
   const { currentNiche, setNiche, nicheConfig, allNiches } = useIndustry();
+  const { selectIndustryAndType } = useBlueprint();
   const [isOpen, setIsOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const ActiveIcon = NICHE_ICON_MAP[currentNiche] || Globe;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -43,10 +76,28 @@ export function IndustrySwitcher() {
 
   const handleSelectNiche = (nicheId: IndustryNiche) => {
     setNiche(nicheId);
+
+    // 1. Immediately synchronize with the Master Blueprint Engine
+    const bp = NICHE_TO_BLUEPRINT_CONFIGS[nicheId];
+    if (bp) {
+      selectIndustryAndType(bp.industry, bp.businessTypeId);
+    }
+
     setIsOpen(false);
     const target = allNiches.find((n) => n.id === nicheId);
     setToast(`Switched workspace profile to ${target?.name || nicheId}!`);
     setTimeout(() => setToast(null), 3000);
+
+    // 2. Intelligently route user to the chosen niche workspace if currently on an industry subroute
+    if (pathname && (pathname.startsWith('/industry') || pathname === '/dashboard')) {
+      if (nicheId === 'all') {
+        router.push('/dashboard');
+      } else if (nicheId === 'custom') {
+        router.push('/industry');
+      } else {
+        router.push(`/industry/${nicheId}`);
+      }
+    }
   };
 
   return (
@@ -58,7 +109,7 @@ export function IndustrySwitcher() {
         className="h-8.5 flex items-center gap-2 px-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.09] border border-slate-200 dark:border-white/[0.08] hover:border-emerald-500/40 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-[0.98] whitespace-nowrap"
         title={`Active Organization Niche: ${nicheConfig.name}`}
       >
-        <span className="text-sm shrink-0">{nicheConfig.icon}</span>
+        <ActiveIcon size={14} className="text-zinc-600 dark:text-zinc-300 shrink-0" />
         <span className="text-slate-900 dark:text-white font-bold text-xs truncate max-w-[125px] hidden sm:inline">
           {nicheConfig.shortName}
         </span>
@@ -73,10 +124,10 @@ export function IndustrySwitcher() {
         </div>
       )}
 
-      {/* Floating Popover Dropdown (anchored to button) */}
+      {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-2xl bg-white dark:bg-slate-950/95 backdrop-blur-2xl border border-slate-200 dark:border-white/[0.12] shadow-2xl z-50 p-3 space-y-2 animate-in fade-in zoom-in-95 duration-150 text-slate-900 dark:text-white">
-          <div className="flex items-center justify-between px-2 pt-1 pb-2 border-b border-slate-200 dark:border-white/[0.08]">
+        <div className="absolute right-0 mt-2 w-84 sm:w-96 rounded-2xl bg-white dark:bg-slate-950/95 border border-slate-200 dark:border-white/10 shadow-2xl z-50 p-3 backdrop-blur-2xl text-slate-900 dark:text-white animate-in fade-in zoom-in-95 duration-150">
+          <div className="px-2 py-1.5 flex items-center justify-between border-b border-slate-100 dark:border-white/10 mb-2">
             <div>
               <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
                 Select Business Niche
@@ -92,6 +143,7 @@ export function IndustrySwitcher() {
           <div className="space-y-1.5 max-h-[380px] overflow-y-auto pr-1">
             {allNiches.map((niche) => {
               const isActive = currentNiche === niche.id;
+              const NicheIcon = NICHE_ICON_MAP[niche.id] || Globe;
               return (
                 <div
                   key={niche.id}
@@ -103,8 +155,8 @@ export function IndustrySwitcher() {
                   }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <span className="text-xl p-1.5 bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] rounded-xl shadow-2xs">
-                      {niche.icon}
+                    <span className="p-2 bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.08] rounded-xl shadow-2xs flex items-center justify-center shrink-0">
+                      <NicheIcon size={16} className="text-zinc-700 dark:text-zinc-300" />
                     </span>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
@@ -128,18 +180,6 @@ export function IndustrySwitcher() {
                 </div>
               );
             })}
-          </div>
-
-          {/* Footer Link to Studio */}
-          <div className="pt-2 border-t border-slate-200 dark:border-white/[0.08] flex items-center justify-between px-2 text-xs">
-            <Link
-              href="/industry"
-              onClick={() => setIsOpen(false)}
-              className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1"
-            >
-              <Sliders size={12} />
-              <span>Open Full Niche Profile Studio</span>
-            </Link>
           </div>
         </div>
       )}

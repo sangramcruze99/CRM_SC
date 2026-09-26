@@ -534,7 +534,7 @@ export function BillingClient({
               ? 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200'
               : alert.type === 'error'
               ? 'bg-rose-950/90 border-rose-500/50 text-rose-200'
-              : 'bg-indigo-950/90 border-indigo-500/50 text-indigo-200'
+              : 'bg-emerald-950/90 border-emerald-500/50 text-emerald-200'
           }`}
         >
           <Sparkles className="w-4 h-4 shrink-0" />
@@ -542,237 +542,173 @@ export function BillingClient({
         </div>
       )}
 
-      {/* Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
-              <CreditCard className="w-7 h-7 text-indigo-400" />
-              SaaS Billing & Subscription Control
+      {/* Top Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        {/* Ambient Botanical Glow */}
+        <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                ATHENA FINOPS CONTROLLER
+              </span>
+              <span className="text-[11px] font-mono text-zinc-500">MULTI-TENANT SAAS GOVERNANCE</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              SaaS Billing & Entitlements Engine
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              Stage 6 Production
-            </span>
-          </div>
-          <p className="text-slate-400 text-sm mt-1">
-            Authoritative multi-tenant billing engine, Stripe reconciliation, real-time entitlement quotas & AI economics.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleRefresh}
-            disabled={loading}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-slate-600 text-slate-300 hover:text-white text-xs font-medium transition"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-            Sync State
-          </button>
-
-          <button
-            onClick={handleOpenPortal}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/20 transition"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-            Stripe Customer Portal
-          </button>
-        </div>
-      </div>
-
-      {/* Hero: Current Plan Card */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-indigo-950/40 border border-slate-800 p-6 md:p-8 shadow-xl">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
-          {/* Col 1: Plan & Status */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold tracking-wider uppercase text-slate-400">Current Plan</span>
-              <span
-                className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                  entitlements?.status === 'ACTIVE'
-                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                    : entitlements?.status === 'TRIALING'
-                    ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                    : entitlements?.status === 'PAST_DUE'
-                    ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                    : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                }`}
-              >
-                {entitlements?.status || 'ACTIVE'}
-              </span>
-            </div>
-
-            <div className="flex items-baseline gap-3">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
-                {currentPlan?.name || currentPlanKey}
-              </h2>
-              <span className="text-xl font-bold text-indigo-400">
-                ${currentPlan?.monthlyPrice ?? 0}
-                <span className="text-xs text-slate-400 font-normal"> / month</span>
-              </span>
-            </div>
-
-            <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
-              {currentPlan?.description || 'Autonomous SaaS operating system with CRM, AI departments & automations.'}
+            <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+              Real-time subscription reconciliation, Stripe customer portal sync, autonomous token metering, and organization seats management.
             </p>
           </div>
 
-          {/* Col 2: Billing Period & Renewal */}
-          <div className="bg-slate-950/60 rounded-xl border border-slate-800/80 p-4 space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-indigo-400" />
-                Active Billing Cycle
-              </span>
-              <span className="text-slate-300 font-medium capitalize">
-                {entitlements?.billingInterval || 'Monthly'}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Period Start:</span>
-              <span className="text-slate-300 font-mono">
-                {entitlements?.currentPeriodStart
-                  ? new Date(entitlements.currentPeriodStart).toLocaleDateString()
-                  : 'N/A'}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-400">Renewal / Period End:</span>
-              <span className="text-emerald-400 font-mono font-medium">
-                {entitlements?.currentPeriodEnd
-                  ? new Date(entitlements.currentPeriodEnd).toLocaleDateString()
-                  : 'N/A'}
-              </span>
-            </div>
-
-            {entitlements?.cancelAtPeriodEnd && (
-              <div className="mt-2 p-2 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] flex items-center gap-2">
-                <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-                Scheduled for cancellation at end of period.
-              </div>
-            )}
-          </div>
-
-          {/* Col 3: Actions & Lifecycle */}
-          <div className="flex flex-col sm:flex-row lg:flex-col gap-2.5 justify-center">
+          <div className="flex items-center gap-2.5 flex-wrap">
             <button
-              onClick={() => setActiveTab('plans')}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/25 transition"
+              onClick={handleRefresh}
+              disabled={loading}
+              className="px-4 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 hover:text-white text-xs font-semibold border border-white/[0.08] transition flex items-center gap-2 cursor-pointer"
             >
-              <Zap className="w-3.5 h-3.5" />
-              Upgrade or Change Tier
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <span>Sync State</span>
             </button>
 
-            {entitlements?.cancelAtPeriodEnd ? (
-              <button
-                onClick={handleResumeSubscription}
-                className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-medium transition"
-              >
-                <Check className="w-3.5 h-3.5" />
-                Resume Subscription Renewal
-              </button>
-            ) : (
-              currentPlanKey !== 'FREE' && (
-                <button
-                  onClick={() => setCancelModalOpen(true)}
-                  className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700/80 text-rose-300 border border-slate-700 text-xs font-medium transition"
-                >
-                  Cancel Plan Renewal
-                </button>
-              )
-            )}
+            <button
+              onClick={handleOpenPortal}
+              className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold transition shadow-lg shadow-emerald-500/20 flex items-center gap-2 cursor-pointer"
+            >
+              <ExternalLink className="w-3.5 h-3.5" />
+              <span>Stripe Customer Portal</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Sentinel pulse status strip */}
+        <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-400">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              SENTINEL: STRIPE BILLING & USAGE MESH ACTIVE
+            </span>
+            <span className="hidden sm:inline text-zinc-600">|</span>
+            <span className="hidden sm:inline text-zinc-400">
+              VAULT TARGET: <code className="text-zinc-300">vault/billing/entitlements_audit/</code>
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-zinc-500 font-mono">STATUS: {entitlements?.status || 'ACTIVE'}</span>
           </div>
         </div>
       </div>
 
+      {/* High-Density Telemetry KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Active Plan Tier</span>
+            <CreditCard size={16} className="text-emerald-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold font-mono text-white">{currentPlan?.name || currentPlanKey}</span>
+            <span className="text-xs font-mono text-emerald-400 uppercase">{entitlements?.status || 'ACTIVE'}</span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">
+            ${currentPlan?.monthlyPrice ?? 0}/month · {entitlements?.billingInterval || 'Monthly'} cycle
+          </p>
+        </div>
+
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Renewal Cycle</span>
+            <Clock size={16} className="text-emerald-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-xl font-bold font-mono text-white">
+              {entitlements?.currentPeriodEnd
+                ? new Date(entitlements.currentPeriodEnd).toLocaleDateString()
+                : 'Next Cycle Active'}
+            </span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">Automatic rollover reconciliation</p>
+        </div>
+
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider">Organization Seats</span>
+            <Users size={16} className="text-emerald-400" />
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold font-mono text-white">
+              {entitlements?.usage?.users || 1} / {entitlements?.limits?.users || 'Unlimited'}
+            </span>
+            <span className="text-xs font-mono text-emerald-400">Seats</span>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500 font-mono">RBAC governance synchronized</p>
+        </div>
+      </div>
+      {/* Action Strip */}
+      <div className="botanical-glass-card rounded-2xl p-4 border border-white/[0.06] flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setActiveTab('plans')}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold shadow-lg shadow-emerald-500/20 transition cursor-pointer"
+          >
+            <Zap className="w-3.5 h-3.5" />
+            <span>Upgrade or Change Plan</span>
+          </button>
+
+          {entitlements?.cancelAtPeriodEnd ? (
+            <button
+              onClick={handleResumeSubscription}
+              className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-xs font-medium transition cursor-pointer"
+            >
+              <Check className="w-3.5 h-3.5" />
+              <span>Resume Subscription Renewal</span>
+            </button>
+          ) : (
+            currentPlanKey !== 'FREE' && (
+              <button
+                onClick={() => setCancelModalOpen(true)}
+                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-rose-500/10 text-zinc-400 hover:text-rose-400 border border-white/[0.08] hover:border-rose-500/30 text-xs font-medium transition cursor-pointer"
+              >
+                <span>Cancel Plan Renewal</span>
+              </button>
+            )
+          )}
+        </div>
+
+        <span className="text-xs font-mono text-zinc-500">RECONCILED VIA STRIPE WEBHOOK MESH</span>
+      </div>
+
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-1.5 border-b border-slate-800 pb-2 overflow-x-auto">
-        <button
-          onClick={() => setActiveTab('usage')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-            activeTab === 'usage'
-              ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <TrendingUp className="w-3.5 h-3.5" />
-          Usage & Quotas
-        </button>
-
-        <button
-          onClick={() => setActiveTab('plans')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-            activeTab === 'plans'
-              ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <Layers className="w-3.5 h-3.5" />
-          Plan Catalog & Pricing
-        </button>
-
-        <button
-          onClick={() => setActiveTab('ai')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-            activeTab === 'ai'
-              ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <Bot className="w-3.5 h-3.5" />
-          AI Unit Economics
-        </button>
-
-        <button
-          onClick={() => setActiveTab('credits')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-            activeTab === 'credits'
-              ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <DollarSign className="w-3.5 h-3.5" />
-          Credit Ledger
-        </button>
-
-        <button
-          onClick={() => setActiveTab('budgets')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-            activeTab === 'budgets'
-              ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <Shield className="w-3.5 h-3.5" />
-          AI Budgets & Caps
-        </button>
-
-        <button
-          onClick={() => setActiveTab('invoices')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-            activeTab === 'invoices'
-              ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <FileText className="w-3.5 h-3.5" />
-          Invoices
-        </button>
-
-        <button
-          onClick={() => setActiveTab('governance')}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition ${
-            activeTab === 'governance'
-              ? 'bg-indigo-600/15 text-indigo-400 border border-indigo-500/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-          }`}
-        >
-          <Lock className="w-3.5 h-3.5" />
-          Resilience & Kill Switches
-        </button>
+      <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3 overflow-x-auto">
+        {[
+          { id: 'usage', label: 'Usage & Quotas', icon: TrendingUp },
+          { id: 'plans', label: 'Plan Catalog & Pricing', icon: Layers },
+          { id: 'ai', label: 'AI Unit Economics', icon: Bot },
+          { id: 'credits', label: 'Credit Ledger', icon: DollarSign },
+          { id: 'budgets', label: 'AI Budgets & Caps', icon: Shield },
+          { id: 'invoices', label: 'Invoices', icon: FileText },
+          { id: 'governance', label: 'Resilience & Kill Switches', icon: Lock },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition cursor-pointer ${
+                isActive
+                  ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20'
+                  : 'bg-white/[0.03] text-zinc-400 hover:text-white hover:bg-white/[0.07] border border-white/[0.06]'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* TAB 1: USAGE & QUOTAS */}
@@ -783,7 +719,7 @@ export function BillingClient({
             <div className="p-5 rounded-xl bg-slate-900/70 border border-slate-800 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
-                  <Cpu className="w-4 h-4 text-purple-400" />
+                  <Cpu className="w-4 h-4 text-teal-400" />
                   Monthly AI Tokens
                 </span>
                 <span
@@ -811,7 +747,7 @@ export function BillingClient({
                         ? 'bg-rose-500'
                         : aiTokensPercent >= 80
                         ? 'bg-amber-400'
-                        : 'bg-purple-500'
+                        : 'bg-teal-500'
                     }`}
                     style={{ width: `${aiTokensPercent}%` }}
                   />
@@ -930,7 +866,7 @@ export function BillingClient({
 
           {/* Policy & Enforcement Banner */}
           <div className="p-4 rounded-xl bg-slate-900/40 border border-slate-800 flex items-start gap-3">
-            <Shield className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+            <Shield className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
             <div className="space-y-1 text-xs">
               <span className="font-semibold text-white">Authoritative Backend Enforcement</span>
               <p className="text-slate-400 leading-relaxed">
@@ -959,7 +895,7 @@ export function BillingClient({
                     onClick={() => setSelectedCurrency(curr)}
                     className={`px-2.5 py-1 rounded-md font-semibold transition ${
                       selectedCurrency === curr
-                        ? 'bg-indigo-600 text-white shadow-sm'
+                        ? 'bg-emerald-600 text-white shadow-sm'
                         : 'text-slate-400 hover:text-slate-200'
                     }`}
                   >
@@ -979,7 +915,7 @@ export function BillingClient({
                 className="relative w-12 h-6 bg-slate-800 rounded-full p-1 transition-colors border border-slate-700"
               >
                 <div
-                  className={`w-4 h-4 bg-indigo-500 rounded-full transition-transform ${
+                  className={`w-4 h-4 bg-emerald-500 rounded-full transition-transform ${
                     interval === 'annual' ? 'translate-x-6' : ''
                   }`}
                 />
@@ -1000,13 +936,13 @@ export function BillingClient({
                   placeholder="Promo Code (e.g. BUSINESSOS20)"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+                  className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
                 />
               </div>
               <button
                 onClick={handleApplyCoupon}
                 disabled={loading || !couponCode.trim()}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white text-xs font-semibold whitespace-nowrap transition"
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-semibold whitespace-nowrap transition"
               >
                 Apply
               </button>
@@ -1040,20 +976,20 @@ export function BillingClient({
                   key={p.id}
                   className={`relative rounded-2xl flex flex-col justify-between p-6 transition-all duration-300 ${
                     isCurrent
-                      ? 'bg-slate-900 border-2 border-indigo-500 shadow-xl shadow-indigo-500/10'
+                      ? 'bg-slate-900 border-2 border-emerald-500 shadow-xl shadow-emerald-500/10'
                       : isPopular
-                      ? 'bg-slate-900/90 border border-purple-500/50 hover:border-purple-400 shadow-lg'
+                      ? 'bg-slate-900/90 border border-teal-500/50 hover:border-teal-400 shadow-lg'
                       : 'bg-slate-900/60 border border-slate-800 hover:border-slate-700'
                   }`}
                 >
                   {isPopular && !isCurrent && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-500 text-white shadow-md">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-teal-500 text-white shadow-md">
                       Most Popular
                     </div>
                   )}
 
                   {isCurrent && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-indigo-600 text-white shadow-md">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-600 text-white shadow-md">
                       Current Plan
                     </div>
                   )}
@@ -1081,19 +1017,19 @@ export function BillingClient({
                         Included Limits:
                       </div>
                       <div className="text-slate-300 flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <span>{p.limits?.users ?? 1} Team Seats</span>
                       </div>
                       <div className="text-slate-300 flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <span>{(p.limits?.aiTokensMonthly || 0).toLocaleString()} AI Tokens/mo</span>
                       </div>
                       <div className="text-slate-300 flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <span>{(p.limits?.workflowExecutionsMonthly || 0).toLocaleString()} Workflows/mo</span>
                       </div>
                       <div className="text-slate-300 flex items-center gap-2">
-                        <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                         <span>{((p.limits?.storageBytes || 0) / (1024 * 1024 * 1024)).toFixed(0)} GB Storage</span>
                       </div>
                     </div>
@@ -1128,8 +1064,8 @@ export function BillingClient({
                         isCurrent
                           ? 'bg-slate-800 text-slate-400 cursor-default'
                           : isPopular
-                          ? 'bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25'
-                          : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/20'
+                          ? 'bg-teal-600 hover:bg-teal-500 text-white shadow-lg shadow-teal-600/25'
+                          : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20'
                       }`}
                     >
                       {isCurrent ? (
@@ -1155,7 +1091,7 @@ export function BillingClient({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
               <span className="text-xs text-slate-400 flex items-center gap-1.5">
-                <Cpu className="w-4 h-4 text-indigo-400" />
+                <Cpu className="w-4 h-4 text-emerald-400" />
                 Total AI Tokens Metered (30d)
               </span>
               <div className="text-2xl font-bold text-white font-mono">
@@ -1177,10 +1113,10 @@ export function BillingClient({
 
             <div className="p-5 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
               <span className="text-xs text-slate-400 flex items-center gap-1.5">
-                <Shield className="w-4 h-4 text-purple-400" />
+                <Shield className="w-4 h-4 text-teal-400" />
                 Gross Margin Indicator
               </span>
-              <div className="text-2xl font-bold text-purple-300 font-mono">98.4%</div>
+              <div className="text-2xl font-bold text-teal-300 font-mono">98.4%</div>
               <p className="text-[11px] text-slate-500">Sustainable AI unit economics and model tiering.</p>
             </div>
           </div>
@@ -1190,7 +1126,7 @@ export function BillingClient({
             {/* Department Breakdown */}
             <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Bot className="w-4 h-4 text-indigo-400" />
+                <Bot className="w-4 h-4 text-emerald-400" />
                 Usage by AI Department & Agent
               </h3>
 
@@ -1198,20 +1134,20 @@ export function BillingClient({
                 <div className="space-y-1">
                   <div className="flex justify-between text-slate-300">
                     <span>Ares (Sales & SDR Autonomous Agent)</span>
-                    <span className="font-mono text-indigo-400">42%</span>
+                    <span className="font-mono text-emerald-400">42%</span>
                   </div>
                   <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-indigo-500 h-full rounded-full" style={{ width: '42%' }} />
+                    <div className="bg-emerald-500 h-full rounded-full" style={{ width: '42%' }} />
                   </div>
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex justify-between text-slate-300">
                     <span>Athena (Support & Churn Prevention)</span>
-                    <span className="font-mono text-purple-400">28%</span>
+                    <span className="font-mono text-teal-400">28%</span>
                   </div>
                   <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-purple-500 h-full rounded-full" style={{ width: '28%' }} />
+                    <div className="bg-teal-500 h-full rounded-full" style={{ width: '28%' }} />
                   </div>
                 </div>
 
@@ -1240,7 +1176,7 @@ export function BillingClient({
             {/* Provider & Model Breakdown */}
             <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-purple-400" />
+                <Cpu className="w-4 h-4 text-teal-400" />
                 Active Model Routing Distribution
               </h3>
 
@@ -1312,7 +1248,7 @@ export function BillingClient({
 
             <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
               <span className="text-[11px] text-slate-400 uppercase font-semibold">Purchased</span>
-              <div className="text-xl font-bold text-indigo-400 font-mono">
+              <div className="text-xl font-bold text-emerald-400 font-mono">
                 {(credits?.breakdown?.purchased ?? 50).toLocaleString()}
               </div>
               <span className="text-[10px] text-slate-500">Add-on purchases</span>
@@ -1320,7 +1256,7 @@ export function BillingClient({
 
             <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1">
               <span className="text-[11px] text-slate-400 uppercase font-semibold">Promotional</span>
-              <div className="text-xl font-bold text-purple-400 font-mono">
+              <div className="text-xl font-bold text-teal-400 font-mono">
                 {(credits?.breakdown?.promotional ?? 50).toLocaleString()}
               </div>
               <span className="text-[10px] text-slate-500">Coupon & trial rewards</span>
@@ -1409,7 +1345,7 @@ export function BillingClient({
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-indigo-400" />
+                    <Shield className="w-4 h-4 text-emerald-400" />
                     Autonomous AI Budget & Headroom Sentinel
                   </h3>
                   <p className="text-xs text-slate-400 mt-0.5">
@@ -1440,7 +1376,7 @@ export function BillingClient({
                       spent of ${(aiBudget?.monthlyBudgetUsd ?? 100).toFixed(2)} monthly budget
                     </span>
                   </div>
-                  <span className="font-mono text-sm font-bold text-indigo-400">
+                  <span className="font-mono text-sm font-bold text-emerald-400">
                     {aiBudget?.usagePercentage ?? 1}%
                   </span>
                 </div>
@@ -1451,7 +1387,7 @@ export function BillingClient({
                         ? 'bg-rose-500'
                         : (aiBudget?.usagePercentage ?? 0) >= 80
                         ? 'bg-amber-400'
-                        : 'bg-indigo-500'
+                        : 'bg-emerald-500'
                     }`}
                     style={{ width: `${Math.min(100, aiBudget?.usagePercentage ?? 1)}%` }}
                   />
@@ -1475,7 +1411,7 @@ export function BillingClient({
             {/* Policy Enforcement Form */}
             <div className="p-6 rounded-xl bg-slate-900/70 border border-slate-800 space-y-4">
               <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                <Lock className="w-4 h-4 text-purple-400" />
+                <Lock className="w-4 h-4 text-teal-400" />
                 Exhaustion Guardrail Policy
               </h4>
 
@@ -1487,7 +1423,7 @@ export function BillingClient({
                     value={budgetCapInput}
                     onChange={(e) => setBudgetCapInput(Number(e.target.value))}
                     min={10}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
@@ -1496,7 +1432,7 @@ export function BillingClient({
                   <select
                     value={budgetPolicyInput}
                     onChange={(e) => setBudgetPolicyInput(e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white focus:outline-none focus:border-emerald-500"
                   >
                     <option value="BLOCK">BLOCK (Hard stop autonomous executions)</option>
                     <option value="THROTTLE">THROTTLE (Delay agent reasoning queues)</option>
@@ -1508,7 +1444,7 @@ export function BillingClient({
                 <button
                   onClick={handleUpdateBudget}
                   disabled={loading}
-                  className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition mt-2"
+                  className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold transition mt-2"
                 >
                   Save Budget Guardrails
                 </button>
@@ -1519,29 +1455,29 @@ export function BillingClient({
           {/* Department Allocations */}
           <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
-              <Bot className="w-4 h-4 text-indigo-400" />
+              <Bot className="w-4 h-4 text-emerald-400" />
               Specialized Agent AI Budget Allocations
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 text-xs">
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-indigo-400">Ares (Sales)</span>
+                  <span className="font-semibold text-emerald-400">Ares (Sales)</span>
                   <span className="font-mono text-slate-300 font-bold">$30/mo</span>
                 </div>
                 <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-indigo-500 h-full rounded-full" style={{ width: '45%' }} />
+                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: '45%' }} />
                 </div>
                 <p className="text-[10px] text-slate-500">Autonomous SDR & Inbound Qualification</p>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold text-purple-400">Athena (CS)</span>
+                  <span className="font-semibold text-teal-400">Athena (CS)</span>
                   <span className="font-mono text-slate-300 font-bold">$25/mo</span>
                 </div>
                 <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-                  <div className="bg-purple-500 h-full rounded-full" style={{ width: '32%' }} />
+                  <div className="bg-teal-500 h-full rounded-full" style={{ width: '32%' }} />
                 </div>
                 <p className="text-[10px] text-slate-500">Support Sentinel & Churn Prevention</p>
               </div>
@@ -1588,14 +1524,13 @@ export function BillingClient({
         <div className="rounded-xl bg-slate-900/60 border border-slate-800 overflow-hidden">
           <div className="p-5 border-b border-slate-800 flex items-center justify-between">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <FileText className="w-4 h-4 text-indigo-400" />
+              <FileText className="w-4 h-4 text-emerald-400" />
               Synchronized Stripe Invoices
             </h3>
             <button
               onClick={handleOpenPortal}
-              className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
-            >
-              View in Stripe Portal <ArrowUpRight className="w-3 h-3" />
+              className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1"
+            > View in Stripe Portal <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
 
@@ -1644,7 +1579,7 @@ export function BillingClient({
                             href={inv.hostedInvoiceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center gap-1"
+                            className="text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center gap-1"
                           >
                             PDF <ArrowUpRight className="w-3 h-3" />
                           </a>

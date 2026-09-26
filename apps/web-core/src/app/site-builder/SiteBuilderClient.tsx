@@ -140,7 +140,7 @@ const TEMPLATE_PRESETS: Record<
         buttonLink: '#lead-form',
         secondaryButtonText: 'Watch Product Tour',
         secondaryButtonLink: '#features',
-        badge: '✨ Next-Gen Business OS v4.8',
+        badge: ' Next-Gen Business OS v4.8',
         style: { bgColor: 'bg-transparent', textColor: 'text-white', align: 'center', padding: 'normal', rounded: '3xl' },
       },
       {
@@ -227,7 +227,7 @@ const TEMPLATE_PRESETS: Record<
         buttonLink: '#re-gallery',
         secondaryButtonText: 'Schedule VIP Showing',
         secondaryButtonLink: '#re-form',
-        badge: '🏡 Luxury Brokerage MLS Partner',
+        badge: ' Luxury Brokerage MLS Partner',
         style: { bgColor: 'bg-transparent', textColor: 'text-white', align: 'center', padding: 'normal', rounded: '3xl' },
       },
       {
@@ -288,7 +288,7 @@ const TEMPLATE_PRESETS: Record<
         title: 'Compassionate, World-Class Healthcare At Your Fingertips',
         subtitle: 'Book appointments with board-certified specialists, consult online, and manage digital health records 24/7.',
         buttonText: 'Schedule Clinical Appointment',
-        badge: '🏥 JCI Accredited Medical Facility',
+        badge: ' JCI Accredited Medical Facility',
         style: { bgColor: 'bg-transparent', textColor: 'text-white', align: 'center', padding: 'normal', rounded: '3xl' },
       },
       {
@@ -336,7 +336,7 @@ const TEMPLATE_PRESETS: Record<
         title: 'An Unforgettable Symphony of Modern Gastronomy',
         subtitle: 'Seasonal Michelin-inspired tasting menus, sommelier-curated cellars, and private rooftop views.',
         buttonText: 'Reserve Your Table',
-        badge: '🍷 Michelin Guide Recommended 2026',
+        badge: ' Michelin Guide Recommended 2026',
         style: { bgColor: 'bg-transparent', textColor: 'text-white', align: 'center', padding: 'normal', rounded: '3xl' },
       },
       {
@@ -384,7 +384,7 @@ const TEMPLATE_PRESETS: Record<
         title: 'Mindfully Engineered Essentials for Intentional Living',
         subtitle: 'Sustainable luxury apparel and architectural home goods created to last a lifetime.',
         buttonText: 'Shop New Arrivals',
-        badge: '🌿 100% Recycled & Zero-Waste Certified',
+        badge: ' 100% Recycled & Zero-Waste Certified',
         style: { bgColor: 'bg-transparent', textColor: 'text-white', align: 'center', padding: 'normal', rounded: '3xl' },
       },
       {
@@ -492,7 +492,7 @@ export function SiteBuilderClient() {
       if (prev.length > 0 && !prev.some((b) => b.id === selectedBlockId)) {
         setSelectedBlockId(prev[0].id);
       }
-      setAlert('↩️ Undo executed');
+      setAlert('Undo executed');
       setTimeout(() => setAlert(null), 1500);
     }
   };
@@ -502,7 +502,7 @@ export function SiteBuilderClient() {
       const next = history[historyIndex + 1];
       setHistoryIndex(historyIndex + 1);
       setBlocks(next);
-      setAlert('↪️ Redo executed');
+      setAlert('Redo executed');
       setTimeout(() => setAlert(null), 1500);
     }
   };
@@ -524,7 +524,7 @@ export function SiteBuilderClient() {
           buttonLink: '#lead-form',
           secondaryButtonText: 'Learn More',
           secondaryButtonLink: '#features',
-          badge: '⭐ Prime Feature Announcement',
+          badge: ' Prime Feature Announcement',
           style: { bgColor: 'bg-transparent', textColor: 'text-white', align: 'center', padding: 'normal', rounded: '3xl' },
         };
         break;
@@ -701,7 +701,7 @@ export function SiteBuilderClient() {
     const updated = [...blocks, newBlock];
     updateBlocksWithHistory(updated);
     setSelectedBlockId(newId);
-    setAlert(`✨ Added ${type} block to canvas!`);
+    setAlert(` Added ${type} block to canvas!`);
     setTimeout(() => setAlert(null), 2500);
   };
 
@@ -717,7 +717,7 @@ export function SiteBuilderClient() {
 
   const handleDeleteBlock = (id: string) => {
     if (blocks.length <= 1) {
-      setAlert('⚠️ You must have at least one block on the page.');
+      setAlert(' You must have at least one block on the page.');
       setTimeout(() => setAlert(null), 2500);
       return;
     }
@@ -801,7 +801,7 @@ export function SiteBuilderClient() {
           slug: tpl.meta.slug || prev.slug,
         }));
       }
-      setAlert(`🎉 Loaded template: ${tpl.name}!`);
+      setAlert(`Loaded template: ${tpl.name}!`);
       setTimeout(() => setAlert(null), 3000);
     }
   };
@@ -874,7 +874,7 @@ export function SiteBuilderClient() {
       const chosen = options[Math.floor(Math.random() * options.length)];
       handleUpdateBlockField('title', chosen);
       setAiGenerating(false);
-      setAlert('🪄 AI Rewrite applied high-converting headline!');
+      setAlert(' AI Rewrite applied high-converting headline!');
       setTimeout(() => setAlert(null), 3000);
     }, 600);
   };
@@ -901,12 +901,12 @@ export function SiteBuilderClient() {
 
       if (res.ok) {
         const publishedPage = await res.json();
-        setAlert(`🚀 Page published live! Public URL: /api/cms/pages/public/${metaSettings.slug}`);
+        setAlert(` Page published live! Public URL: /api/cms/pages/public/${metaSettings.slug}`);
       } else {
-        setAlert('🚀 Website published live to edge CDN (https://crm.acmeglobal.io)!');
+        setAlert(' Website published live to edge CDN (https://crm.acmeglobal.io)!');
       }
     } catch {
-      setAlert('🚀 Website published live to edge CDN (https://crm.acmeglobal.io)!');
+      setAlert(' Website published live to edge CDN (https://crm.acmeglobal.io)!');
     } finally {
       setIsPublishing(false);
       setTimeout(() => setAlert(null), 5000);
@@ -2008,7 +2008,7 @@ ${blocks
                 type="button"
                 onClick={() => {
                   navigator.clipboard.writeText(generateExportHtml());
-                  setAlert('📋 Clean HTML5 markup copied to clipboard!');
+                  setAlert(' Clean HTML5 markup copied to clipboard!');
                   setIsExportModalOpen(false);
                   setTimeout(() => setAlert(null), 3000);
                 }}

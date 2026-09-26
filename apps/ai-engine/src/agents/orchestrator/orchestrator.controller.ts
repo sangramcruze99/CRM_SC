@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post, Query } from '@nestjs/common';
 import { AgentOrchestratorService } from './agent-orchestrator.service';
 import { BusinessEvent } from '@repo/core-types';
 
@@ -27,6 +27,36 @@ export class OrchestratorController {
   @Get('timeline')
   getTimeline(@Query('limit') limit?: string) {
     return this.orchestratorService.getTimeline(limit ? parseInt(limit, 10) : 30);
+  }
+
+  /**
+   * Query persisted universal agent executions
+   */
+  @Get('executions')
+  getExecutions(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Query('limit') limit?: string,
+    @Query('status') status?: string,
+    @Query('agentId') agentId?: string,
+  ) {
+    const tenantId = tenantIdHeader || 'default-tenant';
+    return this.orchestratorService.getExecutions(tenantId, {
+      limit: limit ? parseInt(limit, 10) : 50,
+      status,
+      agentId,
+    });
+  }
+
+  /**
+   * Get single execution with full contract details (actions, outputs, decisions)
+   */
+  @Get('executions/:id')
+  getExecutionById(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+  ) {
+    const tenantId = tenantIdHeader || 'default-tenant';
+    return this.orchestratorService.getExecutionById(id, tenantId);
   }
 
   /**
@@ -65,5 +95,40 @@ export class OrchestratorController {
       ...body,
       tenantId,
     });
+  }
+
+  /**
+   * Query pending HITL approval requests
+   */
+  @Get('approvals')
+  getPendingApprovals(@Headers('x-tenant-id') tenantIdHeader: string) {
+    const tenantId = tenantIdHeader || 'default-tenant';
+    return this.orchestratorService.getPendingApprovals(tenantId);
+  }
+
+  /**
+   * Approve a pending action -> executes tool and updates audit trail
+   */
+  @Post('approvals/:id/approve')
+  approveAction(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+    @Body() body: { reviewerId?: string }
+  ) {
+    const tenantId = tenantIdHeader || 'default-tenant';
+    return this.orchestratorService.resumeApprovedAction(id, tenantId, body?.reviewerId);
+  }
+
+  /**
+   * Reject a pending action -> updates record and registers feedback in agent memory
+   */
+  @Post('approvals/:id/reject')
+  rejectAction(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+    @Body() body: { feedback?: string; reviewerId?: string }
+  ) {
+    const tenantId = tenantIdHeader || 'default-tenant';
+    return this.orchestratorService.rejectApprovalAction(id, tenantId, body?.feedback, body?.reviewerId);
   }
 }

@@ -251,7 +251,7 @@ export function BusinessJournalCalendar({
                     </span>
                   )}
                   {day.tasksCompleted > 0 && (
-                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/15 text-purple-300 font-bold border border-purple-500/20">
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-300 font-bold border border-emerald-500/20">
                       {day.tasksCompleted}k
                     </span>
                   )}

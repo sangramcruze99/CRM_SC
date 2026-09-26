@@ -141,8 +141,8 @@ export default function SnakeGame() {
       </div>
 
       <div className="mb-8 text-center">
-        <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-2">
-          Break Time!
+        <h1 className="text-4xl font-bold text-white mb-2">
+          Break Time
         </h1>
         <div className="flex items-center justify-center space-x-8 text-zinc-400 font-mono">
           <div className="flex items-center space-x-2 text-emerald-400">

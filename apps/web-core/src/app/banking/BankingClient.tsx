@@ -36,7 +36,10 @@ import {
   Building2,
   SlidersHorizontal,
   ChevronDown,
+  Bot
 } from 'lucide-react';
+import { openAgentModal } from '@/components/ai/ContextualAgentModal';
+
 
 export type FinancialAccountType =
   | 'BANK_ACCOUNT'
@@ -199,7 +202,7 @@ export function BankingClient() {
 
   const handleOpenTransferModal = () => {
     if (accounts.length < 2) {
-      setAlert('⚠️ You need at least 2 connected financial structures to execute internal transfers. Connect another account or card first.');
+      setAlert(' You need at least 2 connected financial structures to execute internal transfers. Connect another account or card first.');
       setTimeout(() => setAlert(null), 4000);
       return;
     }
@@ -247,12 +250,12 @@ export function BankingClient() {
 
       if (res.ok) {
         await refreshFinanceData();
-        setAlert(`🎉 Successfully connected new ${newAccType.replace('_', ' ')}: ${newAccName || providerName}!`);
+        setAlert(`Successfully connected new ${newAccType.replace('_', ' ')}: ${newAccName || providerName}!`);
       } else {
-        setAlert(`⚠️ Account created locally, pending background sync.`);
+        setAlert(` Account created locally, pending background sync.`);
       }
     } catch {
-      setAlert(`⚠️ Backend API offline, account creation will retry.`);
+      setAlert(` Backend API offline, account creation will retry.`);
     }
 
     setIsAddAccountModalOpen(false);
@@ -268,7 +271,7 @@ export function BankingClient() {
   const handleExecuteTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (transferFromId === transferToId) {
-      setAlert('⚠️ Source and destination accounts cannot be the same.');
+      setAlert(' Source and destination accounts cannot be the same.');
       setTimeout(() => setAlert(null), 3000);
       return;
     }
@@ -279,7 +282,7 @@ export function BankingClient() {
     if (!fromAcc || !toAcc) return;
 
     if (fromAcc.balance < transferAmount) {
-      setAlert(`⚠️ Insufficient balance in ${fromAcc.name}. Available: $${fromAcc.balance.toLocaleString()}`);
+      setAlert(` Insufficient balance in ${fromAcc.name}. Available: $${fromAcc.balance.toLocaleString()}`);
       setTimeout(() => setAlert(null), 3500);
       return;
     }
@@ -298,12 +301,12 @@ export function BankingClient() {
 
       if (res.ok) {
         await refreshFinanceData();
-        setAlert(`💸 Transferred $${transferAmount.toLocaleString()} from ${fromAcc.name} to ${toAcc.name} with General Ledger posting!`);
+        setAlert(` Transferred $${transferAmount.toLocaleString()} from ${fromAcc.name} to ${toAcc.name} with General Ledger posting!`);
       } else {
-        setAlert(`⚠️ Transfer failed on server. Review available balance.`);
+        setAlert(` Transfer failed on server. Review available balance.`);
       }
     } catch {
-      setAlert(`⚠️ Failed to execute server transfer.`);
+      setAlert(` Failed to execute server transfer.`);
     }
 
     setIsTransferModalOpen(false);
@@ -312,12 +315,12 @@ export function BankingClient() {
 
   const handleReconcileAll = async () => {
     await refreshFinanceData();
-    setAlert('🎉 Bank feeds synced with General Ledger.');
+    setAlert(' Bank feeds synced with General Ledger.');
     setTimeout(() => setAlert(null), 4000);
   };
 
   const handleReconcileSingle = async (id: string) => {
-    setAlert('⚡ Bank transaction verified with General Ledger.');
+    setAlert(' Bank transaction verified with General Ledger.');
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -348,130 +351,149 @@ export function BankingClient() {
         </div>
       )}
 
-      {/* Header & Command Strip */}
-      <div className="bg-slate-900/80 dark:bg-white/[0.02] backdrop-blur-2xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
-              <Sparkles size={11} />
-              Pillar 3: Financials, Banking &amp; Multi-Currency Dual Khata
+      {/* Top Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+        {/* Ambient Botanical Glow */}
+        <div className="absolute -top-24 -right-24 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold tracking-wider uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                MIDAS TREASURY & DUAL KHATA
+              </span>
+              <span className="text-[11px] font-mono text-zinc-500">MULTI-CURRENCY RECONCILIATION</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              Treasury, Forex & Multi-Bank Hub
+            </h1>
+            <p className="text-sm text-zinc-400 mt-1 max-w-2xl">
+              Real-time cash flow monitoring, multi-currency ledger balances, automated bank statement matching, and cross-border settlement rails.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <button
+              type="button"
+              onClick={() => openAgentModal('midas')}
+              className="px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 hover:text-white rounded-xl text-xs font-semibold border border-white/[0.08] transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Bot size={15} className="text-emerald-400" />
+              <span>Finance Copilot</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleOpenTransferModal}
+              className="px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.09] text-zinc-300 hover:text-white rounded-xl text-xs font-semibold border border-white/[0.08] transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Repeat size={14} className="text-emerald-400" />
+              <span>Transfer Funds</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsAddAccountModalOpen(true)}
+              className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Plus size={15} />
+              <span>Connect Account</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                if (bankFeed.length === 0) {
+                  setAlert('No transactions available to reconcile yet. Connect an account or transfer funds to generate records.');
+                  setTimeout(() => setAlert(null), 4000);
+                  return;
+                }
+                handleReconcileAll();
+              }}
+              className="px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold rounded-xl text-xs border border-emerald-500/20 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <Zap size={14} />
+              <span>Auto-Reconcile ({unmatchedCount})</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Sentinel pulse status strip */}
+        <div className="mt-6 pt-4 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-400">
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+              SENTINEL: REAL-TIME BANK FEED RECONCILIATION ACTIVE
             </span>
-            <span className="text-xs text-slate-400 font-semibold flex items-center gap-1">
-              <ShieldCheck size={13} className="text-emerald-400" />
-              SOC2 Encrypted &amp; Plaid Verified
+            <span className="hidden sm:inline text-zinc-600">|</span>
+            <span className="hidden sm:inline text-zinc-400">
+              VAULT TARGET: <code className="text-zinc-300">vault/finance/treasury_ledgers/</code>
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
-            <Landmark className="text-emerald-400" size={32} />
-            Treasury, Bank Accounts &amp; Forex Hub
-          </h1>
-          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-            Manage corporate bank accounts, credit cards, PayPal merchants, and multi-currency ledgers with automated reconciliation.
-          </p>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-zinc-500 font-mono">ENCRYPTION: AES-256 GCM PLAID SYNCHRONIZED</span>
+          </div>
         </div>
-
-        {/* Global Action Buttons */}
-        <div className="flex items-center gap-2.5 flex-wrap relative z-10">
-          {/* Internal Transfer Button */}
-          <button
-            type="button"
-            onClick={handleOpenTransferModal}
-            className="px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-white font-bold rounded-2xl text-xs border border-white/10 transition-all flex items-center gap-2 cursor-pointer"
-          >
-            <Repeat size={14} className="text-emerald-400" />
-            <span>Transfer Funds</span>
-          </button>
-
-          {/* Add Financial Structure Button */}
-          <button
-            type="button"
-            onClick={() => setIsAddAccountModalOpen(true)}
-            className="px-4 py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-2xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-2 cursor-pointer active:scale-95"
-          >
-            <Plus size={15} />
-            <span>Add Card / Bank / PayPal</span>
-          </button>
-
-          {/* Reconcile All Button */}
-          <button
-            type="button"
-            onClick={() => {
-              if (bankFeed.length === 0) {
-                setAlert('ℹ️ No transactions available to reconcile yet. Connect an account or transfer funds to generate records.');
-                setTimeout(() => setAlert(null), 4000);
-                return;
-              }
-              handleReconcileAll();
-            }}
-            className="px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-bold rounded-2xl text-xs border border-emerald-500/30 transition-all flex items-center gap-2 cursor-pointer"
-          >
-            <Zap size={14} />
-            <span>Auto-Reconcile ({unmatchedCount})</span>
-          </button>
-        </div>
-
-        {/* Ambient Glow */}
-        <div className="absolute -top-12 -right-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
-      {/* KPI Metric Strip */}
+      {/* High-Density Telemetry KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5 shadow-xl relative overflow-hidden">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-            <span>Total Consolidated Treasury</span>
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider">
+            <span>Consolidated Treasury</span>
             <DollarSign size={16} className="text-emerald-400" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-400">
+            <span className="text-2xl sm:text-3xl font-black font-mono text-white">
               ${totalTreasuryUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
           </div>
-          <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-            <span className="text-emerald-400 font-bold">
-              {accounts.length === 0
-                ? 'No accounts connected'
-                : `Across ${accounts.length} connected instrument${accounts.length > 1 ? 's' : ''}`}
-            </span>
+          <p className="text-[11px] text-zinc-500 font-mono mt-1">
+            {accounts.length === 0
+              ? 'No accounts connected'
+              : `Across ${accounts.length} connected instrument${accounts.length > 1 ? 's' : ''}`}
           </p>
         </div>
 
-        <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5 shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider">
             <span>Reconciliation Status</span>
-            <ShieldCheck size={16} className="text-teal-400" />
+            <ShieldCheck size={16} className="text-emerald-400" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-black font-mono text-white">
               {bankFeed.length === 0 ? '0 Records' : unmatchedCount === 0 ? '100% Balanced' : `${unmatchedCount} Unmatched`}
             </span>
           </div>
-          <p className="text-[11px] text-teal-400 font-medium mt-1">
+          <p className="text-[11px] text-emerald-400 font-mono mt-1">
             {bankFeed.length === 0 ? 'Awaiting Account Activity' : 'Dual Khata Ledger Synchronized'}
           </p>
         </div>
 
-        <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5 shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
-            <span>Global Currency Rates</span>
-            <Globe2 size={16} className="text-sky-400" />
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider">
+            <span>Forex Multi-Currency</span>
+            <Globe2 size={16} className="text-emerald-400" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-black font-mono text-white">10 Forex Currencies</span>
+            <span className="text-2xl sm:text-3xl font-black font-mono text-white">10 Currencies</span>
           </div>
-          <p className="text-[11px] text-sky-400 font-medium mt-1">USD, EUR, GBP, AED, INR, JPY, SGD...</p>
+          <p className="text-[11px] text-zinc-500 font-mono mt-1">USD, EUR, GBP, AED, INR, JPY, SGD...</p>
         </div>
 
-        <div className="bg-slate-900/60 dark:bg-white/[0.03] backdrop-blur-xl border border-slate-200 dark:border-white/[0.08] rounded-3xl p-5 shadow-xl">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-semibold">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider">
             <span>Connected Structures</span>
-            <Wallet size={16} className="text-amber-400" />
+            <Wallet size={16} className="text-emerald-400" />
           </div>
           <div className="mt-2 flex items-baseline gap-2">
             <span className="text-2xl sm:text-3xl font-black font-mono text-white">{accounts.length} Active</span>
           </div>
-          <p className="text-[11px] text-amber-400 font-medium mt-1">Banks, Cards, PayPal &amp; Crypto</p>
+          <p className="text-[11px] text-zinc-500 font-mono mt-1">Banks, Cards, PayPal & Crypto</p>
         </div>
       </div>
+
 
       {/* SECTION 1: CONNECTED FINANCIAL ACCOUNTS & INSTRUMENTS */}
       <div className="space-y-4">
@@ -544,9 +566,9 @@ export function BankingClient() {
                             : isPaypal
                             ? 'bg-sky-500/20 text-sky-400 border-sky-500/30'
                             : isCrypto
-                            ? 'bg-violet-500/20 text-violet-400 border-violet-500/30'
+                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                             : isStripe
-                            ? 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30'
+                            ? 'bg-teal-500/20 text-teal-400 border-teal-500/30'
                             : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                         }`}
                       >
@@ -1222,3 +1244,4 @@ export function BankingClient() {
     </div>
   );
 }
+

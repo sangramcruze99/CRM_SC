@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import Link from 'next/link';
 import { Plus, Download, CheckCircle, Clock, FileText, Send, Lock, X, Sparkles, Building, Mail, FileCheck, FolderOpen, Paperclip } from 'lucide-react';
 import { DocumentVaultPickerModal, VaultDocument } from '@/components/documents/DocumentVaultPickerModal';
 
@@ -61,88 +62,213 @@ export function NdasClient({ initialNdas = [] }: { initialNdas?: any[] }) {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2.5">
-            <Lock className="text-emerald-600 dark:text-emerald-400" size={24} />
-            Non-Disclosure Agreements (NDAs)
-          </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Automated legal confidentiality agreements, mutual NDA workflows, and expiration tracking.
-          </p>
+      {/* 1. TOP EXECUTIVE COCKPIT HEADER CHASSIS */}
+      <div className="botanical-glass-card p-5 sm:p-6 rounded-2xl space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 via-teal-500 to-emerald-600 text-slate-950 flex items-center justify-center text-xl font-bold shadow-lg shadow-emerald-500/20 border border-emerald-300/30 shrink-0">
+              <Lock size={22} className="stroke-[2.2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-black text-white tracking-tight">
+                  Non-Disclosure Agreements (NDAs)
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  REAL-TIME SYNC
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/[0.06] text-slate-300 border border-white/10">
+                  {ndas.length} Agreements
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Automated legal confidentiality workflows, counterparty e-signatures, and regulatory compliance secured by the Athena Sentinel.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <Link
+              href="/documents"
+              className="px-3.5 py-2 bg-white/[0.05] hover:bg-white/[0.1] text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-all border border-white/10 flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+            >
+              <FolderOpen size={14} className="text-emerald-400" />
+              <span>Smart Vault Storage</span>
+            </Link>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-1.5 cursor-pointer active:scale-[0.98]"
+            >
+              <Plus size={15} />
+              <span>+ Draft New NDA</span>
+            </button>
+          </div>
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-[0.98] border border-emerald-400/40 cursor-pointer"
-        >
-          <Plus size={16} />
-          <span>New NDA Agreement</span>
-        </button>
+
+        {/* Sentinel Automated Pulse Strip */}
+        <div className="pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="px-2.5 py-1 rounded-lg bg-black/40 border border-emerald-500/30 flex items-center gap-2 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-white">Athena</span>
+              <span className="text-[10px] text-slate-400">Risk &amp; Legal Sentinel</span>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+              vault/documents/contracts_incoming/
+            </span>
+          </div>
+          <span className="text-[10px] font-mono text-emerald-400 font-bold flex items-center gap-1.5">
+            <Sparkles size={11} />
+            <span>Digital Signature Escrow Active</span>
+          </span>
+        </div>
       </div>
 
-      {/* NDAs Table */}
-      <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-        <table className="w-full text-sm text-left">
-          <thead className="bg-white/[0.02] text-slate-400 text-xs uppercase tracking-wider font-semibold border-b border-white/[0.08]">
-            <tr>
-              <th className="px-6 py-4">Counterparty / Partner</th>
-              <th className="px-6 py-4">Signee Email</th>
-              <th className="px-6 py-4">Agreement Type</th>
-              <th className="px-6 py-4">Effective Date</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/[0.05]">
-            {ndas.map((n) => (
-              <tr key={n.id} className="hover:bg-white/[0.04] transition-colors">
-                <td className="px-6 py-4 font-bold text-white flex items-center gap-2 text-sm">
-                  <FileText size={16} className="text-emerald-400" />
-                  <span>{n.counterparty}</span>
-                </td>
-                <td className="px-6 py-4 text-slate-300 text-xs font-medium">{n.signeeEmail}</td>
-                <td className="px-6 py-4">
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/[0.08] text-slate-300 border border-white/10">
-                    {n.type} NDA
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-slate-400 text-xs font-medium">{n.effectiveDate}</td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                      n.status === 'EXECUTED'
-                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                        : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                    }`}
-                  >
-                    {n.status === 'EXECUTED' ? <CheckCircle size={12} /> : <Clock size={12} />}
-                    {n.status.replace('_', ' ')}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <button
-                    onClick={() => {
-                      setAlert(`Downloading certified PDF for ${n.counterparty}...`);
-                      setTimeout(() => setAlert(null), 2500);
-                    }}
-                    className="px-3.5 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all border border-white/[0.1] inline-flex items-center gap-1 ml-auto cursor-pointer"
-                  >
-                    <Download size={12} />
-                    <span>PDF</span>
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {ndas.length === 0 && (
+      {/* 2. COCKPIT TELEMETRY METRICS GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">Total Envelopes</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <FileText size={15} />
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+            {ndas.length} <span className="text-sm font-sans font-normal text-slate-400">contracts</span>
+          </div>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Legal Vault Registry</span>
+            <span className="text-emerald-400 font-mono font-bold">Encrypted</span>
+          </div>
+        </div>
+
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">Executed &amp; Binding</span>
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+              <CheckCircle size={15} />
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tight">
+            {ndas.filter((n) => n.status === 'EXECUTED').length} <span className="text-sm font-sans font-normal text-slate-400">signed</span>
+          </div>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Enforceable agreements</span>
+            <span className="text-emerald-400 font-mono font-bold">100% Valid</span>
+          </div>
+        </div>
+
+        <div className="botanical-glass-card p-5 rounded-2xl relative overflow-hidden group">
+          <div className="flex items-center justify-between text-slate-400 mb-2">
+            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-300">Awaiting Signatures</span>
+            <div className="w-7 h-7 rounded-lg bg-white/[0.08] border border-white/10 flex items-center justify-center text-slate-300">
+              <Clock size={15} />
+            </div>
+          </div>
+          <div className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+            {ndas.filter((n) => n.status !== 'EXECUTED').length} <span className="text-sm font-sans font-normal text-slate-400">pending</span>
+          </div>
+          <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-white/[0.06] text-[11px]">
+            <span className="text-slate-400">Athena Sentinel Auto-Followup</span>
+            <span className="text-teal-400 font-mono font-bold">Active</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. NDAS TABLE CHASSIS */}
+      <div className="botanical-glass-card rounded-2xl overflow-hidden border border-white/[0.08]">
+        <div className="p-4 border-b border-white/[0.08] flex items-center justify-between gap-3 bg-white/[0.02]">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono font-bold uppercase text-slate-300">Confidentiality Registry</span>
+            <span className="px-2 py-0.2 rounded bg-emerald-500/10 text-emerald-300 text-[10px] font-mono font-bold border border-emerald-500/20">
+              {ndas.length} total
+            </span>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-black/30 text-slate-400 text-[11px] uppercase tracking-wider font-mono font-bold border-b border-white/[0.08]">
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-slate-500 text-xs font-medium">
-                  No agreements drafted yet. Click <span className="text-emerald-400 font-bold">"Draft New NDA"</span> above to prepare your first confidentiality contract.
-                </td>
+                <th className="px-6 py-3.5">Counterparty &amp; Entity</th>
+                <th className="px-6 py-3.5">Signee Email</th>
+                <th className="px-6 py-3.5">Agreement Type</th>
+                <th className="px-6 py-3.5">Effective Date</th>
+                <th className="px-6 py-3.5">Lifecycle Status</th>
+                <th className="px-6 py-3.5 text-right">Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-white/[0.05]">
+              {ndas.map((n) => (
+                <tr key={n.id} className="hover:bg-white/[0.04] transition-colors group">
+                  <td className="px-6 py-4 font-bold text-white flex items-center gap-2.5 text-xs">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                      <FileText size={14} />
+                    </div>
+                    <span>{n.counterparty}</span>
+                  </td>
+                  <td className="px-6 py-4 text-slate-300 text-xs font-mono">{n.signeeEmail}</td>
+                  <td className="px-6 py-4">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-white/[0.08] text-slate-300 border border-white/10">
+                      {n.type} NDA
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-slate-400 text-xs font-mono">{n.effectiveDate}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold ${
+                        n.status === 'EXECUTED'
+                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                          : 'bg-teal-500/20 text-teal-300 border border-teal-500/40'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${n.status === 'EXECUTED' ? 'bg-emerald-400' : 'bg-teal-400'}`} />
+                      {n.status.replace('_', ' ')}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => {
+                        setAlert(`Downloading certified PDF for ${n.counterparty}...`);
+                        setTimeout(() => setAlert(null), 2500);
+                      }}
+                      className="px-3.5 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all border border-white/[0.1] inline-flex items-center gap-1 ml-auto cursor-pointer"
+                    >
+                      <Download size={12} />
+                      <span>PDF</span>
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {ndas.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="px-6 py-14 text-center">
+                    <div className="max-w-sm mx-auto space-y-3">
+                      <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/20">
+                        <Lock size={24} />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-white">No confidentiality agreements drafted</h4>
+                        <p className="text-xs text-slate-400 mt-1">
+                          Prepare formal mutual or unilateral non-disclosure agreements with automated e-signature links.
+                        </p>
+                      </div>
+                      <div className="pt-2">
+                        <button
+                          onClick={() => setIsModalOpen(true)}
+                          className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-md shadow-emerald-500/20 cursor-pointer"
+                        >
+                          + Draft New NDA
+                        </button>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Remodeled Luxury Glass Portal Modal */}

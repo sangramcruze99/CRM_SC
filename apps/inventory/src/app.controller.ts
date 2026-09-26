@@ -1,39 +1,35 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Headers } from '@nestjs/common';
+import { Public } from './jwt-auth.guard';
 import { AppService } from './app.service';
+import { ProductsService } from './products/products.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly productsService: ProductsService,
+  ) {}
 
+  @Public()
   @Get()
   getHello(): string {
     return this.appService.getHello();
   }
 
+  @Public()
+  @Get('health')
+  getHealth() {
+    return {
+      status: 'ok',
+      service: 'inventory',
+      port: 3026,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  @Public()
   @Get('inventory')
-  getInventory() {
-    return [
-      {
-        id: 'sku_1',
-        name: 'Enterprise Cloud Server Rack',
-        sku: 'SRV-ECR-900',
-        stock: 24,
-        price: 4999.0,
-      },
-      {
-        id: 'sku_2',
-        name: 'Optical Network Transceiver 100G',
-        sku: 'OPT-NT-100',
-        stock: 120,
-        price: 299.0,
-      },
-      {
-        id: 'sku_3',
-        name: 'Secure Hardware Security Module',
-        sku: 'HSM-SEC-50',
-        stock: 15,
-        price: 1250.0,
-      },
-    ];
+  async getInventory(@Headers('x-tenant-id') tenantId?: string) {
+    return this.productsService.findAll({}, tenantId || 'default-tenant');
   }
 }

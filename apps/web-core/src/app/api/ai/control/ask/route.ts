@@ -12,6 +12,88 @@ export async function POST(req: NextRequest) {
     }
 
     const lower = query.toLowerCase();
+    const context = body.context || {};
+
+    // 0. SPECIFIC RECORD CONTEXT (RecordAiMenu / Section AI)
+    if (context.entityType && context.entityId) {
+      let agentName = 'AI Assistant';
+      let agentKey = 'general';
+      let systemRole = 'You are the Business OS AI Assistant.';
+
+      if (context.entityType === 'deal') {
+        agentName = 'Sales AI (Ares)';
+        agentKey = 'sales';
+        systemRole = 'You are Ares, the Sales Intelligence Sentinel in Business OS. Analyze the deal context, assess pipeline velocity, identify risks, and recommend concrete next actions.';
+      } else if (context.entityType === 'invoice') {
+        agentName = 'Finance AI (Midas)';
+        agentKey = 'finance';
+        systemRole = 'You are Midas, the Treasury and Invoicing Sentinel in Business OS. Analyze payment terms, overdue aging, and recommend polite, effective cash collection steps. Do not alter verified invoice balances.';
+      } else if (context.entityType === 'contact' || context.entityType === 'lead') {
+        agentName = 'Lead Qualification AI';
+        agentKey = 'leads';
+        systemRole = 'You are the Inbound Lead Qualification Agent in Business OS. Evaluate ICP fit, score importance, and recommend actionable outreach.';
+      } else if (context.entityType === 'ticket') {
+        agentName = 'Customer Support AI (Athena / Support)';
+        agentKey = 'support';
+        systemRole = 'You are the Customer Support & SLA Sentinel in Business OS. Analyze ticket history and provide clear, empathetic, solution-oriented guidance.';
+      } else if (context.entityType === 'project') {
+        agentName = 'Operations AI (Hermes)';
+        agentKey = 'operations';
+        systemRole = 'You are Hermes, the Project Fulfillment Sentinel in Business OS. Track sprint deliverables, milestones, and operational blockers.';
+      }
+
+      const ollamaBaseCtx = (process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11435').replace(/\/$/, '');
+      const ollamaModelCtx = process.env.OLLAMA_DEFAULT_MODEL || 'gemma4:e4b';
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const localAiRes = await fetch(`${ollamaBaseCtx}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: ollamaModelCtx,
+            messages: [
+              {
+                role: 'system',
+                content: `${systemRole} Provide a concise, professional business recommendation. Keep your response practical and directly relevant to the record. Do not mention tokens, vectors, or models.`,
+              },
+              {
+                role: 'user',
+                content: `Entity Type: ${context.entityType}\nEntity ID: ${context.entityId}\nEntity Name: ${context.entityName || 'N/A'}\nContext Data: ${JSON.stringify(context)}\n\nUser Request: ${query}`,
+              },
+            ],
+            stream: false,
+            options: { temperature: 0.7 },
+          }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (localAiRes.ok) {
+          const localData = await localAiRes.json() as any;
+          const text = localData.message?.content || localData.response || '';
+          if (text) {
+            return NextResponse.json({
+              department: agentName,
+              departmentKey: agentKey,
+              intent: 'RECORD_ASSISTANCE',
+              answer: text,
+              isLocalEngine: true,
+              provider: 'ollama-gemma',
+              model: ollamaModelCtx,
+              provenance: 'OLLAMA_LOCAL_GEMMA',
+              suggestedActions: [
+                { label: `View ${context.entityType}`, action: 'NAVIGATE', path: `/${context.entityType}s` },
+                { label: 'Check Activity Feed', action: 'NAVIGATE', path: '/ai/activity' },
+              ],
+            });
+          }
+        }
+      } catch {
+        // Fallback gracefully to subsequent intent handlers
+      }
+
+    }
 
     // 1. DEALS / SALES INTENT
     if (lower.includes('deal') || lower.includes('pipeline') || lower.includes('sales') || lower.includes('revenue') || lower.includes('opportunity')) {
@@ -174,7 +256,7 @@ export async function POST(req: NextRequest) {
         department: 'AI Team Coordinator',
         departmentKey: 'coordinator',
         intent: 'DAILY_BRIEFING',
-        answer: `Good day. Here is your executive briefing:\n\n💼 Sales: ${dealCount} deals active in pipeline.\n💰 Finance: ${invCount} invoices awaiting payment.\n👥 Relationships: ${contactCount} contacts actively tracked.\n⚡ AI Assistants: All 6 digital employees are operational and assisting your team.`,
+        answer: `Good day. Here is your executive briefing:\n\n Sales: ${dealCount} deals active in pipeline.\n Finance: ${invCount} invoices awaiting payment.\n Relationships: ${contactCount} contacts actively tracked.\n AI Assistants: All 6 digital employees are operational and assisting your team.`,
         isLocalEngine: true,
         provenance: 'LOCAL_PYTHON_GPU',
         suggestedActions: [
@@ -185,7 +267,56 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 6. GENERAL INTENT: Priority 1: Local Machine First (Python AI :3030 / NVIDIA GPU)
+    // 6. GENERAL INTENT: Priority 0 — Ollama Local Gemma (primary brain, zero API cost)
+    const ollamaBase = (process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11435').replace(/\/$/, '');
+    const ollamaModel = process.env.OLLAMA_DEFAULT_MODEL || 'gemma4:e4b';
+    try {
+      const ctrl = new AbortController();
+      const tid = setTimeout(() => ctrl.abort(), 8000);
+      const ollamaRes = await fetch(`${ollamaBase}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: ollamaModel,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are the Business OS AI Team Assistant running on Gemma locally. Provide clear, calm, helpful business guidance. Never mention tokens or model internals.',
+            },
+            { role: 'user', content: query },
+          ],
+          stream: false,
+          options: { temperature: 0.7 },
+        }),
+        signal: ctrl.signal,
+      });
+      clearTimeout(tid);
+
+      if (ollamaRes.ok) {
+        const ollamaData = await ollamaRes.json() as any;
+        const text = ollamaData.message?.content || ollamaData.response || '';
+        if (text) {
+          return NextResponse.json({
+            department: 'Local Gemma Copilot',
+            departmentKey: 'general',
+            intent: 'GENERAL_ASSISTANCE',
+            answer: text,
+            isLocalEngine: true,
+            provider: 'ollama-gemma',
+            model: ollamaModel,
+            provenance: 'OLLAMA_LOCAL_GEMMA',
+            suggestedActions: [
+              { label: 'View AI Team', action: 'NAVIGATE', path: '/ai/team' },
+              { label: 'Open Activity Feed', action: 'NAVIGATE', path: '/ai/activity' },
+            ],
+          });
+        }
+      }
+    } catch {
+      // Ollama unavailable; try Python-AI GPU fallback
+    }
+
+    // 6b. Priority 1 — Python-AI CUDA GPU (secondary local engine)
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 6000);
@@ -197,11 +328,11 @@ export async function POST(req: NextRequest) {
           'X-Service-Key': process.env.PYTHON_AI_API_KEY || 'business-os-internal-ai-key-secret',
         },
         body: JSON.stringify({
-          model: 'local/gtx1060-cuda',
+          model: `ollama/${ollamaModel}`,
           messages: [
             {
               role: 'system',
-              content: 'You are the Business OS AI Team Assistant running locally on the user host machine. Provide clear, calm, helpful business guidance. Never mention tokens or models.',
+              content: 'You are the Business OS AI Team Assistant. Provide clear, calm, helpful business guidance.',
             },
             { role: 'user', content: query },
           ],
@@ -212,15 +343,17 @@ export async function POST(req: NextRequest) {
       clearTimeout(timeoutId);
 
       if (localAiRes.ok) {
-        const localData = await localAiRes.json();
+        const localData = await localAiRes.json() as any;
         const text = localData.content || '';
         if (text) {
           return NextResponse.json({
-            department: 'Local AI Copilot (GTX 1060)',
+            department: 'Local AI Copilot (GPU)',
             departmentKey: 'general',
             intent: 'GENERAL_ASSISTANCE',
             answer: text,
             isLocalEngine: true,
+            provider: 'python-gpu-gemma',
+            model: ollamaModel,
             provenance: 'LOCAL_PYTHON_GPU',
             suggestedActions: [
               { label: 'View AI Team', action: 'NAVIGATE', path: '/ai/team' },
@@ -230,8 +363,9 @@ export async function POST(req: NextRequest) {
         }
       }
     } catch {
-      // Local AI unavailable or timed out; seamlessly proceed to secondary cloud fallback
+      // Local AI unavailable; engaging API failsafe via ai-engine microservice
     }
+
 
     // Secondary 6b: Route to AI Engine prompts microservice with hybrid fallback
     try {

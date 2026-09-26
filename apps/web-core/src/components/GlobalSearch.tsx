@@ -189,14 +189,14 @@ export function GlobalSearch() {
           setTimeout(() => inputRef.current?.focus(), 100);
         }}
         className="w-full h-8.5 flex items-center justify-between px-3 bg-slate-100 hover:bg-slate-200/90 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 rounded-xl text-xs font-medium transition-all border border-slate-200 dark:border-white/[0.08] hover:border-emerald-500/40 shadow-xs cursor-pointer active:scale-[0.99] whitespace-nowrap"
-        title="Universal Search & Command Palette (⌘K / Ctrl+K)"
+        title="Universal Search & Command Palette (K / Ctrl+K)"
       >
         <div className="flex items-center gap-2 min-w-0">
           <Search size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
           <span className="truncate text-slate-600 dark:text-slate-300 font-medium">Search or jump to...</span>
         </div>
         <kbd className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/15 shrink-0 ml-2">
-          ⌘K
+          K
         </kbd>
       </button>
 

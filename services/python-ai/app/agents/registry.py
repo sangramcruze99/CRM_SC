@@ -1,6 +1,11 @@
 """
 Centralized Agent Configuration Registry for all 10 Business OS AI Agents.
 Single source of truth for agent system prompts, tools, trigger rules, and safety approvals.
+
+Model Strategy:
+  PRIMARY:  ollama/gemma4:e4b  (local, free, private — E:/ollama-models)
+  FALLBACK: groq/compound      (ultra-fast cloud — secondary)
+  FAILSAFE: openrouter/openai/gpt-4o (last resort cloud)
 """
 
 from typing import Dict, List, Optional
@@ -25,8 +30,27 @@ class CentralAgentRegistry:
     def get(self, agent_id: str) -> Optional[AgentDefinition]:
         if agent_id in self._agents:
             return self._agents[agent_id]
-        if agent_id in ("content", "content_optimization", "content-optimization"):
-            return self._agents.get("content_optimization") or self._agents.get("content")
+        aliases = {
+            "agent_sales": "ares",
+            "sales": "ares",
+            "agent_csm": "athena",
+            "csm": "athena",
+            "agent_finance": "midas",
+            "finance": "midas",
+            "agent_ops": "hermes",
+            "ops": "hermes",
+            "agent_vesta": "vesta",
+            "agent_support": "customer_support",
+            "support": "customer_support",
+            "agent_recruitment": "recruitment",
+            "agent_ecommerce": "ecommerce",
+            "agent_content": "content",
+            "agent_lead_qualification": "lead_qualification",
+            "content_optimization": "content",
+            "content-optimization": "content",
+        }
+        if agent_id in aliases and aliases[agent_id] in self._agents:
+            return self._agents[aliases[agent_id]]
         alt = agent_id.replace("-", "_") if "-" in agent_id else agent_id.replace("_", "-")
         return self._agents.get(alt)
 
@@ -87,8 +111,8 @@ class CentralAgentRegistry:
                     ),
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.6,
                 ),
                 autonomy_mode=AutonomyMode.HYBRID,
@@ -134,8 +158,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.4,
                 ),
                 autonomy_mode=AutonomyMode.HYBRID,
@@ -185,8 +209,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.5,
                 ),
                 autonomy_mode=AutonomyMode.AUTONOMOUS,
@@ -232,8 +256,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.2,
                 ),
                 autonomy_mode=AutonomyMode.HYBRID,
@@ -278,8 +302,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.4,
                 ),
                 autonomy_mode=AutonomyMode.AUTONOMOUS,
@@ -322,8 +346,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.2,
                 ),
                 autonomy_mode=AutonomyMode.AUTONOMOUS,
@@ -366,8 +390,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.3,
                 ),
                 autonomy_mode=AutonomyMode.AUTONOMOUS,
@@ -411,8 +435,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.3,
                 ),
                 autonomy_mode=AutonomyMode.HYBRID,
@@ -455,8 +479,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.2,
                 ),
                 autonomy_mode=AutonomyMode.AUTONOMOUS,
@@ -498,8 +522,8 @@ class CentralAgentRegistry:
                     )
                 ],
                 model_policy=ModelPolicy(
-                    primary_model="groq/compound",
-                    fallback_model="openrouter/openai/gpt-4o",
+                    primary_model="ollama/gemma4:e4b",
+                    fallback_model="groq/compound",
                     temperature=0.7,
                 ),
                 autonomy_mode=AutonomyMode.HYBRID,

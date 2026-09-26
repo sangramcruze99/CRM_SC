@@ -16,10 +16,12 @@ import {
   Flame,
   Check,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Bot
 } from 'lucide-react';
 import { createSprintTask, updateSprintTaskStatus, deleteSprintTask } from '../../app/actions';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { openAgentModal } from '../ai/ContextualAgentModal';
 
 export interface TaskItem {
   id: string;
@@ -145,7 +147,7 @@ export function SprintKanbanBoard({ initialProjects, initialView }: SprintKanban
     );
 
     setAlert({
-      message: `✨ Task "${task.title}" shifted to "${COLUMNS.find((c) => c.id === newStatus)?.title || newStatus}"`,
+      message: ` Task "${task.title}" shifted to "${COLUMNS.find((c) => c.id === newStatus)?.title || newStatus}"`,
       type: 'success',
     });
     setTimeout(() => setAlert(null), 3000);
@@ -331,6 +333,16 @@ export function SprintKanbanBoard({ initialProjects, initialView }: SprintKanban
               <List size={13} />
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={() => openAgentModal('hermes')}
+            className="px-2.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/50 text-xs font-bold text-emerald-700 dark:text-emerald-300 rounded-xl flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+            title="Open Projects Assistant & Sprint Velocity Copilot"
+          >
+            <Bot size={13} className="text-emerald-600 dark:text-emerald-400 animate-pulse" />
+            <span className="hidden sm:inline">Projects Assistant</span>
+          </button>
         </div>
       </div>
 

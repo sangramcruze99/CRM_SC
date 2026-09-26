@@ -162,4 +162,9 @@ export const INITIAL_NICHE_EMPLOYEES: Record<IndustryNiche, EmployeeNode[]> = {
   sme: [],
   agency: [],
   custom: [],
+  construction: [],
+  legal: [],
+  logistics: [],
+  fitness: [],
+  automotive: [],
 };

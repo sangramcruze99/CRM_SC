@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { IndustryProvider } from "../components/industry/IndustryContext";
+import { BlueprintProvider } from "../components/blueprint/BlueprintContext";
 import { FeatureFlagProvider } from "../components/platform/FeatureFlagContext";
 import { RoleWorkspaceProvider } from "../components/platform/RoleWorkspaceContext";
 import { AccessibilityProvider } from "../components/platform/AccessibilityContext";
@@ -48,9 +49,11 @@ export default function RootLayout({
                   <CreditMeteringProvider>
                     <FeatureFlagProvider>
                       <RoleWorkspaceProvider>
-                        <IndustryProvider>
-                          <WorkspaceShell>{children}</WorkspaceShell>
-                        </IndustryProvider>
+                        <BlueprintProvider>
+                          <IndustryProvider>
+                            <WorkspaceShell>{children}</WorkspaceShell>
+                          </IndustryProvider>
+                        </BlueprintProvider>
                       </RoleWorkspaceProvider>
                     </FeatureFlagProvider>
                   </CreditMeteringProvider>

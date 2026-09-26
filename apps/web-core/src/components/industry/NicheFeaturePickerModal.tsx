@@ -13,9 +13,36 @@ import {
   Layers,
   ArrowRight,
   Zap,
+  Users,
+  Brain,
+  DollarSign,
+  Building2,
+  TrendingUp,
+  Target,
+  FileText,
+  MessageSquare,
+  Scale,
+  Wrench,
+  Shield,
+  LucideIcon,
 } from 'lucide-react';
-import { useIndustry } from './IndustryContext';
+import { useIndustry, NicheIcon } from './IndustryContext';
 import { ALL_67_FEATURES, FEATURE_CATEGORIES, FeatureItem } from '@/lib/featureCatalog';
+
+const CAT_ICON_MAP: Record<string, LucideIcon> = {
+  Users,
+  Brain,
+  DollarSign,
+  Building2,
+  TrendingUp,
+  Target,
+  FileText,
+  MessageSquare,
+  Scale,
+  Wrench,
+  Shield,
+  Sparkles,
+};
 
 interface NicheFeaturePickerModalProps {
   isOpen: boolean;
@@ -65,7 +92,7 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
 
   const handleSelectAll67 = () => {
     setNicheFeatures(ALL_67_FEATURES.map((f) => f.id));
-    setAlert('✨ Enabled all 67 platform features for this workspace!');
+    setAlert(' Enabled all 67 platform features for this workspace!');
     setTimeout(() => setAlert(null), 2500);
   };
 
@@ -96,8 +123,8 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
         {/* Header */}
         <div className="flex justify-between items-start border-b border-white/[0.08] pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/25 border border-emerald-300/30 text-xl">
-              {nicheConfig.icon}
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/25 border border-emerald-300/30 shrink-0">
+              <NicheIcon niche={nicheConfig.id} size={20} className="text-slate-950" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -203,7 +230,10 @@ export function NicheFeaturePickerModal({ isOpen, onClose }: NicheFeaturePickerM
                       : 'bg-white/[0.04] text-slate-400 hover:text-white border border-white/[0.08]'
                   }`}
                 >
-                  <span>{cat.icon}</span>
+                  {(() => {
+                    const CatIcon = CAT_ICON_MAP[cat.icon] || Sparkles;
+                    return <CatIcon size={12} className="shrink-0" />;
+                  })()}
                   <span>{cat.name}</span>
                   <span className={`text-[10px] font-mono ${selectedCat === cat.id ? 'text-slate-950 font-bold' : 'text-slate-500'}`}>
                     ({activeCount}/{count})

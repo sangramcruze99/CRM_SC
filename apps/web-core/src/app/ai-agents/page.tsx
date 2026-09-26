@@ -35,7 +35,19 @@ import {
   FileCheck,
   Lock,
   Workflow,
-  Sparkle
+  Sparkle,
+  Folder,
+  FolderOpen,
+  Mail,
+  MessageSquare,
+  Edit3,
+  MessageCircle,
+  FileText,
+  ArrowDownRight,
+  Sun,
+  Plus,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 interface Agent {
@@ -139,6 +151,43 @@ interface SwarmSweepResult {
   summary: string;
 }
 
+const AVAILABLE_SMART_FOLDERS = [
+  { id: 'crm_leads', name: 'CRM Inbound Leads', path: '/vault/inbound/crm_leads/', records: '1,420 records' },
+  { id: 'invoices', name: 'Scanned OCR Invoices', path: '/vault/documents/invoices_scanned/', records: '342 files' },
+  { id: 'resumes', name: 'Candidate Resumes CVs', path: '/vault/resumes/engineering_pipeline/', records: '89 files' },
+  { id: 'campaigns', name: 'B2B Prospect Lists', path: '/vault/campaigns/csv_imports/', records: '5,600 rows' },
+  { id: 'support_audio', name: 'Audio Calls & Transcripts', path: '/vault/support/transcripts_audio/', records: '215 logs' },
+  { id: 'contracts', name: 'Legal Agreements & SOWs', path: '/vault/contracts/signed_agreements/', records: '76 files' },
+];
+
+const INITIAL_AGENT_RULES: Record<string, string[]> = {
+  agent_ares: [
+    'Flag deals over $25,000 for executive sign-off before emailing',
+    'Follow up within 48 hours if high-intent prospect visits pricing page',
+    'Never offer discount higher than 15% without VP Sales approval',
+  ],
+  agent_athena: [
+    'Auto-resolve Tier-1 FAQ tickets with knowledge base links',
+    'Immediately escalate churn threats or refund requests > $500',
+    'Draft polite check-in email if sentiment score drops below 40%',
+  ],
+  agent_midas: [
+    'Auto-post invoices under $5,000 with matching purchase orders',
+    'Trigger dunning email sequence when invoice is 7+ days overdue',
+    'Require CFO sign-off for ledger adjustments exceeding $10,000',
+  ],
+  agent_hermes: [
+    'Auto-enrich B2B email lists imported into /vault/campaigns/',
+    'Pause campaign if bounce rate exceeds 2.5%',
+    'Personalize opening hook using company industry & funding data',
+  ],
+  agent_vesta: [
+    'Scan PDF agreements for missing indemnification clauses',
+    'Hold escrow contingency releases until dual inspection sign-off',
+    'Notify legal lead immediately if custom SLA terms are requested',
+  ],
+};
+
 export default function AIAgentsPage() {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [approvals, setApprovals] = useState<ApprovalItem[]>([]);
@@ -161,6 +210,26 @@ export default function AIAgentsPage() {
   const [isChaining, setIsChaining] = useState(false);
   const [chainScenario, setChainScenario] = useState('ACCOUNT_RETENTION_INTERVENTION');
   const [activeChain, setActiveChain] = useState<MultiAgentChain | null>(null);
+
+  // User-Friendly Digital Teammate State
+  const [agentFolders, setAgentFolders] = useState<Record<string, string>>({
+    agent_ares: '/vault/inbound/crm_leads/',
+    agent_athena: '/vault/support/transcripts_audio/',
+    agent_midas: '/vault/documents/invoices_scanned/',
+    agent_hermes: '/vault/campaigns/csv_imports/',
+    agent_vesta: '/vault/contracts/signed_agreements/',
+  });
+  const [agentRules, setAgentRules] = useState<Record<string, string[]>>(INITIAL_AGENT_RULES);
+  const [newRuleText, setNewRuleText] = useState<Record<string, string>>({});
+  const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);
+
+  // HITL Interactive Modals
+  const [editingApproval, setEditingApproval] = useState<ApprovalItem | null>(null);
+  const [editedBody, setEditedBody] = useState<string>('');
+  const [rejectingApproval, setRejectingApproval] = useState<ApprovalItem | null>(null);
+  const [rejectionFeedback, setRejectionFeedback] = useState<string>('');
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [activeFolderAgentId, setActiveFolderAgentId] = useState<string | null>(null);
 
   // Policy Form State
   const [policySaving, setPolicySaving] = useState(false);
@@ -342,6 +411,107 @@ export default function AIAgentsPage() {
     }
   };
 
+  const handleEditAndApprove = async (id: string, updatedParams: any) => {
+    try {
+      const res = await fetch(`/api/ai/agents/approvals/${id}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reviewedBy: 'Executive Officer',
+          parameters: updatedParams,
+        }),
+      });
+      if (res.ok) {
+        setActionAlert(`Action modified & executed successfully.`);
+        setEditingApproval(null);
+        loadData();
+        setTimeout(() => setActionAlert(null), 4000);
+      }
+    } catch {
+      setActionAlert(`Action modified & executed.`);
+      setEditingApproval(null);
+      setTimeout(() => setActionAlert(null), 3000);
+    }
+  };
+
+  const [isSimulatingDrop, setIsSimulatingDrop] = useState(false);
+
+  const handleSimulateDrop = async (folderPath?: string) => {
+    setIsSimulatingDrop(true);
+    try {
+      const folderId = folderPath?.includes('invoice') ? 'invoices_scanned' : 'crm_leads';
+      const res = await fetch('/api/automation/vault/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderId }),
+      });
+      const data = await res.json();
+      setActionAlert(` Test file dropped! Ingested into Smart Vault & dispatched to ${data.agentAssigned || 'Ares'}`);
+      loadData();
+    } catch (err: any) {
+      setActionAlert(`Simulated drop processed in Smart Vault.`);
+    } finally {
+      setIsSimulatingDrop(false);
+      setTimeout(() => setActionAlert(null), 5000);
+    }
+  };
+
+  const handleTeachAndReject = async (id: string, feedback: string) => {
+    const targetAgentId = rejectingApproval?.agentId || 'agent_sales';
+    try {
+      await fetch(`/api/ai/agents/approvals/${id}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reviewedBy: 'Executive Officer',
+          feedback,
+        }),
+      });
+      if (feedback && feedback.trim().length > 5) {
+        setAgentRules((prev) => ({
+          ...prev,
+          [targetAgentId]: [...(prev[targetAgentId] || []), feedback.trim()],
+        }));
+      }
+      setActionAlert(`Action rejected. Rule stored in ${targetAgentId} memory: "${feedback.slice(0, 45)}..."`);
+      setRejectingApproval(null);
+      setRejectionFeedback('');
+      loadData();
+      setTimeout(() => setActionAlert(null), 5000);
+    } catch {
+      if (feedback && feedback.trim().length > 5) {
+        setAgentRules((prev) => ({
+          ...prev,
+          [targetAgentId]: [...(prev[targetAgentId] || []), feedback.trim()],
+        }));
+      }
+      setActionAlert(`Action rejected with feedback saved to agent rules.`);
+      setRejectingApproval(null);
+      setTimeout(() => setActionAlert(null), 3000);
+    }
+  };
+
+  const handleUpdateAutonomy = (agentId: string, mode: 'AUTONOMOUS' | 'HYBRID' | 'MONITOR_ONLY') => {
+    setAgents((prev) =>
+      prev.map((a) => (a.id === agentId ? { ...a, autonomyMode: mode } : a)),
+    );
+    const label = mode === 'AUTONOMOUS' ? 'Autonomous' : mode === 'HYBRID' ? 'Hybrid Smart Sentinel' : 'Co-Pilot (100% Sign-Off)';
+    setActionAlert(`${agentId} mode updated to ${label}.`);
+    setTimeout(() => setActionAlert(null), 4000);
+  };
+
+  const handleAddAgentRule = (agentId: string) => {
+    const text = (newRuleText[agentId] || '').trim();
+    if (!text) return;
+    setAgentRules((prev) => ({
+      ...prev,
+      [agentId]: [...(prev[agentId] || []), text],
+    }));
+    setNewRuleText((prev) => ({ ...prev, [agentId]: '' }));
+    setActionAlert(`Supervision rule added: "${text}"`);
+    setTimeout(() => setActionAlert(null), 4000);
+  };
+
   const handleRunDecision = async () => {
     setSimLoading(true);
     setSimResult(null);
@@ -439,6 +609,35 @@ export default function AIAgentsPage() {
           <button onClick={() => setActionAlert(null)} className="text-xs text-emerald-400 hover:text-white cursor-pointer">Dismiss</button>
         </div>
       )}
+
+      {/* Executive Digital Teammate Briefing Banner */}
+      <div className="p-5 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-teal-950/40 border border-emerald-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/10 shrink-0">
+            <Sun size={22} />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-black text-white">Daily Digital Teammate Morning Briefing</h2>
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                ACTIVE CO-PILOT
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-1">
+              All {agents.length} sentinels are currently supervising business events across {Object.keys(agentFolders).length} Smart Vault directories. {pendingCount > 0 ? `${pendingCount} high-risk action(s) require human review before dispatching.` : 'All routine operations moving forward autonomously.'}
+            </p>
+          </div>
+        </div>
+        {pendingCount > 0 && (
+          <button
+            onClick={() => setActiveTab('APPROVALS')}
+            className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition flex items-center gap-1.5 shadow-lg shadow-amber-500/20 cursor-pointer shrink-0"
+          >
+            <AlertTriangle size={14} />
+            <span>Review {pendingCount} Pending Approvals</span>
+          </button>
+        )}
+      </div>
 
       {/* Swarm Telemetry & Metric Highlights */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -633,16 +832,31 @@ export default function AIAgentsPage() {
                       <div className="flex items-center gap-1.5">
                         {isVesta && (
                           <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                            🏡 Real Estate
+                             Real Estate
                           </span>
                         )}
-                        <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
-                          agent.autonomyMode === 'AUTONOMOUS'
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                            : 'bg-teal-500/20 text-teal-300 border border-teal-500/30'
-                        }`}>
-                          {agent.autonomyMode}
-                        </span>
+                        {/* Interactive Autonomy Mode Selector */}
+                        <div className="flex items-center bg-black/50 p-0.5 rounded-xl border border-white/10 text-[9px] font-bold">
+                          {(['MONITOR_ONLY', 'HYBRID', 'AUTONOMOUS'] as const).map((m) => (
+                            <button
+                              key={m}
+                              type="button"
+                              onClick={() => handleUpdateAutonomy(agent.id, m)}
+                              className={`px-2 py-0.5 rounded-lg transition-all cursor-pointer ${
+                                agent.autonomyMode === m
+                                  ? m === 'AUTONOMOUS'
+                                    ? 'bg-emerald-500 text-slate-950 font-black shadow-sm'
+                                    : m === 'HYBRID'
+                                    ? 'bg-teal-500 text-slate-950 font-black shadow-sm'
+                                    : 'bg-amber-500 text-slate-950 font-black shadow-sm'
+                                  : 'text-slate-400 hover:text-white'
+                              }`}
+                              title={`Switch ${agent.name} to ${m}`}
+                            >
+                              {m === 'MONITOR_ONLY' ? 'Co-Pilot' : m === 'HYBRID' ? 'Hybrid' : 'Autonomous'}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
@@ -651,7 +865,30 @@ export default function AIAgentsPage() {
                     </h3>
                     <p className="text-xs text-slate-400 mt-0.5">{agent.role}</p>
 
-                    <div className="mt-4 space-y-2 text-xs bg-white/[0.02] p-3 rounded-2xl border border-white/[0.04]">
+                    {/* Inbound Data Dropzone */}
+                    <div className="mt-3 p-2.5 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 flex items-center justify-between">
+                      <div className="flex items-center space-x-2 min-w-0">
+                        <Folder className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                        <div className="min-w-0">
+                          <span className="text-[9px] uppercase font-bold text-slate-400 block leading-tight">Data Dropzone:</span>
+                          <span className="font-mono text-[11px] text-cyan-300 truncate block font-bold" title={agentFolders[agent.id]}>
+                            {agentFolders[agent.id] || '/vault/inbound/'}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveFolderAgentId(agent.id);
+                          setIsFolderModalOpen(true);
+                        }}
+                        className="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold underline cursor-pointer shrink-0 ml-2"
+                      >
+                        Change
+                      </button>
+                    </div>
+
+                    <div className="mt-3.5 space-y-2 text-xs bg-white/[0.02] p-3 rounded-2xl border border-white/[0.04]">
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="text-slate-400">Domain:</span>
                         <span className="font-semibold text-white">{agent.domain}</span>
@@ -666,7 +903,54 @@ export default function AIAgentsPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                    {/* Supervision Rules Accordion */}
+                    <div className="mt-3.5 pt-3 border-t border-white/[0.06]">
+                      <div
+                        onClick={() => setExpandedAgentId(expandedAgentId === agent.id ? null : agent.id)}
+                        className="flex items-center justify-between cursor-pointer text-[11px] font-bold text-slate-300 hover:text-white transition"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <ShieldCheck size={13} className="text-emerald-400" />
+                          <span>Supervision Rules ({agentRules[agent.id]?.length || 0})</span>
+                        </span>
+                        {expandedAgentId === agent.id ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                      </div>
+
+                      {expandedAgentId === agent.id && (
+                        <div className="mt-2.5 space-y-2 text-[11px] bg-slate-950/70 p-3 rounded-2xl border border-white/10 animate-fadeIn">
+                          <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                            {(agentRules[agent.id] || []).map((rule, idx) => (
+                              <div key={idx} className="flex items-start gap-1.5 text-slate-300 leading-tight">
+                                <span className="text-emerald-400 font-bold">•</span>
+                                <span>{rule}</span>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Add Rule Input */}
+                          <div className="pt-2 border-t border-white/10 flex items-center gap-1.5">
+                            <input
+                              type="text"
+                              placeholder="Add supervision rule..."
+                              value={newRuleText[agent.id] || ''}
+                              onChange={(e) => setNewRuleText({ ...newRuleText, [agent.id]: e.target.value })}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleAddAgentRule(agent.id);
+                              }}
+                              className="flex-1 px-2 py-1 rounded-lg bg-slate-900 border border-white/10 text-white text-[10px] focus:outline-none focus:border-emerald-500"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleAddAgentRule(agent.id)}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-[10px] font-black shrink-0 transition cursor-pointer"
+                            > Add
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-3.5 pt-3 border-t border-white/[0.06]">
                       <span className="text-[10px] uppercase font-bold text-slate-500 block mb-2">Authorized Tool Arsenal:</span>
                       <div className="flex flex-wrap gap-1.5">
                         {agent.allowedTools.map((tool, idx) => (
@@ -869,9 +1153,33 @@ export default function AIAgentsPage() {
                         </span>
                       </div>
 
-                      <p className="text-xs text-slate-300 mt-2 leading-relaxed bg-white/[0.02] p-3 rounded-xl border border-white/[0.04]">
-                        {item.rationale}
-                      </p>
+                      {/* Explainability Callout */}
+                      <div className="mt-3 p-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/30 space-y-1">
+                        <div className="flex items-center gap-1.5 text-emerald-400 font-bold text-xs">
+                          <Sparkles size={13} />
+                          <span>Autonomous Reason &amp; Impact Analysis</span>
+                        </div>
+                        <p className="text-xs text-slate-300 leading-relaxed">
+                          {item.rationale}
+                        </p>
+                      </div>
+
+                      {/* Proposed Action Visual Preview */}
+                      <div className="mt-3 p-3.5 rounded-2xl bg-slate-950/80 border border-white/10 space-y-2">
+                        <div className="flex items-center justify-between text-[11px] border-b border-white/10 pb-2">
+                          <span className="flex items-center gap-1.5 text-cyan-300 font-bold">
+                            <Mail size={13} />
+                            <span>Action Payload Preview: {item.actionType.replace(/_/g, ' ')}</span>
+                          </span>
+                          <span className="text-[10px] text-slate-400 font-mono">Entity: {item.targetEntity}</span>
+                        </div>
+                        <div className="text-xs text-slate-200 font-bold">
+                          {String(item.parameters?.subject || `Target: ${item.targetName} (${item.targetId})`)}
+                        </div>
+                        <p className="text-[11px] text-slate-300 font-sans whitespace-pre-wrap leading-relaxed bg-white/[0.02] p-2.5 rounded-xl border border-white/[0.04]">
+                          {String(item.parameters?.body || item.parameters?.message || `The agent has prepared an automated update for ${item.targetName}. Ready for dispatch into enterprise execution event bus.`)}
+                        </p>
+                      </div>
 
                       <div className="flex items-center gap-4 mt-3 text-[11px] text-slate-500">
                         <span>Initiated by: <span className="text-slate-300 font-medium">{item.agentName}</span></span>
@@ -883,20 +1191,38 @@ export default function AIAgentsPage() {
                     </div>
                   </div>
 
-                  {/* Approve / Reject Controls */}
-                  <div className="flex items-center gap-2 w-full lg:w-auto shrink-0">
+                  {/* 3-Action Approve / Edit / Teach Controls */}
+                  <div className="flex flex-col sm:flex-row items-center gap-2 w-full lg:w-auto shrink-0 mt-4 lg:mt-0">
                     {item.status === 'PENDING_APPROVAL' ? (
                       <>
                         <button
-                          onClick={() => handleReject(item.id)}
-                          className="flex-1 lg:flex-none px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-white border border-rose-500/30 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                          type="button"
+                          onClick={() => {
+                            setRejectingApproval(item);
+                            setRejectionFeedback('');
+                          }}
+                          className="w-full sm:w-auto px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-white border border-rose-500/30 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                          title="Reject and provide feedback to train the agent"
                         >
                           <X size={14} />
-                          <span>Reject</span>
+                          <span>Teach &amp; Reject</span>
                         </button>
                         <button
+                          type="button"
+                          onClick={() => {
+                            setEditingApproval(item);
+                            setEditedBody(String(item.parameters?.body || item.parameters?.message || ''));
+                          }}
+                          className="w-full sm:w-auto px-3.5 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 hover:text-white border border-cyan-500/30 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                          title="Modify content before executing"
+                        >
+                          <Edit3 size={14} />
+                          <span>Edit &amp; Send</span>
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => handleApprove(item.id)}
-                          className="flex-1 lg:flex-none px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-emerald-500/20"
+                          className="w-full sm:w-auto px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-black transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg shadow-emerald-500/20"
                         >
                           <Check size={14} />
                           <span>Approve &amp; Execute</span>
@@ -1135,6 +1461,228 @@ export default function AIAgentsPage() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* 1. Edit & Send Modal */}
+      {editingApproval && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-xl bg-slate-900 border border-cyan-500/40 rounded-3xl p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center">
+                  <Edit3 size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-white">Edit Action Payload Before Dispatch</h3>
+                  <p className="text-[11px] text-slate-400">Target: {editingApproval.targetName} ({editingApproval.actionType})</p>
+                </div>
+              </div>
+              <button onClick={() => setEditingApproval(null)} className="text-slate-400 hover:text-white p-1">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-400 mb-1">Target Entity / Recipient</label>
+                <input
+                  type="text"
+                  disabled
+                  value={`${editingApproval.targetEntity}: ${editingApproval.targetName}`}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-white/10 text-slate-400 text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-300 mb-1">Message Body / Payload Content</label>
+                <textarea
+                  rows={5}
+                  value={editedBody}
+                  onChange={(e) => setEditedBody(e.target.value)}
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-cyan-500 leading-relaxed font-sans"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setEditingApproval(null)}
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  handleEditAndApprove(editingApproval.id, {
+                    ...editingApproval.parameters,
+                    body: editedBody,
+                    message: editedBody,
+                  })
+                }
+                className="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 text-xs font-black shadow-lg shadow-cyan-500/20 transition flex items-center gap-1.5"
+              >
+                <Check size={14} />
+                <span>Execute Modified Action</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Teach & Reject Modal */}
+      {rejectingApproval && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-slate-900 border border-rose-500/40 rounded-3xl p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center">
+                  <XCircle size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-white">Teach Agent: Explain Reason for Rejection</h3>
+                  <p className="text-[11px] text-slate-400">Agent {rejectingApproval.agentName} will learn and avoid repeating this action</p>
+                </div>
+              </div>
+              <button onClick={() => setRejectingApproval(null)} className="text-slate-400 hover:text-white p-1">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[11px] font-semibold text-slate-300">
+                What should the agent have done differently?
+              </label>
+              <textarea
+                rows={3}
+                placeholder="e.g. Do not offer discounts to enterprise leads; wait until they complete a technical demo first."
+                value={rejectionFeedback}
+                onChange={(e) => setRejectionFeedback(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-rose-500 leading-relaxed font-sans"
+              />
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {[
+                  'Deal value too high for auto-outreach',
+                  'Incorrect sentiment or tone',
+                  'Target contact is an existing enterprise customer',
+                ].map((sug, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setRejectionFeedback(sug)}
+                    className="text-[10px] px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 border border-white/5 transition"
+                  >
+                    + {sug}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setRejectingApproval(null)}
+                className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleTeachAndReject(rejectingApproval.id, rejectionFeedback || 'Manual executive override')}
+                className="px-5 py-2 rounded-xl bg-rose-500 hover:bg-rose-400 text-white text-xs font-black shadow-lg shadow-rose-500/20 transition flex items-center gap-1.5"
+              >
+                <X size={14} />
+                <span>Save Feedback &amp; Reject</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Folder Selector Modal for Agent */}
+      {isFolderModalOpen && activeFolderAgentId && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-xl bg-slate-900 border border-cyan-500/40 rounded-3xl p-6 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center">
+                  <FolderOpen size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-white">Select Inbound Data Folder</h3>
+                  <p className="text-[11px] text-slate-400">Designate the Smart Vault directory this agent supervises</p>
+                </div>
+              </div>
+              <button onClick={() => setIsFolderModalOpen(false)} className="text-slate-400 hover:text-white p-1">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              {AVAILABLE_SMART_FOLDERS.map((f) => {
+                const isSelected = agentFolders[activeFolderAgentId] === f.path;
+                return (
+                  <div
+                    key={f.id}
+                    onClick={() => {
+                      setAgentFolders((prev) => ({ ...prev, [activeFolderAgentId]: f.path }));
+                      setIsFolderModalOpen(false);
+                      setActionAlert(`Bound ${activeFolderAgentId} to ${f.path}`);
+                      setTimeout(() => setActionAlert(null), 4000);
+                    }}
+                    className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                      isSelected
+                        ? 'bg-cyan-500/10 border-cyan-400 ring-2 ring-cyan-500/20'
+                        : 'bg-slate-950/60 border-white/10 hover:border-white/20'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Folder className={`w-4 h-4 ${isSelected ? 'text-cyan-400' : 'text-slate-400'}`} />
+                      <div>
+                        <div className="text-xs font-bold text-white">{f.name}</div>
+                        <div className="font-mono text-[11px] text-cyan-300">{f.path}</div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10">
+                      {f.records}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex items-center justify-between gap-2 pt-3 border-t border-white/10">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  LIVE WATCHER ACTIVE
+                </span>
+                <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">E:\businessos\vault</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSimulateDrop(agentFolders[activeFolderAgentId])}
+                  disabled={isSimulatingDrop}
+                  className="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                  title="Drop a test lead or invoice into this Smart Vault dropzone right now"
+                >
+                  <Zap size={13} className="text-emerald-400" />
+                  <span>{isSimulatingDrop ? 'Dropping...' : ' Test Drop File'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsFolderModalOpen(false)}
+                  className="px-4 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-bold transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

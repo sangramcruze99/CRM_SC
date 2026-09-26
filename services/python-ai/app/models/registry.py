@@ -29,6 +29,40 @@ class ModelRegistry:
         self._register_default_models()
 
     def _register_default_models(self):
+        # ── Ollama Local Models (PRIMARY — E:/ollama-models) ──────────────────
+        self.register(
+            ModelMetadata(
+                id="ollama/gemma4:e4b",
+                provider="ollama",
+                model_name="gemma4:e4b",
+                capabilities=["chat", "tool_calling", "reasoning", "private_inference"],
+                context_window=128000,
+                supports_tools=True,
+                supports_vision=False,
+                supports_json=True,
+                cost_profile="FREE",
+                latency_profile="FAST",
+                status="PRODUCTION",
+                version="4.0.0",
+            )
+        )
+        self.register(
+            ModelMetadata(
+                id="ollama/llama3.2:3b",
+                provider="ollama",
+                model_name="llama3.2:3b",
+                capabilities=["chat", "fast_classification", "summarization"],
+                context_window=8192,
+                supports_tools=False,
+                supports_vision=False,
+                supports_json=True,
+                cost_profile="FREE",
+                latency_profile="ULTRA_FAST",
+                status="PRODUCTION",
+                version="3.2.0",
+            )
+        )
+
         # Groq LPU Models (Ultra-Fast)
         self.register(
             ModelMetadata(

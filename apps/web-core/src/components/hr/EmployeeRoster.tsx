@@ -170,7 +170,7 @@ export function EmployeeRoster({ employees, onSelectEmployee, onRemoveEmployee, 
                       ${emp.salary.netMonthly.toLocaleString()}/mo
                     </span>
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                      {emp.salary.paymentStatus === 'PAID' ? '✓ Disbursed' : '⏳ Pending'}
+                      {emp.salary.paymentStatus === 'PAID' ? ' Disbursed' : ' Pending'}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5">

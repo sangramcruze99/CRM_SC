@@ -24,13 +24,13 @@ export function KitchenDisplaySystem() {
 
   const handleBumpTicket = (id: string) => {
     setTickets(tickets.filter((t) => t.id !== id));
-    setAlert(`✅ Ticket ${id} bumped to Expedited/Served!`);
+    setAlert(` Ticket ${id} bumped to Expedited/Served!`);
     setTimeout(() => setAlert(null), 3000);
   };
 
   const handleCreateTestTicket = () => {
     const newKOT: KitchenTicket = {
-      id: `KOT-${Math.floor(100 + Math.random() * 900)}`,
+      id: `KOT-${Date.now().toString().slice(-4)}${Math.floor(100 + Math.random() * 900)}`,
       tableNumber: `Table ${Math.floor(1 + Math.random() * 12)}`,
       server: 'Floor Staff',
       elapsedMinutes: 1,
@@ -41,7 +41,7 @@ export function KitchenDisplaySystem() {
       status: 'COOKING',
     };
     setTickets([...tickets, newKOT]);
-    setAlert(`🔔 New Order ${newKOT.id} sent to Kitchen Display!`);
+    setAlert(` New Order ${newKOT.id} sent to Kitchen Display!`);
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -96,9 +96,9 @@ export function KitchenDisplaySystem() {
       {/* Tickets Grid */}
       {tickets.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative z-10">
-          {tickets.map((ticket) => (
+          {tickets.map((ticket, idx) => (
             <div
-              key={ticket.id}
+              key={`${ticket.id}-${idx}`}
               className="bg-black/40 border border-white/[0.12] hover:border-amber-400/50 rounded-2xl p-5 flex flex-col justify-between space-y-4 transition-all shadow-lg"
             >
               <div>

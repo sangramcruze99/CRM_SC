@@ -5,6 +5,8 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { ActionsModule } from '../actions/actions.module';
 import { WorkflowsModule } from '../workflows/workflows.module';
 
+import { ToolRegistryService } from './tool-registry.service';
+
 @Module({
   imports: [
     PrismaModule,
@@ -14,6 +16,7 @@ import { WorkflowsModule } from '../workflows/workflows.module';
       name: 'workflows',
     }),
   ],
-  providers: [WorkflowProcessor],
+  providers: [WorkflowProcessor, ToolRegistryService],
+  exports: [ToolRegistryService],
 })
 export class ExecutorModule {}

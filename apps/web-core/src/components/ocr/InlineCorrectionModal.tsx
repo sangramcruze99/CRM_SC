@@ -61,7 +61,7 @@ export function InlineCorrectionModal({
       });
 
       if (res.ok) {
-        setStatusMessage('✅ Correction saved to continuous learning evaluation dataset.');
+        setStatusMessage(' Correction saved to continuous learning evaluation dataset.');
         onSavedCorrection(fieldName, correctedValue);
         setTimeout(() => {
           setIsSubmitting(false);
@@ -72,7 +72,7 @@ export function InlineCorrectionModal({
       }
     } catch (err: any) {
       console.error('Correction submission error:', err);
-      setStatusMessage('⚠️ Could not save correction. Please check connection.');
+      setStatusMessage(' Could not save correction. Please check connection.');
       setIsSubmitting(false);
     }
   };

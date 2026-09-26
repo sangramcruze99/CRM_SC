@@ -156,7 +156,7 @@ export function TrackingPixelAndScoringStudio() {
       );
       setIsResolving(false);
       setResolutionSuccess(
-        `🎉 Successfully resolved IP 198.51.100.42 to "${testEmailInput}". Linked 6 past anonymous page views and updated Lead Score to 90 (High MQL Threshold Reached)!`
+        `Successfully resolved IP 198.51.100.42 to "${testEmailInput}". Linked 6 past anonymous page views and updated Lead Score to 90 (High MQL Threshold Reached)!`
       );
       setTimeout(() => setResolutionSuccess(null), 6000);
     }, 1200);

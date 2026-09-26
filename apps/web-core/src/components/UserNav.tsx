@@ -52,19 +52,20 @@ export function UserNav() {
 
   return (
     <>
-      <div className="flex items-center gap-2.5">
-        {/* Credits Meter Quick Pill */}
+      <div className="flex items-center gap-2">
+        {/* Credits Meter Quick Pill - Compact and responsive */}
         <button
           type="button"
           onClick={() => {
             setIsOpen(false);
             setIsTopUpModalOpen(true);
           }}
-          className="h-8.5 hidden sm:flex items-center gap-1.5 px-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 rounded-xl text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300 transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0 active:scale-[0.98]"
-          title="Click to view & top up metered AI / OCR credits"
+          className="h-8.5 hidden md:flex items-center gap-1.5 px-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 hover:border-emerald-500/40 rounded-xl text-xs font-mono font-bold text-emerald-800 dark:text-emerald-300 transition-all cursor-pointer shadow-xs whitespace-nowrap shrink-0 active:scale-[0.98]"
+          title={`Active Metered AI Credits: ${credits.ocrScansRemaining} OCR Scans · ${credits.b2bLeadsRemaining} B2B Leads. Click to top up.`}
         >
           <Zap size={13} className="text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <span className="whitespace-nowrap">{credits.ocrScansRemaining} OCR · {credits.b2bLeadsRemaining} Leads</span>
+          <span className="hidden 2xl:inline">{credits.ocrScansRemaining} OCR · {credits.b2bLeadsRemaining} Leads</span>
+          <span className="2xl:hidden">{credits.ocrScansRemaining} OCR</span>
         </button>
 
         {/* User Profile Trigger */}
@@ -117,7 +118,7 @@ export function UserNav() {
                   </button>
                 </div>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400">
-                  {isPerformanceMode ? '⚡ GPU-lite solid obsidian (WCAG AAA)' : '✨ Luxury glassmorphism blurs'}
+                  {isPerformanceMode ? ' GPU-lite solid obsidian (WCAG AAA)' : ' Luxury glassmorphism blurs'}
                 </p>
               </div>
 

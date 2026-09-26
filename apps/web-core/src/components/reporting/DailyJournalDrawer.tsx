@@ -386,10 +386,10 @@ export function DailyJournalDrawer({
                 <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-4 space-y-2">
                   <div className="flex items-center justify-between text-xs font-bold text-slate-300 uppercase tracking-wider">
                     <span className="flex items-center gap-1.5">
-                      <CheckSquare size={14} className="text-purple-400" />
+                      <CheckSquare size={14} className="text-emerald-400" />
                       Projects & Tasks
                     </span>
-                    <Link href="/projects" className="text-purple-400 hover:underline text-[11px] font-medium lowercase">projects</Link>
+                    <Link href="/projects" className="text-emerald-400 hover:underline text-[11px] font-medium lowercase">projects</Link>
                   </div>
                   <div className="text-sm font-mono text-white pt-1">
                     Completed: <span className="font-bold text-emerald-400">{projects.tasksCompleted || 0}</span> / Created: {projects.tasksCreated || 0}

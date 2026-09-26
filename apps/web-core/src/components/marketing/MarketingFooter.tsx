@@ -9,7 +9,7 @@ export function MarketingFooter() {
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="flex items-center space-x-3">
           <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold text-xs">
-            ⚡
+            
           </div>
           <span className="font-extrabold text-white text-sm">Business OS</span>
           <span className="text-slate-600">|</span>

@@ -31,7 +31,7 @@ const COLOR_THEMES: ColorTheme[] = [
   { id: 'amber', name: 'Executive Amber & Gold (Default)', primaryHex: '#f59e0b', accentHex: '#ea580c', badgeBg: 'bg-emerald-500/20 text-emerald-300' },
   { id: 'emerald', name: 'Emerald Jade & Forest', primaryHex: '#10b981', accentHex: '#059669', badgeBg: 'bg-emerald-500/20 text-emerald-300' },
   { id: 'sapphire', name: 'Sapphire Cobalt & Cyan', primaryHex: '#3b82f6', accentHex: '#06b6d4', badgeBg: 'bg-blue-500/20 text-blue-300' },
-  { id: 'amethyst', name: 'Amethyst Violet & Rose', primaryHex: '#8b5cf6', accentHex: '#ec4899', badgeBg: 'bg-purple-500/20 text-purple-300' },
+  { id: 'amethyst', name: 'Amethyst Violet & Rose', primaryHex: '#8b5cf6', accentHex: '#ec4899', badgeBg: 'bg-emerald-500/20 text-emerald-300' },
   { id: 'obsidian', name: 'Monochrome Silver Titanium', primaryHex: '#e2e8f0', accentHex: '#94a3b8', badgeBg: 'bg-slate-500/20 text-slate-300' },
 ];
 
@@ -46,7 +46,7 @@ export function BrandingClient() {
 
   const handleSaveBranding = (e: React.FormEvent) => {
     e.preventDefault();
-    setAlert(`🎉 White-Label Settings & Custom CNAME (${customDomain}) saved and propagated across client portals!`);
+    setAlert(` White-Label Settings & Custom CNAME (${customDomain}) saved and propagated across client portals!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -139,7 +139,7 @@ export function BrandingClient() {
                 <button
                   type="button"
                   onClick={() => {
-                    setAlert(`🌐 DNS CNAME verified for ${customDomain} pointing to edge.business-os.cloud!`);
+                    setAlert(` DNS CNAME verified for ${customDomain} pointing to edge.business-os.cloud!`);
                     setTimeout(() => setAlert(null), 3000);
                   }}
                   className="px-3.5 py-2 bg-white/[0.08] hover:bg-white/[0.15] text-white font-bold text-xs rounded-xl border border-white/[0.1] cursor-pointer"
@@ -147,8 +147,7 @@ export function BrandingClient() {
                   Verify DNS
                 </button>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
-                Add a DNS <strong>CNAME</strong> record pointing <code className="text-emerald-300 font-mono">{customDomain}</code> to <code className="text-slate-300 font-mono">cname.business-os.cloud</code>.
+              <p className="text-[11px] text-slate-400 leading-relaxed"> Add a DNS <strong>CNAME</strong> record pointing <code className="text-emerald-300 font-mono">{customDomain}</code> to <code className="text-slate-300 font-mono">cname.business-os.cloud</code>.
               </p>
             </div>
 
@@ -272,3 +271,4 @@ export function BrandingClient() {
     </div>
   );
 }
+

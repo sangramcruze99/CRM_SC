@@ -250,40 +250,66 @@ export function CustomerSuccessClient() {
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto bg-slate-950 text-slate-100 p-6 md:p-8 space-y-8 font-sans">
-      {/* Top Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-indigo-500/20">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 flex items-center gap-1.5">
-              <Sparkles size={12} className="text-indigo-400 animate-pulse" />
-              STAGE 5.2 VERTICAL INTELLIGENCE
+    <div className="space-y-6 max-w-7xl mx-auto font-sans">
+      {/* Top Header Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-3xl p-6 md:p-8 border border-white/[0.08] relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+
+        {/* Athena Sentinel Autonomous Status Strip */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-white/[0.06] text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-              ATHENA SENTINEL + OODA RETENTION
-            </span>
+            <span className="text-emerald-400 font-bold tracking-wider uppercase">Athena Sentinel Active</span>
+            <span className="text-zinc-500">•</span>
+            <span className="text-zinc-400">OODA Retention Engine</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-            <ShieldCheck className="text-indigo-400" size={32} />
-            AI Customer Success Department
-          </h1>
-          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-            Proactive retention intelligence unifying Athena Sentinel, multi-dimensional health telemetry, root-cause diagnosis, automated interventions, and EBR briefings.
-          </p>
+          <div className="flex items-center gap-3 text-zinc-400">
+            <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-[11px]">
+              vault/retention/health_telemetry/
+            </span>
+            <span className="text-zinc-500">|</span>
+            <span className="text-emerald-400 font-semibold">HITL SLA: 100% Governed</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={fetchOverview}
-            disabled={loading}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-900 border border-slate-700 hover:border-slate-600 text-xs font-medium text-slate-300 hover:text-white transition shadow-sm"
-          >
-            <RefreshCw size={14} className={loading ? 'animate-spin text-indigo-400' : ''} />
-            Sync Telemetry
-          </button>
-          <div className="px-3.5 py-2 rounded-lg bg-indigo-950/40 border border-indigo-500/30 text-xs flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-indigo-200 font-medium">Athena Sentinel: Active</span>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                STAGE 5.2 VERTICAL INTELLIGENCE
+              </span>
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-mono bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
+                ATHENA SENTINEL + OODA RETENTION
+              </span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+              <ShieldCheck className="text-emerald-400" size={30} />
+              AI Customer Success Department
+            </h1>
+            <p className="text-xs md:text-sm text-zinc-400 max-w-3xl leading-relaxed">
+              Proactive retention intelligence unifying Athena Sentinel, multi-dimensional health telemetry, root-cause diagnosis, automated interventions, and EBR briefings.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <button
+              onClick={fetchOverview}
+              disabled={loading}
+              className="px-4 py-2.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white border border-white/[0.08] text-xs font-mono font-semibold transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <RefreshCw size={13} className={loading ? 'animate-spin text-emerald-400' : ''} />
+              <span>Sync Telemetry</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('intervention')}
+              className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-mono font-bold transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2 cursor-pointer"
+            >
+              <Zap size={14} />
+              <span>Deploy Intervention</span>
+            </button>
           </div>
         </div>
       </div>
@@ -295,75 +321,75 @@ export function CustomerSuccessClient() {
         </div>
       )}
 
-      {/* KPI Ribbons */}
+      {/* High-Density Telemetry KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">Portfolio Health Index</span>
-            <HeartPulse size={18} className="text-emerald-400" />
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden flex flex-col justify-between">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider mb-2">
+            <span>Portfolio Health Index</span>
+            <HeartPulse size={16} className="text-emerald-400" />
           </div>
-          <div className="mt-3">
-            <div className="text-3xl font-black text-white flex items-baseline gap-2">
+          <div>
+            <div className="text-2xl font-bold font-mono text-white flex items-baseline gap-2">
               {overview?.kpis?.averageHealthScore || 82}
-              <span className="text-sm font-normal text-slate-400">/ 100</span>
+              <span className="text-xs font-normal text-zinc-400">/ 100</span>
             </div>
-            <div className="text-xs text-emerald-400 font-medium mt-1 flex items-center gap-1">
+            <div className="text-xs text-emerald-400 font-mono mt-1 flex items-center gap-1">
               <TrendingUp size={12} />
-              Healthy Baseline across accounts
+              <span>Healthy Baseline across accounts</span>
             </div>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">Net Revenue Retention</span>
-            <TrendingUp size={18} className="text-indigo-400" />
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden flex flex-col justify-between">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider mb-2">
+            <span>Net Revenue Retention</span>
+            <TrendingUp size={16} className="text-emerald-400" />
           </div>
-          <div className="mt-3">
-            <div className="text-3xl font-black text-indigo-300">
+          <div>
+            <div className="text-2xl font-bold font-mono text-emerald-400">
               {overview?.kpis?.netRevenueRetentionRate || 118}%
             </div>
-            <div className="text-xs text-slate-400 mt-1">Target: &gt; 110% benchmark</div>
+            <div className="text-xs text-zinc-400 font-mono mt-1">Target: &gt; 110% benchmark</div>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">ARR at Churn Risk</span>
-            <ShieldAlert size={18} className="text-amber-400" />
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden flex flex-col justify-between">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider mb-2">
+            <span>ARR at Churn Risk</span>
+            <ShieldAlert size={16} className="text-amber-400" />
           </div>
-          <div className="mt-3">
-            <div className="text-3xl font-black text-amber-300">
+          <div>
+            <div className="text-2xl font-bold font-mono text-amber-300">
               ${(overview?.kpis?.atRiskArrTotal || 36000).toLocaleString()}
             </div>
-            <div className="text-xs text-amber-400/90 mt-1">
-              {overview?.kpis?.atRiskAccountsCount || 0} flagged accounts under monitoring
+            <div className="text-xs text-zinc-400 font-mono mt-1">
+              {overview?.kpis?.atRiskAccountsCount || 0} flagged accounts monitored
             </div>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 transition flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-400">
-            <span className="text-xs font-semibold uppercase tracking-wider">Interventions Deployed</span>
-            <Zap size={18} className="text-cyan-400" />
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.06] relative overflow-hidden flex flex-col justify-between">
+          <div className="flex items-center justify-between text-zinc-400 text-xs font-mono uppercase tracking-wider mb-2">
+            <span>Interventions Deployed</span>
+            <Zap size={16} className="text-emerald-400" />
           </div>
-          <div className="mt-3">
-            <div className="text-3xl font-black text-cyan-300">
+          <div>
+            <div className="text-2xl font-bold font-mono text-white">
               {overview?.kpis?.proactiveInterventionsDeployed || 3}
             </div>
-            <div className="text-xs text-slate-400 mt-1">Pre-complaint autonomous actions</div>
+            <div className="text-xs text-zinc-400 font-mono mt-1">Pre-complaint autonomous actions</div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 pb-2">
+      {/* Botanical Glass Segmented Tabs Navigation */}
+      <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3 overflow-x-auto">
         {[
-          { id: 'matrix', label: '1. Health Telemetry Matrix', icon: Activity },
-          { id: 'churn', label: '2. Churn Diagnosis & Root Causes', icon: Brain },
-          { id: 'intervention', label: '3. Autonomous Interventions & Policy Gate', icon: Zap },
-          { id: 'escalation', label: '4. CSM P1 Escalations', icon: AlertTriangle },
-          { id: 'ebr', label: '5. Executive Business Review (EBR)', icon: FileText },
+          { id: 'matrix', label: 'Health Telemetry Matrix', icon: Activity },
+          { id: 'churn', label: 'Churn Diagnosis & Root Causes', icon: Brain },
+          { id: 'intervention', label: 'Autonomous Interventions & Policy Gate', icon: Zap },
+          { id: 'escalation', label: 'CSM P1 Escalations', icon: AlertTriangle },
+          { id: 'ebr', label: 'Executive Business Review (EBR)', icon: FileText },
           { id: 'pillars', label: 'Department Architecture & 7 Pillars', icon: ShieldCheck },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -372,14 +398,14 @@ export function CustomerSuccessClient() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition cursor-pointer ${
                 isActive
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                  : 'bg-slate-900/60 text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                  ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20'
+                  : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.06]'
               }`}
             >
-              <Icon size={15} />
-              {tab.label}
+              <Icon size={14} />
+              <span>{tab.label}</span>
             </button>
           );
         })}
@@ -391,7 +417,7 @@ export function CustomerSuccessClient() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Activity size={20} className="text-indigo-400" />
+                <Activity size={20} className="text-emerald-400" />
                 Multi-Dimensional Customer Health Engine
               </h3>
               <p className="text-xs text-slate-400 mt-1">
@@ -402,7 +428,7 @@ export function CustomerSuccessClient() {
               <button
                 onClick={handleEvaluateHealth}
                 disabled={evaluatingHealth}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-md shadow-indigo-600/30"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-md shadow-emerald-600/30"
               >
                 {evaluatingHealth ? <RefreshCw size={14} className="animate-spin" /> : <HeartPulse size={14} />}
                 Audit Primary Account Health
@@ -420,9 +446,9 @@ export function CustomerSuccessClient() {
 
           {healthData && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-indigo-950/40 border border-indigo-500/30 flex flex-col justify-between">
+              <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-emerald-950/40 border border-emerald-500/30 flex flex-col justify-between">
                 <div>
-                  <span className="text-xs font-mono uppercase text-indigo-400">Audited Account</span>
+                  <span className="text-xs font-mono uppercase text-emerald-400">Audited Account</span>
                   <h4 className="text-xl font-black text-white mt-1">{healthData.accountName}</h4>
                   <div className="mt-4 flex items-baseline gap-2">
                     <span className="text-4xl font-black text-emerald-400">{healthData.healthScore}</span>
@@ -465,10 +491,10 @@ export function CustomerSuccessClient() {
                   <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800">
                     <div className="flex justify-between text-xs mb-1">
                       <span className="text-slate-400">Project Milestone Delivery</span>
-                      <span className="text-indigo-400 font-bold">{healthData.metricsBreakdown?.projectDeliveryScore} / 25 pts</span>
+                      <span className="text-emerald-400 font-bold">{healthData.metricsBreakdown?.projectDeliveryScore} / 25 pts</span>
                     </div>
                     <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                      <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${(healthData.metricsBreakdown?.projectDeliveryScore / 25) * 100}%` }} />
+                      <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${(healthData.metricsBreakdown?.projectDeliveryScore / 25) * 100}%` }} />
                     </div>
                     <p className="text-[11px] text-slate-500 mt-2">Milestones pacing on schedule</p>
                   </div>
@@ -558,7 +584,7 @@ export function CustomerSuccessClient() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Brain size={20} className="text-indigo-400" />
+                <Brain size={20} className="text-emerald-400" />
                 Proactive Churn Predictor & Root Cause Engine
               </h3>
               <p className="text-xs text-slate-400 mt-1">
@@ -568,7 +594,7 @@ export function CustomerSuccessClient() {
             <button
               onClick={handleDiagnoseChurn}
               disabled={diagnosingChurn}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-md shadow-indigo-600/30"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-md shadow-emerald-600/30"
             >
               {diagnosingChurn ? <RefreshCw size={14} className="animate-spin" /> : <Sparkles size={14} />}
               Run Churn Prediction & Diagnosis
@@ -608,10 +634,10 @@ export function CustomerSuccessClient() {
                 </div>
               </div>
 
-              <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900/80 border border-indigo-500/30 space-y-5">
+              <div className="lg:col-span-2 p-6 rounded-2xl bg-slate-900/80 border border-emerald-500/30 space-y-5">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                       IDENTIFIED ROOT CAUSE
                     </span>
                     <span className="text-xs font-mono text-slate-400">{churnAnalysis.primaryRootCause}</span>
@@ -627,12 +653,12 @@ export function CustomerSuccessClient() {
                 <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-semibold text-slate-300 flex items-center gap-1.5">
-                      <Send size={12} className="text-indigo-400" />
+                      <Send size={12} className="text-emerald-400" />
                       Athena Pre-Drafted Proactive Outreach Email
                     </span>
                     <span className="text-[11px] text-slate-500">Auto-Generated</span>
                   </div>
-                  <div className="text-xs font-medium text-indigo-200">
+                  <div className="text-xs font-medium text-emerald-200">
                     Subject: {churnAnalysis.preDraftedEmailSubject}
                   </div>
                   <div className="text-xs text-slate-400 whitespace-pre-wrap font-sans bg-slate-900/60 p-3 rounded-lg border border-slate-800/80">
@@ -649,7 +675,7 @@ export function CustomerSuccessClient() {
                       setActiveTab('intervention');
                       setInterventionTaskTitle(`Intervention: ${churnAnalysis.recommendedIntervention}`);
                     }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition"
                   >
                     Deploy Intervention <ChevronRight size={14} />
                   </button>
@@ -688,7 +714,7 @@ export function CustomerSuccessClient() {
                   type="text"
                   value={interventionTaskTitle}
                   onChange={(e) => setInterventionTaskTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -698,7 +724,7 @@ export function CustomerSuccessClient() {
                   type="email"
                   value={recipientEmail}
                   onChange={(e) => setRecipientEmail(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -716,7 +742,7 @@ export function CustomerSuccessClient() {
                   step="5"
                   value={concessionPercent}
                   onChange={(e) => setConcessionPercent(Number(e.target.value))}
-                  className="w-full accent-indigo-500 cursor-pointer"
+                  className="w-full accent-emerald-500 cursor-pointer"
                 />
                 <div className="flex justify-between text-[10px] text-slate-500 mt-1">
                   <span>0% (Autonomous)</span>
@@ -728,7 +754,7 @@ export function CustomerSuccessClient() {
               <button
                 onClick={handleExecuteIntervention}
                 disabled={executingIntervention}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-600 hover:from-indigo-500 hover:to-cyan-500 text-white text-xs font-bold transition shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white text-xs font-bold transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2"
               >
                 {executingIntervention ? <RefreshCw size={14} className="animate-spin" /> : <Zap size={14} />}
                 Deploy Autonomous Retention Intervention
@@ -780,8 +806,8 @@ export function CustomerSuccessClient() {
                 )}
               </div>
 
-              <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/20 text-[11px] text-slate-400 space-y-1">
-                <strong className="text-indigo-300">Policy Rule #CS_POL_02:</strong> Autonomous concessions are strictly bounded. Any service credit or discount exceeding 15% requires formal human executive sign-off in the Approval Center.
+              <div className="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-[11px] text-slate-400 space-y-1">
+                <strong className="text-emerald-300">Policy Rule #CS_POL_02:</strong> Autonomous concessions are strictly bounded. Any service credit or discount exceeding 15% requires formal human executive sign-off in the Approval Center.
               </div>
             </div>
           </div>
@@ -809,7 +835,7 @@ export function CustomerSuccessClient() {
                   rows={4}
                   value={escalationReason}
                   onChange={(e) => setEscalationReason(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-indigo-500"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
@@ -852,7 +878,7 @@ export function CustomerSuccessClient() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900/60 p-6 rounded-2xl border border-slate-800">
             <div>
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <FileText size={20} className="text-indigo-400" />
+                <FileText size={20} className="text-emerald-400" />
                 Executive Business Review (EBR) Dossier Generator
               </h3>
               <p className="text-xs text-slate-400 mt-1">
@@ -862,7 +888,7 @@ export function CustomerSuccessClient() {
             <button
               onClick={handleGenerateEbr}
               disabled={generatingEbr}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition shadow-md shadow-indigo-600/30"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-md shadow-emerald-600/30"
             >
               {generatingEbr ? <RefreshCw size={14} className="animate-spin" /> : <Award size={14} />}
               Generate EBR Briefing Dossier
@@ -870,10 +896,10 @@ export function CustomerSuccessClient() {
           </div>
 
           {ebrResult ? (
-            <div className="p-8 rounded-2xl bg-gradient-to-br from-slate-900 to-indigo-950/30 border border-indigo-500/30 space-y-6">
+            <div className="p-8 rounded-2xl bg-gradient-to-br from-slate-900 to-emerald-950/30 border border-emerald-500/30 space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-800 pb-4 gap-2">
                 <div>
-                  <span className="text-xs font-mono uppercase text-indigo-400">Quarterly Executive Briefing</span>
+                  <span className="text-xs font-mono uppercase text-emerald-400">Quarterly Executive Briefing</span>
                   <h4 className="text-2xl font-black text-white mt-1">{ebrResult.accountName}</h4>
                   <p className="text-xs text-slate-400">{ebrResult.period}</p>
                 </div>
@@ -886,7 +912,7 @@ export function CustomerSuccessClient() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
                   <span className="text-xs text-slate-400">Monthly Hours Saved</span>
-                  <div className="text-2xl font-black text-indigo-400 mt-1">
+                  <div className="text-2xl font-black text-emerald-400 mt-1">
                     {ebrResult.keySuccessMetrics?.manualHoursSavedPerMonth} hrs/mo
                   </div>
                 </div>
@@ -920,7 +946,7 @@ export function CustomerSuccessClient() {
                 <h5 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Recommended Expansion Opportunities</h5>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {ebrResult.recommendedExpansionOpportunities?.map((exp: any, i: number) => (
-                    <div key={i} className="p-3.5 rounded-xl bg-slate-950 border border-indigo-500/20 text-xs">
+                    <div key={i} className="p-3.5 rounded-xl bg-slate-950 border border-emerald-500/20 text-xs">
                       <div className="flex justify-between font-bold text-white mb-1">
                         <span>{exp.title}</span>
                         <span className="text-emerald-400">+{exp.potentialMrrLift} MRR</span>
@@ -944,7 +970,7 @@ export function CustomerSuccessClient() {
         <div className="space-y-6">
           <div className="bg-slate-900/60 p-6 rounded-2xl border border-slate-800 space-y-2">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <ShieldCheck size={20} className="text-indigo-400" />
+              <ShieldCheck size={20} className="text-emerald-400" />
               Customer Success Department: 7-Pillar Architecture
             </h3>
             <p className="text-xs text-slate-400">
@@ -954,7 +980,7 @@ export function CustomerSuccessClient() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
-              <h4 className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
+              <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
                 <Bot size={15} /> Pillar 1: Specialized Agent Ensemble
               </h4>
               <div className="space-y-2.5">
@@ -1035,3 +1061,4 @@ export function CustomerSuccessClient() {
     </div>
   );
 }
+

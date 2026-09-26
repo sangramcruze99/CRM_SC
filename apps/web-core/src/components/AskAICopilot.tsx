@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Sparkles, X, Send, Bot, User, Loader2, Zap, Brain, CheckCircle2, ChevronDown, Clock } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Sparkles, X, Send, Bot, User, Loader2, Brain, Clock, Activity, Wifi, WifiOff } from "lucide-react";
+import { openResultDrawer } from "./ai/ResultDrawer";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -15,39 +17,42 @@ interface ChatMessage {
 export function AskAICopilot() {
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [provider, setProvider] = useState<"groq" | "openrouter">("groq");
+  const [systemOnline, setSystemOnline] = useState<number | null>(null);
+  const [systemTotal, setSystemTotal] = useState<number | null>(null);
+  const pathname = usePathname();
   const [messages, setMessages] = useState<Array<ChatMessage>>([
     {
       role: "assistant",
-      content: "Hello! I am your AI Business Copilot powered by Groq & OpenRouter. Ask me to analyze pipeline metrics, draft client emails, inspect deals, or evaluate support tickets.",
-      provider: "groq",
-      model: "groq/compound",
-      latencyMs: 180,
+      content: "Hello! I am your Business OS Master Copilot, powered by Gemma 4 running locally.\n\nI have **full system access** — live data from CRM, Sales, Finance, Helpdesk, Projects, HR, Inventory, AI Agents, Automation, and all 24 microservices.\n\nAsk me anything about your business — I always know the current state of the system.",
+      provider: "ollama-gemma",
+      model: "gemma4:e4b",
+      latencyMs: 0,
     },
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
 
   useEffect(() => {
     if (!isOpen) return;
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setIsOpen(false);
-      }
+      if (e.key === "Escape") setIsOpen(false);
     }
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
   const quickPrompts = [
-    "📊 Pipeline Health Check",
-    "✉️ Draft High-Value Outreach",
-    "🎯 Score Active Deals",
-    "⚡ Summarize Support SLAs",
+    " Pipeline Health Check",
+    " Draft High-Value Outreach",
+    " Score Active Deals",
+    " Summarize Support SLAs",
   ];
 
   const handleSendPrompt = async (promptText: string) => {
@@ -55,33 +60,42 @@ export function AskAICopilot() {
 
     const userMessage = promptText.trim();
     setInput("");
+
+    // Build history for multi-turn memory (exclude initial greeting)
+    const history = messages
+      .filter((_, i) => i > 0)
+      .map((m) => ({ role: m.role === "assistant" ? "assistant" : "user", content: m.content }));
+
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
 
     try {
-      const model = provider === "groq" ? "groq/compound" : "openai/gpt-4o";
-      const res = await fetch("/api/ai/ask", {
+      const res = await fetch("/api/ai/copilot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: userMessage,
-          provider,
-          model,
+          currentPage: pathname,
+          history,
         }),
       });
 
-      if (!res.ok) {
-        throw new Error("AI service unavailable");
-      }
+      if (!res.ok) throw new Error("AI service unavailable");
 
       const data = await res.json();
+      const reply = data.reply || data.answer || "No response generated.";
+      // Update system health indicator if returned
+      if (data.systemHealth) {
+        setSystemOnline(data.systemHealth.servicesOnline);
+        setSystemTotal(data.systemHealth.servicesTotal);
+      }
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
-          content: data.reply || "No response generated.",
-          provider: data.provider || provider,
-          model: data.model || model,
+          content: reply,
+          provider: data.provider || "ollama-gemma",
+          model: data.model || "gemma4:e4b",
           latencyMs: data.latencyMs,
         },
       ]);
@@ -105,6 +119,16 @@ export function AskAICopilot() {
     e.preventDefault();
     handleSendPrompt(input);
   };
+
+  // Derive a short display label for the model/provider shown under each message
+  const getProviderLabel = (msg: ChatMessage) => {
+    if (msg.model) return msg.model;
+    if (msg.provider) return msg.provider;
+    return "gemma4:e4b";
+  };
+
+  const isGemmaProvider = (p?: string) =>
+    !p || p.includes("gemma") || p.includes("ollama") || p.includes("local");
 
   return (
     <>
@@ -140,52 +164,53 @@ export function AskAICopilot() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-[9px] font-black tracking-widest text-emerald-800 dark:text-emerald-300 uppercase">
-                      AI COPILOT
+                      MASTER COPILOT
                     </span>
                     <span className="flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      LIVE
+                      {systemOnline !== null ? `${systemOnline}/${systemTotal} SERVICES` : 'FULL ACCESS'}
                     </span>
                   </div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight mt-0.5">Enterprise Copilot</h3>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => openResultDrawer({})}
+                  title="Open AI Execution Results Drawer"
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-bold transition cursor-pointer"
+                >
+                  <Activity size={12} />
+                  <span>Results</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="text-slate-400 hover:text-slate-900 dark:hover:text-white p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* Provider Switcher Bar */}
+            {/* System Status Bar */}
             <div className="px-4 py-2 bg-slate-100/80 dark:bg-black/40 border-b border-slate-200 dark:border-white/[0.06] flex items-center justify-between text-xs">
-              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">Inference Engine:</span>
-              <div className="flex items-center gap-1.5 bg-white dark:bg-white/[0.06] p-1 rounded-xl border border-slate-200 dark:border-white/[0.1]">
-                <button
-                  type="button"
-                  onClick={() => setProvider("groq")}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-black text-[10px] transition-all cursor-pointer ${
-                    provider === "groq"
-                      ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 shadow-xs"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white"
-                  }`}
-                >
-                  <Zap size={12} />
-                  <span>Groq Turbo</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setProvider("openrouter")}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-black text-[10px] transition-all cursor-pointer ${
-                    provider === "openrouter"
-                      ? "bg-gradient-to-r from-teal-500 to-emerald-600 text-slate-950 shadow-xs"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white"
-                  }`}
-                >
-                  <Brain size={12} />
-                  <span>OpenRouter GPT-4o</span>
-                </button>
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">System:</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gradient-to-r from-emerald-500/15 to-teal-500/10 border border-emerald-500/25">
+                  <Brain size={11} className="text-emerald-500" />
+                  <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400">Gemma 4 · Full Access</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                {systemOnline !== null ? (
+                  <span className={`flex items-center gap-1 text-[9px] font-mono ${systemOnline >= (systemTotal || 20) * 0.8 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                    {systemOnline >= (systemTotal || 20) * 0.8 ? <Wifi size={9} /> : <WifiOff size={9} />}
+                    {systemOnline}/{systemTotal} online
+                  </span>
+                ) : (
+                  <span className="text-[9px] text-slate-400 font-mono">24 services</span>
+                )}
               </div>
             </div>
 
@@ -225,10 +250,10 @@ export function AskAICopilot() {
                   {m.role === "assistant" && m.provider && (
                     <div className="flex items-center gap-2 pl-9 text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                       <span className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-                        {m.provider.includes("groq") ? <Zap size={10} /> : <Brain size={10} />}
-                        {m.model || m.provider}
+                        {isGemmaProvider(m.provider) ? <Brain size={10} /> : <Activity size={10} />}
+                        {getProviderLabel(m)}
                       </span>
-                      {m.latencyMs !== undefined && (
+                      {m.latencyMs !== undefined && m.latencyMs > 0 && (
                         <span className="flex items-center gap-0.5">
                           <Clock size={10} />
                           {m.latencyMs}ms
@@ -242,10 +267,11 @@ export function AskAICopilot() {
                 <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400 text-xs pl-2">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
                   <span className="font-medium">
-                    Streaming inference via {provider === "groq" ? "Groq LPU Engine" : "OpenRouter GPT-4o"}...
+                    Gemma reading live system data...
                   </span>
                 </div>
               )}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Quick Action Chips */}
@@ -270,7 +296,7 @@ export function AskAICopilot() {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder={`Ask ${provider === "groq" ? "Groq Turbo (⚡ sub-second)" : "GPT-4o (🧠 deep reasoning)"}...`}
+                  placeholder="Ask about any part of the system..."
                   className="flex-1 bg-transparent text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none font-medium"
                 />
                 <button
@@ -281,6 +307,9 @@ export function AskAICopilot() {
                   <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
+              <p className="text-center text-[9px] text-slate-400 dark:text-slate-600 mt-1.5 font-mono">
+                Gemma 4 · Full System Access · Live data from all 24 services
+              </p>
             </form>
           </div>
         </div>,

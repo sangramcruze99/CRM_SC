@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Activity,
@@ -20,300 +20,310 @@ import {
   Zap,
   ShieldAlert,
   ArrowRight,
+  FileText,
+  Check,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  Inbox,
+  AlertTriangle,
+  UserCheck,
+  Send,
+  Database,
+  FileCheck,
 } from 'lucide-react';
+import {
+  UniversalExecutionStatus,
+  AgentExecutionResult,
+  AgentActionRecord,
+  AgentOutputRecord,
+} from '@repo/core-types';
 
-interface StepLog {
+interface UnifiedExecution {
   id: string;
-  nodeId: string;
-  nodeType: string;
-  nodeLabel: string;
-  status: 'QUEUED' | 'RUNNING' | 'SUCCESS' | 'FAILED' | 'SKIPPED' | 'WAITING_APPROVAL';
-  startedAt: string;
-  finishedAt?: string;
-  durationMs?: number;
-  input?: any;
-  output?: any;
-  error?: string;
-}
-
-interface Execution {
-  id: string;
-  workflowId: string;
-  workflowTitle: string;
-  status: 'QUEUED' | 'RUNNING' | 'WAITING' | 'APPROVAL_REQUIRED' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'TIMED_OUT';
+  source: 'WORKFLOW' | 'AGENT';
+  title: string;
+  agentName?: string;
+  agentId?: string;
+  domain?: string;
+  workflowId?: string;
+  status: UniversalExecutionStatus;
+  outcomeCode: string;
+  outcomeSummary: string;
+  decisionReason?: string;
+  nextStep?: string;
   startedAt: string;
   completedAt?: string;
   durationMs: number;
-  stepCount: number;
   tokensUsed: number;
   aiModel?: string;
   error?: string;
   triggerType: string;
-  steps: StepLog[];
+  targetEntityType?: string;
+  targetId?: string;
+  actions: AgentActionRecord[];
+  outputs: AgentOutputRecord[];
+  rawResult?: AgentExecutionResult;
+  rawSteps?: any[];
 }
 
-const INITIAL_EXECUTIONS: Execution[] = [
-  {
-    id: 'exec-84912',
-    workflowId: 'wf-lead-qual',
-    workflowTitle: 'AI Inbound Lead Triage & WhatsApp Welcome',
-    status: 'SUCCESS',
-    startedAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-    completedAt: new Date(Date.now() - 1000 * 60 * 11.5).toISOString(),
-    durationMs: 840,
-    stepCount: 4,
-    tokensUsed: 1420,
-    aiModel: 'groq/llama-3.3-70b-versatile',
-    triggerType: 'crm:new_lead',
-    steps: [
-      {
-        id: 's-1',
-        nodeId: 'node-trigger',
-        nodeType: 'crm:new_lead',
-        nodeLabel: 'New Lead Ingested',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
-        finishedAt: new Date(Date.now() - 1000 * 60 * 11.9).toISOString(),
-        durationMs: 42,
-        output: { leadId: 'lead-9821', email: 'elena.rostova@techcorp.io', score: 85 },
-      },
-      {
-        id: 's-2',
-        nodeId: 'node-ai-score',
-        nodeType: 'ai:score',
-        nodeLabel: 'AI ICP Fit Scoring',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 11.9).toISOString(),
-        finishedAt: new Date(Date.now() - 1000 * 60 * 11.6).toISOString(),
-        durationMs: 420,
-        output: { fitCategory: 'Tier 1 Enterprise', score: 94, urgency: 'High' },
-      },
-      {
-        id: 's-3',
-        nodeId: 'node-crm-update',
-        nodeType: 'crm:update_lead_score',
-        nodeLabel: 'Update CRM Record',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 11.6).toISOString(),
-        finishedAt: new Date(Date.now() - 1000 * 60 * 11.55).toISOString(),
-        durationMs: 85,
-        output: { updated: true, newStatus: 'QUALIFIED_HOT' },
-      },
-      {
-        id: 's-4',
-        nodeId: 'node-wa-send',
-        nodeType: 'comm:whatsapp',
-        nodeLabel: 'Send WhatsApp Instant Greeting',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 11.55).toISOString(),
-        finishedAt: new Date(Date.now() - 1000 * 60 * 11.5).toISOString(),
-        durationMs: 293,
-        output: { messageId: 'wamid.HBgLMTU1NTg5MjE=', deliveryStatus: 'SENT' },
-      },
-    ],
-  },
-  {
-    id: 'exec-84911',
-    workflowId: 'wf-quote-approval',
-    workflowTitle: 'High-Value Quote (> $25k) Auto-Escalation',
-    status: 'APPROVAL_REQUIRED',
-    startedAt: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-    durationMs: 310,
-    stepCount: 3,
-    tokensUsed: 620,
-    triggerType: 'crm:deal_stage_changed',
-    steps: [
-      {
-        id: 's-1',
-        nodeId: 'node-trigger',
-        nodeType: 'crm:deal_stage_changed',
-        nodeLabel: 'Deal Moved to Proposal',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
-        finishedAt: new Date(Date.now() - 1000 * 60 * 34.95).toISOString(),
-        durationMs: 30,
-        output: { dealId: 'deal-4412', amount: 48000, company: 'Starlight Logistics' },
-      },
-      {
-        id: 's-2',
-        nodeId: 'node-approval',
-        nodeType: 'hitl:approval',
-        nodeLabel: 'VP Sales Approval Required',
-        status: 'WAITING_APPROVAL',
-        startedAt: new Date(Date.now() - 1000 * 60 * 34.95).toISOString(),
-        durationMs: 280,
-        output: { approvalId: 'appr-771', riskLevel: 'HIGH', reason: 'Contract value > $25,000 threshold' },
-      },
-    ],
-  },
-  {
-    id: 'exec-84910',
-    workflowId: 'wf-ocr-invoice',
-    workflowTitle: 'Invoice OCR & AP Auto-Reconciliation',
-    status: 'FAILED',
-    startedAt: new Date(Date.now() - 1000 * 60 * 65).toISOString(),
-    completedAt: new Date(Date.now() - 1000 * 60 * 64.2).toISOString(),
-    durationMs: 1240,
-    stepCount: 2,
-    tokensUsed: 890,
-    aiModel: 'openrouter/meta-llama/llama-3.2-11b-vision-instruct',
-    error: 'Vendor tax ID missing on invoice page 1. OCR confidence 0.42 below tolerance 0.85.',
-    triggerType: 'doc:uploaded',
-    steps: [
-      {
-        id: 's-1',
-        nodeId: 'node-doc-in',
-        nodeType: 'doc:uploaded',
-        nodeLabel: 'PDF Document Ingested',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 65).toISOString(),
-        finishedAt: new Date(Date.now() - 1000 * 60 * 64.8).toISOString(),
-        durationMs: 120,
-        output: { filename: 'INV-2026-992.pdf', pages: 2, mimeType: 'application/pdf' },
-      },
-      {
-        id: 's-2',
-        nodeId: 'node-ocr-extract',
-        nodeType: 'doc:ocr_extract',
-        nodeLabel: 'Neural Line-Item OCR',
-        status: 'FAILED',
-        startedAt: new Date(Date.now() - 1000 * 60 * 64.8).toISOString(),
-        finishedAt: new Date(Date.now() - 1000 * 60 * 64.2).toISOString(),
-        durationMs: 1120,
-        error: 'Vendor tax ID missing on invoice page 1. OCR confidence 0.42 below tolerance 0.85.',
-      },
-    ],
-  },
-  {
-    id: 'exec-84909',
-    workflowId: 'wf-voice-agent',
-    workflowTitle: 'Missed Call Triage & SMS Booking Link',
-    status: 'SUCCESS',
-    startedAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-    completedAt: new Date(Date.now() - 1000 * 60 * 119.2).toISOString(),
-    durationMs: 680,
-    stepCount: 3,
-    tokensUsed: 920,
-    triggerType: 'comm:call_received',
-    steps: [
-      {
-        id: 's-1',
-        nodeId: 'node-call',
-        nodeType: 'comm:call_received',
-        nodeLabel: 'Inbound Call Unanswered',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
-        durationMs: 50,
-        output: { callerNumber: '+1 (415) 890-2341', disposition: 'MISSED' },
-      },
-      {
-        id: 's-2',
-        nodeId: 'node-ai-reply',
-        nodeType: 'ai:generate',
-        nodeLabel: 'Generate Personalized SMS',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 119.8).toISOString(),
-        durationMs: 410,
-        output: { smsText: 'Sorry we missed your call! Book a 10-min slot with our team: https://acme.link/meet' },
-      },
-      {
-        id: 's-3',
-        nodeId: 'node-sms',
-        nodeType: 'comm:sms',
-        nodeLabel: 'Send Outbound SMS via Twilio',
-        status: 'SUCCESS',
-        startedAt: new Date(Date.now() - 1000 * 60 * 119.4).toISOString(),
-        durationMs: 220,
-        output: { sid: 'SM8492048102', status: 'delivered' },
-      },
-    ],
-  },
-];
-
 export default function ExecutionsPage() {
-  const [executions, setExecutions] = useState<Execution[]>(INITIAL_EXECUTIONS);
-  const [selectedExec, setSelectedExec] = useState<Execution | null>(INITIAL_EXECUTIONS[0]);
-  const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [executions, setExecutions] = useState<UnifiedExecution[]>([]);
+  const [selectedExec, setSelectedExec] = useState<UnifiedExecution | null>(null);
+  const [activeTab, setActiveTab] = useState<'ALL' | 'ACTION_REQUIRED' | 'REVIEW' | 'COMPLETED' | 'FAILED'>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRetrying, setIsRetrying] = useState<boolean>(false);
+  const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
 
-  // Fetch real executions if available from backend
-  useEffect(() => {
-    async function fetchExecutions() {
-      try {
-        const res = await fetch('/api/automation/executions/all');
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            setExecutions((prev) => [...data, ...prev]);
+  const fetchAllExecutions = async () => {
+    setIsLoading(true);
+    try {
+      // 1. Fetch workflow executions from Automation engine
+      const wfPromise = fetch('/api/automation/executions/all')
+        .then((res) => (res.ok ? res.json() : []))
+        .catch(() => []);
+
+      // 2. Fetch AI agent executions from AI Orchestrator
+      const agentPromise = fetch('/api/ai/orchestrator/executions')
+        .then((res) => (res.ok ? res.json() : []))
+        .catch(() => []);
+
+      const [wfData, agentData] = await Promise.all([wfPromise, agentPromise]);
+
+      const unified: UnifiedExecution[] = [];
+
+      // Process Workflow Executions
+      if (Array.isArray(wfData)) {
+        wfData.forEach((w: any) => {
+          let execResult: AgentExecutionResult | null = null;
+          if (w.executionResult) {
+            execResult = w.executionResult;
+          } else if (w.outputData) {
+            try {
+              const parsed = JSON.parse(w.outputData);
+              execResult = parsed._result || parsed.executionResult || null;
+            } catch {}
           }
-        }
-      } catch (err) {
-        // Fallback to initial seed telemetry
+
+          let actions: AgentActionRecord[] = execResult?.actions || [];
+          let outputs: AgentOutputRecord[] = execResult?.outputs || [];
+
+          // Map legacy workflow steps if actions were empty
+          if (actions.length === 0 && Array.isArray(w.steps)) {
+            actions = w.steps.map((s: any, idx: number) => ({
+              actionId: s.id || `step_${idx}`,
+              actionType: s.nodeType || 'step',
+              toolName: s.nodeTitle || s.nodeType,
+              targetService: 'automation',
+              targetEntityType: 'WORKFLOW',
+              targetEntityId: w.workflowId,
+              status: s.status === 'SUCCESS' ? 'SUCCESS' : s.status === 'FAILED' ? 'FAILED' : 'QUEUED',
+              startedAt: s.createdAt || w.startedAt,
+              durationMs: s.durationMs || 0,
+              error: s.error,
+            }));
+          }
+
+          const status: UniversalExecutionStatus =
+            w.status === 'SUCCESS' ? 'SUCCESS' :
+            w.status === 'FAILED' ? 'FAILED' :
+            w.status === 'APPROVAL_REQUIRED' || w.status === 'WAITING_APPROVAL' ? 'WAITING_APPROVAL' :
+            w.status === 'RUNNING' ? 'PROCESSING' : 'PROCESSING';
+
+          unified.push({
+            id: w.id,
+            source: 'WORKFLOW',
+            title: w.workflow?.title || w.workflowId || 'Workflow Execution',
+            workflowId: w.workflowId,
+            status,
+            outcomeCode: execResult?.outcome.code || (status === 'SUCCESS' ? 'WORKFLOW_COMPLETED' : status),
+            outcomeSummary: execResult?.outcome.summary || (status === 'SUCCESS' ? 'Workflow executed successfully.' : w.error || 'Workflow execution completed.'),
+            decisionReason: execResult?.decision?.reason,
+            nextStep: execResult?.outcome.nextStep || 'Workflow execution complete.',
+            startedAt: w.startedAt || w.createdAt,
+            completedAt: w.completedAt,
+            durationMs: w.durationMs || 0,
+            tokensUsed: w.tokensUsed || 0,
+            aiModel: 'Workflow DAG Engine',
+            error: w.error,
+            triggerType: w.triggerType || 'STUDIO_TRIGGER',
+            actions,
+            outputs,
+            rawResult: execResult || undefined,
+            rawSteps: w.steps,
+          });
+        });
       }
+
+      // Process Autonomous AI Agent Executions
+      if (Array.isArray(agentData)) {
+        agentData.forEach((a: any) => {
+          const res: AgentExecutionResult | null = a.parsedResult || null;
+          const status = (a.status as UniversalExecutionStatus) || 'SUCCESS';
+
+          unified.push({
+            id: a.id,
+            source: 'AGENT',
+            title: `${a.agent?.name || a.agentId}: ${a.outcomeSummary || a.triggerEvent}`,
+            agentName: a.agent?.name || a.agentId,
+            agentId: a.agentId,
+            domain: a.agent?.domain,
+            status,
+            outcomeCode: a.outcomeCode || res?.outcome.code || 'AGENT_COMPLETED',
+            outcomeSummary: a.outcomeSummary || res?.outcome.summary || 'Agent operations executed autonomously.',
+            decisionReason: a.decisionReason || res?.decision?.reason,
+            nextStep: res?.outcome.nextStep || (status === 'WAITING_APPROVAL' ? 'Review in AI Approval Center' : 'Follow up complete.'),
+            startedAt: a.createdAt,
+            completedAt: a.completedAt,
+            durationMs: a.latencyMs || 0,
+            tokensUsed: a.tokensUsed || 0,
+            aiModel: res?.processing?.model || 'hybrid/multi-engine',
+            error: res?.error,
+            triggerType: a.triggerEvent || 'BUSINESS_EVENT',
+            targetEntityType: a.targetEntityType,
+            targetId: a.targetId,
+            actions: a.actions || res?.actions || [],
+            outputs: a.outputs || res?.outputs || [],
+            rawResult: res || undefined,
+          });
+        });
+      }
+
+      // Sort newest first
+      unified.sort((x, y) => new Date(y.startedAt).getTime() - new Date(x.startedAt).getTime());
+      setExecutions(unified);
+      if (unified.length > 0 && !selectedExec) {
+        setSelectedExec(unified[0]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch execution records', err);
+    } finally {
+      setIsLoading(false);
     }
-    fetchExecutions();
+  };
+
+  useEffect(() => {
+    fetchAllExecutions();
   }, []);
 
-  const filteredExecutions = executions.filter((e) => {
-    const matchesStatus = filterStatus === 'ALL' || e.status === filterStatus;
-    const matchesSearch =
-      e.workflowTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.triggerType.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesStatus && matchesSearch;
-  });
+  // Filter based on Tab + Search Query
+  const filteredExecutions = useMemo(() => {
+    return executions.filter((exec) => {
+      // Tab matching
+      let matchesTab = true;
+      if (activeTab === 'ACTION_REQUIRED') {
+        matchesTab = exec.status === 'WAITING_APPROVAL' || exec.status === 'NEEDS_REVIEW' || exec.status === 'ESCALATED';
+      } else if (activeTab === 'REVIEW') {
+        matchesTab = exec.status === 'NEEDS_REVIEW' || exec.status === 'ESCALATED' || Boolean(exec.rawResult?.humanReview?.required);
+      } else if (activeTab === 'COMPLETED') {
+        matchesTab = exec.status === 'SUCCESS' || exec.status === 'NO_ACTION_REQUIRED';
+      } else if (activeTab === 'FAILED') {
+        matchesTab = exec.status === 'FAILED' || exec.status === 'BLOCKED';
+      }
 
-  const handleRetryExecution = async (execId: string) => {
+      // Search matching
+      const query = searchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !query ||
+        exec.title.toLowerCase().includes(query) ||
+        exec.id.toLowerCase().includes(query) ||
+        exec.outcomeSummary.toLowerCase().includes(query) ||
+        exec.outcomeCode.toLowerCase().includes(query) ||
+        (exec.agentName && exec.agentName.toLowerCase().includes(query)) ||
+        (exec.targetEntityType && exec.targetEntityType.toLowerCase().includes(query)) ||
+        (exec.targetId && exec.targetId.toLowerCase().includes(query));
+
+      return matchesTab && matchesSearch;
+    });
+  }, [executions, activeTab, searchQuery]);
+
+  // Handle retry
+  const handleRetryExecution = async (exec: UnifiedExecution) => {
     setIsRetrying(true);
     try {
-      const res = await fetch(`/api/automation/executions/${execId}/retry`, { method: 'POST' });
-      if (res.ok) {
-        alert(`Execution ${execId} successfully resubmitted to the BullMQ queue!`);
+      if (exec.source === 'WORKFLOW') {
+        await fetch(`/api/automation/executions/${exec.id}/retry`, { method: 'POST' });
       } else {
-        alert(`Retrying execution locally... Simulated re-run queued.`);
+        await fetch('/api/ai/orchestrator/trigger-agent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            eventType: exec.triggerType,
+            payload: { id: exec.targetId, targetEntity: exec.targetEntityType },
+          }),
+        });
       }
-    } catch {
-      alert(`Retrying execution locally... Simulated re-run queued.`);
+      await fetchAllExecutions();
+    } catch (err) {
+      console.error('Retry failed', err);
     } finally {
       setIsRetrying(false);
     }
   };
 
-  const getStatusBadge = (status: Execution['status']) => {
+  // Handle Approval quick action
+  const handleQuickApprove = async (approvalId: string) => {
+    setApprovingId(approvalId);
+    try {
+      await fetch(`/api/ai/orchestrator/approvals/${approvalId}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewerId: 'current-user' }),
+      });
+      await fetchAllExecutions();
+    } catch (err) {
+      console.error('Approval failed', err);
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
+  // Human-Friendly Status Badges
+  const renderStatusBadge = (status: UniversalExecutionStatus) => {
     switch (status) {
       case 'SUCCESS':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-400" />
-            SUCCESS
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+            COMPLETED
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30">
-            <XCircle className="w-3.5 h-3.5 mr-1 text-rose-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+            <XCircle className="w-3.5 h-3.5 text-rose-400" />
             FAILED
           </span>
         );
-      case 'APPROVAL_REQUIRED':
+      case 'WAITING_APPROVAL':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
-            <ShieldAlert className="w-3.5 h-3.5 mr-1 text-amber-400" />
-            APPROVAL REQUIRED
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 animate-pulse">
+            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+            ACTION REQUIRED
           </span>
         );
-      case 'RUNNING':
+      case 'NEEDS_REVIEW':
+      case 'ESCALATED':
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 animate-pulse">
-            <RefreshCw className="w-3.5 h-3.5 mr-1 text-cyan-400 animate-spin" />
-            RUNNING
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-300 border border-orange-500/30">
+            <AlertTriangle className="w-3.5 h-3.5 text-orange-400" />
+            REVIEW
+          </span>
+        );
+      case 'PROCESSING':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+            <RefreshCw className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+            PROCESSING
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/30">
-            <Clock className="w-3.5 h-3.5 mr-1 text-slate-400" />
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-300 border border-slate-500/30">
+            <Clock className="w-3.5 h-3.5 text-slate-400" />
             {status}
           </span>
         );
@@ -321,120 +331,128 @@ export default function ExecutionsPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
-      {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2">
-            <h2 className="text-xl font-bold text-white tracking-tight">Workflow Executions & Audit Telemetry</h2>
-            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              Live Feed
+    <div className="space-y-6 max-w-7xl mx-auto text-white font-sans">
+      {/* Top Header Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-3xl p-6 md:p-8 border border-white/[0.08] relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-white/[0.06] text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
+            <span className="text-emerald-400 font-bold tracking-wider uppercase">Reasoning Swarm Bus Active</span>
+            <span className="text-zinc-500">•</span>
+            <span className="text-zinc-400">Universal Contract Telemetry</span>
           </div>
-          <p className="text-sm text-slate-400 mt-1">
-            Deterministic node-by-node audit trace, retry controls, token consumption, and failure diagnostics
-          </p>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={() => window.location.reload()}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-white/10 text-xs font-medium transition"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
-            <span>Refresh</span>
-          </button>
-          <Link
-            href="/automation/approvals"
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold transition"
-          >
-            <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-            <span>View Pending Approvals</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* Metrics Strip */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>Total Executions (24h)</span>
-            <Activity className="w-4 h-4 text-emerald-400" />
+          <div className="flex items-center gap-3 text-zinc-400">
+            <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-[11px]">
+              engine/executions/universal_ledger/
+            </span>
+            <span className="text-zinc-500">|</span>
+            <span className="text-emerald-400 font-semibold">Audit Trail: Verified</span>
           </div>
-          <div className="mt-2 text-2xl font-black text-white">1,842</div>
-          <div className="mt-1 text-[11px] text-emerald-400 font-medium">99.4% success rate</div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>Avg Node Latency</span>
-            <Zap className="w-4 h-4 text-cyan-400" />
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                UNIVERSAL EXECUTION GRAPH
+              </span>
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-mono bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
+                HITL SAFETY GATE ACTIVE
+              </span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+              <Activity className="text-emerald-400" size={30} />
+              AI & Automation Result Center
+            </h1>
+            <p className="text-xs md:text-sm text-zinc-400 max-w-3xl leading-relaxed">
+              Consistent tracking from trigger to decision, business entity update, and immutable audit trail across all autonomous workflows and AI agents.
+            </p>
           </div>
-          <div className="mt-2 text-2xl font-black text-white">314 ms</div>
-          <div className="mt-1 text-[11px] text-cyan-400 font-medium">BullMQ Redis stream</div>
-        </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>AI Tokens Consumed</span>
-            <Cpu className="w-4 h-4 text-violet-400" />
-          </div>
-          <div className="mt-2 text-2xl font-black text-white">482.1k</div>
-          <div className="mt-1 text-[11px] text-violet-400 font-medium">Groq & OpenRouter hybrid</div>
-        </div>
-
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
-          <div className="flex items-center justify-between text-xs text-slate-400">
-            <span>HITL Approvals Paused</span>
-            <ShieldAlert className="w-4 h-4 text-amber-400" />
-          </div>
-          <div className="mt-2 text-2xl font-black text-amber-400">1 Pending</div>
-          <div className="mt-1 text-[11px] text-slate-400">Awaiting human review</div>
-        </div>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-xl bg-slate-900/50 border border-white/10">
-        <div className="flex items-center space-x-1.5 overflow-x-auto w-full sm:w-auto">
-          {['ALL', 'SUCCESS', 'FAILED', 'APPROVAL_REQUIRED', 'RUNNING'].map((status) => (
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
             <button
-              key={status}
-              onClick={() => setFilterStatus(status)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                filterStatus === status
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
-              }`}
+              onClick={fetchAllExecutions}
+              disabled={isLoading}
+              className="px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white rounded-xl text-xs font-mono font-semibold border border-white/[0.08] transition-all flex items-center gap-2 cursor-pointer shadow-sm"
             >
-              {status}
+              <RefreshCw className={`w-3.5 h-3.5 text-zinc-400 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>REFRESH</span>
             </button>
-          ))}
+
+            <Link
+              href="/automation/approvals"
+              className="px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-mono font-bold transition-all shadow-md flex items-center gap-2"
+            >
+              <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+              <span>SAFETY GATE APPROVALS</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Needs Attention / Inbox Tabs */}
+      <div className="botanical-glass-card flex flex-col sm:flex-row items-center justify-between gap-3 p-3 rounded-2xl border border-white/[0.08]">
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto p-1 bg-white/[0.03] rounded-xl border border-white/[0.06]">
+          {[
+            { id: 'ALL', label: 'All Results', count: executions.length },
+            { id: 'ACTION_REQUIRED', label: 'Action Required', count: executions.filter(e => e.status === 'WAITING_APPROVAL').length, color: 'text-amber-400' },
+            { id: 'REVIEW', label: 'Review', count: executions.filter(e => e.status === 'NEEDS_REVIEW' || e.status === 'ESCALATED').length, color: 'text-orange-400' },
+            { id: 'COMPLETED', label: 'Completed', count: executions.filter(e => e.status === 'SUCCESS' || e.status === 'NO_ACTION_REQUIRED').length, color: 'text-emerald-400' },
+            { id: 'FAILED', label: 'Failed', count: executions.filter(e => e.status === 'FAILED').length, color: 'text-rose-400' },
+          ].map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                  isActive
+                    ? 'bg-emerald-500 text-zinc-950 font-bold shadow-md shadow-emerald-500/20'
+                    : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${isActive ? 'bg-zinc-950/30 text-zinc-950 font-bold' : tab.color || 'text-zinc-400'}`}>
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
           <input
             type="text"
-            placeholder="Search by workflow, ID, trigger..."
+            placeholder="Search by entity, agent, summary..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-950/80 border border-white/10 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500/50"
+            className="w-full bg-black/40 border border-white/[0.08] rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500/50"
           />
         </div>
       </div>
 
-      {/* Main Split View: Table on left, Inspector on right */}
+      {/* Main Split: Execution Feed on Left, Human-Friendly Result Detail on Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Execution Table */}
-        <div className="lg:col-span-7 bg-slate-900/50 rounded-xl border border-white/10 overflow-hidden">
-          <div className="p-3.5 border-b border-white/10 flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-300">Execution Runs ({filteredExecutions.length})</span>
-            <span className="text-[11px] text-slate-500">Click a row to inspect node trace</span>
+        {/* Execution Feed */}
+        <div className="lg:col-span-5 botanical-glass-card rounded-2xl border border-white/[0.08] overflow-hidden flex flex-col max-h-[750px]">
+          <div className="p-3.5 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.02]">
+            <span className="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wider">
+              Executions ({filteredExecutions.length})
+            </span>
+            <span className="text-[11px] font-mono text-zinc-500">Select to inspect</span>
           </div>
 
-          <div className="divide-y divide-white/5 max-h-[620px] overflow-y-auto">
+          <div className="divide-y divide-white/[0.05] overflow-y-auto flex-1">
             {filteredExecutions.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 text-xs">No executions match criteria</div>
+              <div className="p-12 text-center text-zinc-500 text-xs font-mono">
+                No executions found for this view
+              </div>
             ) : (
               filteredExecutions.map((exec) => {
                 const isSelected = selectedExec?.id === exec.id;
@@ -442,40 +460,41 @@ export default function ExecutionsPage() {
                   <div
                     key={exec.id}
                     onClick={() => setSelectedExec(exec)}
-                    className={`p-3.5 flex items-center justify-between cursor-pointer transition ${
+                    className={`p-4 flex items-start justify-between cursor-pointer transition-all ${
                       isSelected
-                        ? 'bg-emerald-500/10 border-l-2 border-emerald-400'
+                        ? 'bg-emerald-500/10 border-l-4 border-emerald-400'
                         : 'hover:bg-white/[0.02]'
                     }`}
                   >
-                    <div className="space-y-1 min-w-0 pr-3">
-                      <div className="flex items-center space-x-2">
-                        <span className="font-semibold text-xs text-white truncate max-w-[240px]">
-                          {exec.workflowTitle}
+                    <div className="space-y-1.5 min-w-0 pr-3 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-xs text-white truncate max-w-[220px]">
+                          {exec.agentName || exec.title}
                         </span>
-                        <span className="font-mono text-[10px] text-slate-500">{exec.id}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-zinc-400">
+                          {exec.source}
+                        </span>
                       </div>
-                      <div className="flex items-center space-x-3 text-[11px] text-slate-400">
-                        <span className="flex items-center space-x-1">
-                          <Layers className="w-3 h-3 text-slate-500" />
-                          <span>{exec.stepCount} steps</span>
+
+                      <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">
+                        {exec.outcomeSummary}
+                      </p>
+
+                      <div className="flex items-center gap-3 text-[10px] text-zinc-500 pt-1 font-mono">
+                        <span className="flex items-center gap-1 font-mono">
+                          <Clock className="w-3 h-3" />
+                          {new Date(exec.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
-                        <span className="flex items-center space-x-1">
-                          <Clock className="w-3 h-3 text-slate-500" />
-                          <span>{exec.durationMs}ms</span>
-                        </span>
-                        {exec.tokensUsed > 0 && (
-                          <span className="flex items-center space-x-1">
-                            <Cpu className="w-3 h-3 text-slate-500" />
-                            <span>{exec.tokensUsed} tokens</span>
-                          </span>
-                        )}
+                        <span>•</span>
+                        <span>{exec.actions.length} action(s)</span>
+                        <span>•</span>
+                        <span>{exec.durationMs}ms</span>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-3 shrink-0">
-                      {getStatusBadge(exec.status)}
-                      <ChevronRight className={`w-4 h-4 transition ${isSelected ? 'text-emerald-400' : 'text-slate-600'}`} />
+                    <div className="shrink-0 flex flex-col items-end gap-2">
+                      {renderStatusBadge(exec.status)}
+                      <ChevronRight className={`w-4 h-4 transition ${isSelected ? 'text-emerald-400' : 'text-zinc-600'}`} />
                     </div>
                   </div>
                 );
@@ -484,124 +503,271 @@ export default function ExecutionsPage() {
           </div>
         </div>
 
-        {/* Selected Execution Inspector */}
-        <div className="lg:col-span-5 bg-slate-900/70 rounded-xl border border-white/10 p-5 space-y-5">
+        {/* Human-Friendly Universal Result Detail Inspector */}
+        <div className="lg:col-span-7 botanical-glass-card rounded-2xl border border-white/[0.08] p-6 space-y-6 overflow-y-auto max-h-[750px] relative">
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
           {selectedExec ? (
             <>
               {/* Header */}
-              <div className="flex items-start justify-between border-b border-white/10 pb-4">
+              <div className="flex items-start justify-between border-b border-white/[0.06] pb-5">
                 <div>
-                  <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">Run Inspector</span>
-                  <h3 className="text-sm font-bold text-white mt-0.5">{selectedExec.workflowTitle}</h3>
-                  <p className="text-xs text-slate-400 font-mono mt-0.5">{selectedExec.id}</p>
-                </div>
-                <div>{getStatusBadge(selectedExec.status)}</div>
-              </div>
-
-              {/* Action Controls */}
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handleRetryExecution(selectedExec.id)}
-                  disabled={isRetrying}
-                  className="flex-1 inline-flex items-center justify-center space-x-2 px-3 py-2 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold transition"
-                >
-                  <RotateCcw className={`w-3.5 h-3.5 ${isRetrying ? 'animate-spin' : ''}`} />
-                  <span>{isRetrying ? 'Retrying...' : 'Replay & Retry Run'}</span>
-                </button>
-
-                <Link
-                  href={`/automation/workflows/${selectedExec.workflowId}`}
-                  className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-xs font-medium transition"
-                >
-                  Open in Studio
-                </Link>
-              </div>
-
-              {/* Execution Summary Stats */}
-              <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-slate-950/60 border border-white/5 text-center">
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase">Duration</span>
-                  <p className="text-xs font-mono font-bold text-white mt-0.5">{selectedExec.durationMs}ms</p>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase">AI Tokens</span>
-                  <p className="text-xs font-mono font-bold text-white mt-0.5">{selectedExec.tokensUsed || 'None'}</p>
-                </div>
-                <div>
-                  <span className="text-[10px] text-slate-500 uppercase">Trigger</span>
-                  <p className="text-xs font-mono font-bold text-emerald-400 mt-0.5 truncate">{selectedExec.triggerType}</p>
-                </div>
-              </div>
-
-              {/* Failure Error Alert if present */}
-              {selectedExec.error && (
-                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs space-y-1">
-                  <div className="flex items-center space-x-1.5 font-bold">
-                    <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
-                    <span>Workflow Exception</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider font-semibold">
+                      {selectedExec.source === 'AGENT' ? 'AI Domain Agent Result' : 'Workflow Graph Result'}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-500">ID: {selectedExec.id}</span>
                   </div>
-                  <p className="font-mono text-[11px] text-rose-200">{selectedExec.error}</p>
+                  <h2 className="text-lg font-bold text-white mt-1">
+                    {selectedExec.agentName ? `${selectedExec.agentName}` : selectedExec.title}
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5 font-mono">
+                    Outcome Code: <span className="text-emerald-400 font-semibold">{selectedExec.outcomeCode}</span>
+                  </p>
+                </div>
+
+                <div className="flex flex-col items-end gap-2">
+                  {renderStatusBadge(selectedExec.status)}
+                  <button
+                    onClick={() => handleRetryExecution(selectedExec)}
+                    disabled={isRetrying}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 text-xs font-medium transition"
+                  >
+                    <RotateCcw className={`w-3 h-3 ${isRetrying ? 'animate-spin' : ''}`} />
+                    <span>{isRetrying ? 'Retrying...' : 'Re-run'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Human Review Required Banner (Safety Gate) */}
+              {selectedExec.status === 'WAITING_APPROVAL' && (
+                <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-500/30 text-amber-200 space-y-3">
+                  <div className="flex items-center gap-2 font-bold text-sm text-amber-300">
+                    <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0" />
+                    <span>Human Approval Required</span>
+                  </div>
+                  <p className="text-xs text-amber-200/90 leading-relaxed">
+                    {selectedExec.decisionReason || selectedExec.outcomeSummary}
+                  </p>
+                  <div className="flex items-center justify-between pt-2 border-t border-amber-500/20">
+                    <span className="text-[11px] text-amber-400 font-medium">
+                      Action paused to satisfy Human-in-the-Loop policy gate.
+                    </span>
+                    {selectedExec.rawResult?.humanReview?.approvalRequestId ? (
+                      <button
+                        onClick={() => handleQuickApprove(selectedExec.rawResult!.humanReview!.approvalRequestId!)}
+                        disabled={approvingId === selectedExec.rawResult.humanReview.approvalRequestId}
+                        className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-mono font-bold transition shadow-sm"
+                      >
+                        {approvingId === selectedExec.rawResult.humanReview.approvalRequestId ? 'Approving...' : 'Approve Action'}
+                      </button>
+                    ) : (
+                      <Link
+                        href="/automation/approvals"
+                        className="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-zinc-950 text-xs font-mono font-bold transition"
+                      >
+                        Open in Approvals Center
+                      </Link>
+                    )}
+                  </div>
                 </div>
               )}
 
-              {/* Node-by-Node Step Timeline */}
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
-                  <Terminal className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Node Execution Trace ({selectedExec.steps.length})</span>
+              {/* 1. What Happened? (Result Summary) */}
+              <div className="space-y-2 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  What Happened?
                 </span>
+                <p className="text-sm font-medium text-white leading-relaxed">
+                  {selectedExec.outcomeSummary}
+                </p>
+              </div>
 
-                <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
-                  {selectedExec.steps.map((step, idx) => (
-                    <div
-                      key={step.id}
-                      className="p-3 rounded-lg bg-slate-950/70 border border-white/5 space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <span className="w-5 h-5 rounded-full bg-slate-800 text-[10px] font-mono flex items-center justify-center text-slate-400">
-                            {idx + 1}
+              {/* 2. What Triggered This? (Input Context) */}
+              <div className="space-y-2 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <Zap className="w-4 h-4 text-emerald-400" />
+                  What Triggered This?
+                </span>
+                <div className="flex items-center gap-4 text-xs font-mono">
+                  <div>
+                    <span className="text-zinc-500">Trigger Event:</span>{' '}
+                    <span className="text-emerald-400 font-semibold">{selectedExec.triggerType}</span>
+                  </div>
+                  {selectedExec.targetEntityType && (
+                    <div>
+                      <span className="text-zinc-500">Target Entity:</span>{' '}
+                      <span className="font-semibold text-white">
+                        {selectedExec.targetEntityType} #{selectedExec.targetId}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 3. AI Decision Rationale */}
+              {selectedExec.decisionReason && (
+                <div className="space-y-2 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                    <UserCheck className="w-4 h-4 text-emerald-400" />
+                    AI Decision & Rationale
+                  </span>
+                  <p className="text-xs text-zinc-300 leading-relaxed font-sans">
+                    {selectedExec.decisionReason}
+                  </p>
+                </div>
+              )}
+
+              {/* 4. Actions Taken */}
+              <div className="space-y-2">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-emerald-400" />
+                  Actions Taken ({selectedExec.actions.length})
+                </span>
+                {selectedExec.actions.length === 0 ? (
+                  <p className="text-xs text-zinc-500 italic font-mono">No external actions were required for this run.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {selectedExec.actions.map((act, idx) => (
+                      <div
+                        key={act.actionId || idx}
+                        className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className="w-5 h-5 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-bold">
+                            ✓
                           </span>
                           <div>
-                            <span className="text-xs font-semibold text-white block">{step.nodeLabel}</span>
-                            <span className="text-[10px] font-mono text-slate-500">{step.nodeType}</span>
+                            <span className="text-xs font-semibold text-white block">
+                              {act.toolName || act.actionType}
+                            </span>
+                            <span className="text-[10px] text-zinc-400 font-mono">
+                              {act.targetService} • {act.targetEntityType}:{act.targetEntityId}
+                            </span>
                           </div>
                         </div>
 
-                        <div className="flex items-center space-x-2">
-                          {step.durationMs && (
-                            <span className="text-[10px] font-mono text-slate-400">{step.durationMs}ms</span>
+                        <div className="flex items-center gap-2">
+                          {act.durationMs !== undefined && (
+                            <span className="text-[10px] font-mono text-zinc-500">{act.durationMs}ms</span>
                           )}
-                          <span
-                            className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold ${
-                              step.status === 'SUCCESS'
-                                ? 'bg-emerald-500/20 text-emerald-400'
-                                : step.status === 'FAILED'
-                                ? 'bg-rose-500/20 text-rose-400'
-                                : 'bg-amber-500/20 text-amber-400'
-                            }`}
-                          >
-                            {step.status}
+                          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            {act.status}
                           </span>
                         </div>
                       </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-                      {/* Payload Viewer */}
-                      {step.output && (
-                        <div className="mt-2 bg-slate-900/90 rounded p-2 text-[10px] font-mono text-slate-300 overflow-x-auto">
-                          <pre>{JSON.stringify(step.output, null, 2)}</pre>
+              {/* 5. Outputs Produced */}
+              {selectedExec.outputs.length > 0 && (
+                <div className="space-y-2">
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                    <FileCheck className="w-4 h-4 text-emerald-400" />
+                    Outputs Produced ({selectedExec.outputs.length})
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {selectedExec.outputs.map((out, idx) => (
+                      <div
+                        key={out.outputId || idx}
+                        className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-1"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-white truncate">{out.title}</span>
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-emerald-400 border border-white/[0.06]">
+                            {out.type}
+                          </span>
                         </div>
-                      )}
-                    </div>
-                  ))}
+                        <p className="text-[11px] text-zinc-400 line-clamp-2">{out.summary}</p>
+                        {out.documentId && (
+                          <Link
+                            href={`/documents?id=${out.documentId}`}
+                            className="inline-flex items-center gap-1 text-[11px] text-emerald-400 hover:underline pt-1 font-mono"
+                          >
+                            <span>Open in Document Vault</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              )}
+
+              {/* 6. What Happens Next? */}
+              <div className="space-y-2 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                  <ArrowRight className="w-4 h-4 text-emerald-400" />
+                  What Happens Next?
+                </span>
+                <p className="text-xs text-zinc-300 font-medium">
+                  {selectedExec.nextStep}
+                </p>
+              </div>
+
+              {/* Advanced Technical Details Collapsible (For Admins / Engineers) */}
+              <div className="border-t border-white/[0.08] pt-4">
+                <button
+                  onClick={() => setShowAdvanced((prev) => !prev)}
+                  className="flex items-center justify-between w-full text-xs font-mono text-zinc-400 hover:text-white transition"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+                    Advanced Execution Trace & System Metrics
+                  </span>
+                  {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+
+                {showAdvanced && (
+                  <div className="mt-4 space-y-4 animate-in fade-in duration-150">
+                    <div className="grid grid-cols-4 gap-2 text-center p-3 rounded-xl bg-black/40 border border-white/[0.06] text-xs font-mono">
+                      <div>
+                        <span className="text-[10px] text-zinc-500 uppercase block">Model</span>
+                        <span className="text-white font-semibold">{selectedExec.aiModel || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-zinc-500 uppercase block">Duration</span>
+                        <span className="text-white font-semibold">{selectedExec.durationMs}ms</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-zinc-500 uppercase block">Tokens</span>
+                        <span className="text-white font-semibold">{selectedExec.tokensUsed || 0}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] text-zinc-500 uppercase block">Actions</span>
+                        <span className="text-white font-semibold">{selectedExec.actions.length}</span>
+                      </div>
+                    </div>
+
+                    {selectedExec.rawSteps && selectedExec.rawSteps.length > 0 && (
+                      <div className="space-y-2">
+                        <span className="text-[11px] font-bold text-zinc-400 block font-mono">
+                          Raw DAG Node Execution Logs
+                        </span>
+                        <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                          {selectedExec.rawSteps.map((step: any, idx: number) => (
+                            <div key={idx} className="p-2 rounded bg-black/50 font-mono text-[10px] text-zinc-300 border border-white/[0.06] flex items-center justify-between">
+                              <span>[{step.stepIndex || idx}] {step.nodeTitle || step.nodeType}</span>
+                              <span className="text-emerald-400">{step.status} ({step.durationMs || 0}ms)</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </>
           ) : (
-            <div className="p-8 text-center text-slate-500 text-xs">Select an execution to inspect logs</div>
+            <div className="p-16 text-center text-zinc-500 text-xs font-mono">
+              Select an execution from the feed to view the complete result breakdown
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 }
+

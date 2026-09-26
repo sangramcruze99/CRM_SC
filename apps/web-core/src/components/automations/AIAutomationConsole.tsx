@@ -41,7 +41,7 @@ interface AutomationHub {
   keywords: string[];
 }
 
-export function AIAutomationConsole() {
+export function AIAutomationConsole({ hideTrigger = false }: { hideTrigger?: boolean } = {}) {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isConsoleModalOpen, setIsConsoleModalOpen] = useState(false);
@@ -79,9 +79,14 @@ export function AIAutomationConsole() {
         setIsConsoleModalOpen(false);
       }
     };
+    const handleCustomOpen = () => setIsConsoleModalOpen(true);
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('open-automation-console', handleCustomOpen);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('open-automation-console', handleCustomOpen);
+    };
   }, []);
 
   // Close dropdown on outside click
@@ -181,9 +186,9 @@ export function AIAutomationConsole() {
       subtitle: 'WhatsApp, Twilio, Gmail, Groq, Shopify & CRM',
       href: '/automation/connectors',
       badge: '16 Ready',
-      badgeColor: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
+      badgeColor: 'bg-teal-500/15 text-teal-300 border-teal-500/30',
       icon: Plug,
-      color: 'from-indigo-500/20 to-purple-500/10 text-indigo-400 border-indigo-500/30',
+      color: 'from-teal-500/20 to-emerald-500/10 text-teal-400 border-teal-500/30',
       keywords: ['connector', 'integration', 'whatsapp', 'twilio', 'gmail', 'groq', 'shopify', 'hubspot'],
     },
     {
@@ -271,7 +276,7 @@ export function AIAutomationConsole() {
 
   // Handle Quick Trigger Run from Console
   const handleQuickRun = async (wfId: string, wfName: string) => {
-    setTriggerStatus(`⚡ Triggering "${wfName}"...`);
+    setTriggerStatus(` Triggering "${wfName}"...`);
     try {
       const res = await fetch(`/api/automation/workflows/${wfId}/execute-graph`, {
         method: 'POST',
@@ -279,10 +284,10 @@ export function AIAutomationConsole() {
         body: JSON.stringify({ triggerPayload: { source: 'smart_console_trigger' } }),
       });
       const data = await res.json();
-      setTriggerStatus(`✅ "${wfName}" completed with status: ${data.status || 'SUCCESS'}`);
+      setTriggerStatus(` "${wfName}" completed with status: ${data.status || 'SUCCESS'}`);
       setTimeout(() => setTriggerStatus(null), 4000);
     } catch {
-      setTriggerStatus(`✅ Trigger signal dispatched to automation queue.`);
+      setTriggerStatus(` Trigger signal dispatched to automation queue.`);
       setTimeout(() => setTriggerStatus(null), 4000);
     }
   };
@@ -290,27 +295,29 @@ export function AIAutomationConsole() {
   return (
     <div className="relative inline-block" ref={dropdownRef}>
       {/* Top Header Trigger Button */}
-      <button
-        type="button"
-        onClick={() => setIsDropdownOpen((prev) => !prev)}
-        className={`h-8.5 flex items-center space-x-1.5 px-2.5 rounded-xl text-xs font-bold transition-all border shadow-xs cursor-pointer whitespace-nowrap active:scale-[0.98] ${
-          isDropdownOpen
-            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
-            : 'bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 text-emerald-400 hover:text-emerald-300 border-emerald-500/25 hover:border-emerald-500/40'
-        }`}
-        title="AI Automation OS Smart Shortcut Menu (Alt+A)"
-      >
-        <span className="relative flex h-2 w-2 shrink-0">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-        </span>
-        <Zap size={13} className="text-emerald-400 fill-emerald-400/20 shrink-0" />
-        <span className="tracking-tight hidden xl:inline">Automation OS</span>
-        <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/30 hidden sm:inline shrink-0">
-          ⌥A
-        </span>
-        <ChevronDown size={12} className={`text-emerald-400/70 shrink-0 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-      </button>
+      {!hideTrigger && (
+        <button
+          type="button"
+          onClick={() => setIsDropdownOpen((prev) => !prev)}
+          className={`h-8.5 flex items-center space-x-1.5 px-2.5 rounded-xl text-xs font-bold transition-all border shadow-xs cursor-pointer whitespace-nowrap active:scale-[0.98] ${
+            isDropdownOpen
+              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.25)]'
+              : 'bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 text-emerald-400 hover:text-emerald-300 border-emerald-500/25 hover:border-emerald-500/40'
+          }`}
+          title="AI Automation OS Smart Shortcut Menu (Alt+A)"
+        >
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          <Zap size={13} className="text-emerald-400 fill-emerald-400/20 shrink-0" />
+          <span className="tracking-tight hidden xl:inline">Automation OS</span>
+          <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/30 hidden sm:inline shrink-0">
+            A
+          </span>
+          <ChevronDown size={12} className={`text-emerald-400/70 shrink-0 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+        </button>
+      )}
 
       {/* Floating Header Dropdown Menu */}
       {isDropdownOpen && (
@@ -505,7 +512,7 @@ export function AIAutomationConsole() {
                   <ShieldAlert size={13} />
                   <span>HITL Queue: <strong>1 Review</strong></span>
                 </div>
-                <div className="flex items-center space-x-1.5 text-indigo-400 hidden sm:flex">
+                <div className="flex items-center space-x-1.5 text-teal-400 hidden sm:flex">
                   <Plug size={13} />
                   <span>Connectors: <strong>16 Ready</strong></span>
                 </div>

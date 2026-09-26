@@ -2,7 +2,7 @@
 import { Controller, Get, Post, Body, Headers, BadRequestException } from '@nestjs/common';
 import { ReportTemplateService } from './reports.service';
 
-@Controller('reports')
+@Controller('report-templates')
 export class ReportTemplateController {
   constructor(private readonly service: ReportTemplateService) {}
 

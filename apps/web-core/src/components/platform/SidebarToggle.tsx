@@ -16,7 +16,7 @@ export function SidebarToggle() {
           ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/25 ring-2 ring-emerald-500/20'
           : 'bg-white/[0.04] dark:bg-white/[0.04] border-slate-200 dark:border-white/[0.08] text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.08]'
       }`}
-      title={isCollapsed ? 'Show Sidebar (⌘B / Ctrl+B)' : 'Hide Sidebar (⌘B / Ctrl+B)'}
+      title={isCollapsed ? 'Show Sidebar (B / Ctrl+B)' : 'Hide Sidebar (B / Ctrl+B)'}
     >
       {isCollapsed ? <PanelLeft size={16} /> : <PanelLeftClose size={16} />}
     </button>

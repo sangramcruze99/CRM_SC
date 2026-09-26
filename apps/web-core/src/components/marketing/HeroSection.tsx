@@ -51,7 +51,7 @@ export function HeroSection() {
         className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tight text-white max-w-5xl leading-[1.04] font-sans"
       >
         Run your business. <br />
-        <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-500 bg-clip-text text-transparent">
+        <span className="text-zinc-200">
           Automatically.
         </span>
       </motion.h1>

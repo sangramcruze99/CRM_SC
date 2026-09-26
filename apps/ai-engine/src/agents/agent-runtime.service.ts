@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { PromptsService } from '../prompts/prompts.service';
 import { AgentToolRegistryService } from './agent-tool-registry.service';
 import { AgentMemoryService } from './agent-memory.service';
+import { AgentExecutionContext } from '@repo/core-types';
 
 export interface RunAgentOptions {
   agentId: string;
@@ -12,6 +13,8 @@ export interface RunAgentOptions {
   targetId?: string;
   workflowExecutionId?: string;
   allowAutonomousTools?: boolean;
+  workspaceId?: string;
+  executionContext?: AgentExecutionContext;
 }
 
 export interface AgentStepTrace {
@@ -82,14 +85,47 @@ Use your tools to query CRM contacts, check deals, and log activities.`,
       iteration++;
       this.logger.log(`[Agent ${agent.name}] Loop iteration ${iteration}/${maxIterations}`);
 
-      // Compose agent prompt with tools & memories
-      const toolDescriptions = this.toolRegistry
-        .getTools()
-        .filter((t) => allowedToolsList.length === 0 || allowedToolsList.includes(t.name))
-        .map((t) => `- ${t.name}: ${t.description} (Risk: ${t.riskLevel})`)
-        .join('\n');
+      // Compose tools description using workspace context if available
+      let toolDescriptions = '';
+      if (options.executionContext) {
+        toolDescriptions = options.executionContext.availableTools
+          .map((t) => `- ${t.name}: ${t.description} (Risk: ${t.riskLevel}, Status: ${t.status}${t.requiresApproval ? ', REQUIRES APPROVAL' : ''})`)
+          .join('\n');
+      } else {
+        toolDescriptions = this.toolRegistry
+          .getTools()
+          .filter((t) => allowedToolsList.length === 0 || allowedToolsList.includes(t.name))
+          .map((t) => `- ${t.name}: ${t.description} (Risk: ${t.riskLevel})`)
+          .join('\n');
+      }
 
-      const reasoningPrompt = `Task: ${currentInput}
+      // Compose dynamic workspace context preamble if present
+      let contextPreamble = '';
+      if (options.executionContext) {
+        const ctx = options.executionContext;
+        const enabledNames = ctx.enabledServices.join(', ');
+        const disabledNames = ctx.disabledServices.slice(0, 10).join(', ');
+        contextPreamble = `Operating Environment:
+Workspace: ${ctx.workspace.name} (Industry: ${ctx.industry}, Business Type: ${ctx.businessType}, Config Version: v${ctx.configurationVersion})
+Active Terminology:
+- Customer is strictly called: "${ctx.terminology.customer?.displayTerm || 'Customer'}"
+- Opportunities are called: "${ctx.terminology.deal?.displayTerm || 'Deal'}"
+- Invoices are called: "${ctx.terminology.invoice?.displayTerm || 'Invoice'}"
+
+Enabled Capabilities: ${enabledNames}
+Disabled Services: ${disabledNames}
+
+CRITICAL SERVICE REFUSAL DIRECTIVE:
+If the user asks for a capability belonging to a DISABLED service, you MUST NOT hallucinate or pretend to execute it.
+Directly and politely answer:
+"<Service Name> is not enabled for this workspace."
+
+Authoritative Business Rules (NEVER OVERRIDE):
+${ctx.businessRules.map((r) => `- ${r.name}: ${r.description}`).join('\n') || 'None'}
+`;
+      }
+
+      const reasoningPrompt = `${contextPreamble}Task: ${currentInput}
 
 Available Tools:
 ${toolDescriptions}
@@ -104,12 +140,13 @@ Action: <tool_name> | <json_params>
 OR
 Final Answer: <your comprehensive answer>`;
 
-      // Invoke LLM via PromptsService
+      // Invoke LLM via PromptsService — always 'auto' so Ollama Gemma is tried first;
+      // API keys activate only as failsafe if Ollama is unreachable.
       const aiResponse = await this.promptsService.askAI(
         tenantId,
         reasoningPrompt,
         undefined,
-        agent.model?.includes('groq') ? 'groq' : 'openrouter',
+        'auto',
         agent.model,
       );
 
@@ -144,16 +181,13 @@ Final Answer: <your comprehensive answer>`;
 
       this.logger.log(`[Agent Action] Tool: ${toolName} with params: ${JSON.stringify(toolParams)}`);
 
-      // Check risk & tool existence
-      const toolDef = this.toolRegistry.getTool(toolName);
+      // Check risk & tool existence & execute with workspace context gating
       let observation: any = null;
-
-      if (!toolDef) {
-        observation = `Tool "${toolName}" is not available in registry.`;
-      } else {
-        // Execute tool
-        const toolResult = await this.toolRegistry.executeTool(tenantId, toolName, toolParams);
-        observation = toolResult.output || toolResult.error;
+      try {
+        const toolResult = await this.toolRegistry.executeTool(tenantId, toolName, toolParams, options.executionContext);
+        observation = toolResult.output || (toolResult as any).error;
+      } catch (err: any) {
+        observation = `Execution rejected: ${err.message}`;
       }
 
       traces.push({
@@ -173,7 +207,7 @@ Final Answer: <your comprehensive answer>`;
 
     const latencyMs = Date.now() - startTime;
 
-    // 4. Record to Prisma AgentExecution
+    // 4. Record to Prisma AgentExecution with configuration audit
     const execution = await this.prisma.agentExecution.create({
       data: {
         tenantId,
@@ -181,6 +215,14 @@ Final Answer: <your comprehensive answer>`;
         workflowExecutionId,
         triggerEvent: 'USER_PROMPT_OR_WORKFLOW',
         status: 'SUCCESS',
+        outcomeCode: 'COMPLETED',
+        outcomeSummary: finalResponse.substring(0, 200),
+        resultData: JSON.stringify({
+          configurationVersion: options.executionContext?.configurationVersion || 1,
+          workspaceId: options.executionContext?.workspace.id || options.workspaceId || 'default',
+          industry: options.executionContext?.industry || 'GLOBAL',
+          businessType: options.executionContext?.businessType || 'standard',
+        }),
         inputPrompt,
         reasoningLog: JSON.stringify(traces),
         toolCalls: JSON.stringify(traces.filter((t) => t.action).map((t) => t.action)),
@@ -199,6 +241,10 @@ Final Answer: <your comprehensive answer>`;
       traces,
       tokensUsed: totalTokens,
       latencyMs,
+      configurationVersion: options.executionContext?.configurationVersion || 1,
+      workspaceId: options.executionContext?.workspace.id || options.workspaceId || 'default',
+      industry: options.executionContext?.industry || 'GLOBAL',
+      businessType: options.executionContext?.businessType || 'standard',
     };
   }
 }

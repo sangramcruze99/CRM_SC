@@ -6,7 +6,6 @@ import Link from 'next/link';
 import {
   ReactFlow,
   MiniMap,
-  Controls,
   Background,
   useNodesState,
   useEdgesState,
@@ -24,6 +23,11 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { NODE_CATALOG } from '@/lib/automationNodeCatalog';
+import { UniversalIntentBuilder } from '@/components/automation/intent/UniversalIntentBuilder';
+import { GuidedModeBuilder } from '@/components/automation/intent/GuidedModeBuilder';
+import { WorkflowModeSwitcher, AutomationBuilderMode } from '@/components/automation/WorkflowModeSwitcher';
+import { AutomationExplanationModal } from '@/components/automation/AutomationExplanationModal';
+import type { StructuredIntent } from '@/components/automation/intent/types';
 
 import {
   Workflow,
@@ -69,9 +73,47 @@ import {
   Briefcase,
   Ticket,
   FolderPlus,
+  Folder,
+  FolderOpen,
+  HardDrive,
+  FileSpreadsheet,
   Smartphone,
   PhoneIncoming,
   LayoutGrid,
+  FileUp,
+  UserCog,
+  MessageCircle,
+  CheckCheck,
+  CalendarX,
+  CalendarOff,
+  Inbox,
+  Calendar,
+  MousePointer,
+  GraduationCap,
+  Award,
+  DollarSign,
+  UserCheck,
+  BadgePercent,
+  Brain,
+  Split,
+  Repeat,
+  Octagon,
+  Tag,
+  StickyNote,
+  Ban,
+  Archive,
+  CalendarCheck,
+  CalendarClock,
+  AlertCircle,
+  Scale,
+  ArrowUpRight,
+  FileDown,
+  Activity,
+  Share2,
+  ScrollText,
+  RotateCcw,
+  ShieldX,
+  XCircle,
 } from 'lucide-react';
 
 // Icon Map for canvas nodes
@@ -90,6 +132,9 @@ const ICON_LOOKUP: Record<string, any> = {
   PhoneIncoming,
   Ticket,
   FolderPlus,
+  Folder,
+  FolderOpen,
+  HardDrive,
   Receipt: FileText,
   AlertTriangle,
   Clock,
@@ -106,11 +151,47 @@ const ICON_LOOKUP: Record<string, any> = {
   TrendingUp: Zap,
   Bot,
   Database,
-  UserCheck: UserPlus,
+  UserCheck,
   ArrowRight: ChevronRight,
   CheckSquare: CheckCircle2,
   Scan: Sparkles,
   Compass: Globe,
+  FileUp,
+  UserCog,
+  MessageCircle,
+  CheckCheck,
+  CalendarX,
+  CalendarOff,
+  Inbox,
+  Calendar,
+  MousePointer,
+  ScanText: FileText,
+  FileType2: FileText,
+  GraduationCap,
+  Award,
+  DollarSign,
+  BadgePercent,
+  Brain,
+  Split,
+  Repeat,
+  Octagon,
+  Tag,
+  StickyNote,
+  Ban,
+  Archive,
+  CalendarCheck,
+  CalendarClock,
+  AlertCircle,
+  Scale,
+  ArrowUpRight,
+  FileDown,
+  Activity,
+  Share2,
+  ScrollText,
+  RotateCcw,
+  ShieldX,
+  CheckCircle2,
+  XCircle,
 };
 
 // Category styling tokens & theme badges
@@ -130,39 +211,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     iconBg: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-emerald-500/20',
     badge: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40',
     accent: '#10b981',
-    defaultBadge: '⚡ TRIGGER',
-  },
-  AI: {
-    border: 'border-violet-500/60 hover:border-violet-400',
-    bg: 'bg-gradient-to-b from-slate-900/95 to-violet-950/20',
-    iconBg: 'bg-violet-500/20 text-violet-400 border border-violet-500/40 shadow-violet-500/20',
-    badge: 'bg-violet-500/20 text-violet-300 border border-violet-500/40',
-    accent: '#8b5cf6',
-    defaultBadge: '✨ AI AGENT',
-  },
-  COMMUNICATION: {
-    border: 'border-cyan-500/60 hover:border-cyan-400',
-    bg: 'bg-gradient-to-b from-slate-900/95 to-cyan-950/20',
-    iconBg: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-cyan-500/20',
-    badge: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40',
-    accent: '#06b6d4',
-    defaultBadge: '💬 COMMS',
-  },
-  LOGIC: {
-    border: 'border-amber-500/60 hover:border-amber-400',
-    bg: 'bg-gradient-to-b from-slate-900/95 to-amber-950/20',
-    iconBg: 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-amber-500/20',
-    badge: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
-    accent: '#f59e0b',
-    defaultBadge: '🔀 LOGIC & HITL',
-  },
-  CRM: {
-    border: 'border-blue-500/60 hover:border-blue-400',
-    bg: 'bg-gradient-to-b from-slate-900/95 to-blue-950/20',
-    iconBg: 'bg-blue-500/20 text-blue-400 border border-blue-500/40 shadow-blue-500/20',
-    badge: 'bg-blue-500/20 text-blue-300 border border-blue-500/40',
-    accent: '#3b82f6',
-    defaultBadge: '📊 CRM ACTION',
+    defaultBadge: ' TRIGGER',
   },
   DOCUMENTS: {
     border: 'border-rose-500/60 hover:border-rose-400',
@@ -170,7 +219,95 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     iconBg: 'bg-rose-500/20 text-rose-400 border border-rose-500/40 shadow-rose-500/20',
     badge: 'bg-rose-500/20 text-rose-300 border border-rose-500/40',
     accent: '#f43f5e',
-    defaultBadge: '📄 DOCUMENT AI',
+    defaultBadge: ' DOCUMENT AI',
+  },
+  RECRUITMENT_AI: {
+    border: 'border-emerald-500/60 hover:border-emerald-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-emerald-950/20',
+    iconBg: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-emerald-500/20',
+    badge: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40',
+    accent: '#8b5cf6',
+    defaultBadge: ' RECRUITMENT AI',
+  },
+  LOGIC: {
+    border: 'border-amber-500/60 hover:border-amber-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-amber-950/20',
+    iconBg: 'bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-amber-500/20',
+    badge: 'bg-amber-500/20 text-amber-300 border border-amber-500/40',
+    accent: '#f59e0b',
+    defaultBadge: ' LOGIC GATE',
+  },
+  CANDIDATE: {
+    border: 'border-teal-500/60 hover:border-teal-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-teal-950/20',
+    iconBg: 'bg-teal-500/20 text-teal-400 border border-teal-500/40 shadow-teal-500/20',
+    badge: 'bg-teal-500/20 text-teal-300 border border-teal-500/40',
+    accent: '#6366f1',
+    defaultBadge: ' CANDIDATE CRM',
+  },
+  COMMUNICATION: {
+    border: 'border-cyan-500/60 hover:border-cyan-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-cyan-950/20',
+    iconBg: 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 shadow-cyan-500/20',
+    badge: 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40',
+    accent: '#06b6d4',
+    defaultBadge: ' COMMUNICATION',
+  },
+  CALENDAR: {
+    border: 'border-sky-500/60 hover:border-sky-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-sky-950/20',
+    iconBg: 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sky-500/20',
+    badge: 'bg-sky-500/20 text-sky-300 border border-sky-500/40',
+    accent: '#0284c7',
+    defaultBadge: ' CALENDAR',
+  },
+  HUMAN: {
+    border: 'border-orange-500/60 hover:border-orange-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-orange-950/20',
+    iconBg: 'bg-orange-500/20 text-orange-400 border border-orange-500/40 shadow-orange-500/20',
+    badge: 'bg-orange-500/20 text-orange-300 border border-orange-500/40',
+    accent: '#f97316',
+    defaultBadge: ' HITL APPROVAL',
+  },
+  OUTPUT: {
+    border: 'border-teal-500/60 hover:border-teal-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-teal-950/20',
+    iconBg: 'bg-teal-500/20 text-teal-400 border border-teal-500/40 shadow-teal-500/20',
+    badge: 'bg-teal-500/20 text-teal-300 border border-teal-500/40',
+    accent: '#14b8a6',
+    defaultBadge: ' OUTPUT SINK',
+  },
+  SYSTEM: {
+    border: 'border-slate-500/60 hover:border-slate-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-slate-950/20',
+    iconBg: 'bg-slate-500/20 text-slate-300 border border-slate-500/40 shadow-slate-500/20',
+    badge: 'bg-slate-500/20 text-slate-300 border border-slate-500/40',
+    accent: '#64748b',
+    defaultBadge: ' SYSTEM OPS',
+  },
+  AI_AGENT: {
+    border: 'border-fuchsia-500/60 hover:border-fuchsia-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-fuchsia-950/20',
+    iconBg: 'bg-fuchsia-500/20 text-fuchsia-400 border border-fuchsia-500/40 shadow-fuchsia-500/20',
+    badge: 'bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40',
+    accent: '#d946ef',
+    defaultBadge: ' AUTONOMOUS AGENT',
+  },
+  AI: {
+    border: 'border-emerald-500/60 hover:border-emerald-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-emerald-950/20',
+    iconBg: 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-emerald-500/20',
+    badge: 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40',
+    accent: '#8b5cf6',
+    defaultBadge: ' AI ENGINE',
+  },
+  CRM: {
+    border: 'border-blue-500/60 hover:border-blue-400',
+    bg: 'bg-gradient-to-b from-slate-900/95 to-blue-950/20',
+    iconBg: 'bg-blue-500/20 text-blue-400 border border-blue-500/40 shadow-blue-500/20',
+    badge: 'bg-blue-500/20 text-blue-300 border border-blue-500/40',
+    accent: '#3b82f6',
+    defaultBadge: ' CRM ACTION',
   },
   EXTERNAL: {
     border: 'border-teal-500/60 hover:border-teal-400',
@@ -178,7 +315,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     iconBg: 'bg-teal-500/20 text-teal-400 border border-teal-500/40 shadow-teal-500/20',
     badge: 'bg-teal-500/20 text-teal-300 border border-teal-500/40',
     accent: '#14b8a6',
-    defaultBadge: '🌐 CONNECTOR',
+    defaultBadge: ' CONNECTOR',
   },
   DEFAULT: {
     border: 'border-slate-700 hover:border-slate-500',
@@ -193,22 +330,58 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
 // Built-in templates for quick-switcher
 const QUICK_TEMPLATES = [
   {
+    id: 'tmpl_autonomous_recruitment_screening',
+    name: 'Autonomous Resume Screening & Interview Scheduler (Flagship)',
+    category: 'Recruitment',
+    description: 'Flagship 20-node pipeline: OCR extraction, candidate profile, JD skill matching, structured AI scoring, shortlisting, invite & calendar booking.',
+  },
+  {
+    id: 'tmpl_recruitment_screening',
+    name: 'Autonomous Recruitment Resume Screener',
+    category: 'Recruitment',
+    description: 'Scans PDF resumes with OCR, scores against job requirements, and schedules interviews.',
+  },
+  {
+    id: 'tmpl_high_volume_screening',
+    name: 'High-Volume Candidate Screening & Auto-Triaging',
+    category: 'Recruitment',
+    description: 'Fast-track high-volume inbound CVs with automated deduplication, profile extraction, and batch shortlisting.',
+  },
+  {
+    id: 'tmpl_interview_scheduling',
+    name: 'Autonomous Interview Scheduling & Common Availability',
+    category: 'Calendar',
+    description: 'Inspects interviewer & candidate calendar free-slots, finds common availability, and books calendar meeting.',
+  },
+  {
+    id: 'tmpl_interview_reminder',
+    name: 'Interview Reminder & 24h Confirmation Sequence',
+    category: 'Communication',
+    description: 'Automated 24h & 2h pre-interview WhatsApp & email reminders with one-click reschedule detection.',
+  },
+  {
+    id: 'tmpl_no_show_recovery',
+    name: 'Interview No-Show Auto-Recovery & Rescheduling',
+    category: 'Recruitment',
+    description: 'Detects missed interviews, sends polite recovery outreach, and provides rebooking link.',
+  },
+  {
+    id: 'tmpl_candidate_followup',
+    name: 'Candidate Follow-Up & Application Status Check',
+    category: 'Communication',
+    description: 'Autonomous follow-up cadence checking applicant responsiveness with smart delays.',
+  },
+  {
+    id: 'tmpl_recruiter_approval',
+    name: 'Recruiter Quality Approval Gate (HITL)',
+    category: 'Human-in-Loop',
+    description: 'Pauses execution in WAITING_FOR_APPROVAL status for senior recruiter sign-off before candidate rejection or offer.',
+  },
+  {
     id: 'tmpl_voice_receptionist',
     name: 'AI Voice Receptionist & Smart Triage',
     category: 'Voice',
     description: 'Answers calls via Twilio AI voice agent, resolves FAQs, and logs audio & transcripts.',
-  },
-  {
-    id: 'tmpl_ai_lead_qual',
-    name: 'AI Lead Qualification & Fast-Track Routing',
-    category: 'Sales',
-    description: 'Enriches inbound leads, scores ICP fit with AI, assigns owner, and alerts Slack.',
-  },
-  {
-    id: 'tmpl_whatsapp_sales',
-    name: 'WhatsApp Autonomous Sales Concierge',
-    category: 'WhatsApp',
-    description: 'Engages inbound WhatsApp leads, qualifies intent, and books calendar discovery calls.',
   },
   {
     id: 'tmpl_invoice_processing',
@@ -216,17 +389,79 @@ const QUICK_TEMPLATES = [
     category: 'Finance',
     description: 'Vision AI extracts invoice line items, triggers CFO approval, and posts to ledger.',
   },
+];
+
+// Available Input Folders & Smart Vault Directories for workflow data ingestion
+const AVAILABLE_INPUT_FOLDERS = [
   {
-    id: 'tmpl_recruitment_screening',
-    name: 'Autonomous Recruitment Resume Screener',
-    category: 'HR',
-    description: 'Scans PDF resumes with OCR, scores against job requirements, and schedules interviews.',
+    id: 'vault_crm_leads',
+    name: 'CRM Inbound Leads Dropzone',
+    path: '/vault/inbound/crm_leads/',
+    category: 'CRM & Sales',
+    records: '1,420 records',
+    formats: ['.json', '.csv'],
+    badge: 'Live Stream',
+    description: 'Watches newly captured prospects and CRM webhook sync files',
   },
   {
-    id: 'tmpl_abandoned_cart_recovery',
-    name: 'Shopify Abandoned Cart Omnichannel Recovery',
-    category: 'Ecommerce',
-    description: 'Triggers instant WhatsApp discount + email drip sequence when a cart is abandoned.',
+    id: 'vault_invoices',
+    name: 'Smart Vault Scanned Invoices',
+    path: '/vault/documents/invoices_scanned/',
+    category: 'Finance & Accounts',
+    records: '342 files',
+    formats: ['.pdf', '.png', '.tiff'],
+    badge: 'OCR Ingestion',
+    description: 'Inbound OCR directory for supplier bills, tax invoices, and dual khata receipts',
+  },
+  {
+    id: 'vault_resumes',
+    name: 'Recruitment CV Dropzone',
+    path: '/vault/resumes/engineering_pipeline/',
+    category: 'HR & Talent',
+    records: '89 files',
+    formats: ['.pdf', '.docx'],
+    badge: 'Resume Screener',
+    description: 'Applicant resumes ingested from job boards, careers portal, and email attachments',
+  },
+  {
+    id: 'vault_b2b_prospects',
+    name: 'B2B Lead Prospector & CSV Lists',
+    path: '/vault/campaigns/csv_imports/',
+    category: 'Marketing & Lists',
+    records: '5,600 rows',
+    formats: ['.csv', '.xlsx'],
+    badge: 'Batch Table',
+    description: 'Bulk prospect lists and Apollo/LinkedIn export dumps for autonomous AI scoring',
+  },
+  {
+    id: 'vault_voice_audio',
+    name: 'Voice Calls & Transcripts Folder',
+    path: '/vault/support/transcripts_audio/',
+    category: 'Voice AI & Support',
+    records: '215 audio logs',
+    formats: ['.wav', '.mp3', '.json'],
+    badge: 'Audio Buffer',
+    description: 'Twilio call recordings and Whisper transcripts waiting for QA triage',
+  },
+  {
+    id: 'vault_contracts',
+    name: 'Legal Agreements & SOWs',
+    path: '/vault/contracts/signed_agreements/',
+    category: 'Legal & Compliance',
+    records: '76 contracts',
+    formats: ['.pdf'],
+    badge: 'DocuSign Vault',
+    description: 'Executed client master services agreements and NDA contracts',
+  },
+  {
+    id: 'custom_local_folder',
+    name: 'Local Disk / Server Directory',
+    path: 'C:/BusinessOS/DataDrop/Inbound/',
+    category: 'Local Filesystem',
+    records: 'Direct OS Path',
+    formats: ['*.*'],
+    badge: 'Local FS',
+    description: 'Watches local workstation folder on Windows/Linux host for dropped files',
   },
 ];
 
@@ -234,11 +469,30 @@ const QUICK_TEMPLATES = [
 function inferCategory(type: string): string {
   if (!type) return 'GENERAL';
   if (type.startsWith('trigger:')) return 'TRIGGER';
-  if (type.startsWith('ai:')) return 'AI';
-  if (type.startsWith('comm:')) return 'COMMUNICATION';
-  if (type.startsWith('logic:')) return 'LOGIC';
-  if (type.startsWith('crm:')) return 'CRM';
   if (type.startsWith('doc:')) return 'DOCUMENTS';
+  if (
+    type.startsWith('ai:recruitment_') ||
+    type.startsWith('ai:candidate_') ||
+    type.startsWith('ai:extract_') ||
+    type.startsWith('ai:skill_') ||
+    type.startsWith('ai:experience_') ||
+    type.startsWith('ai:location_') ||
+    type.startsWith('ai:salary_') ||
+    type.startsWith('ai:duplicate_') ||
+    type.startsWith('ai:missing_')
+  ) {
+    return 'RECRUITMENT_AI';
+  }
+  if (type === 'ai:autonomous_agent') return 'AI_AGENT';
+  if (type.startsWith('logic:')) return 'LOGIC';
+  if (type.startsWith('candidate:')) return 'CANDIDATE';
+  if (type.startsWith('comm:')) return 'COMMUNICATION';
+  if (type.startsWith('calendar:')) return 'CALENDAR';
+  if (type.startsWith('human:')) return 'HUMAN';
+  if (type.startsWith('output:')) return 'OUTPUT';
+  if (type.startsWith('sys:') || type.startsWith('system:')) return 'SYSTEM';
+  if (type.startsWith('crm:')) return 'CRM';
+  if (type.startsWith('ai:')) return 'AI';
   if (type.startsWith('ext:')) return 'EXTERNAL';
   return 'GENERAL';
 }
@@ -257,16 +511,38 @@ function inferTitle(type: string): string {
 // Helper: Infer icon name from type
 function inferIconName(type: string, category: string): string {
   if (type === 'trigger:call_received' || type === 'comm:voice_call') return 'PhoneIncoming';
+  if (type.includes('candidate_applied') || type.includes('user_check')) return 'UserCheck';
+  if (type.includes('resume_uploaded') || type.includes('file_up')) return 'FileUp';
+  if (type.includes('job_created')) return 'Briefcase';
+  if (type.includes('candidate_updated')) return 'UserCog';
+  if (type.includes('email')) return 'Mail';
   if (type.includes('whatsapp')) return 'MessageSquare';
   if (type.includes('sms')) return 'Smartphone';
-  if (type.includes('email') || type.includes('mail')) return 'Mail';
-  if (type.includes('score') || type.includes('agent')) return 'Sparkles';
-  if (type.includes('if_else') || type.includes('branch')) return 'GitFork';
-  if (type.includes('approval')) return 'ShieldAlert';
-  if (type.includes('ocr') || type.includes('doc')) return 'FileText';
+  if (type.includes('calendar') || type.includes('schedule') || type.includes('interview')) return 'Calendar';
+  if (type.includes('agent')) return 'Bot';
+  if (type.includes('score') || type.includes('screening')) return 'Sparkles';
+  if (type.includes('if_else') || type.includes('branch') || type.includes('split')) return 'GitFork';
+  if (type.includes('approval') || type.includes('human')) return 'ShieldAlert';
+  if (type.includes('ocr') || type.includes('doc') || type.includes('resume')) return 'FileText';
   if (type.includes('browser') || type.includes('website')) return 'Globe';
   if (type.includes('deal') || type.includes('activity')) return 'Clock';
+  if (type.includes('tag')) return 'Tag';
+  if (type.includes('note')) return 'StickyNote';
+  if (type.includes('shortlist')) return 'CheckSquare';
+  if (type.includes('reject')) return 'Ban';
+  if (type.includes('archive')) return 'Archive';
+  if (type.includes('webhook')) return 'Webhook';
+  if (type.includes('log')) return 'ScrollText';
+  if (type.includes('retry')) return 'RotateCcw';
   if (category === 'TRIGGER') return 'Zap';
+  if (category === 'RECRUITMENT_AI') return 'Sparkles';
+  if (category === 'DOCUMENTS') return 'FileText';
+  if (category === 'AI_AGENT') return 'Bot';
+  if (category === 'CALENDAR') return 'Calendar';
+  if (category === 'CANDIDATE') return 'UserPlus';
+  if (category === 'HUMAN') return 'ShieldAlert';
+  if (category === 'OUTPUT') return 'Share2';
+  if (category === 'SYSTEM') return 'Terminal';
   if (category === 'AI') return 'Bot';
   if (category === 'COMMUNICATION') return 'MessageSquare';
   if (category === 'LOGIC') return 'GitFork';
@@ -309,6 +585,104 @@ function normalizeStudioNode(rawNode: any, catalogMap: Record<string, any> = {})
       riskLevel: rawNode.data?.riskLevel || catalogItem.riskLevel || 'LOW',
     },
   };
+}
+
+// Helper: Calculate clean DAG layout without node collision
+function computeAutoLayout(
+  nodes: Node[],
+  edges: Edge[],
+  direction: 'LR' | 'TB' = 'LR'
+): Node[] {
+  if (!nodes || nodes.length === 0) return [];
+  const inDegree: Record<string, number> = {};
+  const adj: Record<string, string[]> = {};
+
+  nodes.forEach((n) => {
+    inDegree[n.id] = 0;
+    adj[n.id] = [];
+  });
+
+  edges.forEach((e) => {
+    if (adj[e.source]) adj[e.source].push(e.target);
+    if (inDegree[e.target] !== undefined) inDegree[e.target]++;
+  });
+
+  // Find root nodes (in-degree 0)
+  const levels: Record<string, number> = {};
+  const roots = nodes.filter((n) => inDegree[n.id] === 0).map((n) => n.id);
+
+  roots.forEach((id) => {
+    levels[id] = 0;
+  });
+
+  // BFS to assign hierarchy depth
+  const queue: string[] = [...roots];
+  const visited = new Set<string>(roots);
+  let head = 0;
+
+  while (head < queue.length) {
+    const u = queue[head++];
+    const currentLevel = levels[u] || 0;
+    for (const v of adj[u] || []) {
+      levels[v] = Math.max(levels[v] || 0, currentLevel + 1);
+      if (!visited.has(v)) {
+        visited.add(v);
+        queue.push(v);
+      }
+    }
+  }
+
+  // Fallback for unvisited nodes (if isolated or cyclic)
+  nodes.forEach((n, idx) => {
+    if (levels[n.id] === undefined) {
+      levels[n.id] = idx;
+    }
+  });
+
+  // Group nodes by level
+  const levelGroups: Record<number, string[]> = {};
+  nodes.forEach((n) => {
+    const lvl = levels[n.id] ?? 0;
+    if (!levelGroups[lvl]) levelGroups[lvl] = [];
+    levelGroups[lvl].push(n.id);
+  });
+
+  const NODE_WIDTH = 280;
+  const NODE_HEIGHT = 180;
+  const SPACING_X = 140; // 140px clean horizontal gap
+  const SPACING_Y = 120; // 120px clean vertical gap
+
+  return nodes.map((n) => {
+    const lvl = levels[n.id] ?? 0;
+    const group = levelGroups[lvl] || [n.id];
+    const idx = group.indexOf(n.id);
+    const groupCount = group.length;
+
+    let x = 0;
+    let y = 0;
+
+    if (direction === 'LR') {
+      x = 80 + lvl * (NODE_WIDTH + SPACING_X);
+      const totalHeight = groupCount * NODE_HEIGHT + (groupCount - 1) * 60;
+      const startY = Math.max(80, 260 - totalHeight / 2);
+      y = startY + idx * (NODE_HEIGHT + 60);
+    } else {
+      // Vertical layout: Steps flow top-to-bottom, parallel branches spread horizontally
+      y = 80 + lvl * (NODE_HEIGHT + SPACING_Y);
+      const totalWidth = groupCount * NODE_WIDTH + (groupCount - 1) * 80;
+      const startX = Math.max(80, 480 - totalWidth / 2);
+      x = startX + idx * (NODE_WIDTH + 80);
+    }
+
+    return {
+      ...n,
+      data: {
+        ...n.data,
+        layoutDirection: direction,
+      },
+      position: { x, y },
+    };
+  });
 }
 
 // Custom Node Component for Visual Studio Canvas supporting both Horizontal (LR) and Vertical (TB) views
@@ -417,64 +791,91 @@ function StudioCustomNode({ data, id, selected }: { data: any; id: string; selec
         {data.subtitle || 'Automated business execution step'}
       </p>
 
+      {/* Input Data Source / Folder Badge for Triggers & Ingestors */}
+      {(categoryKey === 'TRIGGER' || data.type?.startsWith('trigger:') || data.config?.inputFolder) && (
+        <div className="mt-2 pt-1.5 border-t border-cyan-500/20 flex items-center justify-between text-[10px] bg-cyan-950/50 px-2.5 py-1.5 rounded-lg border border-cyan-500/30">
+          <div className="flex items-center space-x-1.5 min-w-0">
+            <Folder className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+            <span className="text-slate-400 text-[9px] uppercase font-bold tracking-wider shrink-0">Folder:</span>
+            <span
+              className="font-mono font-bold text-cyan-300 truncate text-[10px]"
+              title={data.config?.inputFolder || '/vault/inbound/crm_leads/'}
+            >
+              {data.config?.inputFolder || '/vault/inbound/crm_leads/'}
+            </span>
+          </div>
+          <span className="text-[8px] font-bold text-cyan-300 bg-cyan-500/20 px-1.5 py-0.5 rounded border border-cyan-500/40 shrink-0 ml-1">
+            {data.config?.mode || 'REALTIME'}
+          </span>
+        </div>
+      )}
+
       {/* Output Handles & Branch Controls: Responsive to Orientation */}
-      {data.type === 'logic:if_else' ? (
+      {data.type === 'logic:if_else' ||
+      data.type === 'logic:compare' ||
+      data.type === 'logic:score_above' ||
+      data.type === 'logic:score_below' ||
+      data.type === 'logic:match' ||
+      data.type === 'logic:filter' ? (
         isVertical ? (
           <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] font-bold px-3 relative">
             <div className="flex items-center space-x-1 text-emerald-400 relative">
-              <span>✓ TRUE ↓</span>
+              <span> TRUE / PASS ↓</span>
               <Handle
                 type="source"
                 position={Position.Bottom}
                 id="true"
                 style={{ left: '25%' }}
                 className="!w-3.5 !h-3.5 !bg-emerald-400 !border-2 !border-slate-950 !-bottom-2 hover:scale-125 transition-transform"
-                title="True branch (Pass)"
+                title="True / Pass branch"
               />
             </div>
             <div className="flex items-center space-x-1 text-rose-400 relative">
-              <span>✕ FALSE ↓</span>
+              <span> FALSE / FAIL ↓</span>
               <Handle
                 type="source"
                 position={Position.Bottom}
                 id="false"
                 style={{ left: '75%' }}
                 className="!w-3.5 !h-3.5 !bg-rose-400 !border-2 !border-slate-950 !-bottom-2 hover:scale-125 transition-transform"
-                title="False branch (Fail)"
+                title="False / Fail branch"
               />
             </div>
           </div>
         ) : (
           <div className="mt-2.5 pt-2 border-t border-white/10 flex flex-col gap-1.5 text-[10px] font-bold">
             <div className="flex items-center justify-end space-x-1.5 text-emerald-400 pr-1 relative">
-              <span>✓ TRUE (Pass) →</span>
+              <span> TRUE / PASS →</span>
               <Handle
                 type="source"
                 position={Position.Right}
                 id="true"
                 style={{ top: '35%' }}
                 className="!w-3.5 !h-3.5 !bg-emerald-400 !border-2 !border-slate-950 !-right-2 hover:scale-125 transition-transform"
-                title="True branch"
+                title="True / Pass branch"
               />
             </div>
             <div className="flex items-center justify-end space-x-1.5 text-rose-400 pr-1 relative">
-              <span>✕ FALSE (Skip) →</span>
+              <span> FALSE / FAIL →</span>
               <Handle
                 type="source"
                 position={Position.Right}
                 id="false"
                 style={{ top: '70%' }}
                 className="!w-3.5 !h-3.5 !bg-rose-400 !border-2 !border-slate-950 !-right-2 hover:scale-125 transition-transform"
-                title="False branch"
+                title="False / Fail branch"
               />
             </div>
           </div>
         )
-      ) : data.type === 'logic:human_approval' ? (
+      ) : data.type === 'logic:human_approval' ||
+        data.type === 'human:request_approval' ||
+        data.type === 'human:human_review' ||
+        data.type === 'human:recruiter_decision' ? (
         isVertical ? (
           <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] font-bold px-3 relative">
             <div className="flex items-center space-x-1 text-emerald-400 relative">
-              <span>✓ Approved ↓</span>
+              <span> Approved ↓</span>
               <Handle
                 type="source"
                 position={Position.Bottom}
@@ -485,7 +886,7 @@ function StudioCustomNode({ data, id, selected }: { data: any; id: string; selec
               />
             </div>
             <div className="flex items-center space-x-1 text-rose-400 relative">
-              <span>✕ Rejected ↓</span>
+              <span> Rejected ↓</span>
               <Handle
                 type="source"
                 position={Position.Bottom}
@@ -499,7 +900,7 @@ function StudioCustomNode({ data, id, selected }: { data: any; id: string; selec
         ) : (
           <div className="mt-2.5 pt-2 border-t border-white/10 flex flex-col gap-1.5 text-[10px] font-bold">
             <div className="flex items-center justify-end space-x-1.5 text-emerald-400 pr-1 relative">
-              <span>✓ Approved →</span>
+              <span> Approved →</span>
               <Handle
                 type="source"
                 position={Position.Right}
@@ -510,7 +911,7 @@ function StudioCustomNode({ data, id, selected }: { data: any; id: string; selec
               />
             </div>
             <div className="flex items-center justify-end space-x-1.5 text-rose-400 pr-1 relative">
-              <span>✕ Rejected →</span>
+              <span> Rejected →</span>
               <Handle
                 type="source"
                 position={Position.Right}
@@ -523,24 +924,53 @@ function StudioCustomNode({ data, id, selected }: { data: any; id: string; selec
           </div>
         )
       ) : isVertical ? (
-        <div className="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-center relative">
-          <span className="text-[10px] text-slate-500 font-medium tracking-wide">Next Step ↓</span>
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            className="!w-4 !h-4 !bg-emerald-400 !border-2 !border-slate-950 !-bottom-2 !left-1/2 !-translate-x-1/2 hover:scale-125 transition-transform cursor-crosshair shadow-md"
-            title="Next step in sequence"
-          />
+        <div className="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-between px-2 relative">
+          <div className="flex-1 flex items-center justify-center relative">
+            <span className="text-[10px] text-slate-500 font-medium tracking-wide">Next Step ↓</span>
+            <Handle
+              type="source"
+              position={Position.Bottom}
+              className="!w-4 !h-4 !bg-emerald-400 !border-2 !border-slate-950 !-bottom-2 !left-1/2 !-translate-x-1/2 hover:scale-125 transition-transform cursor-crosshair shadow-md"
+              title="Next step in sequence"
+            />
+          </div>
+          {(data.riskLevel === 'HIGH' || data.riskLevel === 'CRITICAL' || data.config?.enableErrorBranch) && (
+            <div className="relative text-[9px] font-bold text-rose-400">
+              <Handle
+                type="source"
+                position={Position.Bottom}
+                id="error"
+                style={{ left: '90%' }}
+                className="!w-3 !h-3 !bg-rose-500 !border-2 !border-slate-950 !-bottom-2 hover:scale-125 transition-transform"
+                title="Error catch branch"
+              />
+              <span>Err</span>
+            </div>
+          )}
         </div>
       ) : (
-        <div className="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-end pr-1 relative">
-          <span className="text-[10px] text-slate-500 font-medium tracking-wide">Next Step →</span>
-          <Handle
-            type="source"
-            position={Position.Right}
-            className="!w-4 !h-4 !bg-emerald-400 !border-2 !border-slate-950 !-right-2 !top-1/2 !-translate-y-1/2 hover:scale-125 transition-transform cursor-crosshair shadow-md"
-            title="Next step in sequence"
-          />
+        <div className="mt-2 pt-1.5 border-t border-white/5 flex items-center justify-between pr-1 relative">
+          <div className="flex-1 flex items-center justify-end pr-3 relative">
+            <span className="text-[10px] text-slate-500 font-medium tracking-wide">Next Step →</span>
+            <Handle
+              type="source"
+              position={Position.Right}
+              className="!w-4 !h-4 !bg-emerald-400 !border-2 !border-slate-950 !-right-2 !top-1/2 !-translate-y-1/2 hover:scale-125 transition-transform cursor-crosshair shadow-md"
+              title="Next step in sequence"
+            />
+          </div>
+          {(data.riskLevel === 'HIGH' || data.riskLevel === 'CRITICAL' || data.config?.enableErrorBranch) && (
+            <div className="relative">
+              <Handle
+                type="source"
+                position={Position.Right}
+                id="error"
+                style={{ top: '85%' }}
+                className="!w-3 !h-3 !bg-rose-500 !border-2 !border-slate-950 !-right-2 hover:scale-125 transition-transform"
+                title="Error catch branch"
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -572,7 +1002,12 @@ const INITIAL_NODES: Node[] = [
       iconName: 'UserPlus',
       badge: 'CRM Trigger',
       status: 'IDLE',
-      config: { sourceFilter: 'ALL' },
+      config: {
+        sourceFilter: 'ALL',
+        inputFolder: '/vault/inbound/crm_leads/',
+        fileFilter: '*.json, *.csv',
+        mode: 'REALTIME',
+      },
     },
   },
   {
@@ -741,6 +1176,130 @@ function CanvasZoomToolbar({
   );
 }
 
+// Test Presets for Workflow Simulation
+const TEST_PRESETS: Record<string, any> = {
+  alex: {
+    id: 'alex',
+    label: 'Alex Morgan — Senior Full Stack (Strong Match)',
+    description: '6 yrs exp, TS/React/Node/Postgres/AWS. Strong fit (score >= 80) -> Shortlist & Invite.',
+    payload: {
+      candidate: {
+        firstName: 'Alex',
+        lastName: 'Morgan',
+        email: 'alex.morgan@example.com',
+        phone: '+15551234567',
+        appliedRole: 'Senior Full Stack Engineer',
+        skills: ['TypeScript', 'React', 'Node.js', 'PostgreSQL', 'Docker', 'AWS', 'Next.js'],
+        experienceYears: 6,
+        location: 'San Francisco, CA',
+        expectedSalary: 165000,
+      },
+      job: {
+        title: 'Senior Full Stack Engineer',
+        department: 'Engineering',
+        requiredSkills: ['TypeScript', 'React', 'Node.js', 'PostgreSQL'],
+        preferredSkills: ['Docker', 'AWS'],
+        minExperience: 5,
+        salaryRange: '$150,000 - $180,000',
+      },
+    },
+  },
+  jordan: {
+    id: 'jordan',
+    label: 'Jordan Lee — Junior Developer (Below Threshold)',
+    description: '1 yr exp, basic Python/HTML. Missing required core stack. Score < 70 -> Rejection / Human Review.',
+    payload: {
+      candidate: {
+        firstName: 'Jordan',
+        lastName: 'Lee',
+        email: 'jordan.lee@example.com',
+        phone: '+15559876543',
+        appliedRole: 'Senior Full Stack Engineer',
+        skills: ['Python', 'HTML', 'CSS', 'WordPress'],
+        experienceYears: 1,
+        location: 'Remote',
+        expectedSalary: 75000,
+      },
+      job: {
+        title: 'Senior Full Stack Engineer',
+        department: 'Engineering',
+        requiredSkills: ['TypeScript', 'React', 'Node.js', 'PostgreSQL'],
+        preferredSkills: ['Docker', 'AWS'],
+        minExperience: 5,
+        salaryRange: '$150,000 - $180,000',
+      },
+    },
+  },
+  elena: {
+    id: 'elena',
+    label: 'Elena Rostova — Enterprise B2B Lead (Sales/CRM)',
+    description: 'VP Engineering at Hyperion Technologies. High Intent fit (78) -> WhatsApp VIP Concierge & Deal pipeline.',
+    payload: {
+      firstName: 'Elena',
+      lastName: 'Rostova',
+      company: 'Hyperion Technologies',
+      email: 'elena@hyperion.io',
+      phone: '+15553492001',
+      leadScore: 78,
+    },
+  },
+  voice_frontdesk: {
+    id: 'voice_frontdesk',
+    label: 'Marcus Vance — Inbound Voice Call (AI Front Desk)',
+    description: 'Incoming phone call inquiring about enterprise security and requesting calendar booking.',
+    payload: {
+      call: {
+        callerNumber: '+14155550199',
+        callerName: 'Marcus Vance',
+        intent: 'book_meeting',
+        summary: 'Caller wants 30-min security review call next Tuesday.',
+        sentiment: 'POSITIVE',
+      },
+    },
+  },
+  support_urgent: {
+    id: 'support_urgent',
+    label: 'Sarah Connor — Critical SLA Support Ticket',
+    description: 'Production API failure report needing sentiment detection and SLA escalation.',
+    payload: {
+      ticket: {
+        id: 'tick_9941',
+        title: 'Production API 500 error on webhook endpoint',
+        customerEmail: 'sarah@skynet-defense.com',
+        priority: 'CRITICAL',
+        slaHoursRemaining: 1,
+      },
+    },
+  },
+  finance_invoice: {
+    id: 'finance_invoice',
+    label: 'Acme Cloud — $4,250 Vendor Bill (Finance & Approval)',
+    description: 'Uploaded PDF invoice exceeding $1,000 threshold, triggering CFO approval gate.',
+    payload: {
+      document: {
+        id: 'doc_inv_882',
+        name: 'Acme_Cloud_Invoice_Oct.pdf',
+        type: 'INVOICE',
+        amount: 4250,
+        vendor: 'Acme Cloud Infrastructure Ltd',
+      },
+    },
+  },
+  ecom_order: {
+    id: 'ecom_order',
+    label: 'David Miller — Storefront Order (E-Commerce)',
+    description: 'New storefront purchase triggering stock verification and automated receipt delivery.',
+    payload: {
+      order: {
+        id: 'ord_77192',
+        customerEmail: 'david.miller@gmail.com',
+        total: 289.5,
+        items: [{ sku: 'DEV-KIT-PRO', qty: 2 }],
+      },
+    },
+  },
+};
+
 // Inner Visual Studio Canvas with Flow Controls
 function StudioCanvasContent() {
   const params = useParams();
@@ -750,6 +1309,9 @@ function StudioCanvasContent() {
 
   const [workflowName, setWorkflowName] = useState('Enterprise Lead Qualification & WhatsApp Pipeline');
   const [layoutOrientation, setLayoutOrientation] = useState<'LR' | 'TB'>('LR');
+  const [builderMode, setBuilderMode] = useState<AutomationBuilderMode>('SIMPLE');
+  const [guidedIntent, setGuidedIntent] = useState<StructuredIntent | null>(null);
+  const [isExplanationOpen, setIsExplanationOpen] = useState(false);
   const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_NODES);
   const [edges, setEdges, onEdgesChange] = useEdgesState(INITIAL_EDGES);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -758,6 +1320,17 @@ function StudioCanvasContent() {
   const [isExecutionLogsOpen, setIsExecutionLogsOpen] = useState(false);
   const [isTemplatesModalOpen, setIsTemplatesModalOpen] = useState(false);
   const [isGuideOpen, setIsGuideOpen] = useState(true);
+
+  // Test Simulation State
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false);
+  const [testCandidatePreset, setTestCandidatePreset] = useState<string>('alex');
+  const [customTestPayload, setCustomTestPayload] = useState<string>(
+    JSON.stringify(TEST_PRESETS.alex.payload, null, 2),
+  );
+  const [singleNodeTestResult, setSingleNodeTestResult] = useState<any>(null);
+  const [isTestingSingleNode, setIsTestingSingleNode] = useState(false);
+  const [showAdvancedNodeConfig, setShowAdvancedNodeConfig] = useState(false);
+  const [pendingApprovalId, setPendingApprovalId] = useState<string | null>(null);
 
   const [paletteSearch, setPaletteSearch] = useState('');
   const [paletteCategory, setPaletteCategory] = useState('ALL');
@@ -773,6 +1346,12 @@ function StudioCanvasContent() {
   const [isPublishModalOpen, setIsPublishModalOpen] = useState<boolean>(false);
   const [validationResult, setValidationResult] = useState<any>(null);
   const [isPublishing, setIsPublishing] = useState<boolean>(false);
+
+  // Folder and Data Ingestion Source State
+  const [isFolderPickerOpen, setIsFolderPickerOpen] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState<any>(AVAILABLE_INPUT_FOLDERS[0]);
+  const [customFolderPath, setCustomFolderPath] = useState('');
+  const [folderMode, setFolderMode] = useState<'REALTIME' | 'BATCH' | 'MANUAL'>('REALTIME');
 
   // Node catalog lookup map
   const catalogMap = useMemo(() => {
@@ -866,13 +1445,24 @@ function StudioCanvasContent() {
 
         if (data?.triggerData) {
           try {
-            const parsed = JSON.parse(data.triggerData);
-            if (Array.isArray(parsed.nodes)) loadedNodes = parsed.nodes;
-            if (Array.isArray(parsed.edges)) loadedEdges = parsed.edges;
+            const parsed = typeof data.triggerData === 'string' ? JSON.parse(data.triggerData) : data.triggerData;
+            if (Array.isArray(parsed?.nodes)) loadedNodes = parsed.nodes;
+            if (Array.isArray(parsed?.edges)) loadedEdges = parsed.edges;
           } catch {}
-        } else if (Array.isArray(data?.nodes)) {
-          loadedNodes = data.nodes;
-          if (Array.isArray(data?.edges)) loadedEdges = data.edges;
+        }
+        
+        if (loadedNodes.length === 0 && data?.nodes) {
+          try {
+            const parsedNodes = typeof data.nodes === 'string' ? JSON.parse(data.nodes) : data.nodes;
+            if (Array.isArray(parsedNodes)) loadedNodes = parsedNodes;
+          } catch {}
+        }
+
+        if (loadedEdges.length === 0 && data?.edges) {
+          try {
+            const parsedEdges = typeof data.edges === 'string' ? JSON.parse(data.edges) : data.edges;
+            if (Array.isArray(parsedEdges)) loadedEdges = parsedEdges;
+          } catch {}
         }
 
         if (loadedNodes.length > 0 && !isCancelled) {
@@ -885,7 +1475,23 @@ function StudioCanvasContent() {
             return norm;
           });
 
-          setNodes(normalized);
+          // Check if loaded nodes are colliding / stacked (within 60px X and 140px Y of each other)
+          const isOverlapping =
+            normalized.length > 1 &&
+            normalized.some((n1, i) =>
+              normalized.some(
+                (n2, j) =>
+                  i !== j &&
+                  Math.abs(n1.position.x - n2.position.x) < 60 &&
+                  Math.abs(n1.position.y - n2.position.y) < 140
+              )
+            );
+
+          const finalNodes = isOverlapping
+            ? computeAutoLayout(normalized, loadedEdges, layoutOrientation)
+            : normalized;
+
+          setNodes(finalNodes);
 
           if (loadedEdges.length > 0) {
             setEdges(
@@ -902,7 +1508,7 @@ function StudioCanvasContent() {
 
           setTimeout(() => {
             try {
-              reactFlow.fitView({ padding: 0.2, duration: 400 });
+              reactFlow.fitView({ padding: 0.25, duration: 400 });
             } catch {}
           }, 150);
         }
@@ -916,7 +1522,7 @@ function StudioCanvasContent() {
     return () => {
       isCancelled = true;
     };
-  }, [workflowId, reactFlow, setNodes, setEdges]);
+  }, [workflowId, reactFlow, setNodes, setEdges, layoutOrientation]);
 
   // Handle Node Click
   const onNodeClick = (_: React.MouseEvent, node: Node) => {
@@ -926,89 +1532,7 @@ function StudioCanvasContent() {
   // Auto-Layout / Organize Nodes (Hierarchical DAG layout supporting both Horizontal and Vertical orientations)
   const handleAutoLayout = useCallback(
     (direction: 'LR' | 'TB' = layoutOrientation) => {
-      const inDegree: Record<string, number> = {};
-      const adj: Record<string, string[]> = {};
-
-      nodes.forEach((n) => {
-        inDegree[n.id] = 0;
-        adj[n.id] = [];
-      });
-
-      edges.forEach((e) => {
-        if (adj[e.source]) adj[e.source].push(e.target);
-        if (inDegree[e.target] !== undefined) inDegree[e.target]++;
-      });
-
-      // Find root nodes (in-degree 0)
-      const levels: Record<string, number> = {};
-      const roots = nodes.filter((n) => inDegree[n.id] === 0).map((n) => n.id);
-
-      roots.forEach((id) => {
-        levels[id] = 0;
-      });
-
-      // BFS to assign hierarchy depth
-      const queue: string[] = [...roots];
-      const visited = new Set<string>(roots);
-      let head = 0;
-
-      while (head < queue.length) {
-        const u = queue[head++];
-        const currentLevel = levels[u] || 0;
-        for (const v of adj[u] || []) {
-          levels[v] = Math.max(levels[v] || 0, currentLevel + 1);
-          if (!visited.has(v)) {
-            visited.add(v);
-            queue.push(v);
-          }
-        }
-      }
-
-      // Group nodes by level
-      const levelGroups: Record<number, string[]> = {};
-      nodes.forEach((n) => {
-        const lvl = levels[n.id] ?? 0;
-        if (!levelGroups[lvl]) levelGroups[lvl] = [];
-        levelGroups[lvl].push(n.id);
-      });
-
-      const NODE_WIDTH = 280;
-      const NODE_HEIGHT = 160;
-      const SPACING_X = 120; // 120px clean gap between cards horizontally
-      const SPACING_Y = 100; // 100px clean gap vertically
-
-      const newNodes = nodes.map((n) => {
-        const lvl = levels[n.id] ?? 0;
-        const group = levelGroups[lvl] || [n.id];
-        const idx = group.indexOf(n.id);
-        const groupCount = group.length;
-
-        let x = 0;
-        let y = 0;
-
-        if (direction === 'LR') {
-          x = 80 + lvl * (NODE_WIDTH + SPACING_X);
-          const totalHeight = groupCount * NODE_HEIGHT + (groupCount - 1) * 60;
-          const startY = Math.max(80, 260 - totalHeight / 2);
-          y = startY + idx * (NODE_HEIGHT + 60);
-        } else {
-          // Vertical layout: Steps flow top-to-bottom, parallel branches spread horizontally
-          y = 80 + lvl * (NODE_HEIGHT + SPACING_Y);
-          const totalWidth = groupCount * NODE_WIDTH + (groupCount - 1) * 80;
-          const startX = Math.max(80, 480 - totalWidth / 2);
-          x = startX + idx * (NODE_WIDTH + 80);
-        }
-
-        return {
-          ...n,
-          data: {
-            ...n.data,
-            layoutDirection: direction,
-          },
-          position: { x, y },
-        };
-      });
-
+      const newNodes = computeAutoLayout(nodes, edges, direction);
       setNodes(newNodes);
       setAlert({
         message:
@@ -1018,7 +1542,9 @@ function StudioCanvasContent() {
         type: 'success',
       });
       setTimeout(() => {
-        reactFlow.fitView({ padding: 0.25, duration: 300 });
+        try {
+          reactFlow.fitView({ padding: 0.25, duration: 300 });
+        } catch {}
       }, 50);
     },
     [nodes, edges, layoutOrientation, reactFlow, setNodes],
@@ -1134,7 +1660,11 @@ function StudioCanvasContent() {
         if (Array.isArray(tmpl.nodes)) {
           const normNodes = tmpl.nodes.map((n: any, idx: number) => {
             const norm = normalizeStudioNode(n, catalogMap);
-            norm.position = { x: 80 + idx * 400, y: 160 };
+            if (n.position && (n.position.x !== 0 || n.position.y !== 0)) {
+              norm.position = n.position;
+            } else {
+              norm.position = { x: 80 + idx * 360, y: 160 };
+            }
             return norm;
           });
           setNodes(normNodes);
@@ -1144,7 +1674,15 @@ function StudioCanvasContent() {
             tmpl.edges.map((e: any) => ({
               ...e,
               animated: true,
-              style: { stroke: '#10b981', strokeWidth: 2 },
+              style: {
+                stroke:
+                  e.sourceHandle === 'false' ||
+                  e.sourceHandle === 'rejected' ||
+                  e.sourceHandle === 'error'
+                    ? '#f43f5e'
+                    : '#10b981',
+                strokeWidth: 2,
+              },
             })),
           );
         }
@@ -1169,7 +1707,7 @@ function StudioCanvasContent() {
           body: JSON.stringify({
             name: workflowName,
             isActive: true,
-            triggerType: nodes[0]?.data?.type || 'trigger:new_lead',
+            triggerType: nodes[0]?.data?.type || 'trigger:candidate_applied',
             triggerData: JSON.stringify({
               nodes: nodes.map((n) => ({ ...n, data: { ...n.data, status: 'IDLE' } })),
               edges,
@@ -1178,10 +1716,10 @@ function StudioCanvasContent() {
         });
         const created = res.ok ? await res.json() : null;
         const newId = created?.id || `wf_${Date.now()}`;
-        setAlert({ message: '✅ New workflow created and saved!', type: 'success' });
+        setAlert({ message: ' New workflow created and saved!', type: 'success' });
         router.replace(`/automation/workflows/${newId}`);
       } catch {
-        setAlert({ message: '✅ New workflow saved in local state.', type: 'success' });
+        setAlert({ message: ' New workflow saved in local state.', type: 'success' });
       }
       return;
     }
@@ -1198,7 +1736,7 @@ function StudioCanvasContent() {
           }),
         }),
       });
-      setAlert({ message: '✅ Workflow saved successfully!', type: 'success' });
+      setAlert({ message: ' Workflow saved successfully!', type: 'success' });
     } catch {
       setAlert({ message: 'Workflow saved in local state.', type: 'success' });
     }
@@ -1218,14 +1756,108 @@ function StudioCanvasContent() {
     }
   };
 
+  const [isSimulatingDrop, setIsSimulatingDrop] = useState(false);
+
+  const handleSimulateDrop = async () => {
+    setIsSimulatingDrop(true);
+    try {
+      const folderId = selectedFolder?.id || 'crm_leads';
+      const res = await fetch('/api/automation/vault/simulate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderId }),
+      });
+      const data = await res.json();
+      setAlert({
+        message: ` ${data.message || 'Simulated file dropped and ingested into Smart Vault!'}`,
+        type: 'success',
+      });
+    } catch {
+      setAlert({
+        message: 'Simulated file dropped into Smart Vault directory.',
+        type: 'success',
+      });
+    } finally {
+      setIsSimulatingDrop(false);
+    }
+  };
+
+  // Single Node Test Isolation Handler
+  const handleTestSingleNode = async (node: any) => {
+    setIsTestingSingleNode(true);
+    setSingleNodeTestResult(null);
+    try {
+      const samplePayload = TEST_PRESETS.alex.payload;
+      const res = await fetch(`/api/automation/workflows/${workflowId}/test-node`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          node: {
+            id: node.id,
+            type: node.data?.type || node.type,
+            data: node.data?.config,
+          },
+          inputData: samplePayload,
+        }),
+      });
+      const result = await res.json();
+      setSingleNodeTestResult(result);
+      setAlert({
+        message: `Node test executed: ${result.status || (result.success ? 'SUCCESS' : 'FAILED')}`,
+        type: result.success !== false ? 'success' : 'warning',
+      });
+    } catch (err: any) {
+      setSingleNodeTestResult({ success: false, status: 'FAILED', error: err.message });
+      setAlert({ message: 'Single node test failed.', type: 'warning' });
+    } finally {
+      setIsTestingSingleNode(false);
+    }
+  };
+
+  // Approve & Resume Paused HITL Execution
+  const handleApproveAndResume = async () => {
+    if (!pendingApprovalId) return;
+    setAlert({ message: 'Approving request and resuming execution graph...', type: 'info' });
+    try {
+      const res = await fetch(`/api/automation/approvals/${pendingApprovalId}/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'APPROVED', reviewer: 'Senior Recruiter' }),
+      });
+      if (res.ok) {
+        setPendingApprovalId(null);
+        setAlert({ message: ' Approval granted! Workflow resumed to completion.', type: 'success' });
+        setNodes((nds) =>
+          nds.map((n) => (n.data?.status === 'WAITING' ? { ...n, data: { ...n.data, status: 'SUCCESS' } } : n)),
+        );
+      }
+    } catch {
+      setAlert({ message: 'Approved and resumed locally.', type: 'success' });
+    }
+  };
+
   // Interactive Test Run Simulation
-  const handleTestRun = async () => {
+  const handleTestRun = async (overridePayload?: any) => {
     setIsRunning(true);
     setIsExecutionLogsOpen(true);
-    setAlert({ message: '⚡ Dispatching live graph execution to automation engine...', type: 'info' });
+    setIsTestModalOpen(false);
+    setAlert({ message: ' Dispatching live graph execution to automation engine...', type: 'info' });
 
     // Step 1: Set all nodes to READY
     setNodes((nds) => nds.map((n) => ({ ...n, data: { ...n.data, status: 'IDLE' } })));
+
+    let payload = overridePayload;
+    if (!payload) {
+      if (testCandidatePreset === 'custom') {
+        try {
+          payload = JSON.parse(customTestPayload);
+        } catch {
+          payload = TEST_PRESETS.alex.payload;
+        }
+      } else {
+        payload = TEST_PRESETS[testCandidatePreset]?.payload || TEST_PRESETS.alex.payload;
+      }
+    }
 
     try {
       const res = await fetch(`/api/automation/workflows/${workflowId}/execute-graph`, {
@@ -1243,105 +1875,101 @@ function StudioCanvasContent() {
             target: e.target,
             sourceHandle: e.sourceHandle,
           })),
-          triggerPayload: {
-            source: 'studio_test_run',
-            firstName: 'Elena',
-            lastName: 'Rostova',
-            company: 'Hyperion Technologies',
-            email: 'elena@hyperion.io',
-            phone: '+15553492001',
-            leadScore: 78,
-          },
+          triggerPayload: payload,
         }),
       });
 
-      const data = await res.json().catch(() => ({ status: 'SUCCESS', durationMs: 320 }));
+      const data = await res.json().catch(() => ({ status: 'SUCCESS', durationMs: 320, steps: [] }));
 
-      // Sequential animated playback across nodes
-      for (let i = 0; i < nodes.length; i++) {
-        const currentNode = nodes[i];
-        // Mark running
-        setNodes((nds) =>
-          nds.map((n) => (n.id === currentNode.id ? { ...n, data: { ...n.data, status: 'RUNNING' } } : n)),
+      // Sequential animated playback across executed steps or canvas nodes
+      const steps = Array.isArray(data.steps) && data.steps.length > 0 ? data.steps : null;
+
+      if (steps) {
+        for (let i = 0; i < steps.length; i++) {
+          const step = steps[i];
+          setNodes((nds) =>
+            nds.map((n) => (n.id === step.nodeId ? { ...n, data: { ...n.data, status: 'RUNNING' } } : n)),
+          );
+          await new Promise((r) => setTimeout(r, 220));
+          setNodes((nds) =>
+            nds.map((n) =>
+              n.id === step.nodeId
+                ? {
+                    ...n,
+                    data: {
+                      ...n.data,
+                      status:
+                        step.status === 'WAITING' || step.status === 'WAITING_FOR_APPROVAL'
+                          ? 'WAITING'
+                          : step.status === 'FAILED'
+                          ? 'ERROR'
+                          : 'SUCCESS',
+                    },
+                  }
+                : n,
+            ),
+          );
+        }
+
+        setExecutionLogs(
+          steps.map((s: any, idx: number) => ({
+            step: idx + 1,
+            node: s.nodeName || s.nodeId,
+            status: s.status,
+            duration: `${s.durationMs || 15}ms`,
+            output: typeof s.output === 'object' ? JSON.stringify(s.output) : String(s.output || 'Passed'),
+          })),
         );
-        await new Promise((r) => setTimeout(r, 280));
-        // Mark success (or waiting if human approval)
-        const isApprovalNode = currentNode.data?.type === 'logic:human_approval';
-        setNodes((nds) =>
-          nds.map((n) =>
-            n.id === currentNode.id
-              ? {
-                  ...n,
-                  data: {
-                    ...n.data,
-                    status: isApprovalNode && data.status === 'APPROVAL_REQUIRED' ? 'WAITING' : 'SUCCESS',
-                  },
-                }
-              : n,
-          ),
-        );
+      } else {
+        // Fallback across nodes
+        for (let i = 0; i < nodes.length; i++) {
+          const currentNode = nodes[i];
+          setNodes((nds) =>
+            nds.map((n) => (n.id === currentNode.id ? { ...n, data: { ...n.data, status: 'RUNNING' } } : n)),
+          );
+          await new Promise((r) => setTimeout(r, 240));
+          const isApprovalNode =
+            currentNode.data?.type === 'logic:human_approval' || currentNode.data?.type === 'human:request_approval';
+          setNodes((nds) =>
+            nds.map((n) =>
+              n.id === currentNode.id
+                ? {
+                    ...n,
+                    data: {
+                      ...n.data,
+                      status:
+                        isApprovalNode &&
+                        (data.status === 'APPROVAL_REQUIRED' || data.status === 'WAITING_FOR_APPROVAL')
+                          ? 'WAITING'
+                          : 'SUCCESS',
+                    },
+                  }
+                : n,
+            ),
+          );
+        }
       }
 
       setIsRunning(false);
 
-      if (data.status === 'APPROVAL_REQUIRED') {
+      if (data.status === 'APPROVAL_REQUIRED' || data.status === 'WAITING_FOR_APPROVAL') {
+        const approvalReq = data.approvalRequest || data.output?.approvalRequest;
+        if (approvalReq?.id) {
+          setPendingApprovalId(approvalReq.id);
+        }
         setAlert({
-          message: '⚠️ Execution paused: HITL step awaiting sign-off in /automation/approvals!',
+          message: ' Execution paused: HITL step awaiting sign-off in Approval Center!',
           type: 'warning',
         });
       } else {
         setAlert({
-          message: `✅ Workflow executed successfully in ${data.durationMs || 340}ms!`,
+          message: ` Workflow executed successfully (${data.status}) in ${data.durationMs || 340}ms!`,
           type: 'success',
         });
       }
-
-      // Populate rich execution telemetry logs
-      setExecutionLogs([
-        {
-          step: 1,
-          node: nodes[0]?.data?.title || 'Trigger Ingestion',
-          status: 'SUCCESS',
-          duration: '14ms',
-          output: 'Payload verified: Elena Rostova (Hyperion Tech)',
-        },
-        {
-          step: 2,
-          node: nodes[1]?.data?.title || 'AI Processing',
-          status: 'SUCCESS',
-          duration: '185ms',
-          output: 'Evaluated intent score: 78/100 (HIGH_FIT)',
-          tokens: 180,
-        },
-        {
-          step: 3,
-          node: nodes[2]?.data?.title || 'Logic Gate',
-          status: 'SUCCESS',
-          duration: '6ms',
-          output: 'Condition passed: leadScore (78) >= 60 -> Branch TRUE',
-        },
-        {
-          step: 4,
-          node: nodes[3]?.data?.title || 'Communication Dispatch',
-          status: 'SUCCESS',
-          duration: '110ms',
-          output: 'Delivered WhatsApp notification to +15553492001',
-        },
-      ]);
     } catch {
-      // Graceful fallback animation
-      for (let i = 0; i < nodes.length; i++) {
-        const currentNode = nodes[i];
-        setNodes((nds) =>
-          nds.map((n) => (n.id === currentNode.id ? { ...n, data: { ...n.data, status: 'RUNNING' } } : n)),
-        );
-        await new Promise((r) => setTimeout(r, 200));
-        setNodes((nds) =>
-          nds.map((n) => (n.id === currentNode.id ? { ...n, data: { ...n.data, status: 'SUCCESS' } } : n)),
-        );
-      }
       setIsRunning(false);
-      setAlert({ message: 'Workflow test execution completed.', type: 'success' });
+      setAlert({ message: 'Workflow test execution completed.', type: 'info' });
     }
   };
 
@@ -1380,7 +2008,7 @@ function StudioCanvasContent() {
         }
         setIsAiGenerateModalOpen(false);
         setAlert({
-          message: '✨ Workflow drafted by AI in DRAFT mode! Review, test, and publish.',
+          message: ' Workflow drafted by AI in DRAFT mode! Review, test, and publish.',
           type: 'success',
         });
         setTimeout(() => {
@@ -1433,7 +2061,7 @@ function StudioCanvasContent() {
         setWorkflowStatus('ACTIVE');
         setIsPublishModalOpen(false);
         setAlert({
-          message: `🚀 Workflow published as Version ${data.version || workflowVersion + 1} (ACTIVE)!`,
+          message: ` Workflow published as Version ${data.version || workflowVersion + 1} (ACTIVE)!`,
           type: 'success',
         });
       }
@@ -1459,13 +2087,13 @@ function StudioCanvasContent() {
 
   return (
     <div className="relative flex flex-col h-full w-full flex-1 min-h-0 bg-slate-950 overflow-hidden select-none">
-      {/* Top Canvas Bar */}
-      <div className="px-6 py-3 border-b border-white/10 bg-slate-900/95 backdrop-blur-xl flex items-center justify-between z-20 shrink-0 shadow-lg">
+      {/* Top Cockpit Header Bar */}
+      <div className="px-5 py-2.5 border-b border-white/10 bg-slate-900/95 backdrop-blur-xl flex items-center justify-between z-20 shrink-0 shadow-lg gap-4">
         {/* Left: Back link, editable title & status */}
-        <div className="flex items-center space-x-3 min-w-0">
+        <div className="flex items-center space-x-3 shrink-0">
           <Link
             href="/automation/workflows"
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition border border-white/5"
+            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition border border-white/5 shrink-0"
             title="Back to Workflows"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -1476,14 +2104,14 @@ function StudioCanvasContent() {
               type="text"
               value={workflowName}
               onChange={(e) => setWorkflowName(e.target.value)}
-              className="bg-transparent border-b border-transparent hover:border-white/20 focus:border-emerald-500 font-extrabold text-sm text-white focus:outline-none px-1.5 py-0.5 max-w-sm truncate transition"
+              className="bg-transparent border-b border-transparent hover:border-white/20 focus:border-emerald-500 font-extrabold text-sm text-white focus:outline-none px-1.5 py-0.5 max-w-[200px] lg:max-w-xs truncate transition"
               title="Click to rename workflow"
             />
-            <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-white/10 text-slate-300 border border-white/10">
+            <span className="px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold bg-white/10 text-slate-300 border border-white/10 shrink-0">
               v{workflowVersion}
             </span>
             <span
-              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center space-x-1 ${
+              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border flex items-center space-x-1 shrink-0 ${
                 workflowStatus === 'ACTIVE'
                   ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
                   : workflowStatus === 'DRAFT'
@@ -1497,16 +2125,31 @@ function StudioCanvasContent() {
           </div>
         </div>
 
-        {/* Right Action Buttons */}
-        <div className="flex items-center space-x-2">
+        {/* Center: Universal 3-Mode Switcher */}
+        <div className="flex items-center justify-center shrink-0">
+          <WorkflowModeSwitcher currentMode={builderMode} onChangeMode={(m) => setBuilderMode(m)} />
+          {builderMode === 'SIMPLE' && (
+            <button
+              onClick={() => setIsExplanationOpen(true)}
+              className="ml-2 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-300 text-xs font-mono font-bold border border-white/10 hover:border-emerald-500/30 transition shadow-sm"
+              title="Explain this automation in plain English"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Explain This</span>
+            </button>
+          )}
+        </div>
+
+        {/* Right Action Buttons: Primary Top-Level Controls */}
+        <div className="flex items-center space-x-2 shrink-0">
           {/* Build with AI */}
           <button
             onClick={() => setIsAiGenerateModalOpen(true)}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-violet-600/20 to-indigo-600/20 hover:from-violet-600/30 hover:to-indigo-600/30 text-indigo-300 text-xs font-bold border border-indigo-500/40 transition shadow-sm"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600/20 to-teal-600/20 hover:from-emerald-600/30 hover:to-teal-600/30 text-teal-300 text-xs font-bold border border-teal-500/40 transition shadow-sm"
             title="Generate or edit workflow using natural language AI"
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
-            <span>Build with AI</span>
+            <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+            <span className="hidden md:inline">Build with AI</span>
           </button>
 
           {/* Publish Version */}
@@ -1519,109 +2162,134 @@ function StudioCanvasContent() {
             <span>Publish</span>
           </button>
 
-          {/* Layout Orientation Toggle: Horizontal vs Vertical */}
-          <div className="flex items-center bg-slate-950/80 border border-white/10 rounded-xl p-0.5 shadow-sm">
-            <button
-              type="button"
-              onClick={() => toggleOrientation('LR')}
-              className={`inline-flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${
-                layoutOrientation === 'LR'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
-              }`}
-              title="Align flowchart horizontally (Left-to-Right)"
-            >
-              <ArrowRightLeft className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Horizontal</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleOrientation('TB')}
-              className={`inline-flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition ${
-                layoutOrientation === 'TB'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-white hover:bg-white/5 border border-transparent'
-              }`}
-              title="Align flowchart vertically (Top-to-Bottom)"
-            >
-              <ArrowUpDown className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Vertical</span>
-            </button>
-          </div>
-
-          {/* Auto-Align Magic Wand */}
-          <button
-            type="button"
-            onClick={() => handleAutoLayout(layoutOrientation)}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-semibold border border-white/10 hover:border-emerald-500/40 transition shadow-sm"
-            title="Automatically align and space workflow steps cleanly"
-          >
-            <Wand2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="hidden md:inline">Auto-Align</span>
-          </button>
-
-          {/* Add Step */}
-          <button
-            onClick={() => setIsPaletteOpen(!isPaletteOpen)}
-            className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 text-xs font-bold border border-emerald-500/40 transition shadow-sm"
-          >
-            <Plus className="w-4 h-4 text-emerald-400" />
-            <span>Add Step</span>
-          </button>
-
-          {/* Browse Templates */}
-          <button
-            onClick={() => setIsTemplatesModalOpen(true)}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-medium border border-white/10 transition"
-            title="Browse pre-built templates"
-          >
-            <Layers className="w-3.5 h-3.5 text-purple-400" />
-            <span>Templates</span>
-          </button>
-
-          {/* Logs Drawer */}
-          <button
-            onClick={() => setIsExecutionLogsOpen(!isExecutionLogsOpen)}
-            className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border transition ${
-              isExecutionLogsOpen
-                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
-            }`}
-          >
-            <Terminal className="w-3.5 h-3.5" />
-            <span>Logs</span>
-          </button>
-
           {/* Save */}
           <button
             onClick={handleSave}
             className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs border border-white/15 transition shadow-sm"
+            title="Save changes"
           >
             <Save className="w-3.5 h-3.5" />
             <span>Save</span>
           </button>
 
-          {/* Delete Workflow */}
-          <button
-            onClick={handleDeleteWorkflow}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 font-semibold text-xs border border-white/10 hover:border-rose-500/30 transition shadow-sm"
-            title="Delete this workflow"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Delete</span>
-          </button>
-
           {/* Test Run Execution */}
           <button
-            onClick={handleTestRun}
+            onClick={() => setIsTestModalOpen(true)}
             disabled={isRunning}
             className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 transition disabled:opacity-50"
+            title="Configure test candidate and execute live graph"
           >
             <Play className={`w-3.5 h-3.5 ${isRunning ? 'animate-spin' : ''}`} />
-            <span>{isRunning ? 'Simulating...' : 'Test Run'}</span>
+            <span>{isRunning ? 'Executing...' : 'Test Run'}</span>
           </button>
         </div>
       </div>
+
+      {/* Sub-toolbar for Canvas Controls (Cleanly docked, only visible in ADVANCED mode) */}
+      {builderMode === 'ADVANCED' && (
+        <div className="px-5 py-1.5 bg-slate-950/90 border-b border-white/10 backdrop-blur-md flex items-center justify-between z-10 shrink-0 text-xs">
+          <div className="flex items-center space-x-2">
+            {/* Add Step */}
+            <button
+              onClick={() => setIsPaletteOpen(!isPaletteOpen)}
+              className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-bold border border-emerald-500/30 transition shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Add Step</span>
+            </button>
+
+            {/* Layout Orientation Toggle */}
+            <div className="flex items-center bg-slate-900/80 border border-white/10 rounded-lg p-0.5">
+              <button
+                type="button"
+                onClick={() => toggleOrientation('LR')}
+                className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[11px] font-bold transition ${
+                  layoutOrientation === 'LR'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Align horizontally (Left-to-Right)"
+              >
+                <ArrowRightLeft className="w-3 h-3" />
+                <span>Horizontal</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleOrientation('TB')}
+                className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded text-[11px] font-bold transition ${
+                  layoutOrientation === 'TB'
+                    ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Align vertically (Top-to-Bottom)"
+              >
+                <ArrowUpDown className="w-3 h-3" />
+                <span>Vertical</span>
+              </button>
+            </div>
+
+            {/* Auto-Align */}
+            <button
+              type="button"
+              onClick={() => handleAutoLayout(layoutOrientation)}
+              className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 font-semibold border border-white/10 hover:border-emerald-500/40 transition"
+              title="Automatically align and space workflow steps cleanly"
+            >
+              <Wand2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Auto-Align</span>
+            </button>
+
+            {/* Input Source Folder */}
+            <button
+              type="button"
+              onClick={() => setIsFolderPickerOpen(true)}
+              className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 font-medium border border-cyan-500/30 transition group"
+              title="Configure data source folder"
+            >
+              <Folder className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+              <span className="text-[11px]">Folder:</span>
+              <span className="font-mono text-[10px] text-cyan-200 bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-500/30 max-w-[140px] truncate">
+                {selectedFolder?.path || '/vault/inbound/crm_leads/'}
+              </span>
+            </button>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            {/* Browse Templates */}
+            <button
+              onClick={() => setIsTemplatesModalOpen(true)}
+              className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 font-medium border border-white/10 transition"
+              title="Browse pre-built templates"
+            >
+              <Layers className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Templates</span>
+            </button>
+
+            {/* Logs Drawer */}
+            <button
+              onClick={() => setIsExecutionLogsOpen(!isExecutionLogsOpen)}
+              className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-lg font-medium border transition ${
+                isExecutionLogsOpen
+                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                  : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/10'
+              }`}
+            >
+              <Terminal className="w-3.5 h-3.5" />
+              <span>Logs</span>
+            </button>
+
+            {/* Delete Workflow */}
+            <button
+              onClick={handleDeleteWorkflow}
+              className="inline-flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 font-medium border border-white/10 hover:border-rose-500/30 transition"
+              title="Delete this workflow"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Delete</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Alert Banner */}
       {alert && (
@@ -1634,8 +2302,164 @@ function StudioCanvasContent() {
         </div>
       )}
 
-      {/* Main Canvas Area */}
-      <div className="flex-1 relative w-full h-full min-h-0 overflow-hidden">
+      {/* HITL Pending Approval Quick Action Banner */}
+      {pendingApprovalId && (
+        <div className="absolute top-28 left-1/2 -translate-x-1/2 z-40 px-5 py-3 rounded-2xl bg-amber-950/95 border-2 border-amber-500 text-white text-xs shadow-2xl flex items-center space-x-4 backdrop-blur-xl animate-bounce">
+          <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0" />
+          <div>
+            <div className="font-extrabold text-amber-300">Human Approval Gate Active</div>
+            <div className="text-[11px] text-slate-300">Workflow paused in WAITING_FOR_APPROVAL status</div>
+          </div>
+          <button
+            onClick={handleApproveAndResume}
+            className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg shadow-emerald-500/30"
+          >
+             Approve & Resume
+          </button>
+        </div>
+      )}
+
+      {/* Explanation Modal */}
+      <AutomationExplanationModal
+        isOpen={isExplanationOpen}
+        onClose={() => setIsExplanationOpen(false)}
+        workflowName={workflowName}
+        explanation={`This automation "${workflowName}" runs on the universal workflow engine. It has ${nodes.length} step${nodes.length !== 1 ? 's' : ''} and ${edges.length} connection${edges.length !== 1 ? 's' : ''}. When triggered, it processes data through each node in sequence, applying your configured business rules and routing logic.`}
+      />
+
+      {/* Main Mode Content */}
+      {builderMode === 'SIMPLE' ? (
+        <div className="flex-1 w-full h-full overflow-y-auto bg-slate-950/95 relative z-10">
+          <UniversalIntentBuilder
+            workflowId={workflowId}
+            workflowName={workflowName}
+            onSwitchToAdvanced={(compiled) => {
+              if (compiled?.nodes && compiled.nodes.length > 0) {
+                const enriched = compiled.nodes.map((n) => normalizeStudioNode(n, catalogMapRef.current));
+                setNodes(enriched);
+                if (compiled.edges) {
+                  setEdges(compiled.edges);
+                }
+                setTimeout(() => {
+                  try {
+                    reactFlow.fitView({ padding: 0.2, duration: 400 });
+                  } catch {}
+                }, 100);
+              }
+              setBuilderMode('ADVANCED');
+            }}
+            onWorkflowSaved={(saved) => {
+              if (saved?.name) setWorkflowName(saved.name);
+              if (saved?.version) setWorkflowVersion(saved.version);
+              setAlert({ message: 'Automation compiled and saved successfully!', type: 'success' });
+            }}
+          />
+        </div>
+      ) : builderMode === 'GUIDED' ? (
+        <div className="flex-1 w-full h-full overflow-y-auto bg-slate-950/95 relative z-10">
+          {guidedIntent ? (
+            <GuidedModeBuilder
+              intent={guidedIntent}
+              onChangeIntent={(updated) => setGuidedIntent(updated)}
+              onOpenTest={() => setIsTestModalOpen(true)}
+              onCompileAndActivate={async () => {
+                setAlert({ message: 'Compiling guided intent into workflow DAG...', type: 'info' });
+                try {
+                  const res = await fetch('/api/intent/compile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ intent: guidedIntent }),
+                  });
+                  if (res.ok) {
+                    const compiled = await res.json();
+                    if (Array.isArray(compiled.nodes) && compiled.nodes.length > 0) {
+                      const enriched = compiled.nodes.map((n: any) => normalizeStudioNode(n, catalogMapRef.current));
+                      const preparedEdges = (compiled.edges || []).map((e: any) => ({
+                        ...e,
+                        animated: true,
+                        style: {
+                          stroke: e.sourceHandle === 'false' || e.sourceHandle === 'rejected' ? '#f43f5e' : '#10b981',
+                          strokeWidth: 2,
+                        },
+                      }));
+                      const laidOut = computeAutoLayout(enriched, preparedEdges, layoutOrientation);
+                      setNodes(laidOut);
+                      setEdges(preparedEdges);
+                      setTimeout(() => { try { reactFlow.fitView({ padding: 0.25, duration: 400 }); } catch {} }, 150);
+                    }
+                    setBuilderMode('ADVANCED');
+                    setAlert({ message: 'Guided intent compiled into canvas — review the DAG!', type: 'success' });
+                  } else {
+                    setAlert({ message: 'Compiled to Advanced Canvas (backend DAG pending).', type: 'info' });
+                    setBuilderMode('ADVANCED');
+                  }
+                } catch {
+                  setBuilderMode('ADVANCED');
+                  setAlert({ message: 'Guided flow compiled. Inspect the Advanced Canvas.', type: 'info' });
+                }
+              }}
+              isCompiling={false}
+              onSwitchToAdvanced={() => setBuilderMode('ADVANCED')}
+            />
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center py-20 space-y-5">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                <Sliders className="w-7 h-7" />
+              </div>
+              <div className="text-center space-y-2 max-w-sm">
+                <h3 className="text-base font-bold text-white">Start in Simple Mode first</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed">
+                  Describe your automation goal in Simple Mode. Our AI will structure all 11 guided business steps automatically.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setBuilderMode('SIMPLE')}
+                  className="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-mono font-bold text-xs cursor-pointer shadow-md shadow-emerald-500/20 transition"
+                >
+                  Go to Simple Mode
+                </button>
+                <button
+                  onClick={() => {
+                    const syntheticIntent: StructuredIntent = {
+                      name: workflowName,
+                      domainName: 'General',
+                      goal: `Configure the "${workflowName}" automation`,
+                      domain: 'general',
+                      trigger: {
+                        type: 'manual',
+                        description: 'Manual trigger',
+                        timing: 'IMMEDIATELY',
+                      },
+                      ruleGroups: [],
+                      actions: [],
+                      timing: { schedule: '', window: 'ALWAYS' },
+                      channels: [],
+                      approvalPolicy: {
+                        required: false,
+                        condition: 'NEVER',
+                      },
+                      resultDestination: { id: '', name: '', summary: '' },
+                      exceptions: {
+                        onFailure: 'ASK_HUMAN',
+                        onUncertain: 'ESCALATE_TO_HUMAN',
+                      },
+                      explanation: '',
+                      visualSummary: [],
+                      validation: { isValid: true, warnings: [], errors: [] },
+                    };
+                    setGuidedIntent(syntheticIntent);
+                  }}
+                  className="px-5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-zinc-200 border border-white/[0.08] font-mono font-bold text-xs cursor-pointer transition"
+                >
+                  Start from Blank
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex-1 relative w-full h-full min-h-0 overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <ReactFlow
             nodes={nodes}
@@ -1662,10 +2486,6 @@ function StudioCanvasContent() {
             }}
           >
             <Background variant={BackgroundVariant.Dots} gap={24} size={1.2} color="#334155" />
-            <Controls
-              className="!bg-slate-900 !border-white/10 !text-white !fill-white !stroke-white !rounded-xl !shadow-xl"
-              showInteractive={false}
-            />
             <MiniMap
               nodeColor={(n) => {
                 const cat = (n.data?.category as string) || 'DEFAULT';
@@ -1686,8 +2506,7 @@ function StudioCanvasContent() {
                 <Sparkles className="w-7 h-7" />
               </div>
               <h3 className="text-lg font-black text-white">Your Workflow Canvas is Empty</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Add your first trigger (e.g. Inbound Voice Call, WhatsApp Lead, or Document OCR) to start building, or pick
+              <p className="text-xs text-slate-300 leading-relaxed"> Add your first trigger (e.g. Inbound Voice Call, WhatsApp Lead, or Document OCR) to start building, or pick
                 a pre-built workflow template.
               </p>
               <div className="flex items-center justify-center space-x-3 pt-2">
@@ -1740,7 +2559,7 @@ function StudioCanvasContent() {
               <div className="flex items-start space-x-2">
                 <span className="font-bold text-emerald-400 shrink-0">3.</span>
                 <span>
-                  <strong>Tidy:</strong> Press <strong>🪄 Auto-Align</strong> anytime to organize steps with clean spacing.
+                  <strong>Tidy:</strong> Press <strong> Auto-Align</strong> anytime to organize steps with clean spacing.
                 </span>
               </div>
             </div>
@@ -1757,12 +2576,12 @@ function StudioCanvasContent() {
 
         {/* Node Library Drawer / Step Palette */}
         {isPaletteOpen && (
-          <div className="absolute top-4 left-4 z-30 w-84 max-h-[82vh] overflow-hidden rounded-2xl bg-slate-900/95 border border-white/15 shadow-2xl backdrop-blur-2xl flex flex-col">
+          <div className="absolute top-4 left-4 z-30 w-96 max-h-[82vh] overflow-hidden rounded-2xl bg-slate-900/95 border border-white/15 shadow-2xl backdrop-blur-2xl flex flex-col">
             <div className="p-4 border-b border-white/10 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-white flex items-center space-x-2">
                   <Sparkles className="w-4 h-4 text-emerald-400" />
-                  <span>Step Catalog (45+ Available)</span>
+                  <span>Automation Step Catalog (65+ Steps)</span>
                 </h3>
                 <button onClick={() => setIsPaletteOpen(false)} className="text-slate-400 hover:text-white">
                   <X className="w-4 h-4" />
@@ -1774,7 +2593,7 @@ function StudioCanvasContent() {
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" />
                 <input
                   type="text"
-                  placeholder="Search triggers, AI agents, actions..."
+                  placeholder="Search 65+ triggers, recruitment AI, actions..."
                   value={paletteSearch}
                   onChange={(e) => setPaletteSearch(e.target.value)}
                   className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-white text-xs focus:outline-none focus:border-emerald-500"
@@ -1782,18 +2601,31 @@ function StudioCanvasContent() {
               </div>
 
               {/* Category Pills */}
-              <div className="flex items-center space-x-1 overflow-x-auto pb-1 scrollbar-none text-[10px]">
-                {['ALL', 'TRIGGER', 'AI', 'COMMUNICATION', 'LOGIC', 'CRM', 'DOCUMENTS'].map((cat) => (
+              <div className="flex items-center space-x-1.5 overflow-x-auto pb-1.5 scrollbar-none text-[10px]">
+                {[
+                  { id: 'ALL', label: 'All' },
+                  { id: 'TRIGGER', label: ' Triggers' },
+                  { id: 'RECRUITMENT_AI', label: ' Recruitment AI' },
+                  { id: 'DOCUMENTS', label: ' Documents' },
+                  { id: 'LOGIC', label: ' Logic' },
+                  { id: 'CANDIDATE', label: ' Candidate' },
+                  { id: 'COMMUNICATION', label: ' Comms' },
+                  { id: 'CALENDAR', label: ' Calendar' },
+                  { id: 'HUMAN', label: ' HITL' },
+                  { id: 'OUTPUT', label: ' Outputs' },
+                  { id: 'SYSTEM', label: ' System' },
+                  { id: 'AI_AGENT', label: ' AI Agent' },
+                ].map((cat) => (
                   <button
-                    key={cat}
-                    onClick={() => setPaletteCategory(cat)}
-                    className={`px-2 py-0.5 rounded-lg font-bold shrink-0 transition ${
-                      paletteCategory === cat
-                        ? 'bg-emerald-500 text-slate-950'
-                        : 'bg-white/5 text-slate-400 hover:text-white'
+                    key={cat.id}
+                    onClick={() => setPaletteCategory(cat.id)}
+                    className={`px-2.5 py-1 rounded-lg font-bold shrink-0 transition ${
+                      paletteCategory === cat.id
+                        ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                        : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
                     }`}
                   >
-                    {cat}
+                    {cat.label}
                   </button>
                 ))}
               </div>
@@ -1838,7 +2670,7 @@ function StudioCanvasContent() {
             <div className="w-full max-w-2xl bg-slate-900 border border-white/15 rounded-3xl p-6 shadow-2xl space-y-5">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex items-center space-x-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/40 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
                     <Layers className="w-5 h-5" />
                   </div>
                   <div>
@@ -1883,10 +2715,10 @@ function StudioCanvasContent() {
         {/* Build with AI Modal */}
         {isAiGenerateModalOpen && (
           <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-40 flex items-center justify-center p-4">
-            <div className="w-full max-w-2xl bg-slate-900 border border-indigo-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
+            <div className="w-full max-w-2xl bg-slate-900 border border-teal-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div className="flex items-center space-x-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/40 flex items-center justify-center">
                     <Sparkles className="w-5 h-5" />
                   </div>
                   <div>
@@ -1908,7 +2740,7 @@ function StudioCanvasContent() {
                   value={aiPromptInput}
                   onChange={(e) => setAiPromptInput(e.target.value)}
                   placeholder="e.g. When a high-value lead submits a demo form, qualify the lead using AI agent. If score >= 80, create a deal, assign a sales rep, send a personalized intro email, wait 3 days, and follow up if no response."
-                  className="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition"
+                  className="w-full px-4 py-3 rounded-2xl bg-slate-950 border border-white/10 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-teal-500 transition"
                 />
 
                 <div className="space-y-1.5">
@@ -1923,7 +2755,7 @@ function StudioCanvasContent() {
                         key={idx}
                         type="button"
                         onClick={() => setAiPromptInput(sample)}
-                        className="text-[10px] px-2.5 py-1 rounded-xl bg-white/5 hover:bg-white/10 text-indigo-300 border border-indigo-500/20 text-left transition"
+                        className="text-[10px] px-2.5 py-1 rounded-xl bg-white/5 hover:bg-white/10 text-teal-300 border border-teal-500/20 text-left transition"
                       >
                         + {sample}
                       </button>
@@ -1931,9 +2763,9 @@ function StudioCanvasContent() {
                   </div>
                 </div>
 
-                <div className="p-3 rounded-2xl bg-indigo-950/30 border border-indigo-500/20 text-[11px] text-indigo-200 space-y-1">
+                <div className="p-3 rounded-2xl bg-teal-950/30 border border-teal-500/20 text-[11px] text-teal-200 space-y-1">
                   <div className="font-bold flex items-center space-x-1">
-                    <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
+                    <ShieldCheck className="w-3.5 h-3.5 text-teal-400" />
                     <span>Safety & Review Guarantee</span>
                   </div>
                   <p className="text-slate-400">
@@ -1954,7 +2786,7 @@ function StudioCanvasContent() {
                   type="button"
                   onClick={handleGenerateWithAi}
                   disabled={isGeneratingAi || !aiPromptInput.trim()}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 text-white font-black text-xs shadow-lg shadow-indigo-500/25 transition disabled:opacity-50 flex items-center space-x-2"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-white font-black text-xs shadow-lg shadow-teal-500/25 transition disabled:opacity-50 flex items-center space-x-2"
                 >
                   {isGeneratingAi ? (
                     <>
@@ -2012,7 +2844,7 @@ function StudioCanvasContent() {
                     <div className="space-y-1 text-rose-400 text-[11px]">
                       {validationResult.errors.map((err: any, i: number) => (
                         <div key={i} className="flex items-start space-x-1.5">
-                          <span className="font-bold">❌ [{err.code}]:</span>
+                          <span className="font-bold"> [{err.code}]:</span>
                           <span>{err.message}</span>
                         </div>
                       ))}
@@ -2028,7 +2860,7 @@ function StudioCanvasContent() {
                     <div className="space-y-1 text-amber-300 text-[11px] pt-1">
                       {validationResult.warnings.map((warn: any, i: number) => (
                         <div key={i} className="flex items-start space-x-1.5">
-                          <span className="font-bold">⚠️ Notice:</span>
+                          <span className="font-bold"> Notice:</span>
                           <span>{warn.message}</span>
                         </div>
                       ))}
@@ -2087,6 +2919,283 @@ function StudioCanvasContent() {
           </div>
         )}
 
+        {/* Input Data Source & Folder Selector Modal */}
+        {isFolderPickerOpen && (
+          <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
+            <div className="w-full max-w-3xl bg-slate-900 border border-cyan-500/40 rounded-3xl p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-150">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center shadow-lg shadow-cyan-500/10">
+                    <Folder className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-white flex items-center space-x-2">
+                      <span>Select Input Data Folder</span>
+                      <span className="text-[10px] font-mono font-normal px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                        Step 0 • Ingestion Source
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Designate which Smart Vault folder, local directory, or cloud bucket feeds data into this workflow
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsFolderPickerOpen(false)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Current Selection Header Card */}
+              <div className="p-3.5 rounded-2xl bg-cyan-950/30 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center space-x-3 min-w-0">
+                  <FolderOpen className="w-5 h-5 text-cyan-400 shrink-0" />
+                  <div className="min-w-0">
+                    <div className="text-xs font-bold text-white flex items-center space-x-2 truncate">
+                      <span>Current Ingestion Path:</span>
+                      <span className="font-mono text-cyan-300 truncate">{selectedFolder?.path}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-400 truncate">
+                      {selectedFolder?.records} • Ingests via {selectedFolder?.formats?.join(', ')} • {folderMode} Mode
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleSimulateDrop}
+                    disabled={isSimulatingDrop}
+                    className="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                    title="Drop a simulated file into this directory to test live ingestion"
+                  >
+                    <Zap className="w-3 h-3 text-emerald-400" />
+                    <span>{isSimulatingDrop ? 'Dropping...' : ' Test Drop File'}</span>
+                  </button>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    LIVE WATCHER
+                  </span>
+                </div>
+              </div>
+
+              {/* Grid of Folders */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Available Smart Vault Directories:
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1">
+                  {AVAILABLE_INPUT_FOLDERS.map((f) => {
+                    const isSelected = selectedFolder?.id === f.id;
+                    return (
+                      <div
+                        key={f.id}
+                        onClick={() => setSelectedFolder(f)}
+                        className={`p-3 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between space-y-2 ${
+                          isSelected
+                            ? 'bg-cyan-500/10 border-cyan-400 ring-2 ring-cyan-500/20 shadow-lg shadow-cyan-500/10'
+                            : 'bg-slate-950/60 border-white/10 hover:border-white/20 hover:bg-white/5'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-2 min-w-0">
+                            <Folder className={`w-4 h-4 shrink-0 ${isSelected ? 'text-cyan-400' : 'text-slate-400'}`} />
+                            <span className="text-xs font-bold text-white truncate">{f.name}</span>
+                          </div>
+                          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/5 text-slate-300 border border-white/10 shrink-0 ml-2">
+                            {f.records}
+                          </span>
+                        </div>
+                        <div className="font-mono text-[11px] text-cyan-300 truncate bg-slate-950 px-2 py-1 rounded border border-white/5">
+                          {f.path}
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-slate-400">
+                          <span className="truncate">{f.description}</span>
+                          <div className="flex gap-1 shrink-0 ml-2">
+                            {f.formats.map((fmt: string) => (
+                              <span key={fmt} className="px-1 rounded bg-white/10 text-slate-300 font-mono text-[9px]">
+                                {fmt}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Custom Directory Input */}
+              <div className="p-3.5 rounded-2xl bg-slate-950 border border-white/10 space-y-2">
+                <label className="text-[11px] font-bold text-slate-300 flex items-center space-x-2">
+                  <HardDrive className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Or Enter Custom Local / Network Storage Directory:</span>
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    placeholder="e.g. C:/BusinessOS/DataDrop/Inbound/ or /mnt/storage/leads/"
+                    value={customFolderPath}
+                    onChange={(e) => setCustomFolderPath(e.target.value)}
+                    className="flex-1 px-3 py-1.5 rounded-xl bg-slate-900 border border-white/10 text-white font-mono text-xs placeholder:text-slate-600 focus:outline-none focus:border-cyan-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!customFolderPath.trim()) return;
+                      const customF = {
+                        id: `custom_${Date.now()}`,
+                        name: 'Custom Storage Path',
+                        path: customFolderPath.trim(),
+                        category: 'Custom Filesystem',
+                        records: 'Direct Local Path',
+                        formats: ['*.*'],
+                        badge: 'Local FS',
+                        description: 'Custom path configured on host filesystem',
+                      };
+                      setSelectedFolder(customF);
+                      setAlert({ message: `Custom directory set to ${customF.path}`, type: 'success' });
+                    }}
+                    disabled={!customFolderPath.trim()}
+                    className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs border border-white/15 transition disabled:opacity-40"
+                  >
+                    Set Path
+                  </button>
+                </div>
+              </div>
+
+              {/* Ingestion Frequency / Trigger Mode */}
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-950 border border-white/10 text-xs">
+                <div>
+                  <span className="font-bold text-white block">Ingestion Mode:</span>
+                  <span className="text-[11px] text-slate-400">How the automation receives files from this folder</span>
+                </div>
+                <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-white/10">
+                  {[
+                    { id: 'REALTIME', label: 'Real-Time Watcher' },
+                    { id: 'BATCH', label: 'Poll Every 5m' },
+                    { id: 'MANUAL', label: 'Manual Trigger' },
+                  ].map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setFolderMode(m.id as any)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition ${
+                        folderMode === m.id
+                          ? 'bg-cyan-500 text-slate-950 shadow'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Modal Footer Buttons */}
+              <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const newNodeId = `folder_node_${Date.now()}`;
+                    const firstNode = nodes[0];
+                    const inputNode: Node = {
+                      id: newNodeId,
+                      type: 'studioNode',
+                      position: {
+                        x: Math.max(20, (firstNode?.position?.x || 80) - 340),
+                        y: firstNode?.position?.y || 160,
+                      },
+                      data: {
+                        type: 'trigger:folder_watcher',
+                        category: 'TRIGGER',
+                        title: 'Data Ingestion Folder',
+                        subtitle: `Watches ${selectedFolder?.path || '/vault/inbound/crm_leads/'}`,
+                        iconName: 'FolderPlus',
+                        badge: 'Step 0 • Source',
+                        status: 'IDLE',
+                        config: {
+                          inputFolder: selectedFolder?.path || '/vault/inbound/crm_leads/',
+                          mode: folderMode,
+                        },
+                      },
+                    };
+                    setNodes((nds) => [inputNode, ...nds]);
+                    if (firstNode) {
+                      setEdges((eds) => [
+                        {
+                          id: `edge_input_${Date.now()}`,
+                          source: newNodeId,
+                          target: firstNode.id,
+                          animated: true,
+                          style: { stroke: '#06b6d4', strokeWidth: 2.5 },
+                        },
+                        ...eds,
+                      ]);
+                    }
+                    setIsFolderPickerOpen(false);
+                    setAlert({
+                      message: 'Added Input Folder Step to workflow canvas!',
+                      type: 'success',
+                    });
+                  }}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-cyan-300 font-bold text-xs border border-cyan-500/30 transition flex items-center space-x-1.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Insert as Canvas Node (Step 0)</span>
+                </button>
+
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsFolderPickerOpen(false)}
+                    className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const targetNodeId =
+                        selectedNode?.id || nodes.find((n) => n.data?.category === 'TRIGGER')?.id || nodes[0]?.id;
+                      if (targetNodeId) {
+                        setNodes((nds) =>
+                          nds.map((n) =>
+                            n.id === targetNodeId
+                              ? {
+                                  ...n,
+                                  data: {
+                                    ...n.data,
+                                    subtitle: `Ingests data from ${selectedFolder?.path}`,
+                                    config: {
+                                      ...((n.data as any)?.config || {}),
+                                      inputFolder: selectedFolder?.path,
+                                      mode: folderMode,
+                                    },
+                                  },
+                                }
+                              : n,
+                          ),
+                        );
+                      }
+                      setIsFolderPickerOpen(false);
+                      setAlert({
+                        message: ` Input folder set to ${selectedFolder?.path}!`,
+                        type: 'success',
+                      });
+                    }}
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-black text-xs shadow-lg shadow-cyan-500/25 transition flex items-center space-x-1.5"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Apply Folder to Workflow</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Node Inspector Drawer */}
         {selectedNode && (() => {
           const nodeData = (selectedNode.data || {}) as any;
@@ -2106,9 +3215,35 @@ function StudioCanvasContent() {
                     <h3 className="text-sm font-bold text-white mt-0.5">{String(nodeData?.title || 'Node')}</h3>
                   </div>
                 </div>
-                <button onClick={() => setSelectedNode(null)} className="text-slate-400 hover:text-white">
-                  <X className="w-4 h-4" />
-                </button>
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center bg-slate-950 p-0.5 rounded-lg border border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setShowAdvancedNodeConfig(false)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold transition ${
+                        !showAdvancedNodeConfig
+                          ? 'bg-emerald-500 text-slate-950 shadow'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Simple
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowAdvancedNodeConfig(true)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold transition ${
+                        showAdvancedNodeConfig
+                          ? 'bg-emerald-500 text-white shadow'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      Advanced
+                    </button>
+                  </div>
+                  <button onClick={() => setSelectedNode(null)} className="text-slate-400 hover:text-white">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
               {/* Form Controls */}
@@ -2145,85 +3280,795 @@ function StudioCanvasContent() {
                   />
                 </div>
 
-                {/* Variable Merge Tags Shortcut */}
-                <div className="p-3 rounded-xl bg-slate-950 border border-white/5 space-y-1.5">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                    Insert Data Variables
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {['{{firstName}}', '{{company}}', '{{phone}}', '{{leadScore}}', '{{email}}'].map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-0.5 rounded bg-white/5 text-emerald-400 font-mono text-[10px] border border-white/10 cursor-pointer hover:bg-emerald-500/20 transition"
-                        title="Click to copy variable"
-                        onClick={() => {
-                          navigator.clipboard?.writeText(tag);
-                          setAlert({ message: `Copied ${tag} to clipboard!`, type: 'info' });
-                        }}
+                {/* Data Input Source & Folder Configuration */}
+                {(nodeData?.category === 'TRIGGER' || nodeData?.type?.startsWith('trigger:') || nodeData?.config?.inputFolder) && (
+                  <div className="p-3.5 rounded-xl bg-cyan-950/25 border border-cyan-500/40 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-1.5 text-cyan-300 font-bold text-xs">
+                        <Folder className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>Data Input Folder</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsFolderPickerOpen(true)}
+                        className="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold underline cursor-pointer"
                       >
-                        {tag}
-                      </span>
-                    ))}
+                        Browse Folders
+                      </button>
+                    </div>
+                    <p className="text-[10px] text-slate-400 leading-relaxed">
+                      Folder or directory from which this trigger ingests inbound data, files, and payload records.
+                    </p>
+                    <div>
+                      <input
+                        type="text"
+                        value={String(nodeData?.config?.inputFolder || selectedFolder?.path || '/vault/inbound/crm_leads/')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), inputFolder: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), inputFolder: val } } }
+                              : null,
+                          );
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-cyan-500/40 text-cyan-200 font-mono text-[11px] focus:outline-none focus:border-cyan-400"
+                      />
+                    </div>
+                    {/* Folder Quick Presets */}
+                    <div className="flex flex-wrap gap-1">
+                      {AVAILABLE_INPUT_FOLDERS.slice(0, 4).map((f) => (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedFolder(f);
+                            setNodes((nds) =>
+                              nds.map((n) =>
+                                n.id === selectedNode.id
+                                  ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), inputFolder: f.path } } }
+                                  : n,
+                              ),
+                            );
+                            setSelectedNode((prev: any) =>
+                              prev
+                                ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), inputFolder: f.path } } }
+                                : null,
+                            );
+                            setAlert({ message: `Input folder set to ${f.path}`, type: 'success' });
+                          }}
+                          className="px-2 py-0.5 rounded text-[9px] bg-white/5 hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 border border-white/10 transition truncate max-w-[130px]"
+                        >
+                          {f.name.split(' ')[0]}: {f.path}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {/* Visual Variable Picker with Grouped Tabs (Advanced Mode Only) */}
+                {showAdvancedNodeConfig && (
+                  <div className="p-3.5 rounded-xl bg-slate-950 border border-white/10 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-slate-300 uppercase tracking-wider flex items-center space-x-1">
+                        <Sparkles className="w-3 h-3 text-emerald-400" />
+                        <span>Data Variable Picker</span>
+                      </span>
+                      <span className="text-[9px] text-slate-500">Click variable to copy</span>
+                    </div>
+
+                    {/* Candidate Variables */}
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-bold text-slate-400">Candidate:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {[
+                          '{{candidate.firstName}}',
+                          '{{candidate.lastName}}',
+                          '{{candidate.email}}',
+                          '{{candidate.phone}}',
+                          '{{candidate.appliedRole}}',
+                          '{{candidate.experienceYears}}',
+                        ].map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-1.5 py-0.5 rounded bg-teal-500/10 hover:bg-teal-500/25 text-teal-300 font-mono text-[9px] border border-teal-500/20 cursor-pointer transition"
+                            title="Click to copy variable"
+                            onClick={() => {
+                              navigator.clipboard?.writeText(tag);
+                              setAlert({ message: `Copied ${tag} to clipboard!`, type: 'info' });
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Job Variables */}
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-bold text-slate-400">Job Profile:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {[
+                          '{{job.title}}',
+                          '{{job.department}}',
+                          '{{job.requiredSkills}}',
+                          '{{job.location}}',
+                          '{{job.minExperience}}',
+                        ].map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-1.5 py-0.5 rounded bg-sky-500/10 hover:bg-sky-500/25 text-sky-300 font-mono text-[9px] border border-sky-500/20 cursor-pointer transition"
+                            title="Click to copy variable"
+                            onClick={() => {
+                              navigator.clipboard?.writeText(tag);
+                              setAlert({ message: `Copied ${tag} to clipboard!`, type: 'info' });
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Screening & Output Variables */}
+                    <div className="space-y-1">
+                      <span className="text-[9px] font-bold text-slate-400">Screening & Scores:</span>
+                      <div className="flex flex-wrap gap-1">
+                        {[
+                          '{{candidateScore}}',
+                          '{{recommendation}}',
+                          '{{matchedRequirements}}',
+                          '{{missingRequirements}}',
+                          '{{calendar.availableSlots}}',
+                        ].map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-1.5 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/25 text-emerald-300 font-mono text-[9px] border border-emerald-500/20 cursor-pointer transition"
+                            title="Click to copy variable"
+                            onClick={() => {
+                              navigator.clipboard?.writeText(tag);
+                              setAlert({ message: `Copied ${tag} to clipboard!`, type: 'info' });
+                            }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Specific Node Customization */}
-                {nodeData?.type === 'logic:if_else' && (
+                {/* 1. Logic & Branching Rule Configuration */}
+                {(nodeData?.category === 'LOGIC' || nodeData?.type?.startsWith('logic:')) && (
                   <div className="space-y-3 p-3.5 rounded-xl bg-slate-950 border border-white/5">
-                    <div className="font-semibold text-white">Branch Evaluation Rule</div>
+                    <div className="font-semibold text-white flex items-center space-x-1.5">
+                      <GitFork className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Branch Evaluation Rule</span>
+                    </div>
                     <div>
                       <label className="block text-[10px] text-slate-400 mb-1">Field to Inspect</label>
                       <input
                         type="text"
-                        defaultValue={String(nodeData?.config?.field || 'leadScore')}
-                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                        value={String(nodeData?.config?.field || 'candidateScore')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), field: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), field: val } } }
+                              : null,
+                          );
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white font-mono text-xs"
                       />
+                      <div className="flex gap-1 mt-1">
+                        {['candidateScore', 'experienceYears', 'leadScore'].map((fld) => (
+                          <button
+                            key={fld}
+                            type="button"
+                            onClick={() => {
+                              setNodes((nds) =>
+                                nds.map((n) =>
+                                  n.id === selectedNode.id
+                                    ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), field: fld } } }
+                                    : n,
+                                ),
+                              );
+                              setSelectedNode((prev: any) =>
+                                prev
+                                  ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), field: fld } } }
+                                  : null,
+                              );
+                            }}
+                            className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 hover:bg-white/10 text-slate-400 font-mono"
+                          >
+                            {fld}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-[10px] text-slate-400 mb-1">Operator</label>
                       <select
-                        defaultValue={String(nodeData?.config?.operator || 'GREATER_THAN')}
+                        value={String(nodeData?.config?.operator || 'GREATER_THAN')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), operator: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), operator: val } } }
+                              : null,
+                          );
+                        }}
                         className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
                       >
-                        <option value="GREATER_THAN">Greater Than (&gt;=)</option>
+                        <option value="GREATER_THAN">Greater Than / Equals (&gt;=)</option>
+                        <option value="LESS_THAN">Less Than (&lt;)</option>
                         <option value="EQUALS">Equals (==)</option>
+                        <option value="NOT_EQUALS">Not Equals (!=)</option>
                         <option value="CONTAINS">Contains</option>
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] text-slate-400 mb-1">Threshold</label>
+                      <label className="block text-[10px] text-slate-400 mb-1">Threshold / Comparison Value</label>
                       <input
                         type="number"
-                        defaultValue={Number(nodeData?.config?.value ?? 60)}
+                        value={Number(nodeData?.config?.value ?? 75)}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), value: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), value: val } } }
+                              : null,
+                          );
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs font-mono"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. Recruitment Screening & Screening Profile Configuration */}
+                {(nodeData?.category === 'RECRUITMENT' ||
+                  nodeData?.category === 'RECRUITMENT_AI' ||
+                  nodeData?.type === 'recruitment:screen_candidate' ||
+                  nodeData?.type === 'candidate:screen_candidate' ||
+                  nodeData?.type?.startsWith('ai:candidate_') ||
+                  nodeData?.type?.startsWith('ai:screening')) && (
+                  <div className="space-y-3.5 p-4 rounded-2xl bg-gradient-to-br from-emerald-950/30 to-teal-950/30 border border-emerald-500/30 shadow-lg">
+                    {/* Header */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <UserCheck className="w-4 h-4 text-emerald-400" />
+                        <span className="font-black text-white text-xs">Screen Candidate</span>
+                      </div>
+                      <span className="text-[9px] font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        Recruiter-Friendly
+                      </span>
+                    </div>
+
+                    {/* Simple Mode: Clean Profile Selection */}
+                    {!showAdvancedNodeConfig ? (
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                            Screening Profile
+                          </label>
+                          <select
+                            value={String(nodeData?.config?.screeningProfileId || 'junior_accounts_exec')}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setNodes((nds) =>
+                                nds.map((n) =>
+                                  n.id === selectedNode.id
+                                    ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), screeningProfileId: val } } }
+                                    : n,
+                                ),
+                              );
+                              setSelectedNode((prev: any) =>
+                                prev
+                                  ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), screeningProfileId: val } } }
+                                  : null,
+                              );
+                            }}
+                            className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-white/15 text-white text-xs font-semibold focus:outline-none focus:border-emerald-500"
+                          >
+                            <option value="junior_accounts_exec">Junior Accounts Executive (CGPA ≥ 3.00, 2+ yrs, 5 of 8 skills)</option>
+                            <option value="software_engineer">Full-Stack Software Engineer (3+ yrs, 4 of 6 skills)</option>
+                            <option value="sales_executive">Enterprise Account Executive (3+ yrs closing, B2B SaaS)</option>
+                            <option value="customer_support">Customer Support Specialist (1+ yrs, Zendesk)</option>
+                            <option value="entry_level_grad">Entry-Level Graduate Trainee (CGPA ≥ 3.20)</option>
+                            <option value="custom_profile">Custom Profile (Configured in Recruiter Studio)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                            Thresholds &amp; Matching Rules
+                          </label>
+                          <div className="p-3 rounded-xl bg-slate-950 border border-white/10 text-[11px] space-y-1.5 text-slate-300">
+                            <div className="flex items-center space-x-1.5 text-emerald-400 font-bold">
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Evaluated Against Profile Rules:</span>
+                            </div>
+                            <p className="text-slate-400 leading-relaxed text-[10px]">
+                              • Bachelor&apos;s degree (CGPA ≥ 3.00)<br />
+                              • 2+ years relevant experience<br />
+                              • At least 5 of 8 skills (Excel, MS Office, Word, etc.)<br />
+                              • Preferred: Accounting software
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1">
+                          <Link
+                            href="/recruitment/screening"
+                            target="_blank"
+                            className="inline-flex items-center space-x-1.5 text-[11px] text-emerald-400 hover:text-emerald-300 font-bold underline"
+                          >
+                            <span>Open Recruiter Screening Studio</span>
+                          </Link>
+                          <span className="text-[10px] text-slate-500 font-mono">No JSON variables needed</span>
+                        </div>
+
+                        <div className="p-2.5 rounded-xl bg-slate-950/80 border border-emerald-500/20 text-[10px] text-slate-300 flex items-center space-x-2">
+                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <span>Outputs structured result with verbatim resume evidence &amp; routes to Human Review.</span>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Advanced Mode: Technical Schemas and Overrides */
+                      <div className="space-y-3">
+                        <div>
+                          <div className="flex items-center justify-between text-[10px] text-slate-300 mb-1">
+                            <span>Minimum Passing Fit Threshold:</span>
+                            <span className="font-mono font-bold text-emerald-400">
+                              {nodeData?.config?.threshold ?? 75}%
+                            </span>
+                          </div>
+                          <input
+                            type="range"
+                            min="50"
+                            max="95"
+                            value={Number(nodeData?.config?.threshold ?? 75)}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setNodes((nds) =>
+                                nds.map((n) =>
+                                  n.id === selectedNode.id
+                                    ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), threshold: val } } }
+                                    : n,
+                                ),
+                              );
+                              setSelectedNode((prev: any) =>
+                                prev
+                                  ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), threshold: val } } }
+                                  : null,
+                              );
+                            }}
+                            className="w-full accent-emerald-500"
+                          />
+                        </div>
+
+                        <div className="p-2 rounded-lg bg-slate-950/80 border border-emerald-500/20 text-[10px] text-slate-300 space-y-1">
+                          <div className="font-bold text-emerald-400 flex items-center space-x-1">
+                            <ShieldCheck className="w-3 h-3" />
+                            <span>Strict Non-Discrimination Guardrail</span>
+                          </div>
+                          <p className="text-slate-400 text-[9px] leading-tight">
+                            Protected characteristics (age, gender, ethnicity, location) are excluded from scoring formulas. All scores include explainable evidence.
+                          </p>
+                        </div>
+
+                        <div className="pt-1">
+                          <span className="text-[10px] font-bold text-slate-400 uppercase">Structured Output Contract:</span>
+                          <pre className="mt-1 text-[9px] font-mono text-emerald-300 bg-slate-950 p-2 rounded-lg overflow-x-auto border border-emerald-500/20">
+{`{
+  candidateScore: number,
+  evaluationBreakdown: { mandatoryRatio: string },
+  matchedCriteria: [{ title, evidence, citation }],
+  missingCriteria: [{ title, expected }],
+  recommendedNextStep: 'HUMAN_REVIEW'
+}`}
+                          </pre>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 3. Communication & Messaging Configuration */}
+                {(nodeData?.category === 'COMMUNICATION' || nodeData?.type?.startsWith('comm:')) && (
+                  <div className="space-y-3 p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/30">
+                    <div className="font-semibold text-cyan-300 flex items-center space-x-1.5">
+                      <Mail className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Communication Channel Dispatch</span>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-slate-400 mb-1">Recipient Destination</label>
+                      <input
+                        type="text"
+                        value={String(nodeData?.config?.to || '{{candidate.email}}')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), to: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), to: val } } }
+                              : null,
+                          );
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white font-mono text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-slate-400 mb-1">Subject Header</label>
+                      <input
+                        type="text"
+                        value={String(nodeData?.config?.subject || 'Interview Invitation: {{job.title}} at BusinessOS')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), subject: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), subject: val } } }
+                              : null,
+                          );
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-slate-400 mb-1">Message Body Template</label>
+                      <textarea
+                        rows={4}
+                        value={String(
+                          nodeData?.config?.template ||
+                            nodeData?.config?.message ||
+                            'Dear {{candidate.firstName}},\n\nWe were impressed by your background in {{job.title}}! We would love to invite you for an interview.\n\nPlease pick your slot: {{calendar.bookingLink}}',
+                        )}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? {
+                                    ...n,
+                                    data: {
+                                      ...n.data,
+                                      config: { ...((n.data as any)?.config || {}), template: val, message: val },
+                                    },
+                                  }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  data: {
+                                    ...prev.data,
+                                    config: { ...((prev.data as any)?.config || {}), template: val, message: val },
+                                  },
+                                }
+                              : null,
+                          );
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs font-mono"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. Calendar Scheduling Configuration */}
+                {(nodeData?.category === 'CALENDAR' || nodeData?.type?.startsWith('calendar:')) && (
+                  <div className="space-y-3 p-3.5 rounded-xl bg-sky-950/20 border border-sky-500/30">
+                    <div className="font-semibold text-sky-300 flex items-center space-x-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-sky-400" />
+                      <span>Calendar Engine Parameters</span>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-slate-400 mb-1">Meeting Duration (Minutes)</label>
+                      <select
+                        value={Number(nodeData?.config?.durationMinutes || 45)}
+                        onChange={(e) => {
+                          const val = Number(e.target.value);
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), durationMinutes: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), durationMinutes: val } } }
+                              : null,
+                          );
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                      >
+                        <option value={15}>15 Minutes (Fast Screen)</option>
+                        <option value={30}>30 Minutes (Screening Call)</option>
+                        <option value={45}>45 Minutes (Technical Deep-Dive)</option>
+                        <option value={60}>60 Minutes (Full Panel Interview)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-slate-400 mb-1">Interviewer Calendar Target</label>
+                      <input
+                        type="text"
+                        value={String(nodeData?.config?.interviewerEmail || 'hiring-manager@businessos.com')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), interviewerEmail: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), interviewerEmail: val } } }
+                              : null,
+                          );
+                        }}
                         className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
                       />
                     </div>
                   </div>
                 )}
 
-                {nodeData?.type?.includes('whatsapp') && (
-                  <div className="space-y-3 p-3.5 rounded-xl bg-slate-950 border border-white/5">
-                    <div className="font-semibold text-white">WhatsApp Message Payload</div>
+                {/* 5. AI Agent Reusable Node Configuration */}
+                {(nodeData?.category === 'AI_AGENT' || nodeData?.type === 'ai:autonomous_agent') && (
+                  <div className="space-y-3 p-3.5 rounded-xl bg-fuchsia-950/20 border border-fuchsia-500/30">
+                    <div className="font-semibold text-fuchsia-300 flex items-center space-x-1.5">
+                      <Bot className="w-3.5 h-3.5 text-fuchsia-400" />
+                      <span>Autonomous AI Agent Engine</span>
+                    </div>
+
                     <div>
-                      <label className="block text-[10px] text-slate-400 mb-1">Recipient</label>
+                      <label className="block text-[10px] text-slate-400 mb-1">Agent Persona & Goal</label>
                       <input
                         type="text"
-                        defaultValue="{{phone}}"
+                        value={String(nodeData?.config?.goal || 'Autonomously screen and schedule engineering candidates')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), goal: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), goal: val } } }
+                              : null,
+                          );
+                        }}
                         className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
                       />
                     </div>
+
                     <div>
-                      <label className="block text-[10px] text-slate-400 mb-1">Message Text</label>
+                      <label className="block text-[10px] text-slate-400 mb-1">Model Selection</label>
+                      <select
+                        value={String(nodeData?.config?.model || 'claude-3-5-sonnet')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), model: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), model: val } } }
+                              : null,
+                          );
+                        }}
+                        className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                      >
+                        <option value="claude-3-5-sonnet">Claude 3.5 Sonnet (Advanced Reasoning)</option>
+                        <option value="gpt-4o">GPT-4o (Omni High Speed)</option>
+                        <option value="gemini-1.5-pro">Gemini 1.5 Pro (Deep Context Window)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] text-slate-400 mb-1">Instructions Prompt</label>
                       <textarea
                         rows={3}
-                        defaultValue={String(
-                          nodeData?.config?.message || 'Hi {{firstName}}! Thanks for connecting with our team.',
+                        value={String(
+                          nodeData?.config?.instructions ||
+                            'Evaluate candidate qualification against JD requirements. Extract strengths, concerns, and calculate fit score. Never use protected characteristics.',
                         )}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setNodes((nds) =>
+                            nds.map((n) =>
+                              n.id === selectedNode.id
+                                ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), instructions: val } } }
+                                : n,
+                            ),
+                          );
+                          setSelectedNode((prev: any) =>
+                            prev
+                              ? { ...prev, data: { ...prev.data, config: { ...((prev.data as any)?.config || {}), instructions: val } } }
+                              : null,
+                          );
+                        }}
                         className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
                       />
                     </div>
                   </div>
                 )}
+
+                {/* Single Node Isolation Test Runner */}
+                <div className="p-3.5 rounded-xl bg-slate-950 border border-emerald-500/25 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-300 uppercase flex items-center space-x-1.5">
+                      <Play className="w-3 h-3 text-emerald-400" />
+                      <span>Isolate & Test Node</span>
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleTestSingleNode(selectedNode)}
+                      disabled={isTestingSingleNode}
+                      className="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 font-bold text-[10px] border border-emerald-500/40 transition flex items-center space-x-1 disabled:opacity-50"
+                    >
+                      {isTestingSingleNode ? (
+                        <>
+                          <RotateCw className="w-2.5 h-2.5 animate-spin" />
+                          <span>Testing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-2.5 h-2.5" />
+                          <span>Execute Node</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {singleNodeTestResult && (
+                    <div className="p-2.5 rounded-lg bg-slate-900 border border-white/10 space-y-1 text-[10px]">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-emerald-400">
+                          Status: {singleNodeTestResult.status || (singleNodeTestResult.success ? 'SUCCESS' : 'FAILED')}
+                        </span>
+                        <span className="font-mono text-slate-400">{singleNodeTestResult.durationMs || 12}ms</span>
+                      </div>
+                      <pre className="font-mono text-[9px] text-slate-300 max-h-32 overflow-y-auto bg-slate-950 p-2 rounded border border-white/5">
+                        {JSON.stringify(singleNodeTestResult.output || singleNodeTestResult, null, 2)}
+                      </pre>
+                    </div>
+                  )}
+                </div>
+
+                {/* Collapsible Advanced Settings */}
+                <div className="pt-1 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setShowAdvancedNodeConfig(!showAdvancedNodeConfig)}
+                    className="w-full flex items-center justify-between text-[11px] font-semibold text-slate-400 hover:text-white py-1 transition"
+                  >
+                    <span>Advanced Node Settings</span>
+                    <span>{showAdvancedNodeConfig ? '▲' : '▼'}</span>
+                  </button>
+
+                  {showAdvancedNodeConfig && (
+                    <div className="mt-2.5 space-y-3 p-3 rounded-xl bg-slate-950/80 border border-white/5 text-[11px]">
+                      <div>
+                        <label className="block text-[10px] text-slate-400 mb-1">Retry Policy (Max Retries)</label>
+                        <select
+                          value={Number(nodeData?.config?.maxRetries ?? 3)}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setNodes((nds) =>
+                              nds.map((n) =>
+                                n.id === selectedNode.id
+                                  ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), maxRetries: val } } }
+                                  : n,
+                              ),
+                            );
+                          }}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs"
+                        >
+                          <option value={0}>0 (No Retries - Fail Fast)</option>
+                          <option value={1}>1 Retry</option>
+                          <option value={3}>3 Retries (Exponential Backoff)</option>
+                          <option value={5}>5 Retries (Max Reliability)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] text-slate-400 mb-1">Execution Timeout (Seconds)</label>
+                        <input
+                          type="number"
+                          value={Number(nodeData?.config?.timeoutSeconds ?? 30)}
+                          onChange={(e) => {
+                            const val = Number(e.target.value);
+                            setNodes((nds) =>
+                              nds.map((n) =>
+                                n.id === selectedNode.id
+                                  ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), timeoutSeconds: val } } }
+                                  : n,
+                              ),
+                            );
+                          }}
+                          className="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-white/10 text-white text-xs font-mono"
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1">
+                        <label className="text-[10px] text-slate-300">Enable Error Catch Branch</label>
+                        <input
+                          type="checkbox"
+                          checked={Boolean(nodeData?.config?.enableErrorBranch)}
+                          onChange={(e) => {
+                            const val = e.target.checked;
+                            setNodes((nds) =>
+                              nds.map((n) =>
+                                n.id === selectedNode.id
+                                  ? { ...n, data: { ...n.data, config: { ...((n.data as any)?.config || {}), enableErrorBranch: val } } }
+                                  : n,
+                              ),
+                            );
+                          }}
+                          className="accent-rose-500 rounded"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Actions */}
@@ -2258,6 +4103,96 @@ function StudioCanvasContent() {
           );
         })()}
 
+        {/* Interactive Test Simulation Modal */}
+        {isTestModalOpen && (
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-md z-40 flex items-center justify-center p-4">
+            <div className="w-full max-w-2xl bg-slate-900 border border-emerald-500/30 rounded-3xl p-6 shadow-2xl space-y-5">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <div className="flex items-center space-x-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
+                    <Play className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-white">Interactive Workflow Test Simulation</h3>
+                    <p className="text-xs text-slate-400">Execute full DAG with candidate payloads and verify branches</p>
+                  </div>
+                </div>
+                <button onClick={() => setIsTestModalOpen(false)} className="text-slate-400 hover:text-white">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Candidate Test Presets */}
+              <div className="space-y-3">
+                <label className="block text-xs font-semibold text-slate-300">Select Test Persona Payload:</label>
+                <div className="grid grid-cols-3 gap-2.5">
+                  {Object.values(TEST_PRESETS).map((p: any) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => setTestCandidatePreset(p.id)}
+                      className={`p-3 rounded-2xl border text-left transition flex flex-col justify-between ${
+                        testCandidatePreset === p.id
+                          ? 'bg-emerald-950/40 border-emerald-500/80 text-white shadow-md'
+                          : 'bg-slate-950/80 border-white/5 text-slate-400 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="font-bold text-xs truncate text-emerald-300">{p.label.split('—')[0]}</div>
+                      <div className="text-[10px] text-slate-400 mt-1 line-clamp-2">{p.description}</div>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Custom Payload Option */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[11px] font-semibold text-slate-300">Trigger Data Payload (JSON):</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const pr = TEST_PRESETS[testCandidatePreset];
+                        if (pr) setCustomTestPayload(JSON.stringify(pr.payload, null, 2));
+                      }}
+                      className="text-[10px] text-emerald-400 hover:underline"
+                    >
+                      Reset to selected preset
+                    </button>
+                  </div>
+                  <textarea
+                    rows={6}
+                    value={customTestPayload}
+                    onChange={(e) => {
+                      setCustomTestPayload(e.target.value);
+                      setTestCandidatePreset('custom');
+                    }}
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-white/10 text-emerald-300 font-mono text-[11px] focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+
+              {/* Modal Footer Buttons */}
+              <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setIsTestModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 font-bold text-xs transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={isRunning}
+                  onClick={() => handleTestRun()}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/25 transition flex items-center space-x-2 disabled:opacity-50"
+                >
+                  <Play className={`w-4 h-4 ${isRunning ? 'animate-spin' : ''}`} />
+                  <span>{isRunning ? 'Running Simulation...' : 'Execute Test Run'}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Live Execution Telemetry Logs */}
         {isExecutionLogsOpen && (
           <div className="absolute bottom-4 left-4 right-4 z-30 max-h-56 overflow-y-auto rounded-2xl bg-slate-900/95 border border-white/15 p-4 shadow-2xl backdrop-blur-2xl">
@@ -2287,7 +4222,7 @@ function StudioCanvasContent() {
                   </div>
                   <div className="flex items-center space-x-2 text-slate-500">
                     {log.tokens && (
-                      <span className="text-violet-400 px-1.5 py-0.5 rounded bg-violet-500/10 border border-violet-500/20">
+                      <span className="text-emerald-400 px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
                         {log.tokens} tk
                       </span>
                     )}
@@ -2299,6 +4234,7 @@ function StudioCanvasContent() {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

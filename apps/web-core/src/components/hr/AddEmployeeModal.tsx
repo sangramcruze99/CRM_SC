@@ -182,7 +182,7 @@ export function AddEmployeeModal({
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Position member in {nicheConfig.shortName} hierarchy (Tier A ➔ Tier B ➔ Tier C / Tier D)
+                Position member in {nicheConfig.shortName} hierarchy (Tier A  Tier B  Tier C / Tier D)
               </p>
             </div>
           </div>

@@ -85,14 +85,19 @@ class Settings(BaseModel):
     service_api_key: str = os.getenv("PYTHON_AI_API_KEY", "business-os-internal-ai-key-secret")
     require_auth: bool = os.getenv("PYTHON_AI_REQUIRE_AUTH", "true").lower() in ("true", "1")
 
-    # Cloud Provider Keys
+    # Ollama Local LLM (PRIMARY — E:/ollama-models)
+    ollama_base_url: str = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11435")
+    ollama_default_model: str = os.getenv("OLLAMA_DEFAULT_MODEL", "gemma4:e4b")
+    ollama_models_dir: str = os.getenv("OLLAMA_MODELS", "E:/ollama-models")
+
+    # Cloud Provider Keys (Secondary Failsafe)
     groq_api_key: Optional[str] = os.getenv("GROQ_API_KEY")
     openrouter_api_key: Optional[str] = os.getenv("OPENROUTER_API_KEY")
     openai_api_key: Optional[str] = os.getenv("OPENAI_API_KEY")
     gemini_api_key: Optional[str] = os.getenv("GEMINI_API_KEY")
 
     # Defaults
-    default_model: str = os.getenv("DEFAULT_MODEL", "groq/compound")
+    default_model: str = os.getenv("DEFAULT_MODEL", "ollama/gemma4:e4b")
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
     embedding_dimension: int = 384
 

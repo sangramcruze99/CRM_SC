@@ -2,6 +2,32 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { ALL_67_FEATURES, FeatureItem } from '@/lib/featureCatalog';
+import {
+  NICHE_CONFIGURATIONS_2,
+  NicheConfiguration2,
+} from '@/lib/industry/nicheRegistry2';
+import {
+  UNIVERSAL_SERVICE_CATALOG,
+  UniversalService,
+  resolveRequiredDependencies,
+  validateServiceDependencies,
+} from '@/lib/services/serviceCatalog';
+import {
+  Globe,
+  Stethoscope,
+  Home,
+  UtensilsCrossed,
+  ShoppingBag,
+  Building2,
+  Palette,
+  Layers,
+  HardHat,
+  Scale,
+  Truck,
+  Dumbbell,
+  Wrench,
+  LucideIcon,
+} from 'lucide-react';
 
 export type IndustryNiche =
   | 'all'
@@ -11,7 +37,41 @@ export type IndustryNiche =
   | 'retail'
   | 'sme'
   | 'agency'
-  | 'custom';
+  | 'custom'
+  | 'construction'
+  | 'legal'
+  | 'logistics'
+  | 'fitness'
+  | 'automotive';
+
+export const NICHE_ICON_MAP: Record<IndustryNiche, LucideIcon> = {
+  all: Globe,
+  hospital: Stethoscope,
+  realestate: Home,
+  restaurant: UtensilsCrossed,
+  retail: ShoppingBag,
+  sme: Building2,
+  agency: Palette,
+  custom: Layers,
+  construction: HardHat,
+  legal: Scale,
+  logistics: Truck,
+  fitness: Dumbbell,
+  automotive: Wrench,
+};
+
+export function NicheIcon({
+  niche,
+  size = 20,
+  className = '',
+}: {
+  niche: IndustryNiche | string;
+  size?: number;
+  className?: string;
+}) {
+  const IconComponent = (NICHE_ICON_MAP as Record<string, LucideIcon>)[niche] || Globe;
+  return <IconComponent size={size} className={className} />;
+}
 
 export interface NicheMetadata {
   id: IndustryNiche;
@@ -48,11 +108,11 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     name: 'Master Enterprise (All Modules)',
     shortName: 'Enterprise Master',
     tagline: 'Unfiltered access to all 67 enterprise CRM, platform, and revenue modules.',
-    icon: '🌐',
+    icon: 'Globe',
     accentColor: 'indigo',
-    badgeBg: 'bg-indigo-50',
-    badgeText: 'text-indigo-700',
-    badgeBorder: 'border-indigo-200/80',
+    badgeBg: 'bg-teal-50',
+    badgeText: 'text-teal-700',
+    badgeBorder: 'border-teal-200/80',
     terminology: {
       contacts: 'Contacts & Accounts',
       deals: 'Deals Pipeline',
@@ -63,7 +123,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     },
     navigationSections: [
       {
-        sectionTitle: '✨ AI Intelligence',
+        sectionTitle: 'AI Intelligence',
         items: [
           { label: 'AI Command Center', href: '/ai', iconName: 'Sparkles', badge: 'Command' },
           { label: 'My AI Team', href: '/ai/team', iconName: 'Users', badge: '6 Roles' },
@@ -199,7 +259,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     name: 'Hospital, Clinic & Healthcare OS',
     shortName: 'Hospital & Clinic',
     tagline: 'Tailored for medical centers, hospitals, private clinics, and diagnostic labs.',
-    icon: '🏥',
+    icon: 'Stethoscope',
     accentColor: 'rose',
     badgeBg: 'bg-rose-50',
     badgeText: 'text-rose-700',
@@ -254,7 +314,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     name: 'Real Estate Brokerage & Property OS',
     shortName: 'Real Estate & Property',
     tagline: 'Optimized for real estate agents, commercial brokerages, property developers, and landlords.',
-    icon: '🏡',
+    icon: 'Home',
     accentColor: 'emerald',
     badgeBg: 'bg-emerald-50',
     badgeText: 'text-emerald-700',
@@ -311,7 +371,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     name: 'Restaurant, Café & Hospitality OS',
     shortName: 'Restaurant & Café',
     tagline: 'Customized for dining restaurants, cafés, cloud kitchens, bars, and catering businesses.',
-    icon: '🍽️',
+    icon: 'UtensilsCrossed',
     accentColor: 'amber',
     badgeBg: 'bg-amber-50',
     badgeText: 'text-amber-700',
@@ -366,7 +426,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     name: 'Local Retail, Shop & Supermarket POS',
     shortName: 'Retail & Khata Shop',
     tagline: 'Engineered for retail stores, supermarkets, grocery outlets, wholesalers, and traders.',
-    icon: '🛍️',
+    icon: 'ShoppingBag',
     accentColor: 'teal',
     badgeBg: 'bg-teal-50',
     badgeText: 'text-teal-700',
@@ -420,11 +480,11 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     name: 'SME & Tech B2B SaaS OS',
     shortName: 'SME & Tech SaaS',
     tagline: 'Built for software companies, high-growth B2B startups, consultants, and scale-ups.',
-    icon: '🏢',
+    icon: 'Building2',
     accentColor: 'indigo',
-    badgeBg: 'bg-indigo-50',
-    badgeText: 'text-indigo-700',
-    badgeBorder: 'border-indigo-200/80',
+    badgeBg: 'bg-teal-50',
+    badgeText: 'text-teal-700',
+    badgeBorder: 'border-teal-200/80',
     terminology: {
       contacts: 'Accounts & Leads',
       deals: 'Sales Pipeline',
@@ -475,11 +535,11 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     name: 'Creative Agency & Services OS',
     shortName: 'Creative Agency',
     tagline: 'Tailored for digital agencies, marketing studios, dev shops, and consultancy firms.',
-    icon: '🎨',
+    icon: 'Palette',
     accentColor: 'purple',
-    badgeBg: 'bg-purple-50',
-    badgeText: 'text-purple-700',
-    badgeBorder: 'border-purple-200/80',
+    badgeBg: 'bg-emerald-50',
+    badgeText: 'text-emerald-700',
+    badgeBorder: 'border-emerald-200/80',
     terminology: {
       contacts: 'Client Accounts',
       deals: 'Pitch & Retainer Proposals',
@@ -530,7 +590,7 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
     name: 'Custom Tailored Workspace',
     shortName: 'Custom Niche',
     tagline: 'Bespoke workspace dynamically configured with user-selected features from the catalog.',
-    icon: '⚡',
+    icon: 'Layers',
     accentColor: 'amber',
     badgeBg: 'bg-amber-50',
     badgeText: 'text-amber-700',
@@ -556,6 +616,192 @@ export const NICHE_CONFIGS: Record<IndustryNiche, NicheMetadata> = {
       },
     ],
   },
+  construction: {
+    id: 'construction',
+    name: 'Construction & Contracting OS',
+    shortName: 'Construction',
+    tagline: 'Heavy machinery tracking, site superintendent daily logs, subcontractor bids, and AIA progress billing.',
+    icon: 'HardHat',
+    accentColor: 'amber',
+    badgeBg: 'bg-amber-50',
+    badgeText: 'text-amber-700',
+    badgeBorder: 'border-amber-200/80',
+    terminology: {
+      contacts: 'Clients & Subcontractors',
+      deals: 'Estimates & Tender Bids',
+      projects: 'Active Job Sites',
+      invoices: 'AIA Progress Invoices',
+      products: 'Heavy Equipment & Materials',
+      tickets: 'Site Punch List & Hazards',
+    },
+    navigationSections: [
+      {
+        sectionTitle: 'Job Site & Field Operations',
+        items: [
+          { label: 'Active Job Sites & Milestones', href: '/projects', iconName: 'Building2', badge: '8 Sites' },
+          { label: 'Heavy Machinery & Fleet', href: '/projects#equipment', iconName: 'Truck', badge: 'Fleet' },
+          { label: 'Subcontractor Directory', href: '/contacts', iconName: 'Users' },
+          { label: 'Site Daily Safety Logs', href: '/tickets', iconName: 'ShieldAlert' },
+        ],
+      },
+      {
+        sectionTitle: 'Estimating & Progress Billing',
+        items: [
+          { label: 'Tender Bids & Proposals', href: '/deals', iconName: 'Briefcase' },
+          { label: 'AIA Draw Invoices & Lien Waivers', href: '/invoices', iconName: 'Receipt' },
+          { label: 'Change Order E-Signatures', href: '/e-signatures', iconName: 'FileSignature' },
+        ],
+      },
+    ],
+  },
+  legal: {
+    id: 'legal',
+    name: 'Law Firm & Legal Practice OS',
+    shortName: 'Legal & Law',
+    tagline: 'Matter management, conflict-of-interest checks, court dockets, time & billing, and retainer trust accounts.',
+    icon: 'Scale',
+    accentColor: 'sky',
+    badgeBg: 'bg-sky-50',
+    badgeText: 'text-sky-700',
+    badgeBorder: 'border-sky-200/80',
+    terminology: {
+      contacts: 'Clients & Opposing Counsel',
+      deals: 'Client Matters & Retainers',
+      projects: 'Court Filings & Discovery',
+      invoices: 'Legal Fee & Trust Statements',
+      products: 'Practice Areas & Hourly Rates',
+      tickets: 'Court Docket Deadlines',
+    },
+    navigationSections: [
+      {
+        sectionTitle: 'Legal Matters & Litigation',
+        items: [
+          { label: 'Active Legal Matters', href: '/deals', iconName: 'Scale', badge: 'Active' },
+          { label: 'Client Directory & Conflicts', href: '/contacts', iconName: 'Users' },
+          { label: 'Court Calendar & Deadlines', href: '/projects', iconName: 'Calendar' },
+          { label: 'Discovery Evidence Vault', href: '/documents', iconName: 'Folder' },
+        ],
+      },
+      {
+        sectionTitle: 'Time, Trust & Billing',
+        items: [
+          { label: 'Billable Hours & Time Tracking', href: '/projects#time', iconName: 'Clock' },
+          { label: 'Trust Account & IOLTA Invoices', href: '/invoices', iconName: 'Receipt' },
+          { label: 'Client Retainer E-Signatures', href: '/e-signatures', iconName: 'FileSignature' },
+        ],
+      },
+    ],
+  },
+  logistics: {
+    id: 'logistics',
+    name: 'Logistics, Freight & Fleet OS',
+    shortName: 'Logistics & Fleet',
+    tagline: 'Fleet dispatching, bills of lading, trip manifests, driver rosters, and freight billing.',
+    icon: 'Truck',
+    accentColor: 'emerald',
+    badgeBg: 'bg-emerald-50',
+    badgeText: 'text-emerald-700',
+    badgeBorder: 'border-emerald-200/80',
+    terminology: {
+      contacts: 'Shippers, Consignees & Drivers',
+      deals: 'Freight Contracts & Loads',
+      projects: 'Active Shipments & Routes',
+      invoices: 'Freight Invoices & Fuel Surcharges',
+      products: 'Fleet Assets & Trailer Stock',
+      tickets: 'Dispatch Exceptions & Delays',
+    },
+    navigationSections: [
+      {
+        sectionTitle: 'Dispatch & Fleet Operations',
+        items: [
+          { label: 'Live Dispatch & Shipments', href: '/projects', iconName: 'Truck', badge: 'Live' },
+          { label: 'Fleet Vehicle Registry', href: '/price-books', iconName: 'Layers' },
+          { label: 'Shippers & Carriers Directory', href: '/contacts', iconName: 'Users' },
+          { label: 'Route Exceptions & Delays', href: '/tickets', iconName: 'AlertCircle' },
+        ],
+      },
+      {
+        sectionTitle: 'Freight Billing & BOL',
+        items: [
+          { label: 'Bills of Lading (BOL)', href: '/documents', iconName: 'FileText' },
+          { label: 'Freight Invoices & Fuel Surcharges', href: '/invoices', iconName: 'Receipt' },
+        ],
+      },
+    ],
+  },
+  fitness: {
+    id: 'fitness',
+    name: 'Fitness Club & Gym Studio OS',
+    shortName: 'Fitness & Gym',
+    tagline: 'Member check-ins, recurring class schedules, personal trainer rosters, and membership billing.',
+    icon: 'Dumbbell',
+    accentColor: 'pink',
+    badgeBg: 'bg-pink-50',
+    badgeText: 'text-pink-700',
+    badgeBorder: 'border-pink-200/80',
+    terminology: {
+      contacts: 'Members & Athletes',
+      deals: 'Membership Plans & Trials',
+      projects: 'Class Schedules & Workshops',
+      invoices: 'Monthly Dues & POS Sales',
+      products: 'Memberships, Supplements & Gear',
+      tickets: 'Member Inquiries & Freezes',
+    },
+    navigationSections: [
+      {
+        sectionTitle: 'Club Operations & Classes',
+        items: [
+          { label: 'Member Roster & Check-In', href: '/contacts', iconName: 'Users', badge: 'Active' },
+          { label: 'Studio Class Schedule', href: '/projects', iconName: 'Calendar', badge: 'Classes' },
+          { label: 'Personal Training Bookings', href: '/deals', iconName: 'Activity' },
+        ],
+      },
+      {
+        sectionTitle: 'Dues & Pro Shop POS',
+        items: [
+          { label: 'Recurring Membership Dues', href: '/invoices', iconName: 'Receipt' },
+          { label: 'Pro Shop POS & Supplements', href: '/industry/retail', iconName: 'ShoppingBag' },
+        ],
+      },
+    ],
+  },
+  automotive: {
+    id: 'automotive',
+    name: 'Automotive & Fleet Repair OS',
+    shortName: 'Auto Repair',
+    tagline: 'Vehicle VIN registry, mechanic service bay dispatch, parts inventory, and diagnostic work orders.',
+    icon: 'Wrench',
+    accentColor: 'indigo',
+    badgeBg: 'bg-indigo-50',
+    badgeText: 'text-indigo-700',
+    badgeBorder: 'border-indigo-200/80',
+    terminology: {
+      contacts: 'Vehicle Owners & Fleet Accounts',
+      deals: 'Repair Estimates & Approvals',
+      projects: 'Active Bay Work Orders',
+      invoices: 'Repair Invoices & Parts Bills',
+      products: 'OEM & Aftermarket Parts',
+      tickets: 'Customer Diagnostic Complaints',
+    },
+    navigationSections: [
+      {
+        sectionTitle: 'Service Bay & Diagnostics',
+        items: [
+          { label: 'Active Bay Work Orders', href: '/projects', iconName: 'Wrench', badge: 'Bays' },
+          { label: 'Vehicle VIN Registry', href: '/contacts', iconName: 'Car' },
+          { label: 'Diagnostic Estimates', href: '/deals', iconName: 'FileText' },
+          { label: 'Parts Inventory & Stock', href: '/price-books', iconName: 'Layers' },
+        ],
+      },
+      {
+        sectionTitle: 'Repair Billing & Labor',
+        items: [
+          { label: 'Repair Invoices & Statements', href: '/invoices', iconName: 'Receipt' },
+          { label: 'Customer Digital Sign-Off', href: '/e-signatures', iconName: 'FileSignature' },
+        ],
+      },
+    ],
+  },
 };
 
 function getDefaultFeaturesForNiche(niche: IndustryNiche): string[] {
@@ -565,35 +811,62 @@ function getDefaultFeaturesForNiche(niche: IndustryNiche): string[] {
   return ALL_67_FEATURES.filter((f) => f.defaultInNiches.includes(niche)).map((f) => f.id);
 }
 
+export function getDefaultServicesForNiche(niche: IndustryNiche): string[] {
+  const cfg2 = NICHE_CONFIGURATIONS_2[niche] || NICHE_CONFIGURATIONS_2.all;
+  return Array.from(new Set([...cfg2.coreServiceIds, ...cfg2.recommendedServiceIds]));
+}
+
 interface IndustryContextType {
   currentNiche: IndustryNiche;
   setNiche: (niche: IndustryNiche) => void;
   nicheConfig: NicheMetadata;
+  nicheConfig2: NicheConfiguration2;
   allNiches: NicheMetadata[];
+  allNiches2: NicheConfiguration2[];
   activeFeatureIds: string[];
   activeFeatures: FeatureItem[];
   toggleFeature: (featureId: string) => void;
   setNicheFeatures: (featureIds: string[]) => void;
   isFeatureEnabled: (featureId: string) => boolean;
   resetToNicheDefaults: (niche?: IndustryNiche) => void;
+  // Service Catalog 2.0
+  activeServiceIds: string[];
+  activeServices: UniversalService[];
+  enableService: (serviceId: string) => void;
+  disableService: (serviceId: string) => void;
+  isServiceEnabled: (serviceId: string) => boolean;
+  setNicheServices: (serviceIds: string[]) => void;
+  activateWorkspace: (nicheId: IndustryNiche, selectedServiceIds?: string[]) => void;
+  resetToDefaultServices: (niche?: IndustryNiche) => void;
 }
 
 const IndustryContext = createContext<IndustryContextType>({
   currentNiche: 'all',
   setNiche: () => {},
   nicheConfig: NICHE_CONFIGS.all,
+  nicheConfig2: NICHE_CONFIGURATIONS_2.all,
   allNiches: Object.values(NICHE_CONFIGS),
+  allNiches2: Object.values(NICHE_CONFIGURATIONS_2),
   activeFeatureIds: ALL_67_FEATURES.map((f) => f.id),
   activeFeatures: ALL_67_FEATURES,
   toggleFeature: () => {},
   setNicheFeatures: () => {},
   isFeatureEnabled: () => true,
   resetToNicheDefaults: () => {},
+  activeServiceIds: getDefaultServicesForNiche('all'),
+  activeServices: Object.values(UNIVERSAL_SERVICE_CATALOG),
+  enableService: () => {},
+  disableService: () => {},
+  isServiceEnabled: () => true,
+  setNicheServices: () => {},
+  activateWorkspace: () => {},
+  resetToDefaultServices: () => {},
 });
 
 export function IndustryProvider({ children }: { children: React.ReactNode }) {
   const [currentNiche, setCurrentNicheState] = useState<IndustryNiche>('all');
   const [nicheFeatureMap, setNicheFeatureMap] = useState<Record<string, string[]>>({});
+  const [nicheServiceMap, setNicheServiceMap] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     try {
@@ -606,6 +879,11 @@ export function IndustryProvider({ children }: { children: React.ReactNode }) {
       if (savedMap) {
         setNicheFeatureMap(JSON.parse(savedMap));
       }
+
+      const savedServices = localStorage.getItem('business_os_niche_services');
+      if (savedServices) {
+        setNicheServiceMap(JSON.parse(savedServices));
+      }
     } catch (e) {
       // ignore
     }
@@ -615,6 +893,15 @@ export function IndustryProvider({ children }: { children: React.ReactNode }) {
     setNicheFeatureMap(updated);
     try {
       localStorage.setItem('business_os_niche_features', JSON.stringify(updated));
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const saveNicheServiceMap = (updated: Record<string, string[]>) => {
+    setNicheServiceMap(updated);
+    try {
+      localStorage.setItem('business_os_niche_services', JSON.stringify(updated));
     } catch (e) {
       // ignore
     }
@@ -631,7 +918,7 @@ export function IndustryProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Get active features for current niche (from custom map or defaults, memoized to prevent render loops)
+  // Active features
   const activeFeatureIds = useMemo(() => {
     return nicheFeatureMap[currentNiche] || getDefaultFeaturesForNiche(currentNiche);
   }, [nicheFeatureMap, currentNiche]);
@@ -672,8 +959,84 @@ export function IndustryProvider({ children }: { children: React.ReactNode }) {
     return activeFeatureIds.includes(featureId);
   };
 
+  // Active Services
+  const activeServiceIds = useMemo(() => {
+    return nicheServiceMap[currentNiche] || getDefaultServicesForNiche(currentNiche);
+  }, [nicheServiceMap, currentNiche]);
+
+  const activeServices = useMemo(() => {
+    return activeServiceIds
+      .map((id) => UNIVERSAL_SERVICE_CATALOG[id])
+      .filter(Boolean) as UniversalService[];
+  }, [activeServiceIds]);
+
+  const isServiceEnabled = (serviceId: string) => {
+    return activeServiceIds.includes(serviceId);
+  };
+
+  const enableService = (serviceId: string) => {
+    // Automatically include required dependencies
+    const missingDeps = resolveRequiredDependencies(serviceId, activeServiceIds);
+    const updated = Array.from(new Set([...activeServiceIds, serviceId, ...missingDeps]));
+    saveNicheServiceMap({
+      ...nicheServiceMap,
+      [currentNiche]: updated,
+    });
+  };
+
+  const disableService = (serviceId: string) => {
+    const updated = activeServiceIds.filter((id) => id !== serviceId);
+    saveNicheServiceMap({
+      ...nicheServiceMap,
+      [currentNiche]: updated,
+    });
+  };
+
+  const setNicheServices = (serviceIds: string[]) => {
+    saveNicheServiceMap({
+      ...nicheServiceMap,
+      [currentNiche]: serviceIds,
+    });
+  };
+
+  const resetToDefaultServices = (niche?: IndustryNiche) => {
+    const target = niche || currentNiche;
+    const updated = { ...nicheServiceMap };
+    delete updated[target];
+    saveNicheServiceMap(updated);
+  };
+
+  const activateWorkspace = (nicheId: IndustryNiche, selectedServiceIds?: string[]) => {
+    if (NICHE_CONFIGS[nicheId]) {
+      setCurrentNicheState(nicheId);
+      try {
+        localStorage.setItem('business_os_niche', nicheId);
+      } catch (e) {
+        // ignore
+      }
+
+      const servicesToSet =
+        selectedServiceIds && selectedServiceIds.length > 0
+          ? selectedServiceIds
+          : getDefaultServicesForNiche(nicheId);
+
+      const updatedServiceMap = {
+        ...nicheServiceMap,
+        [nicheId]: servicesToSet,
+      };
+      saveNicheServiceMap(updatedServiceMap);
+
+      // Reset legacy features to match niche defaults
+      const updatedFeatureMap = { ...nicheFeatureMap };
+      delete updatedFeatureMap[nicheId];
+      saveNicheFeatureMap(updatedFeatureMap);
+    }
+  };
+
   const nicheConfig = NICHE_CONFIGS[currentNiche] || NICHE_CONFIGS.all;
+  const nicheConfig2 = NICHE_CONFIGURATIONS_2[currentNiche] || NICHE_CONFIGURATIONS_2.all;
   const allNiches = Object.values(NICHE_CONFIGS);
+  const allNiches2 = Object.values(NICHE_CONFIGURATIONS_2);
 
   return (
     <IndustryContext.Provider
@@ -681,13 +1044,23 @@ export function IndustryProvider({ children }: { children: React.ReactNode }) {
         currentNiche,
         setNiche,
         nicheConfig,
+        nicheConfig2,
         allNiches,
+        allNiches2,
         activeFeatureIds,
         activeFeatures,
         toggleFeature,
         setNicheFeatures,
         isFeatureEnabled,
         resetToNicheDefaults,
+        activeServiceIds,
+        activeServices,
+        enableService,
+        disableService,
+        isServiceEnabled,
+        setNicheServices,
+        activateWorkspace,
+        resetToDefaultServices,
       }}
     >
       {children}

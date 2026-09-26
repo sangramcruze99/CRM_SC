@@ -8,15 +8,26 @@ import { AgentPlanService } from '../plans/agent-plan.service';
 import { AgentExecutionStateMachine } from '../state-machine/agent-state-machine';
 import { AgentToolRegistryService } from '../agent-tool-registry.service';
 import { PromptsService } from '../../prompts/prompts.service';
-import { BusinessEvent, BusinessEventType, AgentHandoffPayload, AgentHandoffResult } from '@repo/core-types';
+import {
+  BusinessEvent,
+  BusinessEventType,
+  AgentHandoffPayload,
+  AgentHandoffResult,
+  AgentExecutionResult,
+  UniversalExecutionStatus,
+  AgentActionRecord,
+  AgentOutputRecord,
+  AgentOutputType,
+} from '@repo/core-types';
 
 export interface OrchestrationResult {
   orchestrationId: string;
   agentId: string;
   agentName: string;
   decisionReason: string;
-  event: BusinessEventType;
+  event: BusinessEventType | string;
   status: 'EXECUTED_AUTONOMOUSLY' | 'QUEUED_FOR_APPROVAL' | 'HANDED_OFF' | 'FAILED';
+  universalStatus?: UniversalExecutionStatus;
   planId?: string;
   state: string;
   toolsExecuted: string[];
@@ -28,6 +39,7 @@ export interface OrchestrationResult {
     expectedOutcome: string;
   };
   durationMs: number;
+  executionResult?: AgentExecutionResult;
 }
 
 @Injectable()
@@ -50,7 +62,7 @@ export class AgentOrchestratorService {
   /**
    * Determine which domain agent should act on the incoming business event
    */
-  resolveAgentForEvent(eventType: BusinessEventType, payload: any): {
+  resolveAgentForEvent(eventType: BusinessEventType | string, payload: any): {
     agentId: string;
     agentName: string;
     domain: string;
@@ -58,16 +70,19 @@ export class AgentOrchestratorService {
     targetId: string;
     primaryAction: string;
   } {
-    switch (eventType) {
-      // 1. Leads & New Contacts -> Lead Qualification Agent
+    const raw = String(eventType || '').toUpperCase();
+    const normalized = raw.includes(':') ? raw.split(':')[1] : raw;
+    switch (normalized) {
+      // 1. Leads & Inbound Contacts -> Lead Qualification Agent
       case 'CONTACT_CREATED':
       case 'LEAD_CREATED':
+      case 'LEAD_QUALIFIED':
         return {
           agentId: 'agent_lead_qualification',
           agentName: 'Inbound SDR & Lead Qualification Agent',
           domain: 'LEADS',
           targetEntity: 'Contact',
-          targetId: payload.contactId || payload.id,
+          targetId: payload.contactId || payload.id || 'lead_active',
           primaryAction: 'QUALIFY_LEAD',
         };
 
@@ -80,70 +95,183 @@ export class AgentOrchestratorService {
           agentName: 'Ares Sales Intelligence Sentinel',
           domain: 'SALES',
           targetEntity: 'Deal',
-          targetId: payload.dealId || payload.id,
+          targetId: payload.dealId || payload.id || 'deal_active',
           primaryAction: payload.stage === 'Proposal' ? 'DRAFT_PROPOSAL_FOLLOWUP' : 'ANALYZE_PIPELINE',
         };
 
-      // 3. Deal Closed Won -> Hermes (Sprint & Onboarding)
+      // 3. Deal Closed Won & Project Operations -> Hermes
       case 'DEAL_CLOSED_WON':
       case 'DEAL_WON':
+      case 'PROJECT_CREATED':
+      case 'TASK_COMPLETED':
         return {
           agentId: 'agent_ops',
-          agentName: 'Hermes Sprint & HR Operations Orchestrator',
+          agentName: 'Hermes Operations & Fulfillment Sentinel',
           domain: 'OPERATIONS',
-          targetEntity: 'Deal',
-          targetId: payload.dealId || payload.id,
-          primaryAction: 'INITIALIZE_CLIENT_ONBOARDING',
+          targetEntity: payload.projectId ? 'Project' : 'Deal',
+          targetId: payload.projectId || payload.dealId || payload.id || 'proj_active',
+          primaryAction: (eventType === 'DEAL_WON' || eventType === 'DEAL_CLOSED_WON')
+            ? 'INITIALIZE_CLIENT_ONBOARDING'
+            : 'MONITOR_SPRINT_SLA',
         };
 
       // 4. Overdue Invoices & Billing -> Midas
       case 'INVOICE_OVERDUE':
       case 'INVOICE_CREATED':
+      case 'PAYMENT_RECEIVED':
         return {
-          agentId: 'agent_finance',
-          agentName: 'Midas Treasury & Billing Sentinel',
+          agentId: 'agent_midas',
+          agentName: 'Midas Treasury & Invoicing Sentinel',
           domain: 'FINANCE',
           targetEntity: 'Invoice',
-          targetId: payload.invoiceId || payload.id,
+          targetId: payload.invoiceId || payload.id || 'inv_active',
           primaryAction: 'CALCULATE_AR_AGING_AND_REMIND',
         };
 
-      // 5. Ticket Escalated & Support -> Athena / Support Agent
+      // 5. Customer Health & Churn Sentinel -> Athena
+      case 'CUSTOMER_CHURN_RISK':
+      case 'CUSTOMER_HEALTH_CHANGED':
+        return {
+          agentId: 'agent_csm',
+          agentName: 'Athena Customer Success Sentinel',
+          domain: 'SUPPORT',
+          targetEntity: 'Customer',
+          targetId: payload.customerId || payload.contactId || payload.id || 'cust_active',
+          primaryAction: 'EVALUATE_CUSTOMER_RETENTION_RISK',
+        };
+
+      // 6. Ticket Escalated & Support -> Customer Support Agent
       case 'TICKET_ESCALATED':
       case 'TICKET_CREATED':
+      case 'TICKET_RESOLVED':
         return {
           agentId: 'agent_support',
           agentName: 'Customer Support & SLA Sentinel',
           domain: 'SUPPORT',
           targetEntity: 'Ticket',
-          targetId: payload.ticketId || payload.id,
+          targetId: payload.ticketId || payload.id || 'tkt_active',
           primaryAction: 'INVESTIGATE_TICKET_SOP',
         };
 
-      // 6. Recruitment & Candidates -> Recruitment Agent
+      // 7. Recruitment & Candidate Sourcing -> Recruitment Agent
       case 'CANDIDATE_APPLIED':
+      case 'EMPLOYEE_CREATED':
+      case 'EMPLOYEE_ONBOARDED':
         return {
           agentId: 'agent_recruitment',
           agentName: 'Recruitment & Candidate Sourcing Agent',
           domain: 'HR',
           targetEntity: 'Candidate',
-          targetId: payload.candidateId || payload.id,
+          targetId: payload.candidateId || payload.id || 'cand_active',
           primaryAction: 'SCREEN_CANDIDATE_RESUME',
         };
 
-      // 7. Projects & Tasks -> Hermes
-      case 'PROJECT_CREATED':
-      case 'TASK_COMPLETED':
+      // 8. Real Estate & Escrow Transactions -> Vesta
+      case 'TRANSACTION_CREATED':
+      case 'ESCROW_CONTINGENCY_AUDIT':
         return {
-          agentId: 'agent_ops',
-          agentName: 'Hermes Sprint & HR Operations Orchestrator',
-          domain: 'OPERATIONS',
-          targetEntity: 'Project',
-          targetId: payload.projectId || payload.id,
-          primaryAction: 'MONITOR_SPRINT_SLA',
+          agentId: 'agent_vesta',
+          agentName: 'Vesta Property & Escrow Sentinel',
+          domain: 'REALESTATE',
+          targetEntity: 'Transaction',
+          targetId: payload.transactionId || payload.id || 'txn_active',
+          primaryAction: 'AUDIT_ESCROW_CONTINGENCY',
         };
 
-      // Fallback
+      // 9. E-Commerce & Retail Operations -> E-Commerce Agent
+      case 'ORDER_CREATED':
+      case 'ORDER_REFUNDED':
+      case 'INVENTORY_CRITICAL':
+        return {
+          agentId: 'agent_ecommerce',
+          agentName: 'E-Commerce & Merchandising Sentinel',
+          domain: 'ECOMMERCE',
+          targetEntity: 'Order',
+          targetId: payload.orderId || payload.id || 'ord_active',
+          primaryAction: 'PROCESS_COMMERCE_EVENT',
+        };
+
+      // 10. Content & Marketing Optimization -> Content Agent
+      case 'CONTENT_CREATED':
+      case 'CAMPAIGN_BRIEF_SUBMITTED':
+      case 'MARKETING_WORKFLOW_TRIGGER':
+        return {
+          agentId: 'agent_content',
+          agentName: 'Content & Social Optimization Agent',
+          domain: 'MARKETING',
+          targetEntity: 'Campaign',
+          targetId: payload.campaignId || payload.id || 'cmp_active',
+          primaryAction: 'REPURPOSE_CONTENT_ASSETS',
+        };
+
+      // 11. Central Document Vault Events -> Dynamic Classification
+      case 'DOCUMENT_UPLOADED':
+      case 'DOCUMENT_PROCESSED':
+      case 'DOCUMENT_EXTRACTION_COMPLETED': {
+        const rawPath = String(payload.storageKey || payload.url || payload.filename || payload.name || '').toLowerCase();
+        const service = String(payload.service || '').toLowerCase();
+        const moduleName = String(payload.module || '').toLowerCase();
+
+        // Candidate CV / Resume in HR vault
+        if (service === 'hr' || moduleName.includes('recruit') || rawPath.includes('cv') || rawPath.includes('resume') || rawPath.includes('candidate')) {
+          return {
+            agentId: 'agent_recruitment',
+            agentName: 'Recruitment & Candidate Sourcing Agent',
+            domain: 'HR',
+            targetEntity: 'Candidate',
+            targetId: payload.candidateId || payload.documentId || payload.id || 'cand_doc',
+            primaryAction: 'SCREEN_CANDIDATE_RESUME',
+          };
+        }
+
+        // Invoices / Receipts in Finance vault
+        if (service === 'finance' || moduleName.includes('invoice') || moduleName.includes('bill') || rawPath.includes('invoice') || rawPath.includes('receipt')) {
+          return {
+            agentId: 'agent_midas',
+            agentName: 'Midas Treasury & Invoicing Sentinel',
+            domain: 'FINANCE',
+            targetEntity: 'Invoice',
+            targetId: payload.invoiceId || payload.documentId || payload.id || 'inv_doc',
+            primaryAction: 'CALCULATE_AR_AGING_AND_REMIND',
+          };
+        }
+
+        // Real Estate / Property agreements in Industry vault
+        if (service === 'realestate' || moduleName.includes('transaction') || moduleName.includes('escrow') || rawPath.includes('deed') || rawPath.includes('lease') || rawPath.includes('agreement')) {
+          return {
+            agentId: 'agent_vesta',
+            agentName: 'Vesta Property & Escrow Sentinel',
+            domain: 'REALESTATE',
+            targetEntity: 'Transaction',
+            targetId: payload.transactionId || payload.documentId || payload.id || 'txn_doc',
+            primaryAction: 'AUDIT_ESCROW_CONTINGENCY',
+          };
+        }
+
+        // Marketing / Blog / Brand content in CMS vault
+        if (service === 'marketing' || service === 'cms' || moduleName.includes('content') || rawPath.includes('campaign') || rawPath.includes('brief') || rawPath.includes('article')) {
+          return {
+            agentId: 'agent_content',
+            agentName: 'Content & Social Optimization Agent',
+            domain: 'MARKETING',
+            targetEntity: 'Content',
+            targetId: payload.contentId || payload.documentId || payload.id || 'content_doc',
+            primaryAction: 'REPURPOSE_CONTENT_ASSETS',
+          };
+        }
+
+        // Fallback document routing -> Sales proposal review
+        return {
+          agentId: 'agent_sales',
+          agentName: 'Ares Sales Intelligence Sentinel',
+          domain: 'SALES',
+          targetEntity: 'Document',
+          targetId: payload.documentId || payload.id || 'doc_active',
+          primaryAction: 'ANALYZE_PIPELINE',
+        };
+      }
+
+      // Default Fallback -> Ares Pipeline
       default:
         return {
           agentId: 'agent_sales',
@@ -218,10 +346,14 @@ export class AgentOrchestratorService {
     });
 
     const toolsExecuted: string[] = [];
+    const actions: AgentActionRecord[] = [];
+    const outputs: AgentOutputRecord[] = [];
     let pendingApprovalId: string | undefined = undefined;
 
     // 4. Step-by-Step Execution with Policy & Safety Gates
     for (const step of plan.steps) {
+      const stepStartTime = Date.now();
+
       // Evaluate Policy & Risk
       const policyResult = this.policyEngine.evaluateAction({
         agentId: targetAgent.agentId,
@@ -238,10 +370,15 @@ export class AgentOrchestratorService {
         stateMachine.transition('WAITING_FOR_APPROVAL', `Action ${step.action} requires human sign-off`);
         this.planService.updateStepStatus(plan.id, step.id, 'WAITING_APPROVAL');
 
+        // Check agent foreign key constraint
+        const agentExists = targetAgent.agentId
+          ? await this.prisma.agent.findUnique({ where: { id: targetAgent.agentId } }).catch(() => null)
+          : null;
+
         const approval = await this.prisma.approvalRequest.create({
           data: {
             tenantId,
-            agentId: targetAgent.agentId,
+            agentId: agentExists ? targetAgent.agentId : null,
             actionType: step.action,
             targetEntity: targetAgent.targetEntity,
             targetId: targetAgent.targetId,
@@ -259,6 +396,30 @@ export class AgentOrchestratorService {
         });
 
         pendingApprovalId = approval.id;
+        actions.push({
+          actionId: `act_${step.id}`,
+          actionType: step.action,
+          toolName: step.action,
+          targetService: targetAgent.domain,
+          targetEntityType: targetAgent.targetEntity,
+          targetEntityId: targetAgent.targetId,
+          parametersSummary: JSON.stringify(step.parameters || {}),
+          status: 'BLOCKED_APPROVAL',
+          startedAt: new Date(stepStartTime).toISOString(),
+          resultSummary: `Paused for supervisor sign-off: ${policyResult.reason}`,
+        });
+
+        outputs.push({
+          outputId: `out_appr_${approval.id}`,
+          type: 'APPROVAL_REQUEST',
+          title: `Supervisor Approval Required for ${step.action}`,
+          summary: policyResult.reason,
+          entityType: targetAgent.targetEntity,
+          entityId: targetAgent.targetId,
+          service: targetAgent.domain,
+          createdAt: new Date().toISOString(),
+        });
+
         this.logger.log(`[Agent Orchestrator] Paused on ApprovalRequest ${approval.id} [Risk: ${policyResult.riskLevel}]`);
         break; // Pause execution loop until human approves
       }
@@ -270,7 +431,51 @@ export class AgentOrchestratorService {
       try {
         const toolResult = await this.toolRegistry.executeTool(tenantId, step.action, step.parameters || {});
         toolsExecuted.push(step.action);
+        const stepDurationMs = Date.now() - stepStartTime;
         this.planService.updateStepStatus(plan.id, step.id, 'COMPLETED', toolResult.output);
+
+        actions.push({
+          actionId: `act_${step.id}`,
+          actionType: step.action,
+          toolName: step.action,
+          targetService: targetAgent.domain,
+          targetEntityType: targetAgent.targetEntity,
+          targetEntityId: targetAgent.targetId,
+          parametersSummary: JSON.stringify(step.parameters || {}),
+          status: 'SUCCESS',
+          startedAt: new Date(stepStartTime).toISOString(),
+          completedAt: new Date().toISOString(),
+          durationMs: stepDurationMs,
+          resultSummary: JSON.stringify(toolResult.output || {}),
+        });
+
+        let outType: AgentOutputType = 'STRUCTURED_DATA';
+        let outTitle = `Result of ${step.action}`;
+        if (step.action.includes('email') || step.action.includes('reply')) {
+          outType = 'EMAIL';
+          outTitle = `Outbound Email for ${targetAgent.targetEntity} ${targetAgent.targetId}`;
+        } else if (step.action.includes('task')) {
+          outType = 'TASK';
+          outTitle = `Task Created for ${targetAgent.targetEntity}`;
+        } else if (step.action.includes('deal') || step.action.includes('contact')) {
+          outType = 'ENTITY_UPDATE';
+          outTitle = `${targetAgent.targetEntity} Updated in CRM`;
+        } else if (step.action.includes('payment')) {
+          outType = 'EXTERNAL_ACTION_RESULT';
+          outTitle = `Payment Link Created`;
+        }
+
+        outputs.push({
+          outputId: `out_${step.id}`,
+          type: outType,
+          title: outTitle,
+          summary: `Tool ${step.action} executed with status SUCCESS`,
+          data: toolResult.output || {},
+          entityType: targetAgent.targetEntity,
+          entityId: targetAgent.targetId,
+          service: targetAgent.domain,
+          createdAt: new Date().toISOString(),
+        });
 
         // Propose a candidate memory from successful tool execution
         await this.memoryGovernance.proposeMemory({
@@ -290,6 +495,32 @@ export class AgentOrchestratorService {
         this.planService.updateStepStatus(plan.id, step.id, 'FAILED', null, err.message);
         this.logger.error(`[Agent Orchestrator] Step ${step.id} failed: ${err.message}`);
         stateMachine.transition('FAILED', err.message);
+
+        actions.push({
+          actionId: `act_${step.id}`,
+          actionType: step.action,
+          toolName: step.action,
+          targetService: targetAgent.domain,
+          targetEntityType: targetAgent.targetEntity,
+          targetEntityId: targetAgent.targetId,
+          parametersSummary: JSON.stringify(step.parameters || {}),
+          status: 'FAILED',
+          startedAt: new Date(stepStartTime).toISOString(),
+          completedAt: new Date().toISOString(),
+          durationMs: Date.now() - stepStartTime,
+          error: err.message,
+        });
+
+        outputs.push({
+          outputId: `out_err_${step.id}`,
+          type: 'ERROR',
+          title: `Execution Failed on Step ${step.action}`,
+          summary: err.message,
+          entityType: targetAgent.targetEntity,
+          entityId: targetAgent.targetId,
+          service: targetAgent.domain,
+          createdAt: new Date().toISOString(),
+        });
         break;
       }
     }
@@ -311,11 +542,200 @@ export class AgentOrchestratorService {
     }).explainability;
 
     const durationMs = Date.now() - startTime;
+    const universalStatus: UniversalExecutionStatus = pendingApprovalId
+      ? 'WAITING_APPROVAL'
+      : stateMachine.getState() === 'COMPLETED'
+      ? 'SUCCESS'
+      : 'FAILED';
+
     const finalStatus = pendingApprovalId
       ? 'QUEUED_FOR_APPROVAL'
       : stateMachine.getState() === 'COMPLETED'
       ? 'EXECUTED_AUTONOMOUSLY'
       : 'FAILED';
+
+    // Domain Outcome Codes & Human-Readable Summaries
+    let outcomeCode = 'COMPLETED';
+    let outcomeSummary = 'Agent operations completed successfully.';
+    let nextStep = 'No further action required.';
+
+    if (targetAgent.agentId === 'agent_sales') {
+      outcomeCode = pendingApprovalId ? 'PROPOSAL_REQUIRES_APPROVAL' : 'DEAL_ACCELERATED';
+      outcomeSummary = pendingApprovalId
+        ? `Sales proposal for ${targetAgent.targetEntity} ${targetAgent.targetId} exceeds risk threshold and requires executive approval.`
+        : `Deal health evaluated and follow-up scheduled.`;
+      nextStep = pendingApprovalId ? 'Review in AI Approval Center' : 'Sales representative follow-up';
+    } else if (targetAgent.agentId === 'agent_midas') {
+      outcomeCode = pendingApprovalId ? 'PAYMENT_REQUIRES_APPROVAL' : 'REMINDER_SCHEDULED';
+      outcomeSummary = pendingApprovalId
+        ? `Overdue payment reminder requires finance sign-off.`
+        : `Accounts receivable aging audited and payment link generated.`;
+      nextStep = pendingApprovalId ? 'Approve reminder dispatch' : 'Monitor bank payment';
+    } else if (targetAgent.agentId === 'agent_lead_qualification') {
+      outcomeCode = 'LEAD_QUALIFIED';
+      outcomeSummary = `Lead ICP evaluated and CRM contact profile updated.`;
+      nextStep = 'Assign account owner';
+    } else if (targetAgent.agentId === 'agent_csm') {
+      outcomeCode = pendingApprovalId ? 'ACCOUNT_RISK_ESCALATED' : 'ACCOUNT_HEALTH_AUDITED';
+      outcomeSummary = `Customer retention health evaluated with stability score ${Math.round(explainability.confidence * 100)}%.`;
+      nextStep = 'Executive check-in';
+    } else if (targetAgent.agentId === 'agent_ops') {
+      outcomeCode = 'ONBOARDING_INITIALIZED';
+      outcomeSummary = `Delivery project and onboarding tasks created for ${targetAgent.targetEntity}.`;
+      nextStep = 'Sprint kickoff';
+    } else if (targetAgent.agentId === 'agent_vesta') {
+      outcomeCode = 'ESCROW_CONTINGENCY_AUDITED';
+      outcomeSummary = `Real estate transaction closing timeline and contingencies validated.`;
+      nextStep = 'Broker file review';
+    } else if (targetAgent.agentId === 'agent_recruitment') {
+      outcomeCode = 'CANDIDATE_EVALUATED';
+      outcomeSummary = `Candidate resume parsed and scored against job criteria.`;
+      nextStep = 'Recruiter review';
+    } else if (targetAgent.agentId === 'agent_ecommerce') {
+      outcomeCode = 'COMMERCE_EVENT_PROCESSED';
+      outcomeSummary = `Order event ingested and customer loyalty metrics refreshed.`;
+      nextStep = 'Order fulfillment';
+    } else if (targetAgent.agentId === 'agent_support') {
+      outcomeCode = 'TICKET_INVESTIGATED';
+      outcomeSummary = `Support ticket investigated against knowledge base documentation.`;
+      nextStep = 'Send customer response';
+    } else if (targetAgent.agentId === 'agent_content') {
+      outcomeCode = 'CONTENT_OPTIMIZED';
+      outcomeSummary = `Marketing brief adapted into multi-channel campaign assets.`;
+      nextStep = 'Publish campaign';
+    }
+
+    // 7. Universal Agent Execution Contract Assembly
+    const executionResult: AgentExecutionResult = {
+      id: orchestrationId,
+      executionId: orchestrationId,
+      agentId: targetAgent.agentId,
+      agentName: targetAgent.agentName,
+      agentVersion: '2.5.0',
+      tenantId,
+      trigger: {
+        type: eventType as string,
+        source: 'event_bus',
+        sourceId: payload.id || payload.dealId || payload.invoiceId || payload.contactId,
+        timestamp: new Date(startTime).toISOString(),
+      },
+      input: {
+        sourceType: targetAgent.domain,
+        sourceId: payload.id,
+        entityType: targetAgent.targetEntity,
+        entityId: targetAgent.targetId,
+        entityName: contextPackage.targetSummary || payload.title || payload.name,
+        dataSummary: JSON.stringify(payload),
+      },
+      processing: {
+        stepsCount: toolsExecuted.length,
+        model: localDecision ? 'local/gtx1060-cuda' : 'hybrid/multi-engine',
+        provider: localDecision ? 'python-ai' : 'orchestrator',
+        confidence: explainability.confidence,
+        durationMs,
+        tokensUsed: 250,
+      },
+      decision: {
+        outcome: outcomeCode,
+        reason: explainability.why.join('; '),
+        confidence: explainability.confidence,
+        policyChecksPassed: !pendingApprovalId,
+      },
+      actions,
+      outputs,
+      outcome: {
+        status: universalStatus,
+        code: outcomeCode,
+        summary: outcomeSummary,
+        nextStep,
+      },
+      humanReview: {
+        required: Boolean(pendingApprovalId),
+        reason: pendingApprovalId ? explainability.why.join('; ') : undefined,
+        status: pendingApprovalId ? 'PENDING' : 'NOT_REQUIRED',
+        approvalRequestId: pendingApprovalId,
+      },
+      sourceReferences: [
+        {
+          id: targetAgent.targetId,
+          type: 'ENTITY',
+          name: `${targetAgent.targetEntity}: ${targetAgent.targetId}`,
+          service: targetAgent.domain,
+        },
+      ],
+      metrics: {
+        latencyMs: durationMs,
+        tokenUsage: 250,
+        toolCalls: toolsExecuted.length,
+      },
+      error: stateMachine.getState() === 'FAILED' ? explainability.why.join('; ') : undefined,
+      audit: {
+        recordedAt: new Date().toISOString(),
+      },
+      createdAt: new Date(startTime).toISOString(),
+      completedAt: new Date().toISOString(),
+    };
+
+    // 8. Persist to Prisma AgentExecution table
+    const agentExists = targetAgent.agentId
+      ? await this.prisma.agent.findUnique({ where: { id: targetAgent.agentId } }).catch(() => null)
+      : null;
+
+    if (agentExists) {
+      await this.prisma.agentExecution.create({
+        data: {
+          id: orchestrationId,
+          tenantId,
+          agentId: targetAgent.agentId,
+          triggerEvent: eventType as string,
+          status: universalStatus,
+          outcomeCode,
+          outcomeSummary,
+          decisionReason: explainability.why.join('; '),
+          targetEntityType: targetAgent.targetEntity,
+          targetId: targetAgent.targetId,
+          inputPrompt: JSON.stringify(payload),
+          reasoningLog: JSON.stringify(explainability.why),
+          toolCalls: JSON.stringify(toolsExecuted),
+          actionsData: JSON.stringify(actions),
+          outputsData: JSON.stringify(outputs),
+          resultData: JSON.stringify(executionResult),
+          finalResponse: outcomeSummary,
+          tokensUsed: 250,
+          latencyMs: durationMs,
+          createdAt: new Date(startTime),
+          completedAt: new Date(),
+        },
+      }).catch((err) => {
+        this.logger.warn(`Failed to persist AgentExecution record: ${err.message}`);
+      });
+    }
+
+    // 9. Record Activity and AuditLog
+    await this.prisma.activity.create({
+      data: {
+        tenantId,
+        type: 'SYSTEM',
+        title: `${targetAgent.agentName}: ${outcomeSummary}`,
+        content: `Event: ${eventType}\nOutcome: ${outcomeCode}\nSummary: ${outcomeSummary}\nNext Step: ${nextStep}`,
+      },
+    }).catch(() => null);
+
+    await this.prisma.auditLog.create({
+      data: {
+        tenantId,
+        action: `AI_AGENT_EXECUTION_${universalStatus}`,
+        entityType: targetAgent.targetEntity,
+        entityId: targetAgent.targetId,
+        userId: 'system-agent',
+        metadata: JSON.stringify({
+          executionId: orchestrationId,
+          agentId: targetAgent.agentId,
+          outcomeCode,
+          durationMs,
+        }),
+      },
+    }).catch(() => null);
 
     const result: OrchestrationResult = {
       orchestrationId,
@@ -324,6 +744,7 @@ export class AgentOrchestratorService {
       decisionReason: explainability.why.join('; '),
       event: eventType,
       status: finalStatus,
+      universalStatus,
       planId: plan.id,
       state: stateMachine.getState(),
       toolsExecuted,
@@ -335,13 +756,14 @@ export class AgentOrchestratorService {
         expectedOutcome: explainability.expectedOutcome,
       },
       durationMs,
+      executionResult,
     };
 
     this.timeline.unshift(result);
     if (this.timeline.length > 100) this.timeline.pop();
 
     this.logger.log(
-      `[Agent Orchestrator] Completed ${orchestrationId} in ${durationMs}ms: Status=${finalStatus}, Tools=${toolsExecuted.join(', ')}`
+      `[Agent Orchestrator] Completed ${orchestrationId} in ${durationMs}ms: Status=${universalStatus} (${outcomeCode}), Tools=${toolsExecuted.join(', ')}`
     );
 
     return result;
@@ -589,5 +1011,195 @@ export class AgentOrchestratorService {
 
   getTimeline(limit: number = 30): OrchestrationResult[] {
     return this.timeline.slice(0, limit);
+  }
+
+  async getExecutions(tenantId: string, options: { limit?: number; status?: string; agentId?: string } = {}) {
+    const where: any = { tenantId };
+    if (options.status) where.status = options.status;
+    if (options.agentId) where.agentId = options.agentId;
+
+    const records = await this.prisma.agentExecution.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: options.limit || 50,
+      include: {
+        agent: {
+          select: { id: true, name: true, role: true, domain: true }
+        }
+      }
+    });
+
+    return records.map((r: any) => {
+      let parsedResult: any = null;
+      let parsedActions: any[] = [];
+      let parsedOutputs: any[] = [];
+      try {
+        if (r.resultData) parsedResult = JSON.parse(r.resultData);
+        if (r.actionsData) parsedActions = JSON.parse(r.actionsData);
+        if (r.outputsData) parsedOutputs = JSON.parse(r.outputsData);
+      } catch {
+        // Safe fallback
+      }
+      return {
+        ...r,
+        parsedResult,
+        actions: parsedActions,
+        outputs: parsedOutputs,
+      };
+    });
+  }
+
+  async getExecutionById(id: string, tenantId: string) {
+    const record = await this.prisma.agentExecution.findFirst({
+      where: { id, tenantId },
+      include: {
+        agent: {
+          select: { id: true, name: true, role: true, domain: true }
+        }
+      }
+    });
+
+    if (!record) return null;
+
+    let parsedResult: any = null;
+    let parsedActions: any[] = [];
+    let parsedOutputs: any[] = [];
+    try {
+      if (record.resultData) parsedResult = JSON.parse(record.resultData);
+      if (record.actionsData) parsedActions = JSON.parse(record.actionsData);
+      if (record.outputsData) parsedOutputs = JSON.parse(record.outputsData);
+    } catch {
+      // Safe fallback
+    }
+
+    return {
+      ...record,
+      parsedResult,
+      actions: parsedActions,
+      outputs: parsedOutputs,
+    };
+  }
+
+  async getPendingApprovals(tenantId?: string) {
+    return this.prisma.approvalRequest.findMany({
+      where: {
+        ...(tenantId ? { tenantId } : {}),
+        status: 'PENDING',
+      },
+      orderBy: { requestedAt: 'desc' },
+      take: 50,
+    });
+  }
+
+  async resumeApprovedAction(approvalId: string, tenantId: string, reviewerId?: string) {
+    const approval = await this.prisma.approvalRequest.findFirst({
+      where: { id: approvalId, tenantId },
+    });
+    if (!approval) {
+      throw new Error(`Approval request ${approvalId} not found for tenant ${tenantId}`);
+    }
+    if (approval.status !== 'PENDING') {
+      return { success: false, message: `Approval request is already ${approval.status}` };
+    }
+
+    let parsedPayload: any = {};
+    try {
+      parsedPayload = JSON.parse(approval.payload || '{}');
+    } catch {
+      parsedPayload = {};
+    }
+
+    const actionType = approval.actionType;
+    const parameters = parsedPayload.parameters || {};
+
+    const startTime = Date.now();
+    let toolResult: any = null;
+    let executionStatus = 'SUCCESS';
+    let errorMessage: string | null = null;
+
+    try {
+      toolResult = await this.toolRegistry.executeTool(tenantId, actionType, parameters);
+    } catch (err: any) {
+      executionStatus = 'FAILED';
+      errorMessage = err.message;
+    }
+
+    const durationMs = Date.now() - startTime;
+
+    // Record ToolExecution in Prisma
+    await this.prisma.toolExecution.create({
+      data: {
+        tenantId,
+        toolName: actionType,
+        agentId: approval.agentId,
+        inputData: JSON.stringify(parameters),
+        outputData: JSON.stringify(toolResult || {}),
+        status: executionStatus,
+        durationMs,
+        error: errorMessage,
+      },
+    }).catch(() => null);
+
+    // Update ApprovalRequest status
+    await this.prisma.approvalRequest.update({
+      where: { id: approvalId },
+      data: {
+        status: executionStatus === 'SUCCESS' ? 'APPROVED' : 'REJECTED',
+        reviewedAt: new Date(),
+        reviewedBy: reviewerId || 'supervisor',
+      },
+    });
+
+    // Record Activity audit in CRM
+    await this.prisma.activity.create({
+      data: {
+        tenantId,
+        type: 'AI_APPROVAL_EXECUTED',
+        title: `Approved & executed ${actionType}`,
+        content: `Human supervisor approved action for ${approval.targetEntity} ${approval.targetId}: ${approval.reason}`,
+      },
+    }).catch(() => null);
+
+    return {
+      success: executionStatus === 'SUCCESS',
+      approvalId,
+      actionType,
+      toolResult,
+      error: errorMessage,
+    };
+  }
+
+  async rejectApprovalAction(approvalId: string, tenantId: string, feedback?: string, reviewerId?: string) {
+    const approval = await this.prisma.approvalRequest.findFirst({
+      where: { id: approvalId, tenantId },
+    });
+    if (!approval) {
+      throw new Error(`Approval request ${approvalId} not found for tenant ${tenantId}`);
+    }
+
+    await this.prisma.approvalRequest.update({
+      where: { id: approvalId },
+      data: {
+        status: 'REJECTED',
+        reviewedAt: new Date(),
+        reviewedBy: reviewerId || 'supervisor',
+      },
+    });
+
+    if (feedback && approval.agentId) {
+      await this.memoryGovernance.proposeMemory({
+        tenantId,
+        agentId: approval.agentId,
+        memoryType: 'AGENT',
+        key: `SupervisorFeedback:${approval.actionType}`,
+        value: `Supervisor rejected action: ${feedback}`,
+        confidence: 1.0,
+        source: 'human_feedback',
+        entityType: approval.targetEntity || undefined,
+        entityId: approval.targetId || undefined,
+      }).catch(() => null);
+    }
+
+    return { success: true, approvalId, status: 'REJECTED' };
   }
 }

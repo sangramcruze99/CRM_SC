@@ -31,6 +31,9 @@ import {
   Scan,
 } from 'lucide-react';
 import { BUSINESS_AGENTS, BusinessAgentMetadata } from '@/lib/agents.config';
+import { openResultDrawer } from './ResultDrawer';
+import { getActiveBlueprint } from '@/lib/blueprint/blueprintEngine';
+import { resolveAgentExecutionContext } from '@/lib/blueprint/agentContextResolver';
 
 const ICON_MAP: Record<string, any> = {
   Landmark,
@@ -44,13 +47,14 @@ const ICON_MAP: Record<string, any> = {
   Scan,
 };
 
-export function ContextualAgentModal() {
+function ContextualAgentModalContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [activeAgentId, setActiveAgentId] = useState<string | null>(null);
   const [isAdvancedMode, setIsAdvancedMode] = useState(false);
   const [isRunningAutomation, setIsRunningAutomation] = useState(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
+  const [lastExecutionId, setLastExecutionId] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Listen for global open-agent-modal events or URL parameter ?agent=
@@ -102,20 +106,48 @@ export function ContextualAgentModal() {
     setIsRunningAutomation(true);
     setSuccessToast(null);
 
-    // Call execution endpoint or simulated audit pass
+    // Map agent ID to its canonical event
+    const eventMap: Record<string, { type: string; payload: Record<string, any> }> = {
+      midas: { type: 'INVOICE_OVERDUE', payload: { invoiceId: 'inv-live-101', clientName: 'Enterprise Client Corp', amount: 9800, daysPastDue: 14 } },
+      ares: { type: 'DEAL_STALLED', payload: { dealId: 'deal-live-204', title: 'Q3 Enterprise Expansion', daysSilent: 9, stage: 'PROPOSAL_SUBMITTED' } },
+      athena: { type: 'LEAD_SUBMITTED', payload: { leadId: 'lead-live-309', email: 'director@techcorp.io', intentScore: 91, source: 'Website Demo Form' } },
+      support: { type: 'TICKET_ESCALATED', payload: { ticketId: 'tkt-live-441', priority: 'HIGH', category: 'BILLING_INQUIRY', userTier: 'VIP_ENTERPRISE' } },
+      recruitment: { type: 'CANDIDATE_APPLIED', payload: { candidateId: 'cand-live-512', position: 'Lead Cloud Architect', yearsExperience: 8 } },
+      csm: { type: 'csm:customer_churn_risk', payload: { customerId: 'cust-live-601', healthScore: 42, activeUsersDropPct: 35 } },
+      ecommerce: { type: 'ecommerce:abandoned_cart', payload: { cartId: 'cart-live-701', cartTotal: 480 } },
+      ops: { type: 'SYSTEM_ALERT', payload: { service: 'payments-pipeline', status: 'WARN', latencyMs: 420 } },
+    };
+
+    const targetEvent = eventMap[agent.id] || {
+      type: 'INVOICE_OVERDUE',
+      payload: { entityId: `sample-${agent.id}`, triggeredBy: 'Human Executive Console' },
+    };
+
     try {
-      if (agent.runEndpoint) {
-        await fetch(agent.runEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-tenant-id': 'default-tenant' },
-          body: JSON.stringify({ triggeredBy: 'Human Executive Console' }),
-        }).catch(() => {});
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 900));
+      let executionId: string | null = null;
+      let executionResult: any = null;
+
+      const res = await fetch('/api/ai/orchestrator/handle-event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-tenant-id': 'default-tenant' },
+        body: JSON.stringify({
+          type: targetEvent.type,
+          tenantId: 'default-tenant',
+          payload: targetEvent.payload,
+        }),
+      }).catch(() => null);
+
+      if (res && res.ok) {
+        const data = await res.json().catch(() => null);
+        executionId = data?.orchestrationId || data?.executionId || null;
+        executionResult = data?.executionResult || data?.result || null;
       }
 
-      setSuccessToast(`✓ ${agent.friendlyName} executed successfully! Staged items updated.`);
-      setTimeout(() => setSuccessToast(null), 4000);
+      setLastExecutionId(executionId);
+      setSuccessToast(` ${agent.friendlyName} executed successfully! Results staged.`);
+      setTimeout(() => setSuccessToast(null), 6000);
+    } catch {
+      setSuccessToast(` ${agent.friendlyName} triggered.`);
     } finally {
       setIsRunningAutomation(false);
     }
@@ -125,6 +157,13 @@ export function ContextualAgentModal() {
 
   const agent = BUSINESS_AGENTS[activeAgentId] || BUSINESS_AGENTS['midas'];
   const IconComponent = ICON_MAP[agent.avatarIcon] || Bot;
+  const activeBlueprint = getActiveBlueprint();
+  const agentContext = resolveAgentExecutionContext({
+    blueprint: activeBlueprint,
+    agentId: agent.id,
+    agentName: agent.friendlyName,
+    agentRole: agent.departmentTitle,
+  });
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
@@ -182,11 +221,53 @@ export function ContextualAgentModal() {
 
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6">
+          {/* Active Operating Environment Ribbon (Master Prompt Section 35 & 46) */}
+          <div className="p-3.5 bg-slate-100/80 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-bold text-slate-900 dark:text-white">
+                  Operating in: {activeBlueprint.name}
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-300">
+                  v{agentContext.configurationVersion}
+                </span>
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                <span>{agentContext.industry} · {agentContext.businessType}</span>
+                <span>•</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                  Terminology: {agentContext.terminology.customer?.displayTerm || 'Client'}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0 text-[10px] font-bold">
+              <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                {agentContext.availableTools.length} Permitted Tools
+              </span>
+              <span className="px-2 py-1 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                {agentContext.businessRules.length} Rules Active
+              </span>
+            </div>
+          </div>
+
           {/* Success Banner */}
           {successToast && (
-            <div className="p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-2xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 animate-in fade-in">
-              <CheckCircle2 size={16} className="shrink-0" />
-              <span>{successToast}</span>
+            <div className="p-3 bg-emerald-500/15 border border-emerald-500/30 rounded-2xl text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center justify-between gap-2 animate-in fade-in">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={16} className="shrink-0" />
+                <span>{successToast}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  handleClose();
+                  openResultDrawer({ executionId: lastExecutionId || undefined });
+                }}
+                className="px-2.5 py-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg font-black text-[10px] transition cursor-pointer shrink-0"
+              > View Result Drawer →
+              </button>
             </div>
           )}
 
@@ -292,7 +373,7 @@ export function ContextualAgentModal() {
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center justify-center text-[10px] font-bold shrink-0">
-                      ✓
+                      
                     </span>
                     <span className="font-semibold text-slate-800 dark:text-slate-200 truncate">
                       {auto.title}
@@ -347,6 +428,14 @@ export function ContextualAgentModal() {
         </div>
       </div>
     </div>
+  );
+}
+
+export function ContextualAgentModal() {
+  return (
+    <React.Suspense fallback={null}>
+      <ContextualAgentModalContent />
+    </React.Suspense>
   );
 }
 

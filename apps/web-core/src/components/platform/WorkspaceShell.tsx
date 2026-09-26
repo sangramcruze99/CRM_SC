@@ -20,10 +20,11 @@ import { GlowingOrbitalBackground } from './GlowingOrbitalBackground';
 import { NativeAppTitlebar } from './NativeAppTitlebar';
 import { CommandPalette } from './CommandPalette';
 import { MobileAppDock } from './MobileAppDock';
+import { AIActionHub } from './AIActionHub';
 import { AIAutomationConsole } from '../automations/AIAutomationConsole';
-import { AgentApprovalsWidget } from './AgentApprovalsWidget';
-import { DocumentVaultTopBarWidget } from './DocumentVaultTopBarWidget';
 import { ContextualAgentModal } from '../ai/ContextualAgentModal';
+import { SmartDropzone } from '../ai/SmartDropzone';
+import { ResultDrawer } from '../ai/ResultDrawer';
 import { useIndustry } from '../industry/IndustryContext';
 import { resolveBreadcrumbs } from '@/lib/navigation.config';
 
@@ -81,21 +82,21 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
           {/* Floating Frosted Glass Topbar */}
           <header className="h-14 border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-4 sm:px-6 bg-white/85 dark:bg-[#0c1411]/75 backdrop-blur-3xl z-20 shadow-xs dark:shadow-[0_4px_30px_rgba(0,0,0,0.5)] shrink-0 gap-3">
             {/* Zone 1: Context & Dynamic Breadcrumb */}
-            <div className="flex items-center space-x-2.5 text-sm font-medium text-slate-700 dark:text-slate-400 shrink-0">
+            <div className="flex items-center space-x-2.5 text-sm font-medium text-slate-700 dark:text-slate-400 shrink-0 min-w-0">
               <SidebarToggle />
-              <div className="flex items-center text-xs sm:text-sm">
+              <div className="flex items-center text-xs sm:text-sm min-w-0">
                 <Link
                   href={breadcrumb.domainHref || "/dashboard"}
                   title="Go to Executive Dashboard"
-                  className="text-slate-600 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors font-bold truncate max-w-[120px] sm:max-w-none"
+                  className="text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-emerald-400 transition-colors font-medium truncate max-w-[130px] sm:max-w-none"
                 >
                   {breadcrumb.domainTitle}
                 </Link>
                 {breadcrumb.pageTitle && (
                   <>
-                    <span className="mx-1.5 sm:mx-2 text-slate-400 dark:text-slate-600">/</span>
+                    <span className="mx-1.5 sm:mx-2 text-slate-400 dark:text-slate-600 select-none">/</span>
                     <span
-                      className="text-slate-900 dark:text-white font-extrabold truncate max-w-[140px] sm:max-w-none"
+                      className="text-slate-900 dark:text-white font-bold truncate max-w-[160px] sm:max-w-none"
                       title={breadcrumb.pageTitle}
                     >
                       {breadcrumb.pageTitle}
@@ -106,30 +107,28 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Zone 2: Spotlight Omnibox Search */}
-            <div className="hidden md:flex items-center justify-center flex-1 max-w-xs lg:max-w-md mx-2">
+            <div className="hidden md:flex items-center justify-center flex-1 max-w-sm lg:max-w-md mx-3">
               <GlobalSearch />
             </div>
 
             {/* Zone 3: Workstations, Preferences & Account */}
             <div className="flex items-center space-x-2 shrink-0">
-              {/* Workstation Quick Hubs */}
+              {/* Workstation Niche & Unified AI Action Hub */}
               <div className="flex items-center space-x-1.5">
                 <IndustrySwitcher />
-                <AgentApprovalsWidget />
-                <AIAutomationConsole />
-                <DocumentVaultTopBarWidget />
+                <AIActionHub />
               </div>
 
-              <div className="h-5 w-px bg-slate-200 dark:bg-white/10 mx-0.5 hidden sm:block" />
+              <div className="h-5 w-px bg-slate-200 dark:bg-white/10 mx-1 hidden sm:block" />
 
-              {/* Segmented Preferences Cluster */}
+              {/* Segmented Preferences Micro-Cluster */}
               <div className="flex items-center space-x-1">
                 <ThemeToggle />
                 <PersonalizationToggle />
                 <LanguageSwitcher />
               </div>
 
-              <div className="h-5 w-px bg-slate-200 dark:bg-white/10 mx-0.5" />
+              <div className="h-5 w-px bg-slate-200 dark:bg-white/10 mx-1" />
 
               {/* Account & Metered Credits */}
               <UserNav />
@@ -138,22 +137,12 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
 
           {/* Main View Container */}
           {(() => {
-            const isAutomationRoute = pathname?.startsWith('/automation');
-            const isAiRoute = pathname?.startsWith('/ai');
-            const isSiteBuilderRoute = pathname?.startsWith('/site-builder');
-            const isFullBleedRoute = isAiRoute || isSiteBuilderRoute;
+            const isWorkflowCanvas = pathname?.startsWith('/automation/workflows/') && pathname !== '/automation/workflows/new';
+            const isSiteBuilderCanvas = pathname?.startsWith('/site-builder/') && pathname !== '/site-builder';
 
-            if (isAutomationRoute) {
+            if (isWorkflowCanvas || isSiteBuilderCanvas) {
               return (
                 <div className="flex-1 min-h-0 h-full flex flex-col overflow-hidden p-0 relative">
-                  {children}
-                </div>
-              );
-            }
-
-            if (isFullBleedRoute) {
-              return (
-                <div className="flex-1 min-h-0 overflow-auto p-0 pb-16 relative">
                   {children}
                 </div>
               );
@@ -177,8 +166,15 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
       {/* Contextual Human-Centered AI Agent Modal */}
       <ContextualAgentModal />
 
+      {/* Universal AI Agent Result & Output Drawer */}
+      <ResultDrawer />
+
       {/* Mobile/Tablet Floating App Dock */}
       <MobileAppDock />
+
+      {/* Global Background Shortcut Handlers & Launcher Modals */}
+      <SmartDropzone hideTrigger={true} />
+      <AIAutomationConsole hideTrigger={true} />
 
       {/* Appearance & Personalization Settings Modal */}
       <PersonalizationModal

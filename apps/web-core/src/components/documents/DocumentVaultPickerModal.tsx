@@ -132,7 +132,7 @@ export function DocumentVaultPickerModal({
         const newDoc: VaultDocument = await res.json();
         setDocuments((prev) => [newDoc, ...prev]);
         setSelectedDocId(newDoc.id);
-        setAlert(`✅ "${file.name}" uploaded to Vault! Click "${actionLabel}" to proceed.`);
+        setAlert(` "${file.name}"uploaded to Vault! Click "${actionLabel}" to proceed.`);
       } else {
         throw new Error('Upload failed');
       }
@@ -148,7 +148,7 @@ export function DocumentVaultPickerModal({
       };
       setDocuments((prev) => [fallbackDoc, ...prev]);
       setSelectedDocId(fallbackDoc.id);
-      setAlert(`✅ "${file.name}" ready to attach.`);
+      setAlert(` "${file.name}" ready to attach.`);
     } finally {
       setIsUploading(false);
       setTimeout(() => setAlert(null), 3500);

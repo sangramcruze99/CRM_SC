@@ -72,7 +72,7 @@ export function AutonomousPipelineRunner({ extractedData, onComplete }: Autonomo
               Autonomous Cross-Module Pipeline
             </h3>
             <p className="text-[11px] text-slate-400">
-              Chains Neural OCR (Cat. 7) ➔ Dual Khata (Cat. 3) ➔ Deal Pipeline (Cat. 1)
+              Chains Neural OCR (Cat. 7)  Dual Khata (Cat. 3)  Deal Pipeline (Cat. 1)
             </p>
           </div>
         </div>

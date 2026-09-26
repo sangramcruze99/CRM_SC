@@ -135,7 +135,7 @@ export function DealsKanbanBoard({ initialDeals }: DealsKanbanBoardProps) {
     );
 
     setAlert({
-      message: `✨ Opportunity "${deal.title}" moved to "${newStage}"`,
+      message: `Opportunity "${deal.title}" moved to "${newStage}"`,
       type: 'success',
     });
     setTimeout(() => setAlert(null), 3000);
@@ -184,93 +184,115 @@ export function DealsKanbanBoard({ initialDeals }: DealsKanbanBoardProps) {
       )}
 
       {/* ========================================================= */}
-      {/* 1. COMPACT EXECUTIVE COMMAND & TELEMETRY STRIP (One Line) */}
+      {/* 1. EXECUTIVE COCKPIT COMMAND & TELEMETRY CHASSIS          */}
       {/* ========================================================= */}
-      <div className="botanical-glass-card p-3 px-4 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-3.5 shrink-0">
-        {/* Title & Brand */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-md shadow-emerald-500/20 border border-emerald-300/30">
-            <Briefcase size={16} />
+      <div className="botanical-glass-card p-5 sm:p-6 rounded-2xl space-y-4 shrink-0">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-400 via-teal-500 to-emerald-600 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/20 border border-emerald-300/30 shrink-0">
+              <Briefcase size={22} className="stroke-[2.2]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-lg font-black text-white tracking-tight">Deals &amp; Revenue Pipeline</h1>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  REAL-TIME SYNC
+                </span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-white/[0.06] text-slate-300 border border-white/10">
+                  {deals.length} Active Opportunities
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-1">
+                Drag-and-drop revenue stages, weighted forecasts, and automated opportunity progression.
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">Deals Pipeline</h1>
-            <span className="px-2 py-0.2 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-              {deals.length} Active
+
+          {/* Quick Search, Filter & Actions */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="relative w-48 sm:w-56">
+              <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filter opportunities..."
+                className="w-full bg-black/40 border border-white/10 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500/50"
+              />
+            </div>
+
+            {/* Kanban / List Toggle */}
+            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10">
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'kanban' ? 'bg-emerald-500 text-slate-950 font-bold shadow-xs' : 'text-slate-400 hover:text-white'
+                }`}
+                title="Kanban Board View"
+              >
+                <LayoutGrid size={14} />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded-lg transition-all cursor-pointer ${
+                  viewMode === 'list' ? 'bg-emerald-500 text-slate-950 font-bold shadow-xs' : 'text-slate-400 hover:text-white'
+                }`}
+                title="Table List View"
+              >
+                <List size={14} />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => openAgentModal('ares')}
+              className="px-3.5 py-2 bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-slate-300 hover:text-white rounded-xl flex items-center gap-1.5 transition-all cursor-pointer active:scale-[0.98]"
+              title="Open Sales Assistant & Pipeline Intelligence"
+            >
+              <Bot size={14} className="text-emerald-400" />
+              <span>Ask Sales Copilot</span>
+            </button>
+
+            <RecordAiMenu entityType="deal" entityId="pipeline" entityName="Deals Pipeline" />
+            <CreateDealModal />
+          </div>
+        </div>
+
+        {/* Telemetry Micro-Badges & Sentinel Row */}
+        <div className="pt-3 border-t border-white/[0.08] flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="px-2.5 py-1 rounded-lg bg-black/40 border border-emerald-500/30 flex items-center gap-2 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-bold text-white">Ares</span>
+              <span className="text-[10px] text-slate-400">Deal Velocity Copilot</span>
+            </div>
+            <span className="text-[11px] font-mono text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+              vault/inbound/deals/
             </span>
           </div>
-        </div>
 
-        {/* Inline Compact Telemetry Badges */}
-        <div className="flex items-center gap-2 flex-wrap text-xs">
-          <div className="px-3 py-1 botanical-glass-inset rounded-xl flex items-center gap-2 border border-slate-200 dark:border-white/[0.08]">
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-mono">Volume</span>
-            <span className="font-mono font-black text-slate-900 dark:text-white">${(totalPipelineValue / 1000).toFixed(0)}k</span>
+          <div className="flex items-center gap-3 flex-wrap text-xs">
+            <div className="px-3 py-1 bg-black/40 rounded-xl flex items-center gap-2 border border-white/[0.08]">
+              <span className="text-[10px] text-slate-400 uppercase font-mono">Pipeline Volume</span>
+              <span className="font-mono font-black text-white">${(totalPipelineValue / 1000).toFixed(0)}k</span>
+            </div>
+
+            <div className="px-3 py-1 bg-black/40 rounded-xl flex items-center gap-2 border border-white/[0.08]">
+              <span className="text-[10px] text-teal-400 uppercase font-mono">Weighted Forecast</span>
+              <span className="font-mono font-black text-teal-300">${(weightedForecast / 1000).toFixed(0)}k</span>
+            </div>
+
+            <div className="px-3 py-1 bg-black/40 rounded-xl flex items-center gap-2 border border-white/[0.08]">
+              <span className="text-[10px] text-emerald-400 uppercase font-mono">Closed Won</span>
+              <span className="font-mono font-black text-emerald-400">${(closedWonValue / 1000).toFixed(0)}k</span>
+            </div>
+
+            <div className="px-3 py-1 bg-black/40 rounded-xl flex items-center gap-2 border border-white/[0.08]">
+              <span className="text-[10px] text-slate-400 uppercase font-mono">Win Rate</span>
+              <span className="font-mono font-bold text-white">{winRate}%</span>
+            </div>
           </div>
-
-          <div className="px-3 py-1 botanical-glass-inset rounded-xl flex items-center gap-2 border border-slate-200 dark:border-white/[0.08]">
-            <span className="text-[10px] text-teal-600 dark:text-teal-400 uppercase font-mono">Weighted</span>
-            <span className="font-mono font-black text-teal-700 dark:text-teal-300">${(weightedForecast / 1000).toFixed(0)}k</span>
-          </div>
-
-          <div className="px-3 py-1 botanical-glass-inset rounded-xl flex items-center gap-2 border border-slate-200 dark:border-white/[0.08]">
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-mono">Won</span>
-            <span className="font-mono font-black text-emerald-600 dark:text-emerald-400">${(closedWonValue / 1000).toFixed(0)}k</span>
-          </div>
-
-          <div className="px-3 py-1 botanical-glass-inset rounded-xl flex items-center gap-2 border border-slate-200 dark:border-white/[0.08]">
-            <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-mono">Win Rate</span>
-            <span className="font-mono font-bold text-slate-900 dark:text-white">{winRate}%</span>
-          </div>
-        </div>
-
-        {/* Search, Mode Switcher & Actions */}
-        <div className="flex items-center gap-2 w-full xl:w-auto justify-between xl:justify-end flex-wrap">
-          {/* Quick Search Input */}
-          <div className="relative w-44 sm:w-52">
-            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter deals..."
-              className="w-full bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 rounded-full pl-8 pr-3 py-1 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500/50"
-            />
-          </div>
-
-          {/* Kanban / List Toggle */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/[0.06] p-0.5 rounded-full border border-slate-200 dark:border-white/10">
-            <button
-              onClick={() => setViewMode('kanban')}
-              className={`p-1.5 rounded-full transition-all cursor-pointer ${
-                viewMode === 'kanban' ? 'botanical-pill-active text-slate-950' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-              title="Kanban Board View"
-            >
-              <LayoutGrid size={13} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-full transition-all cursor-pointer ${
-                viewMode === 'list' ? 'botanical-pill-active text-slate-950' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-              title="Table List View"
-            >
-              <List size={13} />
-            </button>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => openAgentModal('ares')}
-            className="px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/50 text-xs font-bold text-rose-600 dark:text-rose-300 rounded-xl flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
-            title="Open Ares — Deal Velocity Agent & Sales AI"
-          >
-            <Bot size={13} className="text-rose-500 animate-pulse" />
-            <span className="hidden sm:inline">Ask Ares (Sales AI)</span>
-          </button>
-
-          <RecordAiMenu entityType="deal" entityId="pipeline" entityName="Deals Pipeline" />
-          <CreateDealModal />
         </div>
       </div>
 

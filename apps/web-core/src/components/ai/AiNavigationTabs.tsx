@@ -43,33 +43,37 @@ export function AiNavigationTabs({ pendingApprovalsCount = 0 }: AiNavigationTabs
   ];
 
   return (
-    <div className="border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0c1411]/95 backdrop-blur-2xl sticky top-0 z-20 px-4 md:px-8 shadow-xs">
-      <div className="flex items-center gap-1 overflow-x-auto py-2 scrollbar-none">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = pathname === tab.href;
+    <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3 overflow-x-auto shrink-0 w-full mb-6">
+      {tabs.map((tab) => {
+        const Icon = tab.icon;
+        const isActive = pathname === tab.href;
 
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
-                isActive
-                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold border border-emerald-500/30 shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
-              }`}
-            >
-              <Icon size={16} className={isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'} />
-              <span>{tab.label}</span>
-              {tab.badge !== undefined && (
-                <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-slate-950 font-mono animate-pulse">
-                  {tab.badge}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </div>
+        return (
+          <Link
+            key={tab.href}
+            href={tab.href}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-mono font-bold whitespace-nowrap transition cursor-pointer ${
+              isActive
+                ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20'
+                : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.06]'
+            }`}
+          >
+            <Icon size={14} />
+            <span>{tab.label}</span>
+            {tab.badge !== undefined && (
+              <span
+                className={`ml-1 px-1.5 py-0.2 rounded-md text-[10px] font-mono font-bold ${
+                  isActive
+                    ? 'bg-zinc-950 text-emerald-400'
+                    : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                }`}
+              >
+                {tab.badge}
+              </span>
+            )}
+          </Link>
+        );
+      })}
     </div>
   );
 }

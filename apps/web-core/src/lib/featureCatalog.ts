@@ -18,18 +18,18 @@ export interface FeatureCategory {
 }
 
 export const FEATURE_CATEGORIES: FeatureCategory[] = [
-  { id: 1, name: 'Core CRM & Operations', icon: '👥', description: 'Contact ledger, deals pipeline, tickets, tasks, employees & onboarding' },
-  { id: 2, name: 'AI & Neural Autonomy', icon: '🧠', description: 'Enrichment, sentiment analysis, predictive scoring & vector AI' },
-  { id: 3, name: 'Financials, Salary & Dual Khata', icon: '💰', description: 'Invoices, salary payroll, Dual Khata, quotes & taxes' },
-  { id: 4, name: 'Multi-Industry Niche Hubs', icon: '🏥', description: 'Hospital EHR, Real Estate MLS, Restaurant POS & Retail Khata' },
-  { id: 5, name: 'Marketing & Social Media', icon: '🚀', description: 'Social post generator, 4-network previews, email builder & stats' },
-  { id: 6, name: 'B2B Lead Prospector', icon: '🎯', description: 'Apollo/ZoomInfo prospect database, filters & bulk CRM import' },
-  { id: 7, name: 'OCR Neural Document Vision', icon: '📄', description: 'Receipt/invoice scanner, auto-extraction & schema synthesizer' },
-  { id: 8, name: 'Real-Time Communication', icon: '💬', description: 'Team chat channels, embeddable live widgets & AI copilot' },
-  { id: 9, name: 'Legal, E-Sign & Contracts', icon: '⚖️', description: 'Digital e-signatures, offer letters, NDAs & document vault' },
-  { id: 10, name: 'Low-Code Platform Engine', icon: '🛠️', description: 'Custom objects, schema builder, dynamic forms & UI page builder' },
-  { id: 11, name: 'Security, RBAC & Admin', icon: '🛡️', description: 'Super-admin console, audit logs, ABAC matrix & developer API' },
-  { id: 12, name: 'Glassmorphism UX & Pricing', icon: '✨', description: 'Performance mode, dual-curve charts, usage credits & tiers' },
+  { id: 1, name: 'Core CRM & Operations', icon: 'Users', description: 'Contact ledger, deals pipeline, tickets, tasks, employees & onboarding' },
+  { id: 2, name: 'AI & Neural Autonomy', icon: 'Brain', description: 'Enrichment, sentiment analysis, predictive scoring & vector AI' },
+  { id: 3, name: 'Financials, Salary & Dual Khata', icon: 'DollarSign', description: 'Invoices, salary payroll, Dual Khata, quotes & taxes' },
+  { id: 4, name: 'Multi-Industry Niche Hubs', icon: 'Building2', description: 'Hospital EHR, Real Estate MLS, Restaurant POS & Retail Khata' },
+  { id: 5, name: 'Marketing & Social Media', icon: 'TrendingUp', description: 'Social post generator, 4-network previews, email builder & stats' },
+  { id: 6, name: 'B2B Lead Prospector', icon: 'Target', description: 'Apollo/ZoomInfo prospect database, filters & bulk CRM import' },
+  { id: 7, name: 'OCR Neural Document Vision', icon: 'FileText', description: 'Receipt/invoice scanner, auto-extraction & schema synthesizer' },
+  { id: 8, name: 'Real-Time Communication', icon: 'MessageSquare', description: 'Team chat channels, embeddable live widgets & AI copilot' },
+  { id: 9, name: 'Legal, E-Sign & Contracts', icon: 'Scale', description: 'Digital e-signatures, offer letters, NDAs & document vault' },
+  { id: 10, name: 'Low-Code Platform Engine', icon: 'Wrench', description: 'Custom objects, schema builder, dynamic forms & UI page builder' },
+  { id: 11, name: 'Security, RBAC & Admin', icon: 'Shield', description: 'Super-admin console, audit logs, ABAC matrix & developer API' },
+  { id: 12, name: 'Glassmorphism UX & Pricing', icon: 'Sparkles', description: 'Performance mode, dual-curve charts, usage credits & tiers' },
 ];
 
 export const ALL_67_FEATURES: FeatureItem[] = [
@@ -46,7 +46,7 @@ export const ALL_67_FEATURES: FeatureItem[] = [
   },
   {
     id: 'feat_employee_org_tree',
-    name: 'Employee Org Hierarchy Tree (CEO ➔ Manager ➔ Clerk)',
+    name: 'Employee Org Hierarchy Tree (CEO  Manager  Clerk)',
     shortDesc: 'Visual reporting tree mapping leadership, managers, leads, and clerks.',
     category: 1,
     categoryName: 'Core CRM & Operations',
@@ -107,7 +107,7 @@ export const ALL_67_FEATURES: FeatureItem[] = [
   },
   {
     id: 'feat_global_search',
-    name: 'Global Command Palette (⌘K)',
+    name: 'Global Command Palette (K)',
     shortDesc: 'Keyboard-driven search & action shortcuts across all records.',
     category: 1,
     categoryName: 'Core CRM & Operations',
@@ -348,7 +348,7 @@ export const ALL_67_FEATURES: FeatureItem[] = [
   {
     id: 'feat_social_previews',
     name: '4-Network Live Preview Simulators',
-    shortDesc: 'Pixel-perfect live previews for 𝕏, Facebook, Instagram & LinkedIn.',
+    shortDesc: 'Pixel-perfect live previews for , Facebook, Instagram & LinkedIn.',
     category: 5,
     categoryName: 'Marketing & Social Media',
     iconName: 'Share2',

@@ -166,7 +166,7 @@ export function DataSyncClient() {
 
   const handleTriggerManualSync = () => {
     setIsSyncing(true);
-    setAlert('⚡ Executing bidirectional sync across Stripe, Shopify, Airtable, Slack, and Business OS...');
+    setAlert(' Executing bidirectional sync across Stripe, Shopify, Airtable, Slack, and Business OS...');
 
     setTimeout(() => {
       setIsSyncing(false);
@@ -181,13 +181,13 @@ export function DataSyncClient() {
         status: 'SUCCESS',
       };
       setLogs([newLog, ...logs]);
-      setAlert('🎉 Bidirectional Data Sync Complete! 184 records updated instantly across all team dashboards.');
+      setAlert(' Bidirectional Data Sync Complete! 184 records updated instantly across all team dashboards.');
       setTimeout(() => setAlert(null), 4500);
     }, 1600);
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto text-white">
+    <div className="space-y-6 max-w-7xl mx-auto text-white font-sans">
       {/* Alert Banner */}
       {alert && (
         <div className="p-3.5 bg-emerald-500/15 border border-emerald-500/40 rounded-2xl text-emerald-300 text-xs font-semibold flex items-center gap-2 shadow-2xl animate-in fade-in zoom-in-95 backdrop-blur-xl">
@@ -196,93 +196,117 @@ export function DataSyncClient() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+      {/* Top Header Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-3xl p-6 md:p-8 border border-white/[0.08] relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-white/[0.06] text-xs font-mono">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
-              Operational Automation
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              Bidirectional Multi-Stack Mesh
-            </span>
+            <span className="text-emerald-400 font-bold tracking-wider uppercase">Stage 5.0 Integration Mesh</span>
+            <span className="text-zinc-500">•</span>
+            <span className="text-zinc-400">Bidirectional Multi-Stack Sync</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2.5 mt-1">
-            <ArrowRightLeft className="text-emerald-400" size={24} />
-            Operational "Data Sync" & Disparate Stack Tooling Hub
-          </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Eliminates disparate software silos. Seamlessly syncs inventory, client statuses, and transaction metrics in real-time across Stripe, Shopify, Airtable, Slack, and your CRM without human data entry.
-          </p>
+          <div className="flex items-center gap-3 text-zinc-400">
+            <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-[11px]">
+              mesh/connectors/active/
+            </span>
+            <span className="text-zinc-500">|</span>
+            <span className="text-emerald-400 font-semibold">Conflict Rule: Auto-Reconcile</span>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            disabled={isSyncing}
-            onClick={handleTriggerManualSync}
-            className="px-4 py-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-amber-400 hover:to-orange-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl text-xs shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-1.5 cursor-pointer"
-          >
-            <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
-            <span>{isSyncing ? 'Syncing Stack Mesh...' : 'Sync All Stacks Now'}</span>
-          </button>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                CROSS-SERVICE DATA MESH
+              </span>
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-mono bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
+                ZERO-COLLISION RECONCILIATION
+              </span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+              <ArrowRightLeft className="text-emerald-400" size={30} />
+              Cross-Service Data Mesh & Stack Sync
+            </h1>
+            <p className="text-xs md:text-sm text-zinc-400 max-w-3xl leading-relaxed">
+              Eliminates software silos. Seamlessly syncs inventory, client statuses, and transaction metrics in real-time across Stripe, Shopify, Airtable, Slack, and your CRM without human data entry.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0 flex-wrap">
+            <button
+              type="button"
+              disabled={isSyncing}
+              onClick={handleTriggerManualSync}
+              className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-xs font-mono tracking-wider shadow-lg shadow-emerald-500/20 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
+              <span>{isSyncing ? 'SYNCING STACK MESH...' : 'SYNC ALL STACKS NOW'}</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Telemetry KPI Metrics Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-3xl bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-1">
-          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.08] relative overflow-hidden space-y-1">
+          <span className="text-[10px] text-zinc-400 uppercase font-mono font-bold tracking-wider block">
             Records Synced Today
           </span>
-          <div className="text-2xl font-extrabold font-mono text-white">6,520</div>
+          <div className="text-2xl font-black font-mono text-white">6,520</div>
           <span className="text-[10px] text-emerald-400 font-mono">↑ 18% vs yesterday</span>
         </div>
 
-        <div className="p-4 rounded-3xl bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-1">
-          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.08] relative overflow-hidden space-y-1">
+          <span className="text-[10px] text-zinc-400 uppercase font-mono font-bold tracking-wider block">
             Sync Success Rate
           </span>
-          <div className="text-2xl font-extrabold font-mono text-emerald-400">99.98%</div>
-          <span className="text-[10px] text-slate-400 font-mono">0 Sync Collisions</span>
+          <div className="text-2xl font-black font-mono text-emerald-400">99.98%</div>
+          <span className="text-[10px] text-zinc-400 font-mono">0 Sync Collisions</span>
         </div>
 
-        <div className="p-4 rounded-3xl bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-1">
-          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.08] relative overflow-hidden space-y-1">
+          <span className="text-[10px] text-zinc-400 uppercase font-mono font-bold tracking-wider block">
             Average Mesh Latency
           </span>
-          <div className="text-2xl font-extrabold font-mono text-emerald-400">62ms</div>
+          <div className="text-2xl font-black font-mono text-emerald-400">62ms</div>
           <span className="text-[10px] text-emerald-400 font-mono">Sub-100ms Target</span>
         </div>
 
-        <div className="p-4 rounded-3xl bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-1">
-          <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">
+        <div className="botanical-glass-card rounded-2xl p-5 border border-white/[0.08] relative overflow-hidden space-y-1">
+          <span className="text-[10px] text-zinc-400 uppercase font-mono font-bold tracking-wider block">
             Active Stack Connectors
           </span>
-          <div className="text-2xl font-extrabold font-mono text-white">5 Live</div>
-          <span className="text-[10px] text-slate-400 font-mono">All Webhooks Healthy</span>
+          <div className="text-2xl font-black font-mono text-white">5 Live</div>
+          <span className="text-[10px] text-zinc-400 font-mono">All Webhooks Healthy</span>
         </div>
       </div>
 
       {/* Connected Software Stacks Mesh Cards */}
-      <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
-        <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+      <div className="botanical-glass-card rounded-3xl p-6 md:p-8 border border-white/[0.08] relative overflow-hidden space-y-5">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+        <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
           <div className="flex items-center gap-2">
             <Layers size={16} className="text-emerald-400" />
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+            <h3 className="text-sm font-bold text-white tracking-tight">
               Connected Enterprise Software Stack Grid
             </h3>
           </div>
-          <span className="text-[10px] font-mono text-emerald-400">Auto-Reconnection Active</span>
+          <span className="text-xs font-mono text-emerald-400">Auto-Reconnection Active</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3.5">
           {connectors.map((conn) => {
             const IconComp = conn.icon;
             return (
               <div
                 key={conn.id}
-                className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] transition-all space-y-3"
+                className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-emerald-500/30 hover:bg-white/[0.04] transition-all space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -293,12 +317,12 @@ export function DataSyncClient() {
 
                 <div>
                   <h4 className="font-bold text-xs text-white leading-tight">{conn.name}</h4>
-                  <span className="text-[10px] text-slate-400 font-mono mt-0.5 block">{conn.syncMode}</span>
+                  <span className="text-[10px] text-zinc-400 font-mono mt-0.5 block">{conn.syncMode}</span>
                 </div>
 
-                <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] text-zinc-400 font-mono">
                   <span>Latency: <strong className="text-white">{conn.latency}</strong></span>
-                  <span className="text-emerald-400">{conn.recordsSyncedToday} syncs</span>
+                  <span className="text-emerald-400 font-bold">{conn.recordsSyncedToday} syncs</span>
                 </div>
               </div>
             );
@@ -310,22 +334,23 @@ export function DataSyncClient() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Visual Field Mapping Editor & Conflict Policies */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-5">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div className="botanical-glass-card rounded-3xl p-6 md:p-8 border border-white/[0.08] relative overflow-hidden space-y-5">
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/[0.06] pb-4">
               <div className="flex items-center gap-2">
                 <Sliders size={16} className="text-emerald-400" />
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h3 className="text-sm font-bold text-white tracking-tight">
                   Bidirectional Schema & Field Mapping Rules
                 </h3>
               </div>
 
               {/* Conflict Policy Selector */}
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-slate-400 uppercase font-bold font-mono">Conflict Rule:</span>
+              <div className="flex items-center gap-2 font-mono text-xs">
+                <span className="text-zinc-400 text-[10px] uppercase font-bold">Conflict Rule:</span>
                 <select
                   value={conflictPolicy}
                   onChange={(e) => setConflictPolicy(e.target.value as any)}
-                  className="px-2 py-1 bg-white/[0.06] border border-white/[0.1] rounded-lg text-[10px] text-emerald-300 font-bold font-mono focus:outline-none"
+                  className="px-2.5 py-1 bg-black/40 border border-white/[0.1] rounded-lg text-[11px] text-emerald-400 font-bold font-mono focus:outline-none focus:border-emerald-500/50"
                 >
                   <option value="LATEST_TIMESTAMP">Latest Timestamp Wins</option>
                   <option value="SOURCE_WINS">Source System Wins</option>
@@ -339,22 +364,22 @@ export function DataSyncClient() {
               {mappings.map((m) => (
                 <div
                   key={m.id}
-                  className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs"
+                  className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs"
                 >
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2 font-mono">
+                    <div className="flex items-center gap-2 font-mono flex-wrap">
                       <span className="font-bold text-emerald-400">{m.sourceStack}</span>
-                      <span className="text-slate-500">({m.sourceField})</span>
-                      <ArrowRightLeft size={12} className="text-slate-400" />
+                      <span className="text-zinc-500">({m.sourceField})</span>
+                      <ArrowRightLeft size={12} className="text-zinc-400" />
                       <span className="font-bold text-emerald-400">{m.destinationStack}</span>
-                      <span className="text-slate-500">({m.destinationField})</span>
+                      <span className="text-zinc-500">({m.destinationField})</span>
                     </div>
-                    <div className="text-[10px] text-slate-400 font-mono">
-                      Transform: <code className="text-slate-300">{m.transformRule}</code>
+                    <div className="text-[10px] text-zinc-400 font-mono">
+                      Transform: <code className="text-zinc-300 bg-white/[0.04] px-1.5 py-0.5 rounded">{m.transformRule}</code>
                     </div>
                   </div>
 
-                  <span className="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                  <span className="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     {m.status}
                   </span>
                 </div>
@@ -365,41 +390,42 @@ export function DataSyncClient() {
 
         {/* Right Column: Live Sync Event Audit Stream */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] space-y-4">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div className="botanical-glass-card rounded-3xl p-6 md:p-8 border border-white/[0.08] relative overflow-hidden space-y-4">
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+            <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
               <div className="flex items-center gap-2">
                 <Activity size={16} className="text-emerald-400" />
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h3 className="text-sm font-bold text-white tracking-tight">
                   Live Stack Sync Audit Stream
                 </h3>
               </div>
-              <span className="text-[10px] font-mono text-emerald-400">Stream: Active</span>
+              <span className="text-xs font-mono text-emerald-400">Stream: Active</span>
             </div>
 
             <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1 font-mono text-xs">
               {logs.map((log) => (
                 <div
                   key={log.id}
-                  className="p-3 rounded-2xl bg-slate-950/80 border border-white/[0.06] space-y-1.5"
+                  className="p-3.5 rounded-2xl bg-black/40 border border-white/[0.06] space-y-1.5"
                 >
                   <div className="flex items-center justify-between text-[10px]">
                     <span className="text-emerald-400 font-bold">
                       {log.source} ➔ {log.destination}
                     </span>
-                    <span className="text-slate-500">{log.timestamp}</span>
+                    <span className="text-zinc-500">{log.timestamp}</span>
                   </div>
 
                   <div className="font-bold text-white text-[11px]">{log.entity}</div>
-                  <p className="text-[10px] text-slate-400 font-sans leading-relaxed">{log.details}</p>
+                  <p className="text-[11px] text-zinc-400 font-sans leading-relaxed">{log.details}</p>
 
                   <div className="flex items-center justify-between pt-1 border-t border-white/[0.04] text-[9px]">
                     <span className="text-emerald-400 font-bold">✓ {log.action}</span>
-                    <span className="text-slate-500">{log.status}</span>
+                    <span className="text-zinc-500">{log.status}</span>
                   </div>
                 </div>
               ))}
               {logs.length === 0 && (
-                <div className="py-16 text-center text-slate-500 text-xs font-medium">
+                <div className="py-16 text-center text-zinc-500 text-xs font-medium">
                   Sync stream active. Webhook events and bidirectional updates will log here in real-time.
                 </div>
               )}

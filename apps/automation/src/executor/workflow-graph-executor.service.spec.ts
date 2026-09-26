@@ -76,6 +76,9 @@ describe('WorkflowGraphExecutorService', () => {
 
     expect(result.status).toBe('SUCCESS');
     expect(result.stepsExecuted).toBe(2);
+    expect(result.executionResult).toBeDefined();
+    expect(result.executionResult!.outcome.status).toBe('SUCCESS');
+    expect(result.executionResult!.workflowId).toBe('wf-test-1');
     expect(mockPrisma.workflowExecutionStep.create).toHaveBeenCalledTimes(2);
   });
 
@@ -196,6 +199,9 @@ describe('WorkflowGraphExecutorService', () => {
     });
 
     expect(result.status).toBe('APPROVAL_REQUIRED');
+    expect(result.executionResult).toBeDefined();
+    expect(result.executionResult!.outcome.status).toBe('WAITING_APPROVAL');
+    expect(result.executionResult!.humanReview.required).toBe(true);
     expect(mockApprovalsService.createApproval).toHaveBeenCalled();
   });
 });

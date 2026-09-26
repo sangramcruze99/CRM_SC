@@ -17,7 +17,7 @@ import {
   ArrowRight,
   ExternalLink,
 } from 'lucide-react';
-import { useIndustry } from '@/components/industry/IndustryContext';
+import { useIndustry, NicheIcon } from '@/components/industry/IndustryContext';
 
 export function PortalClient() {
   const { currentNiche, nicheConfig } = useIndustry();
@@ -28,13 +28,13 @@ export function PortalClient() {
 
   const handlePayInvoice = () => {
     setIsInvoicePaid(true);
-    setAlert('🎉 Payment of $14,500.00 processed via Stripe! Dual Khata ledger updated.');
+    setAlert(' Payment of $14,500.00 processed via Stripe! Dual Khata ledger updated.');
     setTimeout(() => setAlert(null), 4000);
   };
 
   const handleSignContract = () => {
     setIsContractSigned(true);
-    setAlert('✍️ Digital signature legally applied! Tamper-proof certificate generated.');
+    setAlert(' Digital signature legally applied! Tamper-proof certificate generated.');
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -51,8 +51,8 @@ export function PortalClient() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-slate-950 flex items-center justify-center text-2xl font-bold shadow-lg shadow-emerald-500/25">
-            {nicheConfig.icon}
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/25 shrink-0">
+            <NicheIcon niche={nicheConfig.id} size={22} className="text-slate-950" />
           </div>
           <div>
             <div className="flex items-center gap-2">

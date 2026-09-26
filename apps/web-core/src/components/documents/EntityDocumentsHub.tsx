@@ -57,7 +57,7 @@ interface EntityDocumentsHubProps {
 
 function getFileIcon(mimeType: string) {
   if (mimeType?.startsWith('image/')) return <FileImage className="text-blue-400" size={18} />;
-  if (mimeType?.startsWith('video/')) return <FileVideo className="text-purple-400" size={18} />;
+  if (mimeType?.startsWith('video/')) return <FileVideo className="text-emerald-400" size={18} />;
   if (mimeType?.startsWith('audio/')) return <FileAudio className="text-emerald-400" size={18} />;
   if (mimeType === 'application/pdf') return <FileText className="text-rose-400" size={18} />;
   if (mimeType === 'application/zip') return <Archive className="text-amber-400" size={18} />;
@@ -312,7 +312,7 @@ export function EntityDocumentsHub({
             className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-500/20 active:scale-95 border border-emerald-400/30 cursor-pointer disabled:opacity-50"
           >
             <Receipt size={14} />
-            <span>{isGeneratingOutput ? 'Generating...' : '⚡ Generate Output'}</span>
+            <span>{isGeneratingOutput ? 'Generating...' : ' Generate Output'}</span>
           </button>
         </div>
       </div>
@@ -412,7 +412,7 @@ export function EntityDocumentsHub({
               : 'No files attached to this record'}
           </p>
           <p className="text-[11px] text-slate-500">
-            Attach client documents or click &quot;⚡ Generate Output&quot; to produce official deliverables.
+            Attach client documents or click &quot; Generate Output&quot; to produce official deliverables.
           </p>
         </div>
       ) : (

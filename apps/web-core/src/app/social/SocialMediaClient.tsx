@@ -96,19 +96,19 @@ export function SocialMediaClient() {
       const hashtags = '#BusinessOS #EnterpriseTech #CRM #SalesVelocity #AIInnovation';
 
       if (tone === 'viral') {
-        copy = `🚀 Why are 500+ top enterprises ditching legacy CRM systems?\n\nBecause speed wins deals. With Business OS:\n✅ Instant sub-10ms querying & live deal telemetry\n✅ Neural vision OCR invoice & document parsing\n✅ Built-in automated team WhatsApp & email actions\n\nStop losing revenue to slow workflows. Upgrade your workspace now 👇\n🔗 https://businessos.io\n\n${hashtags}`;
+        copy = ` Why are 500+ top enterprises ditching legacy CRM systems?\n\nBecause speed wins deals. With Business OS:\n Instant sub-10ms querying & live deal telemetry\n Neural vision OCR invoice & document parsing\n Built-in automated team WhatsApp & email actions\n\nStop losing revenue to slow workflows. Upgrade your workspace now \n https://businessos.io\n\n${hashtags}`;
       } else if (tone === 'professional') {
         copy = `We are proud to present Business OS: the unified enterprise workspace integrating CRM pipelines, commercial invoicing, SLA management, and SOC2-compliant data isolation.\n\nDesigned for modern enterprise teams that demand security, velocity, and seamless multi-tenant orchestration.\n\nExplore our architectural capabilities: https://businessos.io\n\n${hashtags}`;
       } else if (tone === 'fomo') {
-        copy = `⏳ Don't get left behind while your competitors close deals 3x faster.\n\nBusiness OS brings real-time deal Kanban boards, automated quote generation, and instant Stripe payment links right to your fingertip.\n\n🔥 Secure your enterprise deployment tier today before Q3 slots close:\n👉 https://businessos.io\n\n${hashtags}`;
+        copy = ` Don't get left behind while your competitors close deals 3x faster.\n\nBusiness OS brings real-time deal Kanban boards, automated quote generation, and instant Stripe payment links right to your fingertip.\n\n Secure your enterprise deployment tier today before Q3 slots close:\n https://businessos.io\n\n${hashtags}`;
       } else if (tone === 'educational') {
-        copy = `💡 3 High-Impact Strategies to Scale B2B Sales in 2026:\n\n1. Centralize your Khata ledger & revenue data\n2. Automate lead follow-ups with intelligent AI prompts\n3. Enforce cryptographic e-signature envelopes for contracts\n\nSee how Business OS implements all three in minutes:\n🔗 https://businessos.io\n\n${hashtags}`;
+        copy = ` 3 High-Impact Strategies to Scale B2B Sales in 2026:\n\n1. Centralize your Khata ledger & revenue data\n2. Automate lead follow-ups with intelligent AI prompts\n3. Enforce cryptographic e-signature envelopes for contracts\n\nSee how Business OS implements all three in minutes:\n https://businessos.io\n\n${hashtags}`;
       } else {
-        copy = `Just dropped a huge update to Business OS! 🎉 Work faster with our clean gradient interface, instant custom object builder, and multi-channel team chat. Check it out and let us know what you think!\n\n👉 https://businessos.io\n\n${hashtags}`;
+        copy = `Just dropped a huge update to Business OS!  Work faster with our clean gradient interface, instant custom object builder, and multi-channel team chat. Check it out and let us know what you think!\n\n https://businessos.io\n\n${hashtags}`;
       }
 
       if (topicPrompt.trim()) {
-        copy = `✨ Focused on "${topicPrompt}":\n\n` + copy;
+        copy = ` Focused on "${topicPrompt}":\n\n` + copy;
       }
 
       setGeneratedContent(copy);
@@ -152,7 +152,7 @@ export function SocialMediaClient() {
 
       setPosts([newPost, ...posts]);
       setIsPublishing(false);
-      setAlert(`🎉 Post successfully published to ${selectedPlatforms.map((p) => p.toUpperCase()).join(', ')}!`);
+      setAlert(` Post successfully published to ${selectedPlatforms.map((p) => p.toUpperCase()).join(', ')}!`);
       setTimeout(() => setAlert(null), 4000);
     }, 1200);
   };
@@ -174,7 +174,7 @@ export function SocialMediaClient() {
     setPosts([newPost, ...posts]);
     setIsScheduleOpen(false);
     setScheduleDateTime('');
-    setAlert(`📅 Post scheduled for ${newPost.scheduledFor} across ${selectedPlatforms.length} networks!`);
+    setAlert(` Post scheduled for ${newPost.scheduledFor} across ${selectedPlatforms.length} networks!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
@@ -199,15 +199,15 @@ export function SocialMediaClient() {
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
       case 'x':
-        return <span className="font-extrabold font-mono text-sm text-white">𝕏</span>;
+        return <span className="font-extrabold font-mono text-sm text-white"></span>;
       case 'facebook':
         return <span className="font-bold text-sm text-blue-400">f</span>;
       case 'instagram':
-        return <span className="font-bold text-sm text-pink-400">📷</span>;
+        return <span className="font-bold text-sm text-pink-400"></span>;
       case 'linkedin':
         return <span className="font-bold text-sm text-sky-400">in</span>;
       case 'tiktok':
-        return <span className="font-bold text-sm text-white">🎵</span>;
+        return <span className="font-bold text-sm text-white"></span>;
       default:
         return <Globe size={14} className="text-emerald-400" />;
     }
@@ -301,7 +301,7 @@ export function SocialMediaClient() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {[
-                  { id: 'x', label: '𝕏 / Twitter', color: 'border-white/20 text-white bg-white/[0.06]' },
+                  { id: 'x', label: ' / Twitter', color: 'border-white/20 text-white bg-white/[0.06]' },
                   { id: 'facebook', label: 'Facebook Page', color: 'border-blue-500/40 text-blue-300 bg-blue-500/10' },
                   { id: 'instagram', label: 'Instagram Feed', color: 'border-pink-500/40 text-pink-300 bg-pink-500/10' },
                   { id: 'linkedin', label: 'LinkedIn Org', color: 'border-sky-500/40 text-sky-300 bg-sky-500/10' },
@@ -339,7 +339,7 @@ export function SocialMediaClient() {
                     <span>Campaign Topic or Goal Prompt</span>
                   </label>
                   <span className="text-[11px] text-emerald-400 font-semibold cursor-pointer hover:underline" onClick={() => setTopicPrompt(samplePrompts[Math.floor(Math.random() * samplePrompts.length)])}>
-                    🎲 Try Random Prompt
+                     Try Random Prompt
                   </span>
                 </div>
                 <input
@@ -358,11 +358,11 @@ export function SocialMediaClient() {
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {[
-                    { id: 'viral', label: '🔥 Viral & Hooky' },
-                    { id: 'professional', label: '💼 Enterprise Authority' },
-                    { id: 'fomo', label: '⚡ Urgent & FOMO' },
-                    { id: 'educational', label: '📚 Educational Tips' },
-                    { id: 'casual', label: '✨ Friendly & Casual' },
+                    { id: 'viral', label: ' Viral & Hooky' },
+                    { id: 'professional', label: ' Enterprise Authority' },
+                    { id: 'fomo', label: ' Urgent & FOMO' },
+                    { id: 'educational', label: ' Educational Tips' },
+                    { id: 'casual', label: ' Friendly & Casual' },
                   ].map((t) => (
                     <button
                       key={t.id}
@@ -509,13 +509,13 @@ export function SocialMediaClient() {
                           : 'text-slate-400 hover:text-white'
                       }`}
                     >
-                      {p === 'x' ? '𝕏' : p === 'facebook' ? 'FB' : p === 'instagram' ? 'IG' : 'IN'}
+                      {p === 'x' ? '' : p === 'facebook' ? 'FB' : p === 'instagram' ? 'IG' : 'IN'}
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* 𝕏 (Twitter) Mockup Preview */}
+              {/*  (Twitter) Mockup Preview */}
               {previewPlatform === 'x' && (
                 <div className="border border-white/[0.08] rounded-2xl p-4 bg-white/[0.02] shadow-2xs space-y-3 font-sans">
                   <div className="flex items-start justify-between">
@@ -526,12 +526,12 @@ export function SocialMediaClient() {
                       <div>
                         <div className="flex items-center gap-1">
                           <span className="font-bold text-xs text-white">Business OS</span>
-                          <span className="text-emerald-400 text-xs">✓</span>
+                          <span className="text-emerald-400 text-xs"></span>
                         </div>
                         <span className="text-[11px] text-slate-400">@BusinessOS · 1m</span>
                       </div>
                     </div>
-                    <span className="font-mono text-slate-400 text-xs">𝕏</span>
+                    <span className="font-mono text-slate-400 text-xs"></span>
                   </div>
 
                   <p className="text-xs text-slate-200 whitespace-pre-wrap leading-relaxed">
@@ -572,9 +572,9 @@ export function SocialMediaClient() {
                       <div>
                         <div className="flex items-center gap-1">
                           <span className="font-bold text-xs text-white">Business OS Platform</span>
-                          <span className="text-blue-400 text-xs">✓</span>
+                          <span className="text-blue-400 text-xs"></span>
                         </div>
-                        <span className="text-[10px] text-slate-400">Just now · 🌍 Public</span>
+                        <span className="text-[10px] text-slate-400">Just now ·  Public</span>
                       </div>
                     </div>
                     <MoreHorizontal size={16} className="text-slate-400" />
@@ -592,7 +592,7 @@ export function SocialMediaClient() {
 
                   <div className="flex items-center justify-between text-[11px] text-slate-400 py-1 border-b border-white/[0.08] font-medium">
                     <div className="flex items-center gap-1">
-                      <span className="p-0.5 bg-blue-600 text-white rounded-full text-[9px]">👍</span>
+                      <span className="p-0.5 bg-blue-600 text-white rounded-full text-[9px]"></span>
                       <span>148 people</span>
                     </div>
                     <span>26 Comments · 14 Shares</span>
@@ -617,7 +617,7 @@ export function SocialMediaClient() {
                 <div className="border border-white/[0.08] rounded-2xl p-4 bg-white/[0.02] shadow-2xs space-y-3 font-sans">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 p-[2px]">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-emerald-600 p-[2px]">
                         <div className="w-full h-full bg-slate-950 rounded-full flex items-center justify-center font-bold text-xs text-emerald-400">
                           BO
                         </div>
@@ -688,8 +688,8 @@ export function SocialMediaClient() {
 
                   <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-white/[0.08] font-medium">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-sky-400">👍</span>
-                      <span className="text-emerald-400">👏</span>
+                      <span className="text-sky-400"></span>
+                      <span className="text-emerald-400"></span>
                       <span>384 reactions</span>
                     </div>
                     <span>49 comments · 18 reposts</span>
@@ -808,10 +808,10 @@ export function SocialMediaClient() {
             <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
               <div className="flex items-center justify-between text-slate-400 mb-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider">Engaged Audience</span>
-                <Users size={18} className="text-purple-400" />
+                <Users size={18} className="text-emerald-400" />
               </div>
               <div className="text-3xl font-extrabold text-white font-mono">167.2K</div>
-              <div className="text-xs text-purple-300 mt-2 font-bold">Across 5 connected networks</div>
+              <div className="text-xs text-emerald-300 mt-2 font-bold">Across 5 connected networks</div>
             </div>
 
             <div className="bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-5 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
@@ -832,7 +832,7 @@ export function SocialMediaClient() {
               </h3>
               <div className="space-y-3 font-medium">
                 {[
-                  { name: '𝕏 / Twitter', percent: 42, color: 'bg-amber-500', count: '62,280 views' },
+                  { name: ' / Twitter', percent: 42, color: 'bg-amber-500', count: '62,280 views' },
                   { name: 'LinkedIn Org', percent: 34, color: 'bg-sky-500', count: '50,410 views' },
                   { name: 'Facebook Page', percent: 14, color: 'bg-blue-500', count: '20,760 views' },
                   { name: 'Instagram Feed', percent: 10, color: 'bg-pink-500', count: '14,840 views' },
@@ -946,3 +946,4 @@ export function SocialMediaClient() {
     </div>
   );
 }
+

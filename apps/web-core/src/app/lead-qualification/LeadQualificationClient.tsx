@@ -140,7 +140,7 @@ export function LeadQualificationClient() {
   const handleRunSimulation = (leadData?: Partial<QualifiedLead>) => {
     setIsSimulating(true);
     setSimulationProgress(0);
-    setAlert('🚀 Running 6-step autonomous lead qualification & outreach pipeline...');
+    setAlert(' Running 6-step autonomous lead qualification & outreach pipeline...');
 
     // Reset step statuses
     setSteps((prev) => prev.map((s) => ({ ...s, status: 'PENDING' })));
@@ -188,7 +188,7 @@ export function LeadQualificationClient() {
             setIsSimulating(false);
             setLeads((prev) => [targetLead, ...prev]);
             setSelectedLead(targetLead);
-            setAlert(`🎉 Lead ${targetLead.name} (${targetLead.company}) qualified with Priority Score ${targetLead.priorityScore}/100! Email drafted & Slack alert sent.`);
+            setAlert(` Lead ${targetLead.name} (${targetLead.company}) qualified with Priority Score ${targetLead.priorityScore}/100! Email drafted & Slack alert sent.`);
             setTimeout(() => setAlert(null), 5000);
           }, 600);
         }
@@ -339,11 +339,11 @@ export function LeadQualificationClient() {
 
                 {/* Priority Gauge */}
                 <div className="text-right">
-                  <div className="text-2xl font-extrabold font-mono text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-200">
+                  <div className="text-2xl font-extrabold font-mono text-slate-900 dark:text-white">
                     {selectedLead.priorityScore}/100
                   </div>
-                  <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider">
-                    🔥 Tier-1 VIP Priority
+                  <span className="text-[10px] uppercase font-bold text-zinc-500 dark:text-zinc-400 tracking-wider">
+                    Tier-1 Priority
                   </span>
                 </div>
               </div>
@@ -384,7 +384,7 @@ export function LeadQualificationClient() {
 
                 <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-amber-200/90 leading-relaxed">
                   <span className="font-bold block text-emerald-300 text-[10px] uppercase tracking-wider mb-0.5">
-                    ⚡ Recent Intel / Buying Trigger:
+                     Recent Intel / Buying Trigger:
                   </span>
                   {selectedLead.enrichmentData.recentNews}
                 </div>
@@ -434,7 +434,7 @@ export function LeadQualificationClient() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-5 h-5 rounded bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-[10px]">
-                        ⚡
+                        
                       </div>
                       <span className="font-bold text-white">Business OS Lead Sentinel</span>
                       <span className="text-[10px] text-slate-400 font-mono">APP • Just now</span>
@@ -445,7 +445,7 @@ export function LeadQualificationClient() {
                   </div>
 
                   <p className="text-slate-300 font-medium">
-                    🚀 <strong>{selectedLead.name}</strong> ({selectedLead.role} at{' '}
+                     <strong>{selectedLead.name}</strong> ({selectedLead.role} at{' '}
                     <strong>{selectedLead.company}</strong>) just submitted inbound request. LLM Priority Score:{' '}
                     <span className="text-emerald-400 font-bold">{selectedLead.priorityScore}/100</span>.
                   </p>
@@ -454,22 +454,22 @@ export function LeadQualificationClient() {
                     <button
                       type="button"
                       onClick={() => {
-                        setAlert(`✉️ Dispatched personalized email to ${selectedLead.email}!`);
+                        setAlert(` Dispatched personalized email to ${selectedLead.email}!`);
                         setTimeout(() => setAlert(null), 3500);
                       }}
                       className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-[11px] font-bold cursor-pointer transition-colors shadow-xs"
                     >
-                      ✓ Approve & Send Email
+                       Approve & Send Email
                     </button>
                     <button
                       type="button"
                       onClick={() => {
-                        setAlert(`📅 Generated instant calendar invite for ${selectedLead.name}!`);
+                        setAlert(` Generated instant calendar invite for ${selectedLead.name}!`);
                         setTimeout(() => setAlert(null), 3000);
                       }}
                       className="px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.12] text-slate-200 rounded-lg text-[11px] font-bold border border-white/10 cursor-pointer transition-colors"
                     >
-                      📅 Book Meeting
+                       Book Meeting
                     </button>
                   </div>
                 </div>

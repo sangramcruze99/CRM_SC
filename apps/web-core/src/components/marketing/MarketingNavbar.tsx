@@ -28,7 +28,7 @@ export function MarketingNavbar() {
         {/* Brand Logo */}
         <Link href="/" className="flex items-center space-x-3 group">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-black text-sm shadow-[0_0_15px_rgba(16,185,129,0.2)] group-hover:scale-105 transition-transform">
-            ⚡
+            
           </div>
           <div className="flex flex-col">
             <div className="flex items-center space-x-2">

@@ -285,19 +285,205 @@ export class WorkflowsService {
     return newWf;
   }
 
-  async findAll(tenantId: string) {
+  async findAll(tenantId: string, filters?: { type?: string; category?: string; status?: string }) {
     if (this.prisma.isConnected) {
       try {
+        const where: any = { tenantId };
+        if (filters?.type && filters.type !== 'ALL') {
+          where.type = filters.type;
+        }
+        if (filters?.category && filters.category !== 'ALL') {
+          where.category = filters.category;
+        }
+        if (filters?.status && filters.status !== 'ALL') {
+          where.status = filters.status;
+        }
         const records = await this.prisma.workflow.findMany({
-          where: { tenantId },
-          include: { actions: true }
+          where,
+          include: { actions: true },
+          orderBy: { updatedAt: 'desc' },
         });
         return records;
       } catch {
         // fallback
       }
     }
-    return WorkflowsService.inMemoryWorkflows.filter(w => w.tenantId === tenantId || w.tenantId === 'default-tenant');
+    let list = WorkflowsService.inMemoryWorkflows.filter(
+      (w) => w.tenantId === tenantId || w.tenantId === 'default-tenant'
+    );
+    if (filters?.type && filters.type !== 'ALL') {
+      list = list.filter((w) => (w.type || 'USER_WORKFLOW') === filters.type);
+    }
+    if (filters?.category && filters.category !== 'ALL') {
+      list = list.filter((w) => (w.category || 'General') === filters.category);
+    }
+    if (filters?.status && filters.status !== 'ALL') {
+      list = list.filter((w) => (w.status || 'ACTIVE') === filters.status);
+    }
+    return list;
+  }
+
+  /**
+   * Archive a workflow without deleting history
+   */
+  async archive(tenantId: string, id: string) {
+    this.logger.log(`Archiving Workflow ${id} for tenant ${tenantId}`);
+    if (this.prisma.isConnected) {
+      try {
+        return await this.prisma.workflow.update({
+          where: { id },
+          data: { status: 'ARCHIVED', isActive: false },
+        });
+      } catch (err: any) {
+        this.logger.warn(`Could not archive in DB: ${err.message}`);
+      }
+    }
+    const wf = await this.findOne(tenantId, id);
+    (wf as any).status = 'ARCHIVED';
+    (wf as any).isActive = false;
+    return wf;
+  }
+
+  /**
+   * Section 72-74: Demo Data Cleanup & Detection
+   * Identifies workflows marked with demo/seed/test indicators.
+   * If dryRun is true, reports what would be removed without deleting.
+   * Never deletes real user workflows or execution history.
+   */
+  async cleanupDemoWorkflows(tenantId: string, dryRun: boolean = true) {
+    this.logger.log(`[Demo Cleanup] Initiated for tenant ${tenantId} (dryRun=${dryRun})`);
+    const allWorkflows = await this.findAll(tenantId);
+
+    const demoKeywords = ['demo', 'sample', 'dummy', 'mock', 'seed', 'test pipeline', 'fake'];
+    const candidates: any[] = [];
+
+    for (const wf of allWorkflows) {
+      const nameLower = (wf.name || '').toLowerCase();
+      const descLower = (wf.description || '').toLowerCase();
+      const isSystem = (wf as any).isSystem === true;
+      const isTemplate = (wf as any).type === 'TEMPLATE';
+
+      // Never clean up system workflows or registered templates
+      if (isSystem || isTemplate) continue;
+
+      const hasDemoMarker = demoKeywords.some(
+        (kw) => nameLower.includes(kw) || descLower.includes(kw)
+      );
+
+      // Check if definition has known dummy email patterns
+      const triggerDataStr = typeof wf.triggerData === 'string' ? wf.triggerData : JSON.stringify(wf.triggerData || {});
+      const hasDummyData = triggerDataStr.includes('example.com') || triggerDataStr.includes('test@');
+
+      if (hasDemoMarker || (hasDummyData && nameLower.includes('test'))) {
+        candidates.push({
+          id: wf.id,
+          name: wf.name,
+          category: (wf as any).category || 'General',
+          type: (wf as any).type || 'USER_WORKFLOW',
+          status: (wf as any).status || 'ACTIVE',
+          reason: hasDemoMarker ? 'Matches demo/test keyword pattern' : 'Contains dummy data markers',
+          createdAt: wf.createdAt,
+        });
+      }
+    }
+
+    if (dryRun) {
+      return {
+        dryRun: true,
+        tenantId,
+        identifiedDemoCount: candidates.length,
+        totalWorkflows: allWorkflows.length,
+        candidates,
+        message: candidates.length === 0
+          ? 'No unverified demo workflows detected.'
+          : `Dry run identified ${candidates.length} demo workflows that can be safely archived/cleaned.`,
+      };
+    }
+
+    // Execute actual safe cleanup: Archive or remove candidate demo workflows
+    const removedIds: string[] = [];
+    for (const c of candidates) {
+      try {
+        await this.remove(tenantId, c.id);
+        removedIds.push(c.id);
+      } catch (err: any) {
+        this.logger.warn(`Failed removing demo workflow ${c.id}: ${err.message}`);
+      }
+    }
+
+    return {
+      dryRun: false,
+      tenantId,
+      removedCount: removedIds.length,
+      removedIds,
+      remainingCount: allWorkflows.length - removedIds.length,
+      message: `Successfully cleaned up ${removedIds.length} verified demo workflows. Real user workflows preserved.`,
+    };
+  }
+
+  /**
+   * Section 73: Explicit Demo Seeding Command (Never runs automatically in production)
+   */
+  async seedDemoWorkflows(tenantId: string) {
+    this.logger.log(`[Explicit Demo Seeding] Creating verified sandbox workflows for tenant ${tenantId}`);
+    const sampleWorkflows = [
+      {
+        name: 'Demo: AI Receptionist & Appointment Booker',
+        description: 'Demonstration pipeline for inbound voice calls with conversational RAG and automated calendar scheduling.',
+        category: 'Voice',
+        triggerType: 'trigger:call_received',
+        type: 'USER_WORKFLOW',
+        isActive: false,
+        triggerData: JSON.stringify({
+          nodes: [
+            { id: '1', type: 'trigger:call_received', data: { title: 'Inbound Call Received' } },
+            { id: '2', type: 'voice:ai_receptionist', data: { title: 'Athena Front Desk AI' } },
+            { id: '3', type: 'calendar:create_interview', data: { title: 'Book Calendar Appointment' } },
+            { id: '4', type: 'comm:whatsapp', data: { title: 'Send WhatsApp Confirmation' } },
+          ],
+          edges: [
+            { id: 'e1-2', source: '1', target: '2' },
+            { id: 'e2-3', source: '2', target: '3' },
+            { id: 'e3-4', source: '3', target: '4' },
+          ],
+        }),
+      },
+      {
+        name: 'Demo: High-Value Deal Approvals & Cadence',
+        description: 'Demonstration pipeline for sales deal movement with automated scoring and executive discount approval.',
+        category: 'Sales',
+        triggerType: 'trigger:deal_stage_changed',
+        type: 'USER_WORKFLOW',
+        isActive: false,
+        triggerData: JSON.stringify({
+          nodes: [
+            { id: '1', type: 'trigger:deal_stage_changed', data: { title: 'Deal Negotiation Started' } },
+            { id: '2', type: 'sales:lead_qualify', data: { title: 'AI Deal Health Score' } },
+            { id: '3', type: 'logic:human_approval', data: { title: 'CRO Discount Sign-Off' } },
+            { id: '4', type: 'sales:cadence_step', data: { title: 'Dispatch Closing Kit' } },
+          ],
+          edges: [
+            { id: 'e1-2', source: '1', target: '2' },
+            { id: 'e2-3', source: '2', target: '3' },
+            { id: 'e3-4', source: '3', target: '4', sourceHandle: 'approved' },
+          ],
+        }),
+      },
+    ];
+
+    const created: any[] = [];
+    for (const sw of sampleWorkflows) {
+      const res = await this.create(tenantId, sw);
+      created.push(res);
+    }
+
+    return {
+      success: true,
+      tenantId,
+      seededCount: created.length,
+      workflows: created,
+      message: `Explicitly seeded ${created.length} demonstration workflows in PAUSED/DRAFT mode.`,
+    };
   }
 
   async findOne(tenantId: string, id: string) {
@@ -580,7 +766,7 @@ export class WorkflowsService {
       where.status = status;
     }
 
-    return this.prisma.workflowExecution.findMany({
+    const records = await this.prisma.workflowExecution.findMany({
       where,
       orderBy: { startedAt: 'desc' },
       take: limit,
@@ -589,6 +775,22 @@ export class WorkflowsService {
           orderBy: { stepIndex: 'asc' },
         },
       },
+    });
+
+    return records.map((rec: any) => {
+      let executionResult: any = null;
+      if (rec.outputData) {
+        try {
+          const parsed = JSON.parse(rec.outputData);
+          executionResult = parsed._result || parsed.executionResult || null;
+        } catch {
+          // safe
+        }
+      }
+      return {
+        ...rec,
+        executionResult,
+      };
     });
   }
 
@@ -600,7 +802,19 @@ export class WorkflowsService {
       },
     });
     if (!execution) throw new NotFoundException('Execution not found');
-    return execution;
+    let executionResult: any = null;
+    if (execution.outputData) {
+      try {
+        const parsed = JSON.parse(execution.outputData);
+        executionResult = parsed._result || parsed.executionResult || null;
+      } catch {
+        // safe
+      }
+    }
+    return {
+      ...execution,
+      executionResult,
+    };
   }
 
   async retryExecution(tenantId: string, executionId: string) {
@@ -611,6 +825,22 @@ export class WorkflowsService {
 
     const triggerData = prev.triggerData ? JSON.parse(prev.triggerData) : {};
     return this.executeGraph(tenantId, prev.workflowId, undefined, triggerData);
+  }
+
+  async testSingleNode(tenantId: string, node: any, sampleContext: any = {}) {
+    return this.graphExecutor.executeSingleNodeTest(node, sampleContext, tenantId);
+  }
+
+  async cloneWorkflow(tenantId: string, id: string) {
+    const wf = await this.findOne(tenantId, id);
+    const cloned = await this.create(tenantId, {
+      name: `${wf.name} (Copy)`,
+      description: wf.description,
+      isActive: false,
+      triggerType: wf.triggerType,
+      triggerData: wf.triggerData,
+    });
+    return cloned;
   }
 }
 

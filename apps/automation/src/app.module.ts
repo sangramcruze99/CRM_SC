@@ -18,6 +18,9 @@ import { ConnectorsModule } from './connectors/connectors.module';
 import { BrowserModule } from './browser/browser.module';
 import { VoiceModule } from './voice/voice.module';
 import { TemplatesModule } from './templates/templates.module';
+import { ScreeningProfilesModule } from './screening-profiles/screening-profiles.module';
+import { VaultWatcherModule } from './vault-watcher/vault-watcher.module';
+import { IntentModule } from './intent/intent.module';
 
 const isRedisConfigured = Boolean(
   process.env.ENABLE_BULLMQ !== 'false' && (
@@ -59,6 +62,9 @@ const isRedisConfigured = Boolean(
     BrowserModule,
     VoiceModule,
     TemplatesModule,
+    ScreeningProfilesModule,
+    VaultWatcherModule,
+    IntentModule,
     PrismaModule,
   ],
   controllers: [AppController],

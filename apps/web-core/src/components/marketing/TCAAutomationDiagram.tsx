@@ -25,7 +25,7 @@ export function TCAAutomationDiagram() {
         <div className="p-4 rounded-2xl bg-black/50 border border-emerald-500/40 shadow-lg flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-xs font-mono font-bold">
-              ⚡
+              
             </div>
             <div>
               <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider block">
@@ -57,7 +57,7 @@ export function TCAAutomationDiagram() {
             </div>
           </div>
           <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded-md font-bold">
-            PASSED ✓
+            PASSED 
           </span>
         </div>
 

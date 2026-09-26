@@ -1,7 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, FileText, ArrowRight, Mail, CheckSquare, HelpCircle, Loader2, X } from 'lucide-react';
+import Link from 'next/link';
+import { Sparkles, FileText, ArrowRight, Mail, CheckSquare, HelpCircle, Loader2, X, Activity, Zap } from 'lucide-react';
+import { openResultDrawer } from './ResultDrawer';
 
 interface RecordAiMenuProps {
   entityType: 'deal' | 'contact' | 'invoice' | 'project' | 'ticket';
@@ -57,7 +59,7 @@ export function RecordAiMenu({ entityType, entityId, entityName, entityData }: R
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-600/10 hover:from-emerald-500/20 hover:to-emerald-600/20 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-sm transition-all"
         >
           <Sparkles size={14} className="text-emerald-600 dark:text-emerald-400" />
-          <span>✨ AI Actions</span>
+          <span> AI Actions</span>
         </button>
 
         {isOpen && (
@@ -78,6 +80,26 @@ export function RecordAiMenu({ entityType, entityId, entityName, entityData }: R
                 </button>
               );
             })}
+            <div className="border-t border-slate-100 dark:border-white/5 my-1" />
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
+                openResultDrawer({});
+              }}
+              className="flex items-center gap-2.5 w-full px-3.5 py-2 text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-emerald-500/10 transition-colors text-left cursor-pointer"
+            >
+              <Zap size={14} className="shrink-0 text-emerald-500" />
+              <span> Live Result Drawer</span>
+            </button>
+            <Link
+              href={`/automation/executions?search=${encodeURIComponent(entityId)}`}
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 w-full px-3.5 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 transition-colors"
+            >
+              <Activity size={14} className="shrink-0" />
+              <span>Full Audit History</span>
+            </Link>
           </div>
         )}
       </div>

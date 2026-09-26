@@ -237,9 +237,9 @@ const PRESET_BANNERS = [
 const INITIAL_TEMPLATES: CustomTemplate[] = [
   {
     id: 'b2b_cold_outreach',
-    name: '🎯 B2B Cold Sales Outreach',
+    name: ' B2B Cold Sales Outreach',
     category: 'Sales',
-    badge: '🔥 Highest Reply (34%)',
+    badge: ' Highest Reply (34%)',
     subject: "Quick question regarding {{company}}'s workflow, {{firstName}}",
     preheader: "Noticed your team's recent expansion in {{industry}} — have a quick idea.",
     updatedAt: '2 hours ago',
@@ -270,7 +270,7 @@ const INITIAL_TEMPLATES: CustomTemplate[] = [
         type: 'MEETING_SCHEDULER',
         title: 'Schedule 10-Min Intro with {{senderName}}',
         body: 'Pick a slot on my live calendar that works best for you:',
-        buttonText: '👉 Choose 10-Min Timeslot',
+        buttonText: ' Choose 10-Min Timeslot',
         buttonUrl: '{{calendarLink}}',
         meetingDuration: '10 mins • No commitment',
       },
@@ -293,9 +293,9 @@ const INITIAL_TEMPLATES: CustomTemplate[] = [
   },
   {
     id: 'product_announcement',
-    name: '🚀 Product Launch & Feature Drop',
+    name: ' Product Launch & Feature Drop',
     category: 'Marketing',
-    badge: '🌟 High Engagement',
+    badge: ' High Engagement',
     subject: 'Introducing Business OS 2.0: Unified Workspace for Modern Teams',
     preheader: 'Explore live telemetry, automated workflows, and instant CRM synchronization.',
     updatedAt: '1 day ago',
@@ -327,7 +327,7 @@ const INITIAL_TEMPLATES: CustomTemplate[] = [
         body: 'See how modern revenue teams automate 80% of daily pipeline tasks with sub-10ms response times.',
         videoThumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
         videoUrl: 'https://youtube.com/watch?v=demo',
-        badge: '▶ 2:15 Min Walkthrough',
+        badge: ' 2:15 Min Walkthrough',
       },
       {
         id: 'blk_cta_1',
@@ -353,9 +353,9 @@ const INITIAL_TEMPLATES: CustomTemplate[] = [
   },
   {
     id: 'promo_discount',
-    name: '🏷️ Flash Sale & Limited-Time Promo',
+    name: ' Flash Sale & Limited-Time Promo',
     category: 'Marketing',
-    badge: '💰 High Conversion',
+    badge: ' High Conversion',
     subject: 'Exclusive: 30% Off Annual Enterprise Plans for {{company}}',
     preheader: 'Lock in your discounted rate before Friday midnight.',
     updatedAt: '3 days ago',
@@ -388,7 +388,7 @@ const INITIAL_TEMPLATES: CustomTemplate[] = [
       {
         id: 'blk_txt_urgency',
         type: 'TEXT',
-        body: '⚠️ **Note:** This special pricing tier expires this Friday at 11:59 PM EST. After that, licenses return to standard rates.',
+        body: ' **Note:** This special pricing tier expires this Friday at 11:59 PM EST. After that, licenses return to standard rates.',
         align: 'center',
       },
       {
@@ -491,14 +491,14 @@ export function EmailBuilder() {
         setBlocks(converted);
         setSelectedBlockId(converted[0]?.id || null);
       }
-      showToast(`🔗 Linked to Workflow Step: "${transfer.workflowNodeTitle || 'Automation Step'}"`);
+      showToast(` Linked to Workflow Step: "${transfer.workflowNodeTitle || 'Automation Step'}"`);
     } else if (fromQuery === 'automations' || nodeIdQuery) {
       setWorkflowBridgeContext({
         nodeId: nodeIdQuery || undefined,
         nodeTitle: nodeTitleQuery || 'Automation Step',
         source: 'automations',
       });
-      showToast(`🔗 Linked to Workflow Step: "${nodeTitleQuery || 'Automation Step'}"`);
+      showToast(` Linked to Workflow Step: "${nodeTitleQuery || 'Automation Step'}"`);
     }
   }, []);
 
@@ -520,7 +520,7 @@ export function EmailBuilder() {
       id: `tmpl_${Date.now()}`,
       name: currentDraftName || subject || 'Exported Studio Template',
       category: targetTab === 'automations' ? 'Automations' : 'Marketing',
-      badge: '🎨 From Studio',
+      badge: ' From Studio',
       subject,
       preheader,
       sections,
@@ -529,7 +529,7 @@ export function EmailBuilder() {
     });
 
     setIsExportBridgeModalOpen(false);
-    showToast(`🚀 Transferring to Email Marketing (${targetTab})...`);
+    showToast(` Transferring to Email Marketing (${targetTab})...`);
     window.location.href = `/email-marketing?tab=${targetTab}&source=bridge`;
   };
 
@@ -557,7 +557,7 @@ export function EmailBuilder() {
     reader.onload = (e) => {
       if (e.target?.result) {
         callback(e.target.result as string, file.name);
-        showToast(`📁 Loaded "${file.name}" from PC!`);
+        showToast(`Loaded "${file.name}" from PC!`);
       }
     };
     reader.readAsDataURL(file);
@@ -660,7 +660,7 @@ export function EmailBuilder() {
           type: 'MEETING_SCHEDULER',
           title: 'Book a 15-Minute Intro Call',
           body: 'Directly reserve time on my schedule for a tailored walkthrough:',
-          buttonText: '👉 View Available Timeslots',
+          buttonText: ' View Available Timeslots',
           buttonUrl: '{{calendarLink}}',
           meetingDuration: '15 mins • Live Screen Share',
         };
@@ -674,7 +674,7 @@ export function EmailBuilder() {
           videoThumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80',
           videoUrl: 'https://youtube.com/watch?v=demo',
           videoFileName: 'product_walkthrough_demo.mp4',
-          badge: '▶ 2:00 Min Demo',
+          badge: ' 2:00 Min Demo',
         };
         break;
       case 'SALES_SIGNATURE':
@@ -781,7 +781,7 @@ export function EmailBuilder() {
       id: `tmpl_${Date.now()}`,
       name: currentDraftName || 'Custom Saved Template',
       category: 'Sales',
-      badge: '✨ Custom Saved',
+      badge: ' Custom Saved',
       subject,
       preheader,
       blocks,
@@ -1043,7 +1043,7 @@ export function EmailBuilder() {
           showToast('Refined copy for maximum sales reply rate!');
         }
       } else if (actionType === 'promo') {
-        setSubject(`⚡ 48-Hour Priority Access for {{firstName}} @ {{company}}`);
+        setSubject(` 48-Hour Priority Access for {{firstName}} @ {{company}}`);
         showToast('Generated urgency-focused subject line!');
       }
       setIsAiModalOpen(false);
@@ -1321,7 +1321,7 @@ export function EmailBuilder() {
       )}
 
       {/* ========================================================================= */}
-      {/* 🚀 VIEW 1: VISUAL BUILDER */}
+      {/*  VIEW 1: VISUAL BUILDER */}
       {/* ========================================================================= */}
       {mainView === 'builder' && (
         <div className="flex-1 flex overflow-hidden">
@@ -1363,7 +1363,7 @@ export function EmailBuilder() {
                 onClick={() => setActiveTab('ai')}
                 className={`py-2 text-center font-bold rounded-lg transition-all cursor-pointer ${
                   activeTab === 'ai'
-                    ? 'bg-slate-800 text-purple-400 shadow-xs'
+                    ? 'bg-slate-800 text-emerald-400 shadow-xs'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -1503,7 +1503,7 @@ export function EmailBuilder() {
                 {/* Quick Merge Tags Reference */}
                 <div className="p-3 bg-slate-900/80 border border-slate-800/80 rounded-2xl">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-bold text-slate-300">💡 1-Click Merge Tags</span>
+                    <span className="text-[11px] font-bold text-slate-300"> 1-Click Merge Tags</span>
                     <span className="text-[10px] text-slate-500">Auto-filled</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5">
@@ -1646,9 +1646,9 @@ export function EmailBuilder() {
             {/* Tab 4: AI Copywriter Boost */}
             {activeTab === 'ai' && (
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                <div className="p-3.5 bg-gradient-to-br from-purple-900/30 to-indigo-900/30 border border-purple-500/30 rounded-2xl">
-                  <div className="flex items-center gap-2 text-purple-300 font-bold text-xs mb-1">
-                    <Sparkles size={14} className="text-purple-400" />
+                <div className="p-3.5 bg-gradient-to-br from-emerald-900/30 to-teal-900/30 border border-emerald-500/30 rounded-2xl">
+                  <div className="flex items-center gap-2 text-emerald-300 font-bold text-xs mb-1">
+                    <Sparkles size={14} className="text-emerald-400" />
                     <span>AI Email Optimizer</span>
                   </div>
                   <p className="text-[11px] text-slate-300 leading-relaxed">
@@ -1660,11 +1660,11 @@ export function EmailBuilder() {
                   <button
                     onClick={() => handleAiAction('punchy')}
                     disabled={aiGenerating}
-                    className="w-full p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 rounded-xl text-left transition-all group cursor-pointer"
+                    className="w-full p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 rounded-xl text-left transition-all group cursor-pointer"
                   >
-                    <div className="text-xs font-bold text-white group-hover:text-purple-300 flex items-center justify-between">
-                      <span>⚡ Make It Punchy & Concise</span>
-                      <ArrowRight size={13} className="text-slate-500 group-hover:text-purple-400" />
+                    <div className="text-xs font-bold text-white group-hover:text-emerald-300 flex items-center justify-between">
+                      <span> Make It Punchy & Concise</span>
+                      <ArrowRight size={13} className="text-slate-500 group-hover:text-emerald-400" />
                     </div>
                     <p className="text-[11px] text-slate-400 mt-1">Shortens sentences and removes fluff to boost replies.</p>
                   </button>
@@ -1672,11 +1672,11 @@ export function EmailBuilder() {
                   <button
                     onClick={() => handleAiAction('subject')}
                     disabled={aiGenerating}
-                    className="w-full p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 rounded-xl text-left transition-all group cursor-pointer"
+                    className="w-full p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 rounded-xl text-left transition-all group cursor-pointer"
                   >
-                    <div className="text-xs font-bold text-white group-hover:text-purple-300 flex items-center justify-between">
-                      <span>🎯 Optimize Subject Line</span>
-                      <ArrowRight size={13} className="text-slate-500 group-hover:text-purple-400" />
+                    <div className="text-xs font-bold text-white group-hover:text-emerald-300 flex items-center justify-between">
+                      <span> Optimize Subject Line</span>
+                      <ArrowRight size={13} className="text-slate-500 group-hover:text-emerald-400" />
                     </div>
                     <p className="text-[11px] text-slate-400 mt-1">Generates curiosity-driven B2B subject formulas.</p>
                   </button>
@@ -1684,11 +1684,11 @@ export function EmailBuilder() {
                   <button
                     onClick={() => handleAiAction('promo')}
                     disabled={aiGenerating}
-                    className="w-full p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 rounded-xl text-left transition-all group cursor-pointer"
+                    className="w-full p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 rounded-xl text-left transition-all group cursor-pointer"
                   >
-                    <div className="text-xs font-bold text-white group-hover:text-purple-300 flex items-center justify-between">
-                      <span>🔥 Add Scarcity & FOMO</span>
-                      <ArrowRight size={13} className="text-slate-500 group-hover:text-purple-400" />
+                    <div className="text-xs font-bold text-white group-hover:text-emerald-300 flex items-center justify-between">
+                      <span> Add Scarcity & FOMO</span>
+                      <ArrowRight size={13} className="text-slate-500 group-hover:text-emerald-400" />
                     </div>
                     <p className="text-[11px] text-slate-400 mt-1">Adds urgency cues for flash sales and limited offers.</p>
                   </button>
@@ -2081,7 +2081,7 @@ export function EmailBuilder() {
                                   </div>
                                 </div>
                                 <span className="absolute bottom-2 right-2 bg-slate-950/80 text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                                  {block.badge || '▶ Video'}
+                                  {block.badge || ' Video'}
                                 </span>
                               </div>
                               <div className="text-xs font-bold text-slate-900">
@@ -2432,7 +2432,7 @@ export function EmailBuilder() {
                         value={selectedBlock.badge || ''}
                         onChange={(e) => handleUpdateBlock(selectedBlock.id, { badge: e.target.value })}
                         className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white outline-none"
-                        placeholder="e.g. ▶ 2:30 Min Demo"
+                        placeholder="e.g.  2:30 Min Demo"
                       />
                     </div>
                   </div>
@@ -2623,7 +2623,7 @@ export function EmailBuilder() {
       )}
 
       {/* ========================================================================= */}
-      {/* 🚀 VIEW 2: TEMPLATES LIBRARY */}
+      {/*  VIEW 2: TEMPLATES LIBRARY */}
       {/* ========================================================================= */}
       {mainView === 'templates' && (
         <div className="flex-1 overflow-y-auto p-6 max-w-7xl mx-auto w-full space-y-6">
@@ -2755,7 +2755,7 @@ export function EmailBuilder() {
       )}
 
       {/* ========================================================================= */}
-      {/* 🚀 VIEW 3: DRAFTS BOX */}
+      {/*  VIEW 3: DRAFTS BOX */}
       {/* ========================================================================= */}
       {mainView === 'drafts' && (
         <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full space-y-6">
@@ -2841,7 +2841,7 @@ export function EmailBuilder() {
       )}
 
       {/* ========================================================================= */}
-      {/* 🚀 VIEW 4: SENT BOX / BROADCAST OUTBOX */}
+      {/*  VIEW 4: SENT BOX / BROADCAST OUTBOX */}
       {/* ========================================================================= */}
       {mainView === 'sent' && (
         <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full space-y-6">
@@ -3054,9 +3054,9 @@ export function EmailBuilder() {
                   setSentBox([newSentRecord, ...sentBox]);
                   setIsSendTestModalOpen(false);
                   if (deliveryStatus === 'FAILED') {
-                    showToast(`⚠️ Delivery issue: ${deliveryError || 'Check recipient'}`);
+                    showToast(` Delivery issue: ${deliveryError || 'Check recipient'}`);
                   } else if (resendId) {
-                    showToast(`✨ Real email dispatched via Resend! ID: ${resendId}`);
+                    showToast(` Real email dispatched via Resend! ID: ${resendId}`);
                   } else {
                     showToast(`Test email sent to ${targetTo} and logged in Sent Box!`);
                   }
@@ -3124,7 +3124,7 @@ export function EmailBuilder() {
           <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-purple-500/20 text-purple-400 rounded-xl">
+                <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-xl">
                   <Sparkles size={18} />
                 </div>
                 <h3 className="font-bold text-base text-white">AI Sales & Marketing Assistant</h3>
@@ -3144,9 +3144,9 @@ export function EmailBuilder() {
             <div className="grid grid-cols-2 gap-2.5 pt-1">
               <button
                 onClick={() => handleAiAction('punchy')}
-                className="p-3 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 rounded-2xl text-left transition-all group cursor-pointer"
+                className="p-3 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 rounded-2xl text-left transition-all group cursor-pointer"
               >
-                <div className="text-xs font-bold text-white group-hover:text-purple-300 flex items-center gap-1.5">
+                <div className="text-xs font-bold text-white group-hover:text-emerald-300 flex items-center gap-1.5">
                   <Flame size={14} className="text-amber-400" />
                   <span>High-Reply Pitch</span>
                 </div>
@@ -3155,9 +3155,9 @@ export function EmailBuilder() {
 
               <button
                 onClick={() => handleAiAction('subject')}
-                className="p-3 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/50 rounded-2xl text-left transition-all group cursor-pointer"
+                className="p-3 bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/50 rounded-2xl text-left transition-all group cursor-pointer"
               >
-                <div className="text-xs font-bold text-white group-hover:text-purple-300 flex items-center gap-1.5">
+                <div className="text-xs font-bold text-white group-hover:text-emerald-300 flex items-center gap-1.5">
                   <Target size={14} className="text-emerald-400" />
                   <span>Subject Line Formulas</span>
                 </div>
@@ -3172,7 +3172,7 @@ export function EmailBuilder() {
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
                 placeholder="e.g. Make this email sound friendly and invite them to an exclusive VIP dinner at SaaStr..."
-                className="w-full bg-slate-950 border border-slate-800 focus:border-purple-500 rounded-xl p-3 text-xs text-white outline-none resize-none"
+                className="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 rounded-xl p-3 text-xs text-white outline-none resize-none"
               />
             </div>
 
@@ -3186,7 +3186,7 @@ export function EmailBuilder() {
               <button
                 onClick={() => handleAiAction('punchy')}
                 disabled={aiGenerating}
-                className="px-5 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-400 hover:to-indigo-400 text-xs font-bold text-white rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-xs font-bold text-white rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <Sparkles size={14} />
                 <span>{aiGenerating ? 'Optimizing...' : 'Generate with AI'}</span>
@@ -3227,7 +3227,7 @@ export function EmailBuilder() {
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-sm text-white group-hover:text-emerald-300 flex items-center gap-2">
                     <GitBranch size={16} className="text-emerald-400" />
-                    <span>🤖 Use in Automation Workflow Studio</span>
+                    <span> Use in Automation Workflow Studio</span>
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full font-bold">
                     Automations
@@ -3246,7 +3246,7 @@ export function EmailBuilder() {
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-sm text-white group-hover:text-teal-300 flex items-center gap-2">
                     <Users size={16} className="text-teal-400" />
-                    <span>🎯 Use in Bulk Blast Lead Filter</span>
+                    <span> Use in Bulk Blast Lead Filter</span>
                   </span>
                   <span className="text-[10px] font-mono text-teal-400 bg-teal-500/20 px-2 py-0.5 rounded-full font-bold">
                     AI STO
@@ -3265,7 +3265,7 @@ export function EmailBuilder() {
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-sm text-white group-hover:text-cyan-300 flex items-center gap-2">
                     <Layers size={16} className="text-cyan-400" />
-                    <span>📰 Open in Campaign Newsletter Studio</span>
+                    <span> Open in Campaign Newsletter Studio</span>
                   </span>
                   <span className="text-[10px] font-mono text-cyan-400 bg-cyan-500/20 px-2 py-0.5 rounded-full font-bold">
                     Campaigns

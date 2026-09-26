@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Headers, Query } from '@nestjs/common';
 import { WorkflowsService } from './workflows.service';
 import { WorkflowGeneratorService } from './workflow-generator.service';
+import { UNIVERSAL_NODE_CATALOG } from '../executor/node-catalog';
 
 @Controller('workflows')
 export class WorkflowsController {
@@ -11,6 +12,16 @@ export class WorkflowsController {
 
   private getTenant(tenantIdHeader?: string) {
     return tenantIdHeader || 'default-tenant';
+  }
+
+  @Get('nodes/catalog')
+  getNodeCatalog() {
+    return UNIVERSAL_NODE_CATALOG;
+  }
+
+  @Get('catalog')
+  getCatalogAlias() {
+    return UNIVERSAL_NODE_CATALOG;
   }
 
   @Post('generate')
@@ -124,11 +135,6 @@ export class WorkflowsController {
     return this.workflowsService.create(this.getTenant(tenantIdHeader), createWorkflowDto);
   }
 
-  @Get('nodes/catalog')
-  getNodeCatalog() {
-    return this.workflowsService.getNodeCatalog();
-  }
-
   @Get('executions/all')
   getAllExecutions(
     @Headers('x-tenant-id') tenantIdHeader: string,
@@ -140,6 +146,28 @@ export class WorkflowsController {
       limit ? parseInt(limit, 10) : 50,
       status,
     );
+  }
+
+  @Get('results')
+  getResults(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Query('limit') limit?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.workflowsService.getAllExecutions(
+      this.getTenant(tenantIdHeader),
+      limit ? parseInt(limit, 10) : 50,
+      status,
+    );
+  }
+
+  @Get('executions/:executionId/result')
+  async getExecutionResult(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('executionId') executionId: string,
+  ) {
+    const data = await this.workflowsService.getExecutionSteps(this.getTenant(tenantIdHeader), executionId);
+    return data.executionResult || { message: 'No structured result available for this execution', status: data.status };
   }
 
   @Get('executions/:executionId/steps')
@@ -172,9 +200,57 @@ export class WorkflowsController {
     );
   }
 
+  @Post(':id/test-node')
+  testSingleNode(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+    @Body() body: { node: any; sampleContext?: any },
+  ) {
+    return this.workflowsService.testSingleNode(
+      this.getTenant(tenantIdHeader),
+      body.node,
+      body.sampleContext || {},
+    );
+  }
+
+  @Post(':id/clone')
+  cloneWorkflow(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+  ) {
+    return this.workflowsService.cloneWorkflow(this.getTenant(tenantIdHeader), id);
+  }
+
   @Get()
-  findAll(@Headers('x-tenant-id') tenantIdHeader: string) {
-    return this.workflowsService.findAll(this.getTenant(tenantIdHeader));
+  findAll(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Query('type') type?: string,
+    @Query('category') category?: string,
+    @Query('status') status?: string,
+  ) {
+    return this.workflowsService.findAll(this.getTenant(tenantIdHeader), { type, category, status });
+  }
+
+  @Post('cleanup-demo')
+  cleanupDemo(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Query('dryRun') dryRun?: string,
+  ) {
+    const isDryRun = dryRun === undefined || dryRun === 'true' || dryRun === '1';
+    return this.workflowsService.cleanupDemoWorkflows(this.getTenant(tenantIdHeader), isDryRun);
+  }
+
+  @Post('seed-demo')
+  seedDemo(@Headers('x-tenant-id') tenantIdHeader: string) {
+    return this.workflowsService.seedDemoWorkflows(this.getTenant(tenantIdHeader));
+  }
+
+  @Post(':id/archive')
+  archive(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('id') id: string,
+  ) {
+    return this.workflowsService.archive(this.getTenant(tenantIdHeader), id);
   }
 
 

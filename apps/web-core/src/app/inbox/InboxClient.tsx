@@ -91,7 +91,7 @@ export function InboxClient() {
 
     setConversations(updated);
     setReplyText('');
-    setAlert(`⚡ Dispatched message to ${activeConv.name} via ${activeConv.channel.toUpperCase()}!`);
+    setAlert(` Dispatched message to ${activeConv.name} via ${activeConv.channel.toUpperCase()}!`);
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -135,7 +135,7 @@ export function InboxClient() {
       case 'sms':
         return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">SMS</span>;
       case 'instagram':
-        return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40">Instagram</span>;
+        return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Instagram</span>;
       case 'messenger':
         return <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/40">Messenger</span>;
       case 'webchat':
@@ -305,7 +305,7 @@ export function InboxClient() {
                             )}
                           </div>
                           <div className="text-[10px] text-slate-400">
-                            ⚡ Direct link dispatched via encrypted webhook payload.
+                             Direct link dispatched via encrypted webhook payload.
                           </div>
                         </div>
                       )}
@@ -447,7 +447,7 @@ export function InboxClient() {
         onClose={() => setIsVaultPickerOpen(false)}
         onSelect={(doc: VaultDocument) => {
           handleSendMessage(
-            `📄 Attached Document from Vault: ${doc.name}`,
+            ` Attached Document from Vault: ${doc.name}`,
             {
               type: 'invoice',
               title: doc.name,
@@ -464,3 +464,4 @@ export function InboxClient() {
     </div>
   );
 }
+

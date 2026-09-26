@@ -4,15 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Layers,
-  Sparkles,
   Search,
-  ArrowRight,
   Download,
-  Zap,
-  CheckCircle2,
-  Tag,
   Star,
-  Copy,
 } from 'lucide-react';
 
 const PRESET_TEMPLATES = [
@@ -98,32 +92,32 @@ const PRESET_TEMPLATES = [
     name: 'AI Voice Receptionist & Smart Triage',
     description: 'Answers telephone calls, provides business hours & pricing FAQs, and transfers VIPs to account reps.',
     category: 'Voice',
-    author: 'Business OS Telephony',
-    version: '1.4.0',
-    usageCount: 390,
-    rating: 4.8,
-    integrations: ['Twilio', 'Whisper STT', 'CRM'],
-  },
-  {
-    id: 'tmpl_browser_extraction',
-    name: 'Sandboxed Browser Competitor & Pricing Scraper',
-    description: 'Executes sandboxed browser sessions to extract competitor pricing tables and inject into CRM pricebooks.',
-    category: 'Browser',
-    author: 'Business OS Research',
+    author: 'Business OS Voice Hub',
     version: '1.0.0',
     usageCount: 260,
     rating: 4.6,
-    integrations: ['Browser Sandbox', 'CRM'],
+    integrations: ['Twilio Voice', 'Groq Llama-3', 'Calendar'],
+  },
+  {
+    id: 'tmpl_browser_scraping',
+    name: 'Autonomous Competitor Pricing Sentinel',
+    description: 'Runs scheduled headless browser scrapes of competitor sites, detects price cuts, and logs to Deal Intelligence.',
+    category: 'Browser',
+    author: 'Business OS Autonomous Agents',
+    version: '1.4.0',
+    usageCount: 390,
+    rating: 4.8,
+    integrations: ['Playwright', 'Groq Vision', 'CRM'],
   },
 ];
 
 const CATEGORIES = ['ALL', 'Sales', 'WhatsApp', 'Voice', 'Finance', 'HR', 'Ecommerce', 'Content', 'Browser'];
 
-export default function TemplatesMarketplacePage() {
+export default function AutomationTemplatesPage() {
   const router = useRouter();
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
-  const [searchQuery, setSearchQuery] = useState('');
   const [templates, setTemplates] = useState<any[]>(PRESET_TEMPLATES);
+  const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [installingId, setInstallingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -168,41 +162,71 @@ export default function TemplatesMarketplacePage() {
     WhatsApp: 'bg-green-500/15 text-green-400 border-green-500/30',
     Voice: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
     Finance: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-    HR: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+    HR: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
     Ecommerce: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
     Content: 'bg-pink-500/15 text-pink-400 border-pink-500/30',
     Browser: 'bg-teal-500/15 text-teal-400 border-teal-500/30',
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-6 pb-28">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-black text-white tracking-tight flex items-center space-x-2">
-            <span>Workflow Template Marketplace</span>
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-              {templates.length} Available
+    <div className="space-y-6 text-white font-sans">
+      {/* Top Header Cockpit Chassis */}
+      <div className="botanical-glass-card rounded-3xl p-6 md:p-8 border border-white/[0.08] relative overflow-hidden">
+        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none" />
+
+        {/* Autonomous Sentinel Pulse Status Strip */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pb-4 mb-4 border-b border-white/[0.06] text-xs font-mono">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Pre-built enterprise automations with one-click installation into your workspace
-          </p>
+            <span className="text-emerald-400 font-bold tracking-wider uppercase">Blueprint Library Online</span>
+            <span className="text-zinc-500">•</span>
+            <span className="text-zinc-400">Pre-Engineered Swarms</span>
+          </div>
+          <div className="flex items-center gap-3 text-zinc-400">
+            <span className="px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-[11px]">
+              vault/automation/templates/
+            </span>
+            <span className="text-zinc-500">|</span>
+            <span className="text-emerald-400 font-semibold">{templates.length} Templates Active</span>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                STAGE 5.0 VERTICAL BLUEPRINTS
+              </span>
+              <span className="px-2.5 py-0.5 rounded text-[10px] font-mono bg-white/[0.04] text-zinc-300 border border-white/[0.08]">
+                ONE-CLICK WORKFLOW CLONING
+              </span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+              <Layers className="text-emerald-400" size={30} />
+              Workflow Template Marketplace
+            </h1>
+            <p className="text-xs md:text-sm text-zinc-400 max-w-3xl leading-relaxed">
+              Pre-built enterprise automations with one-click installation into your workspace. Verified topologies for sales outreach, financial approvals, customer triage, and AI phone agents.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 bg-slate-900/80 p-2.5 rounded-2xl border border-white/10 backdrop-blur-xl shadow-lg">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 botanical-glass-card p-3 rounded-2xl border border-white/[0.08]">
         {/* Category Tabs */}
-        <div className="flex items-center space-x-1.5 overflow-x-auto scrollbar-none py-1">
+        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition whitespace-nowrap cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                  : 'bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white'
+                  ? 'bg-emerald-500 text-zinc-950 shadow-md shadow-emerald-500/20'
+                  : 'bg-white/[0.04] text-zinc-400 hover:text-white hover:bg-white/[0.08] border border-white/[0.06]'
               }`}
             >
               {cat}
@@ -212,13 +236,13 @@ export default function TemplatesMarketplacePage() {
 
         {/* Search */}
         <div className="relative shrink-0">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-2.5" />
           <input
             type="text"
             placeholder="Search templates..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 pr-4 py-1.5 rounded-xl bg-slate-950 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 w-full sm:w-64 transition"
+            className="pl-9 pr-4 py-1.5 rounded-xl bg-black/40 border border-white/[0.08] text-xs font-mono text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 w-full sm:w-64 transition"
           />
         </div>
       </div>
@@ -226,29 +250,29 @@ export default function TemplatesMarketplacePage() {
       {/* Templates Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {filteredTemplates.map((t) => {
-          const badgeStyle = CATEGORY_BADGES[t.category] || 'bg-white/5 text-slate-300 border-white/10';
+          const badgeStyle = CATEGORY_BADGES[t.category] || 'bg-white/5 text-zinc-300 border-white/10';
 
           return (
             <div
               key={t.id}
-              className="p-5 rounded-2xl bg-slate-900/80 border border-white/10 hover:border-emerald-500/40 hover:bg-slate-900/95 transition-all shadow-xl backdrop-blur-xl flex flex-col justify-between space-y-4 group min-h-[250px]"
+              className="p-5 rounded-2xl botanical-glass-card border border-white/[0.08] hover:border-emerald-500/40 transition-all flex flex-col justify-between space-y-4 group min-h-[250px] relative overflow-hidden"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border ${badgeStyle}`}>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border ${badgeStyle}`}>
                     {t.category}
                   </span>
-                  <div className="flex items-center space-x-1 text-amber-400 text-xs font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                  <div className="flex items-center space-x-1 text-amber-400 text-xs font-mono font-bold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
                     <Star className="w-3.5 h-3.5 fill-amber-400" />
                     <span>{t.rating || 4.9}</span>
                   </div>
                 </div>
 
                 <div>
-                  <h3 className="text-sm font-extrabold text-white group-hover:text-emerald-300 transition line-clamp-2 min-h-[40px] leading-snug">
+                  <h3 className="text-sm font-bold text-white group-hover:text-emerald-300 transition line-clamp-2 min-h-[40px] leading-snug">
                     {t.name}
                   </h3>
-                  <p className="text-xs text-slate-300 mt-1.5 line-clamp-3 leading-relaxed min-h-[54px]">
+                  <p className="text-xs text-zinc-400 mt-1.5 line-clamp-3 leading-relaxed min-h-[54px]">
                     {t.description}
                   </p>
                 </div>
@@ -257,7 +281,7 @@ export default function TemplatesMarketplacePage() {
                   {(t.integrations || t.requiredIntegrations || []).map((intName: string, i: number) => (
                     <span
                       key={i}
-                      className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-white/5 text-slate-300 border border-white/10"
+                      className="px-2 py-0.5 rounded-md text-[9px] font-mono font-bold bg-white/[0.04] text-zinc-300 border border-white/[0.06]"
                     >
                       {intName}
                     </span>
@@ -265,15 +289,15 @@ export default function TemplatesMarketplacePage() {
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-                <div className="text-[11px] text-slate-400 font-medium">
+              <div className="pt-3 border-t border-white/[0.06] flex items-center justify-between">
+                <div className="text-[11px] text-zinc-500 font-mono">
                   <span>{t.usageCount || 100}+ installs</span>
                 </div>
 
                 <button
                   onClick={() => handleInstallTemplate(t.id)}
                   disabled={installingId === t.id}
-                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-md shadow-emerald-500/20 disabled:opacity-50"
+                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-mono font-bold text-xs transition shadow-md shadow-emerald-500/20 disabled:opacity-50 cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>{installingId === t.id ? 'Opening...' : 'Install'}</span>

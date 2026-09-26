@@ -8,6 +8,7 @@ const serviceMap: Record<string, string> = {
   'platform': 'http://localhost:3008',
   'custom-objects': 'http://localhost:3008',
   'automation': 'http://localhost:3009',
+  'intent': 'http://localhost:3009',
   'ai': 'http://localhost:3010',
   'auth': 'http://localhost:3011',
   'marketplace': 'http://localhost:3012',
@@ -75,6 +76,20 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
     }
   } else if (servicePrefix === 'billing') {
     backendPath = `billing${remainingPath ? '/' + remainingPath : ''}`;
+  } else if (servicePrefix === 'intent') {
+    backendPath = `intent${remainingPath ? '/' + remainingPath : ''}`;
+  } else if (servicePrefix === 'automation') {
+    if (
+      remainingPath.startsWith('approvals') ||
+      remainingPath.startsWith('workflows') ||
+      remainingPath.startsWith('screening-profiles') ||
+      remainingPath.startsWith('templates') ||
+      remainingPath.startsWith('intent')
+    ) {
+      backendPath = remainingPath;
+    } else {
+      backendPath = `workflows/${remainingPath}`;
+    }
   } else if (servicePrefix === 'ai' && remainingPath === 'ask') {
     backendPath = 'prompts/ask';
   }
@@ -121,11 +136,15 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
   if (tenantId) {
     newHeaders.set('x-tenant-id', tenantId);
   }
+
+  // Do not inject fallback credentials if client specifically calls auth/me without auth
+  const isAuthMe = servicePrefix === 'auth' && remainingPath === 'me';
+
   if (authHeader) {
     newHeaders.set('authorization', authHeader);
   } else if (token) {
     newHeaders.set('authorization', `Bearer ${token}`);
-  } else {
+  } else if (!isAuthMe) {
     const fallbackToken = signInternalToken({
       email: 'admin@crm.internal',
       sub: 'usr_default_admin',
@@ -141,7 +160,7 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
   const incomingApiKey = req.headers.get('x-api-key');
   if (incomingApiKey) {
     newHeaders.set('x-api-key', incomingApiKey);
-  } else if (!token && !authHeader) {
+  } else if (!token && !authHeader && !isAuthMe) {
     newHeaders.set('x-api-key', process.env.API_KEY || process.env.SYSTEM_API_KEY || 'ee03f6bc2fba450fdf6d080ae6c8c919');
   }
 

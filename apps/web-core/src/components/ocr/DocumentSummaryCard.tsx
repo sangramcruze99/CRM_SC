@@ -80,13 +80,13 @@ export function DocumentSummaryCard({
     }
     if (s.includes('CREDIT')) {
       return {
-        bg: 'bg-purple-500/15 text-purple-300 border-purple-500/40',
+        bg: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40',
         label: 'CREDIT / SURPLUS',
       };
     }
     if (s.includes('REFUND')) {
       return {
-        bg: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/40',
+        bg: 'bg-teal-500/15 text-teal-300 border-teal-500/40',
         label: 'REFUNDED',
       };
     }
@@ -125,7 +125,7 @@ export function DocumentSummaryCard({
                         key={idx}
                         className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-md bg-amber-950/60 border border-amber-500/40 text-amber-300"
                       >
-                        ⚠️ {reason.replace(/_/g, ' ')}
+                         {reason.replace(/_/g, ' ')}
                       </span>
                     ))}
                   </div>

@@ -250,14 +250,14 @@ export function PaymentLinksClient({ initialLinks = [] }: { initialLinks?: any[]
     setFormTitle('');
     setFormAmount(2500);
     setFormNote('');
-    setAlert(`🎉 Payment link "${newPaymentLink.title}" created with instant settlement to ${selectedDestAccount.name}!`);
+    setAlert(` Payment link "${newPaymentLink.title}"created with instant settlement to ${selectedDestAccount.name}!`);
     setTimeout(() => setAlert(null), 4000);
   };
 
   // Copy link
   const copyToClipboard = (url: string) => {
     navigator.clipboard.writeText(url);
-    setAlert(`📋 Checkout link copied to clipboard: ${url}`);
+    setAlert(` Checkout link copied to clipboard: ${url}`);
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -420,8 +420,7 @@ export function PaymentLinksClient({ initialLinks = [] }: { initialLinks?: any[]
             <CreditCard className="text-emerald-400" size={30} />
             Payment Links &amp; Forex Checkout
           </h1>
-          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-            Create instant checkout links in 10 global currencies. Payments convert in real-time and settle directly into your connected bank accounts, corporate cards, or PayPal merchant vaults.
+          <p className="text-sm text-slate-400 mt-1 max-w-2xl"> Create instant checkout links in 10 global currencies. Payments convert in real-time and settle directly into your connected bank accounts, corporate cards, or PayPal merchant vaults.
           </p>
         </div>
 
@@ -1216,7 +1215,7 @@ export function PaymentLinksClient({ initialLinks = [] }: { initialLinks?: any[]
 
                 {/* Crypto Details */}
                 {selectedPayMethod === 'CRYPTO' && (
-                  <div className="p-3 bg-violet-500/10 border border-violet-500/30 rounded-xl space-y-1 text-[11px] text-violet-300">
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl space-y-1 text-[11px] text-emerald-300">
                     <span className="font-bold block">USDC / USDT Multi-Sig Treasury Inflow</span>
                     <p className="text-slate-400 text-[10px]">Smart contract settlement verified on-chain.</p>
                   </div>
@@ -1321,3 +1320,4 @@ export function PaymentLinksClient({ initialLinks = [] }: { initialLinks?: any[]
     </div>
   );
 }
+

@@ -303,37 +303,37 @@ export function ExtractedDataTabs({
                     <td className="p-3 text-slate-300">Subtotal</td>
                     <td className="p-3 text-right text-white">{financial.currency || '$'}{(financial.subtotal || 0).toFixed(2)}</td>
                     <td className="p-3 text-right text-slate-400">Sum(Line Items)</td>
-                    <td className="p-3 text-center text-emerald-400">✓</td>
+                    <td className="p-3 text-center text-emerald-400"></td>
                   </tr>
                   <tr>
                     <td className="p-3 text-slate-300">Tax / VAT</td>
                     <td className="p-3 text-right text-white">+{financial.currency || '$'}{(financial.tax || 0).toFixed(2)}</td>
                     <td className="p-3 text-right text-slate-400">Computed</td>
-                    <td className="p-3 text-center text-emerald-400">✓</td>
+                    <td className="p-3 text-center text-emerald-400"></td>
                   </tr>
                   <tr>
                     <td className="p-3 text-slate-300">Discount</td>
                     <td className="p-3 text-right text-white">-{financial.currency || '$'}{(financial.discount || 0).toFixed(2)}</td>
                     <td className="p-3 text-right text-slate-400">Deduction</td>
-                    <td className="p-3 text-center text-emerald-400">✓</td>
+                    <td className="p-3 text-center text-emerald-400"></td>
                   </tr>
                   <tr className="bg-white/[0.02] font-bold">
                     <td className="p-3 text-emerald-300">Grand Total</td>
                     <td className="p-3 text-right text-emerald-300">{financial.currency || '$'}{(financial.total || 0).toFixed(2)}</td>
                     <td className="p-3 text-right text-emerald-300">{financial.currency || '$'}{(subtotal + taxAmount - discountAmount).toFixed(2)}</td>
-                    <td className="p-3 text-center text-emerald-400">✓</td>
+                    <td className="p-3 text-center text-emerald-400"></td>
                   </tr>
                   <tr>
                     <td className="p-3 text-slate-300">Amount Paid</td>
                     <td className="p-3 text-right text-white">{financial.currency || '$'}{(financial.amountPaid || 0).toFixed(2)}</td>
                     <td className="p-3 text-right text-slate-400">Sum(Payments)</td>
-                    <td className="p-3 text-center text-emerald-400">✓</td>
+                    <td className="p-3 text-center text-emerald-400"></td>
                   </tr>
                   <tr className="bg-white/[0.02] font-bold">
                     <td className="p-3 text-amber-300">Balance Due</td>
                     <td className="p-3 text-right text-amber-300">{financial.currency || '$'}{(financial.balanceDue || 0).toFixed(2)}</td>
                     <td className="p-3 text-right text-amber-300">{financial.currency || '$'}{Math.max(0, (financial.total || 0) - (financial.amountPaid || 0)).toFixed(2)}</td>
-                    <td className="p-3 text-center text-emerald-400">✓</td>
+                    <td className="p-3 text-center text-emerald-400"></td>
                   </tr>
                 </tbody>
               </table>

@@ -36,7 +36,7 @@ export function SchemaBuilderClient({ initialObjects }: { initialObjects: any[] 
       case 'TEXT': return <Type size={14} className="text-blue-400" />;
       case 'NUMBER': return <Hash size={14} className="text-emerald-400" />;
       case 'DATE': return <Calendar size={14} className="text-emerald-400" />;
-      case 'BOOLEAN': return <CheckSquare size={14} className="text-purple-400" />;
+      case 'BOOLEAN': return <CheckSquare size={14} className="text-emerald-400" />;
       case 'RELATION': return <LinkIcon size={14} className="text-rose-400" />;
       default: return <Type size={14} className="text-slate-400" />;
     }
@@ -172,3 +172,4 @@ export function SchemaBuilderClient({ initialObjects }: { initialObjects: any[] 
     </div>
   );
 }
+

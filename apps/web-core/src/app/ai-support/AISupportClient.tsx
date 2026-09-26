@@ -177,7 +177,7 @@ export function AISupportClient() {
           sentiment: 'NEUTRAL',
         };
         setMessages((prev) => [...prev, aiMsg]);
-        setAlert('⚡ Dissatisfaction threshold reached! Ticket autonomously generated and assigned to specialist.');
+        setAlert(' Dissatisfaction threshold reached! Ticket autonomously generated and assigned to specialist.');
       } else {
         const aiMsg: ChatMessage = {
           id: `m_ai_${Date.now()}`,
@@ -210,7 +210,7 @@ export function AISupportClient() {
             <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">
               Autonomous Support Sentinel
             </span>
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
               LangChain & Flowise Knowledge Vector Agent
             </span>
           </div>
@@ -234,7 +234,7 @@ export function AISupportClient() {
                 : 'bg-white/[0.06] text-slate-300 hover:text-white'
             }`}
           >
-            🔥 Billing Dispute & Escalation
+             Billing Dispute & Escalation
           </button>
           <button
             type="button"
@@ -245,7 +245,7 @@ export function AISupportClient() {
                 : 'bg-white/[0.06] text-slate-300 hover:text-white'
             }`}
           >
-            📚 Auto-Resolved Knowledge Base
+             Auto-Resolved Knowledge Base
           </button>
         </div>
       </div>
@@ -283,7 +283,7 @@ export function AISupportClient() {
                       : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
                   }`}
                 >
-                  {activeScenario === 'billing_dispute' ? '🔥 FRUSTRATED (88%)' : '😊 SATISFIED (98%)'}
+                  {activeScenario === 'billing_dispute' ? ' FRUSTRATED (88%)' : ' SATISFIED (98%)'}
                 </span>
               </div>
             </div>
@@ -423,7 +423,7 @@ export function AISupportClient() {
                   <button
                     type="button"
                     onClick={() => {
-                      setAlert(`✅ Approved 1-Click Resolution for ${ticketDraft.id}! Refund credited on Stripe & confirmation SMS sent.`);
+                      setAlert(` Approved 1-Click Resolution for ${ticketDraft.id}! Refund credited on Stripe & confirmation SMS sent.`);
                       setTimeout(() => setAlert(null), 4000);
                     }}
                     className="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
@@ -435,7 +435,7 @@ export function AISupportClient() {
                   <button
                     type="button"
                     onClick={() => {
-                      setAlert(`👤 Live Human Agent joined conversation session for ${ticketDraft.customerName}!`);
+                      setAlert(` Live Human Agent joined conversation session for ${ticketDraft.customerName}!`);
                       setTimeout(() => setAlert(null), 3000);
                     }}
                     className="w-full py-2 bg-white/[0.06] hover:bg-white/[0.1] text-slate-300 font-bold rounded-xl text-xs border border-white/[0.1] transition-all cursor-pointer flex items-center justify-center gap-1.5"
@@ -458,3 +458,4 @@ export function AISupportClient() {
     </div>
   );
 }
+
