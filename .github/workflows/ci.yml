@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "1.8" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "1.8" ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -43,6 +43,9 @@ jobs:
         env:
           NODE_ENV: production
           JWT_SECRET: "ci-test-secret-key-at-least-32-chars-long"
+
+      - name: Typecheck Web Core
+        run: pnpm --filter @repo/web-core exec tsc --noEmit
 
       - name: Lint Codebase
         run: pnpm run lint || true
