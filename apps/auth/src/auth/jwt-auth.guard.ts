@@ -13,12 +13,14 @@ export class JwtAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const apiKeyHeader = (request.headers['x-api-key'] || request.headers['x-service-key']) as string | undefined;
+    const apiKeyHeader = (request.headers['x-api-key'] ||
+      request.headers['x-service-key']) as string | undefined;
     const configuredApiKey = process.env.API_KEY || process.env.SYSTEM_API_KEY;
 
     // Check direct X-API-Key or X-Service-Key authentication
     if (configuredApiKey && apiKeyHeader === configuredApiKey) {
-      const tenantId = (request.headers['x-tenant-id'] as string) || 'default-tenant';
+      const tenantId =
+        (request.headers['x-tenant-id'] as string) || 'default-tenant';
       request['user'] = {
         sub: 'system-api-key',
         email: 'admin@gmail.com',
