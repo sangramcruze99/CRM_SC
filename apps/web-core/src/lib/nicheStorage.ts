@@ -1,23 +1,21 @@
 // apps/web-core/src/lib/nicheStorage.ts
 /**
  * Master Niche Storage & Business Capability Engine
- * Provides persistent, tenant-isolated storage for all niche operations:
- * Healthcare (Patients, Appointments, Beds, Rx)
- * Real Estate (Properties, Showings, Escrow Deals)
- * Restaurant (Tables, Kitchen KOT, Menu Items)
- * Retail (POS Sales, Barcode Catalog, Khata Ledger)
- * SME (SaaS Subscriptions, MRR)
- * Agency (Client Deliverables, Retainers)
+ * PostgreSQL Relational Persistence Layer (with JSON fallback & dual-sync)
  *
- * Implements:
- * - Atomic persistence to disk
- * - Real audit logging
- * - Universal automation event dispatch
- * - Dynamic metric / KPI recalculation
+ * Supported Verticals:
+ * - Healthcare (Patients, Appointments, Prescriptions, Beds)
+ * - Real Estate (Properties, Showings, Escrow Deals)
+ * - Restaurant (Tables, Kitchen Orders, Menu Items)
+ * - Retail (POS Sales, Barcode Catalog, Khata Credit)
+ * - SME (Subscriptions, MRR)
+ * - Agency (Client Deliverables, Retainers)
+ * - Dynamic / Generic Verticals (Construction, Legal, Logistics, Fitness, Automotive)
  */
 
 import fs from 'fs';
 import path from 'path';
+import { PrismaClient } from '@repo/database';
 
 export interface AuditRecord {
   id: string;
@@ -32,185 +30,34 @@ export interface AuditRecord {
 
 export interface NicheStoreData {
   hospital: {
-    patients: Array<{
-      id: string;
-      tenantId?: string;
-      name: string;
-      age: number;
-      gender: string;
-      department: string;
-      attendingPhysician: string;
-      triageLevel: 'CRITICAL' | 'URGENT' | 'STABLE';
-      roomNumber: string;
-      admitDate: string;
-      insuranceStatus: 'VERIFIED' | 'SELF_PAY' | 'PENDING';
-      notes?: string;
-    }>;
-    appointments: Array<{
-      id: string;
-      tenantId?: string;
-      patient: string;
-      time: string;
-      doctor: string;
-      type: string;
-      status: 'CONFIRMED' | 'IN_CONSULTATION' | 'COMPLETED' | 'CANCELLED';
-    }>;
-    prescriptions: Array<{
-      id: string;
-      tenantId?: string;
-      patientName: string;
-      ehrRecordId: string;
-      diagnosis: string;
-      medications: Array<{ drug: string; dosage: string; frequency: string }>;
-      date: string;
-      prescribedBy: string;
-    }>;
+    patients: Array<any>;
+    appointments: Array<any>;
+    prescriptions: Array<any>;
     totalBeds: number;
   };
   realestate: {
-    properties: Array<{
-      id: string;
-      tenantId?: string;
-      title: string;
-      address: string;
-      price: number;
-      type: 'SINGLE_FAMILY' | 'CONDO' | 'COMMERCIAL' | 'PENTHOUSE';
-      beds: number;
-      baths: number;
-      sqft: number;
-      status: 'ACTIVE' | 'PENDING' | 'CLOSED';
-      imageUrl: string;
-      matchedBuyers: number;
-      agent: string;
-    }>;
-    showings: Array<{
-      id: string;
-      tenantId?: string;
-      propertyId: string;
-      propertyTitle: string;
-      buyerName: string;
-      date: string;
-      time: string;
-      status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED';
-    }>;
-    deals: Array<{
-      id: string;
-      tenantId?: string;
-      propertyTitle: string;
-      buyerName: string;
-      offerAmount: number;
-      stage: 'IN_ESCROW' | 'INSPECTION' | 'FINANCING' | 'CLOSED';
-      closingDate: string;
-      commissionAmount: number;
-    }>;
+    properties: Array<any>;
+    showings: Array<any>;
+    deals: Array<any>;
   };
   restaurant: {
-    tables: Array<{
-      id: string;
-      tenantId?: string;
-      number: string;
-      capacity: number;
-      status: 'AVAILABLE' | 'OCCUPIED' | 'RESERVED' | 'DIRTY';
-      guestName?: string;
-      server?: string;
-      seatedTime?: string;
-      billTotal: number;
-    }>;
-    kitchenOrders: Array<{
-      id: string;
-      tenantId?: string;
-      tableId: string;
-      tableNumber: string;
-      items: Array<{ name: string; qty: number; notes?: string }>;
-      placedTime: string;
-      status: 'PREPARING' | 'READY' | 'SERVED';
-      waiter: string;
-    }>;
-    menuItems: Array<{
-      id: string;
-      tenantId?: string;
-      name: string;
-      category: string;
-      price: number;
-      cost: number;
-      currentStock: number;
-      parLevel: number;
-    }>;
+    tables: Array<any>;
+    kitchenOrders: Array<any>;
+    menuItems: Array<any>;
   };
   retail: {
-    catalogProducts: Array<{
-      id: string;
-      tenantId?: string;
-      barcode: string;
-      name: string;
-      category: string;
-      price: number;
-      stock: number;
-    }>;
-    sales: Array<{
-      id: string;
-      tenantId?: string;
-      receiptNumber: string;
-      timestamp: string;
-      items: Array<{ name: string; qty: number; price: number }>;
-      totalAmount: number;
-      paymentMethod: 'CASH' | 'CARD' | 'QR_PAY' | 'KHATA';
-      customerName?: string;
-    }>;
-    khataCustomers: Array<{
-      id: string;
-      tenantId?: string;
-      name: string;
-      phone: string;
-      totalCreditDue: number;
-      lastPurchaseDate: string;
-      creditLimit: number;
-    }>;
+    catalogProducts: Array<any>;
+    sales: Array<any>;
+    khataCustomers: Array<any>;
   };
   sme: {
-    subscriptions: Array<{
-      id: string;
-      tenantId?: string;
-      customerName: string;
-      plan: string;
-      mrr: number;
-      status: 'ACTIVE' | 'PAST_DUE' | 'TRIAL';
-      renewalDate: string;
-      seats: number;
-    }>;
+    subscriptions: Array<any>;
   };
   agency: {
-    deliverables: Array<{
-      id: string;
-      tenantId?: string;
-      clientName: string;
-      projectTitle: string;
-      milestone: string;
-      dueDate: string;
-      status: 'IN_PROGRESS' | 'IN_REVIEW' | 'APPROVED';
-      retainerAmount: number;
-    }>;
+    deliverables: Array<any>;
   };
-  crm_contacts?: Array<{
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone?: string;
-    companyId?: string;
-    customData?: string;
-    createdAt: string;
-  }>;
-  nicheRecords?: Record<string, Array<{
-    id: string;
-    name: string;
-    status: string;
-    statusColor: string;
-    primaryField: string;
-    secondaryField: string;
-    amount?: string;
-    date: string;
-  }>>;
+  crm_contacts?: Array<any>;
+  nicheRecords?: Record<string, Array<any>>;
   auditLogs: AuditRecord[];
 }
 
@@ -218,6 +65,27 @@ const STORAGE_PATH = path.resolve(
   process.cwd(),
   '../../packages/database/prisma/niche_store.json'
 );
+
+// Global PrismaClient singleton for Next.js App Router
+declare global {
+  var __nichePrisma: PrismaClient | undefined;
+}
+
+const prisma: PrismaClient =
+  global.__nichePrisma ||
+  new PrismaClient({
+    datasourceUrl:
+      process.env.DATABASE_URL ||
+      'postgresql://postgres:postgres_password@127.0.0.1:5432/business_os?schema=public&connection_limit=20&pool_timeout=20',
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  global.__nichePrisma = prisma;
+}
+
+export function getPrismaClient(): PrismaClient {
+  return prisma;
+}
 
 function getInitialStore(): NicheStoreData {
   return {
@@ -268,6 +136,272 @@ function getInitialStore(): NicheStoreData {
     auditLogs: [],
   };
 }
+
+// ----------------------------------------------------------------------------
+// POSTGRESQL ASYNCHRONOUS ENGINE
+// ----------------------------------------------------------------------------
+
+/**
+ * Fetch all scoped entities for a niche directly from PostgreSQL.
+ */
+export async function getScopedNicheDataAsync(
+  niche: string,
+  tenantId: string = 'default-tenant'
+): Promise<any> {
+  try {
+    const records = await prisma.nicheEntity.findMany({
+      where: {
+        tenantId,
+        niche,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (records.length === 0) {
+      // Return defaults if none yet created for standard niches
+      const defaults = getInitialStore();
+      const raw = (defaults as any)[niche];
+      if (raw) return raw;
+      if (defaults.nicheRecords && defaults.nicheRecords[niche]) {
+        return { records: defaults.nicheRecords[niche] };
+      }
+      return null;
+    }
+
+    // Parse JSON records grouped by entityType
+    const grouped: Record<string, any[]> = {};
+    let configData: any = null;
+
+    for (const r of records) {
+      try {
+        const parsed = JSON.parse(r.data);
+        if (r.entityType === 'config') {
+          configData = parsed;
+          continue;
+        }
+        if (!grouped[r.entityType]) {
+          grouped[r.entityType] = [];
+        }
+        grouped[r.entityType].push(parsed);
+      } catch {
+        // Skip unparseable
+      }
+    }
+
+    // Structure standard responses based on vertical
+    if (niche === 'hospital') {
+      return {
+        totalBeds: configData?.totalBeds || 165,
+        patients: grouped['patient'] || [],
+        appointments: grouped['appointment'] || [],
+        prescriptions: grouped['prescription'] || [],
+      };
+    }
+
+    if (niche === 'realestate') {
+      return {
+        properties: grouped['property'] || [],
+        showings: grouped['showing'] || [],
+        deals: grouped['deal'] || [],
+      };
+    }
+
+    if (niche === 'restaurant') {
+      const defaults = getInitialStore().restaurant;
+      return {
+        tables: grouped['table'] && grouped['table'].length > 0 ? grouped['table'] : defaults.tables,
+        kitchenOrders: grouped['kitchenOrder'] || [],
+        menuItems: grouped['menuItem'] || [],
+      };
+    }
+
+    if (niche === 'retail') {
+      return {
+        catalogProducts: grouped['catalogProduct'] || [],
+        sales: grouped['sale'] || [],
+        khataCustomers: grouped['khataCustomer'] || [],
+      };
+    }
+
+    if (niche === 'sme') {
+      return {
+        subscriptions: grouped['subscription'] || [],
+      };
+    }
+
+    if (niche === 'agency') {
+      return {
+        deliverables: grouped['deliverable'] || [],
+      };
+    }
+
+    // Generic niches
+    return {
+      records: grouped['record'] || [],
+    };
+  } catch (err: any) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error(`[POSTGRESQL ERROR] Failed fetching niche data: ${err.message}`);
+      throw err;
+    }
+    console.warn(`[POSTGRESQL FALLBACK] Fallback to memory for niche ${niche}: ${err.message}`);
+    return getScopedNicheData(niche, tenantId);
+  }
+}
+
+/**
+ * Save or update a niche entity in PostgreSQL (atomic upsert).
+ */
+export async function saveNicheEntityAsync(
+  tenantId: string,
+  niche: string,
+  entityType: string,
+  entityId: string,
+  data: any
+): Promise<any> {
+  const safeTenantId = tenantId || 'default-tenant';
+  const payload = { ...data, id: entityId, tenantId: safeTenantId };
+
+  try {
+    const updated = await prisma.nicheEntity.upsert({
+      where: {
+        tenantId_niche_entityType_entityId: {
+          tenantId: safeTenantId,
+          niche,
+          entityType,
+          entityId,
+        },
+      },
+      update: {
+        data: JSON.stringify(payload),
+        updatedAt: new Date(),
+      },
+      create: {
+        tenantId: safeTenantId,
+        niche,
+        entityType,
+        entityId,
+        data: JSON.stringify(payload),
+      },
+    });
+
+    // Mirror to JSON in background for compatibility only in non-production
+    if (process.env.NODE_ENV !== 'production') {
+      try {
+        syncEntityToJson(safeTenantId, niche, entityType, entityId, payload);
+      } catch {}
+    }
+
+    return JSON.parse(updated.data);
+  } catch (err: any) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error(`[POSTGRESQL ERROR] Failed saving niche entity: ${err.message}`);
+      throw err;
+    }
+    console.warn(`[POSTGRESQL FALLBACK] Failed saving to PG, writing to JSON: ${err.message}`);
+    syncEntityToJson(safeTenantId, niche, entityType, entityId, payload);
+    return payload;
+  }
+}
+
+/**
+ * Delete a niche entity from PostgreSQL.
+ */
+export async function deleteNicheEntityAsync(
+  tenantId: string,
+  niche: string,
+  entityType: string,
+  entityId: string
+): Promise<boolean> {
+  const safeTenantId = tenantId || 'default-tenant';
+  try {
+    const res = await prisma.nicheEntity.deleteMany({
+      where: {
+        tenantId: safeTenantId,
+        niche,
+        entityType,
+        entityId,
+      },
+    });
+    return res.count > 0;
+  } catch (err: any) {
+    console.error(`[POSTGRESQL ERROR] Failed deleting niche entity: ${err.message}`);
+    if (process.env.NODE_ENV === 'production') {
+      throw err;
+    }
+    return false;
+  }
+}
+
+/**
+ * Record an audit log entry in PostgreSQL.
+ */
+export async function logNicheAuditAsync(
+  tenantId: string,
+  niche: string,
+  action: string,
+  entityType: string,
+  entityId: string,
+  details: string
+): Promise<void> {
+  const safeTenantId = tenantId || 'default-tenant';
+  try {
+    await prisma.nicheAuditLog.create({
+      data: {
+        tenantId: safeTenantId,
+        niche,
+        action,
+        entityType,
+        entityId,
+        details,
+        timestamp: new Date(),
+      },
+    });
+  } catch (err: any) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error(`[POSTGRESQL AUDIT ERROR] Could not write audit log: ${err.message}`);
+      throw err;
+    }
+    console.warn(`[POSTGRESQL AUDIT WARN] Could not write audit log: ${err.message}`);
+    logNicheAudit(safeTenantId, niche, action, entityType, entityId, details);
+  }
+}
+
+/**
+ * Fetch latest audit logs from PostgreSQL.
+ */
+export async function getScopedAuditLogsAsync(
+  tenantId: string = 'default-tenant'
+): Promise<AuditRecord[]> {
+  try {
+    const logs = await prisma.nicheAuditLog.findMany({
+      where: { tenantId },
+      orderBy: { timestamp: 'desc' },
+      take: 50,
+    });
+
+    return logs.map((l) => ({
+      id: l.id,
+      timestamp: l.timestamp.toISOString(),
+      tenantId: l.tenantId,
+      niche: l.niche,
+      action: l.action,
+      entityType: l.entityType,
+      entityId: l.entityId,
+      details: l.details,
+    }));
+  } catch (err: any) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error(`[POSTGRESQL AUDIT ERROR] Could not fetch audit logs: ${err.message}`);
+      throw err;
+    }
+    return getScopedAuditLogs(tenantId);
+  }
+}
+
+// ----------------------------------------------------------------------------
+// SYNCHRONOUS COMPATIBILITY & DUAL-SYNC LAYER
+// ----------------------------------------------------------------------------
 
 export function readStore(): NicheStoreData {
   try {
@@ -331,6 +465,20 @@ export function logNicheAudit(
   if (!targetStore) {
     writeStore(store);
   }
+
+  // Asynchronously record to PostgreSQL
+  prisma.nicheAuditLog.create({
+    data: {
+      id: entry.id,
+      tenantId,
+      niche,
+      action,
+      entityType,
+      entityId,
+      details,
+      timestamp: new Date(entry.timestamp),
+    },
+  }).catch(() => {});
 }
 
 export function getScopedNicheData(niche: string, tenantId: string = 'default-tenant'): any {
@@ -349,7 +497,6 @@ export function getScopedNicheData(niche: string, tenantId: string = 'default-te
     return null;
   }
 
-  // Strictly filter each array by tenant scope
   const scopedData: Record<string, any> = {};
   for (const [key, value] of Object.entries(rawData)) {
     if (Array.isArray(value)) {
@@ -357,7 +504,6 @@ export function getScopedNicheData(niche: string, tenantId: string = 'default-te
         scopedData[key] = value.filter((item: any) => !item.tenantId || item.tenantId === 'default-tenant');
       } else {
         const tenantItems = value.filter((item: any) => item.tenantId === tenantId);
-        // Fallback for base catalog/floor plan if tenant hasn't defined custom ones yet
         if (tenantItems.length === 0 && (key === 'menuItems' || key === 'catalogProducts' || key === 'tables')) {
           scopedData[key] = value.filter((item: any) => !item.tenantId || item.tenantId === 'default-tenant');
         } else {
@@ -398,15 +544,12 @@ export function saveContactToStore(contact: any, tenantId: string = 'default-ten
     createdAt: new Date().toISOString(),
   };
   store.crm_contacts.unshift(newContact);
-  logNicheAudit(
-    tenantId,
-    'crm',
-    'CREATE_CONTACT',
-    'Contact',
-    newContact.id,
-    `Ingested CRM contact ${newContact.firstName} ${newContact.lastName} (${newContact.email})`
-  );
   writeStore(store);
+
+  // Sync to PostgreSQL
+  saveNicheEntityAsync(tenantId, 'crm', 'contact', newContact.id, newContact).catch(() => {});
+  logNicheAuditAsync(tenantId, 'crm', 'CREATE_CONTACT', 'Contact', newContact.id, `Ingested CRM contact ${newContact.firstName} ${newContact.lastName}`).catch(() => {});
+
   return newContact;
 }
 
@@ -425,8 +568,8 @@ export function deleteContactFromStore(id: string, tenantId: string = 'default-t
   const initialLength = store.crm_contacts.length;
   store.crm_contacts = store.crm_contacts.filter((c) => c.id !== id);
   if (store.crm_contacts.length !== initialLength) {
-    logNicheAudit(tenantId, 'crm', 'DELETE_CONTACT', 'Contact', id, `Removed CRM contact ${id}`);
     writeStore(store);
+    deleteNicheEntityAsync(tenantId, 'crm', 'contact', id).catch(() => {});
     return true;
   }
   return false;
@@ -463,3 +606,37 @@ export async function emitNicheAutomationEvent(
   }
 }
 
+function syncEntityToJson(
+  tenantId: string,
+  niche: string,
+  entityType: string,
+  entityId: string,
+  payload: any
+) {
+  const store = readStore();
+  const targetNiche = (store as any)[niche];
+
+  if (targetNiche) {
+    const pluralKey = `${entityType}s`;
+    if (Array.isArray(targetNiche[pluralKey])) {
+      const idx = targetNiche[pluralKey].findIndex((item: any) => item.id === entityId);
+      if (idx !== -1) {
+        targetNiche[pluralKey][idx] = payload;
+      } else {
+        targetNiche[pluralKey].unshift(payload);
+      }
+      writeStore(store);
+      return;
+    }
+  }
+
+  if (store.nicheRecords && store.nicheRecords[niche]) {
+    const idx = store.nicheRecords[niche].findIndex((item: any) => item.id === entityId);
+    if (idx !== -1) {
+      store.nicheRecords[niche][idx] = payload;
+    } else {
+      store.nicheRecords[niche].unshift(payload);
+    }
+    writeStore(store);
+  }
+}

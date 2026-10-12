@@ -97,4 +97,41 @@ export class UsersService implements OnModuleInit {
       return newUser;
     }
   }
+
+  async findById(id: string) {
+    if (!id) return null;
+    try {
+      const user = await this.prisma.user.findUnique({ where: { id } });
+      if (user) return user;
+    } catch (err: any) {
+      this.logger.warn(`Database unreachable in findById: ${err.message}`);
+    }
+    for (const u of UsersService.inMemoryUsers.values()) {
+      if (u.id === id) return u;
+    }
+    return null;
+  }
+
+  async updateMfa(
+    userId: string,
+    data: { mfaEnabled: boolean; mfaSecret?: string | null; mfaRecoveryCodes?: string | null }
+  ) {
+    if (!userId) return null;
+    try {
+      return await this.prisma.user.update({
+        where: { id: userId },
+        data,
+      });
+    } catch (err: any) {
+      this.logger.warn(`Failed to update user MFA in DB, updating memory: ${err.message}`);
+      for (const [email, u] of UsersService.inMemoryUsers.entries()) {
+        if (u.id === userId) {
+          const updated = { ...u, ...data, updatedAt: new Date() };
+          UsersService.inMemoryUsers.set(email, updated);
+          return updated;
+        }
+      }
+      throw err;
+    }
+  }
 }

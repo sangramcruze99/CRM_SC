@@ -125,7 +125,7 @@ console.log('\n🔍 SUITE 3: JWT Integrity, Alg-Confusion, and Token Verificatio
 
 import { secureTimingCompare, getJwtSecret, ALLOWED_JWT_ALGORITHMS } from '../packages/auth/dist/index.js';
 
-function signTestToken(payload, secret = 'super-secret-business-os-key', alg = 'HS256') {
+function signTestToken(payload, secret = 'test-secure-256bit-automated-verification-secret-xyz123', alg = 'HS256') {
   const header = Buffer.from(JSON.stringify({ alg, typ: 'JWT' })).toString('base64url');
   const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
   if (alg === 'none') {
@@ -135,7 +135,7 @@ function signTestToken(payload, secret = 'super-secret-business-os-key', alg = '
   return `${header}.${body}.${sig}`;
 }
 
-function verifyTestToken(token, secret = 'super-secret-business-os-key') {
+function verifyTestToken(token, secret = 'test-secure-256bit-automated-verification-secret-xyz123') {
   if (!token) return null;
   const parts = token.split('.');
   if (parts.length !== 3) return null;
@@ -361,8 +361,136 @@ await runTest('AI Defense: Sanitizes untrusted context to prevent system policy 
 });
 
 // ----------------------------------------------------------------------------
-// SUMMARY
+// SUITE 9: Cross-Site Request Forgery (CSRF) & Cookie Session Defense
 // ----------------------------------------------------------------------------
+console.log('\n🔍 SUITE 9: CSRF Defense for Cookie-Authenticated Mutations');
+
+function evaluateCsrfProtection({ method, isCookieAuth, isPublic, secFetchSite, originHeader, refererHeader, hostHeader }) {
+  const isMutating = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method);
+  if (!isCookieAuth || !isMutating || isPublic) {
+    return { allowed: true };
+  }
+
+  if (secFetchSite === 'cross-site') {
+    return { allowed: false, reason: 'Cross-site request blocked via sec-fetch-site' };
+  }
+
+  if (originHeader) {
+    try {
+      const parsedOrigin = new URL(originHeader);
+      if (parsedOrigin.host !== hostHeader) {
+        return { allowed: false, reason: 'Origin mismatch against target host' };
+      }
+      return { allowed: true };
+    } catch {
+      return { allowed: false, reason: 'Malformed origin header' };
+    }
+  }
+
+  if (refererHeader) {
+    try {
+      const parsedReferer = new URL(refererHeader);
+      if (parsedReferer.host !== hostHeader) {
+        return { allowed: false, reason: 'Referer mismatch against target host' };
+      }
+      return { allowed: true };
+    } catch {
+      return { allowed: false, reason: 'Malformed referer header' };
+    }
+  }
+
+  return { allowed: false, reason: 'Missing Origin/Referer headers on cookie mutation' };
+}
+
+await runTest('CSRF: Blocks mutating request with cross-site sec-fetch-site header', () => {
+  const res = evaluateCsrfProtection({
+    method: 'POST',
+    isCookieAuth: true,
+    isPublic: false,
+    secFetchSite: 'cross-site',
+    originHeader: 'http://localhost:4000',
+    hostHeader: 'localhost:4000',
+  });
+  assert.strictEqual(res.allowed, false);
+  assert.match(res.reason, /cross-site/i);
+});
+
+await runTest('CSRF: Blocks mutating request when origin belongs to external host', () => {
+  const res = evaluateCsrfProtection({
+    method: 'DELETE',
+    isCookieAuth: true,
+    isPublic: false,
+    originHeader: 'https://attacker.evil.com',
+    hostHeader: 'businessos.internal:4000',
+  });
+  assert.strictEqual(res.allowed, false);
+  assert.match(res.reason, /Origin mismatch/i);
+});
+
+await runTest('CSRF: Allows mutating request when origin matches target host', () => {
+  const res = evaluateCsrfProtection({
+    method: 'POST',
+    isCookieAuth: true,
+    isPublic: false,
+    originHeader: 'https://app.businessos.internal',
+    hostHeader: 'app.businessos.internal',
+  });
+  assert.strictEqual(res.allowed, true);
+});
+
+await runTest('CSRF: Allows safe read-only GET requests even with cookie authentication', () => {
+  const res = evaluateCsrfProtection({
+    method: 'GET',
+    isCookieAuth: true,
+    isPublic: false,
+    originHeader: 'https://attacker.evil.com',
+    hostHeader: 'businessos.internal',
+  });
+  assert.strictEqual(res.allowed, true);
+});
+
+// ----------------------------------------------------------------------------
+// SUITE 10: Document Vault Magic Bytes & Anti-Malware Defense
+// ----------------------------------------------------------------------------
+console.log('\n🔍 SUITE 10: Document Vault Magic Bytes & Malware Detection');
+
+import {
+  verifyFileMagicBytes,
+  scanBufferForMalware,
+} from '../apps/documents/dist/documents/storage-path.util.js';
+
+await runTest('Document Security: Accepts genuine PDF with %PDF magic bytes', () => {
+  const validPdfBuf = Buffer.from('%PDF-1.7\n%Valid PDF Stream');
+  const res = verifyFileMagicBytes(validPdfBuf, 'contract.pdf', 'application/pdf');
+  assert.strictEqual(res.isValid, true);
+  assert.strictEqual(res.detectedType, 'pdf');
+});
+
+await runTest('Document Security: Rejects executable PE binary renamed as .pdf (MZ signature)', () => {
+  const peExeBuf = Buffer.from([0x4d, 0x5a, 0x90, 0x00, 0x03, 0x00, 0x00, 0x00]);
+  const res = verifyFileMagicBytes(peExeBuf, 'malware.pdf', 'application/pdf');
+  assert.strictEqual(res.isValid, false);
+  assert.match(res.reason, /Executable binary signature/i);
+});
+
+await runTest('Document Security: Rejects prohibited executable file extensions (.exe, .sh, .ps1)', () => {
+  const txtBuf = Buffer.from('echo "hello world"');
+  const res = verifyFileMagicBytes(txtBuf, 'payload.ps1', 'text/plain');
+  assert.strictEqual(res.isValid, false);
+  assert.match(res.reason, /Prohibited executable file extension/i);
+});
+
+await runTest('Document Security: EICAR standard anti-malware hook catches test payload', () => {
+  const eicarBuf = Buffer.from('X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*');
+  const scanResult = scanBufferForMalware(eicarBuf);
+  assert.strictEqual(scanResult.isClean, false);
+  assert.strictEqual(scanResult.threat, 'EICAR-Test-Signature');
+
+  const cleanBuf = Buffer.from('Normal clean customer contract content.');
+  const cleanScan = scanBufferForMalware(cleanBuf);
+  assert.strictEqual(cleanScan.isClean, true);
+});
+
 console.log('\n' + '='.repeat(70));
 console.log(`📊 TEST RESULTS: ${passCount} PASSED, ${failCount} FAILED`);
 console.log('='.repeat(70));

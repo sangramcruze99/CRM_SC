@@ -3,70 +3,263 @@
     "totalBeds": 165,
     "patients": [
       {
-        "id": "PT-6867895",
-        "tenantId": "acme-tenant",
-        "name": "Victoria Hawthorne",
-        "age": 36,
-        "gender": "Female",
-        "department": "Neurology",
-        "attendingPhysician": "Dr. Sarah Lin, MD",
-        "triageLevel": "URGENT",
-        "roomNumber": "Ward 4B - Bed 01",
-        "admitDate": "2026-09-26",
+        "id": "PT-7486344",
+        "tenantId": "master-gate-tenant",
+        "name": "Lady Genevieve",
+        "age": 48,
+        "gender": "Other",
+        "department": "Emergency Care",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-MASTER",
+        "admitDate": "2026-10-12",
         "insuranceStatus": "VERIFIED",
         "notes": "Inpatient admission registered"
       },
       {
-        "id": "PT-6296853",
-        "tenantId": "acme-tenant",
-        "name": "Victoria Hawthorne",
-        "age": 36,
-        "gender": "Female",
-        "department": "Neurology",
-        "attendingPhysician": "Dr. Sarah Lin, MD",
-        "triageLevel": "URGENT",
-        "roomNumber": "Ward 4B - Bed 01",
-        "admitDate": "2026-09-26",
+        "id": "PT-6402998",
+        "tenantId": "master-gate-tenant",
+        "name": "Lady Genevieve",
+        "age": 48,
+        "gender": "Other",
+        "department": "Emergency Care",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-MASTER",
+        "admitDate": "2026-10-12",
         "insuranceStatus": "VERIFIED",
         "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-5856725",
+        "tenantId": "test-audit-tenant-phase5",
+        "name": "Dr. Arthur Conan",
+        "age": 55,
+        "gender": "Other",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-02",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Phase 5 automated test admission"
+      },
+      {
+        "id": "PT-7172713",
+        "tenantId": "test-audit-tenant-phase5",
+        "name": "Dr. Arthur Conan",
+        "age": 55,
+        "gender": "Other",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-02",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Phase 5 automated test admission"
+      },
+      {
+        "id": "PT-9444945",
+        "tenantId": "test-audit-tenant-phase5",
+        "name": "Dr. Arthur Conan",
+        "age": 55,
+        "gender": "Other",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-02",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Phase 5 automated test admission"
+      },
+      {
+        "id": "PT-REG-1791837634560",
+        "tenantId": "tenant_regression_test",
+        "name": "Jane Doe Regression",
+        "age": 34,
+        "gender": "Other",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward Bed 01",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-REG-1791835546371",
+        "tenantId": "tenant_regression_test",
+        "name": "Jane Doe Regression",
+        "age": 34,
+        "gender": "Other",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward Bed 01",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-5719601",
+        "tenantId": "master-gate-tenant",
+        "name": "Lady Genevieve",
+        "age": 48,
+        "gender": "Other",
+        "department": "Emergency Care",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-MASTER",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-REG-1791834033129",
+        "tenantId": "tenant_regression_test",
+        "name": "Jane Doe Regression",
+        "age": 34,
+        "gender": "Other",
+        "department": "Cardiology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "URGENT",
+        "roomNumber": "Ward Bed 01",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-9683254",
+        "tenantId": "test-audit-tenant-phase5",
+        "name": "Dr. Arthur Conan",
+        "age": 55,
+        "gender": "Other",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-02",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Phase 5 automated test admission"
+      },
+      {
+        "id": "PT-5760685",
+        "tenantId": "test-audit-tenant-phase5",
+        "name": "Dr. Arthur Conan",
+        "age": 55,
+        "gender": "Other",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-02",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Phase 5 automated test admission"
+      },
+      {
+        "id": "PT-9609692",
+        "tenantId": "test-audit-tenant-phase5",
+        "name": "Dr. Arthur Conan",
+        "age": 55,
+        "gender": "Other",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-02",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Phase 5 automated test admission"
+      },
+      {
+        "id": "PT-3137252",
+        "tenantId": "master-gate-tenant",
+        "name": "Lady Genevieve",
+        "age": 48,
+        "gender": "Other",
+        "department": "Emergency Care",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-MASTER",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-1247491",
+        "tenantId": "test-audit-tenant-phase5",
+        "name": "Dr. Arthur Conan",
+        "age": 55,
+        "gender": "Other",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-02",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Phase 5 automated test admission"
+      },
+      {
+        "id": "PT-3837964",
+        "tenantId": "master-gate-tenant",
+        "name": "Lady Genevieve",
+        "age": 48,
+        "gender": "Other",
+        "department": "Emergency Care",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-MASTER",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-9357935",
+        "tenantId": "master-gate-tenant",
+        "name": "Lady Genevieve",
+        "age": 48,
+        "gender": "Other",
+        "department": "Emergency Care",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-MASTER",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-1710217",
+        "tenantId": "master-gate-tenant",
+        "name": "Lady Genevieve",
+        "age": 48,
+        "gender": "Other",
+        "department": "Emergency Care",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-MASTER",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Inpatient admission registered"
+      },
+      {
+        "id": "PT-9440826",
+        "tenantId": "test-audit-tenant-phase5",
+        "name": "Dr. Arthur Conan",
+        "age": 55,
+        "gender": "Other",
+        "department": "Neurology",
+        "attendingPhysician": "Dr. On-Duty Specialist",
+        "triageLevel": "CRITICAL",
+        "roomNumber": "ICU-02",
+        "admitDate": "2026-10-12",
+        "insuranceStatus": "VERIFIED",
+        "notes": "Phase 5 automated test admission"
       }
     ],
     "appointments": [],
     "prescriptions": []
   },
   "realestate": {
-    "properties": [
-      {
-        "id": "PROP-735",
-        "tenantId": "acme-tenant",
-        "title": "Malibu Oceanfront Villa",
-        "address": "24800 Pacific Coast Hwy, Malibu, CA",
-        "price": 8500000,
-        "type": "SINGLE_FAMILY",
-        "beds": 5,
-        "baths": 6,
-        "sqft": 6800,
-        "status": "ACTIVE",
-        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
-        "matchedBuyers": 12,
-        "agent": "Broker On Duty"
-      },
-      {
-        "id": "PROP-705",
-        "tenantId": "acme-tenant",
-        "title": "Malibu Oceanfront Villa",
-        "address": "24800 Pacific Coast Hwy, Malibu, CA",
-        "price": 8500000,
-        "type": "SINGLE_FAMILY",
-        "beds": 5,
-        "baths": 6,
-        "sqft": 6800,
-        "status": "ACTIVE",
-        "imageUrl": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80",
-        "matchedBuyers": 4,
-        "agent": "Broker On Duty"
-      }
-    ],
+    "properties": [],
     "showings": [],
     "deals": []
   },
@@ -76,10 +269,8 @@
         "id": "T-01",
         "number": "Table 1",
         "capacity": 2,
-        "status": "OCCUPIED",
-        "billTotal": 250,
-        "tenantId": "acme-tenant",
-        "guestName": "Chef VIP Party"
+        "status": "AVAILABLE",
+        "billTotal": 0
       },
       {
         "id": "T-02",
@@ -131,101 +322,19 @@
         "billTotal": 0
       }
     ],
-    "kitchenOrders": [
-      {
-        "id": "KOT-7022971",
-        "tenantId": "acme-tenant",
-        "tableId": "T-01",
-        "tableNumber": "Table 1",
-        "items": [
-          {
-            "name": "Dry-Aged Ribeye",
-            "qty": 2,
-            "price": 65
-          }
-        ],
-        "placedTime": "01:19 AM",
-        "status": "PREPARING",
-        "waiter": "Marco"
-      },
-      {
-        "id": "KOT-6440188",
-        "tenantId": "acme-tenant",
-        "tableId": "T-01",
-        "tableNumber": "Table 1",
-        "items": [
-          {
-            "name": "Dry-Aged Ribeye",
-            "qty": 2,
-            "price": 65
-          }
-        ],
-        "placedTime": "01:18 AM",
-        "status": "PREPARING",
-        "waiter": "Marco"
-      }
-    ],
+    "kitchenOrders": [],
     "menuItems": []
   },
   "retail": {
-    "catalogProducts": [
-      {
-        "id": "sku_1790450397066",
-        "tenantId": "acme-tenant",
-        "name": "Premium Coffee Beans",
-        "category": "Beverage",
-        "price": 24.5,
-        "stock": 38,
-        "barcode": "890828826800"
-      }
-    ],
-    "sales": [
-      {
-        "id": "POS-956",
-        "tenantId": "acme-tenant",
-        "receiptNumber": "REC-2026-8439",
-        "timestamp": "2026-09-26T19:19:57.091Z",
-        "items": [
-          {
-            "name": "Premium Coffee Beans",
-            "qty": 2,
-            "price": 24.5
-          }
-        ],
-        "totalAmount": 49,
-        "paymentMethod": "KHATA_CREDIT",
-        "customerName": "Walk-In Customer"
-      }
-    ],
+    "catalogProducts": [],
+    "sales": [],
     "khataCustomers": []
   },
   "sme": {
-    "subscriptions": [
-      {
-        "id": "SUB-531",
-        "tenantId": "acme-tenant",
-        "customerName": "Quantum AI Systems",
-        "plan": "Dedicated Cluster",
-        "mrr": 15000,
-        "status": "ACTIVE",
-        "renewalDate": "2027-01-01",
-        "seats": 150
-      }
-    ]
+    "subscriptions": []
   },
   "agency": {
-    "deliverables": [
-      {
-        "id": "DEL-230",
-        "tenantId": "acme-tenant",
-        "clientName": "AeroDynamics EV",
-        "projectTitle": "Global TV Commercial",
-        "milestone": "3D VFX Final Render",
-        "dueDate": "2026-10-20",
-        "status": "IN_PROGRESS",
-        "retainerAmount": 32000
-      }
-    ]
+    "deliverables": []
   },
   "nicheRecords": {
     "construction": [],
@@ -237,64 +346,184 @@
   "crm_contacts": [],
   "auditLogs": [
     {
-      "id": "aud_1790450397232_63o2h",
-      "timestamp": "2026-09-26T19:19:57.232Z",
-      "tenantId": "acme-tenant",
-      "niche": "agency",
-      "action": "CREATE_DELIVERABLE",
-      "entityType": "Deliverable",
-      "entityId": "DEL-230",
-      "details": "Created deliverable 3D VFX Final Render for AeroDynamics EV"
-    },
-    {
-      "id": "aud_1790450397066_4k0zy",
-      "timestamp": "2026-09-26T19:19:57.066Z",
-      "tenantId": "acme-tenant",
-      "niche": "retail",
-      "action": "ADD_PRODUCT",
-      "entityType": "Product",
-      "entityId": "sku_1790450397066",
-      "details": "Added Premium Coffee Beans to catalog ($24.5)"
-    },
-    {
-      "id": "aud_1790450397022_3z2v9",
-      "timestamp": "2026-09-26T19:19:57.022Z",
-      "tenantId": "acme-tenant",
-      "niche": "restaurant",
-      "action": "CREATE_KOT",
-      "entityType": "KitchenOrder",
-      "entityId": "KOT-7022971",
-      "details": "Sent 1 items to kitchen for Table 1"
-    },
-    {
-      "id": "aud_1790450396867_vcyo2",
-      "timestamp": "2026-09-26T19:19:56.867Z",
-      "tenantId": "acme-tenant",
+      "id": "aud_1791845507523_gleq8",
+      "timestamp": "2026-10-12T22:51:47.523Z",
+      "tenantId": "master-gate-tenant",
       "niche": "hospital",
       "action": "ADMIT_PATIENT",
       "entityType": "Patient",
-      "entityId": "PT-6867895",
-      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+      "entityId": "PT-7486344",
+      "details": "Admitted patient Lady Genevieve to ICU-MASTER"
     },
     {
-      "id": "aud_1790450306440_5h7z5",
-      "timestamp": "2026-09-26T19:18:26.440Z",
-      "tenantId": "acme-tenant",
-      "niche": "restaurant",
-      "action": "CREATE_KOT",
-      "entityType": "KitchenOrder",
-      "entityId": "KOT-6440188",
-      "details": "Sent 1 items to kitchen for Table 1"
-    },
-    {
-      "id": "aud_1790450306296_4ely4",
-      "timestamp": "2026-09-26T19:18:26.296Z",
-      "tenantId": "acme-tenant",
+      "id": "aud_1791837796407_um2nd",
+      "timestamp": "2026-10-12T20:43:16.407Z",
+      "tenantId": "master-gate-tenant",
       "niche": "hospital",
       "action": "ADMIT_PATIENT",
       "entityType": "Patient",
-      "entityId": "PT-6296853",
-      "details": "Admitted patient Victoria Hawthorne to Ward 4B - Bed 01"
+      "entityId": "PT-6402998",
+      "details": "Admitted patient Lady Genevieve to ICU-MASTER"
+    },
+    {
+      "id": "aud_1791837745859_dnhmv",
+      "timestamp": "2026-10-12T20:42:25.859Z",
+      "tenantId": "test-audit-tenant-phase5",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-5856725",
+      "details": "Admitted patient Dr. Arthur Conan to ICU-02"
+    },
+    {
+      "id": "aud_1791837717176_kmrry",
+      "timestamp": "2026-10-12T20:41:57.176Z",
+      "tenantId": "test-audit-tenant-phase5",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-7172713",
+      "details": "Admitted patient Dr. Arthur Conan to ICU-02"
+    },
+    {
+      "id": "aud_1791837639447_6jcyz",
+      "timestamp": "2026-10-12T20:40:39.447Z",
+      "tenantId": "test-audit-tenant-phase5",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-9444945",
+      "details": "Admitted patient Dr. Arthur Conan to ICU-02"
+    },
+    {
+      "id": "aud_1791837634592_4fqwv",
+      "timestamp": "2026-10-12T20:40:34.592Z",
+      "tenantId": "tenant_regression_test",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-REG-1791837634560",
+      "details": "Admitted patient Jane Doe Regression to Ward Bed 01"
+    },
+    {
+      "id": "aud_1791835546385_41011",
+      "timestamp": "2026-10-12T20:05:46.385Z",
+      "tenantId": "tenant_regression_test",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-REG-1791835546371",
+      "details": "Admitted patient Jane Doe Regression to Ward Bed 01"
+    },
+    {
+      "id": "aud_1791835535792_xdmb8",
+      "timestamp": "2026-10-12T20:05:35.792Z",
+      "tenantId": "master-gate-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-5719601",
+      "details": "Admitted patient Lady Genevieve to ICU-MASTER"
+    },
+    {
+      "id": "aud_1791834033140_i58hs",
+      "timestamp": "2026-10-12T19:40:33.140Z",
+      "tenantId": "tenant_regression_test",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-REG-1791834033129",
+      "details": "Admitted patient Jane Doe Regression to Ward Bed 01"
+    },
+    {
+      "id": "aud_1791833999686_ep2te",
+      "timestamp": "2026-10-12T19:39:59.686Z",
+      "tenantId": "test-audit-tenant-phase5",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-9683254",
+      "details": "Admitted patient Dr. Arthur Conan to ICU-02"
+    },
+    {
+      "id": "aud_1791829085760_vnonn",
+      "timestamp": "2026-10-12T18:18:05.760Z",
+      "tenantId": "test-audit-tenant-phase5",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-5760685",
+      "details": "Admitted patient Dr. Arthur Conan to ICU-02"
+    },
+    {
+      "id": "aud_1791828119609_zzj7z",
+      "timestamp": "2026-10-12T18:01:59.609Z",
+      "tenantId": "test-audit-tenant-phase5",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-9609692",
+      "details": "Admitted patient Dr. Arthur Conan to ICU-02"
+    },
+    {
+      "id": "aud_1791826573143_aukj6",
+      "timestamp": "2026-10-12T17:36:13.143Z",
+      "tenantId": "master-gate-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-3137252",
+      "details": "Admitted patient Lady Genevieve to ICU-MASTER"
+    },
+    {
+      "id": "aud_1791826521269_1qq76",
+      "timestamp": "2026-10-12T17:35:21.269Z",
+      "tenantId": "test-audit-tenant-phase5",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-1247491",
+      "details": "Admitted patient Dr. Arthur Conan to ICU-02"
+    },
+    {
+      "id": "aud_1791826323844_3mgy7",
+      "timestamp": "2026-10-12T17:32:03.844Z",
+      "tenantId": "master-gate-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-3837964",
+      "details": "Admitted patient Lady Genevieve to ICU-MASTER"
+    },
+    {
+      "id": "aud_1791826299383_f8kcp",
+      "timestamp": "2026-10-12T17:31:39.383Z",
+      "tenantId": "master-gate-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-9357935",
+      "details": "Admitted patient Lady Genevieve to ICU-MASTER"
+    },
+    {
+      "id": "aud_1791826231765_rxacu",
+      "timestamp": "2026-10-12T17:30:31.765Z",
+      "tenantId": "master-gate-tenant",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-1710217",
+      "details": "Admitted patient Lady Genevieve to ICU-MASTER"
+    },
+    {
+      "id": "aud_1791825489446_cj24p",
+      "timestamp": "2026-10-12T17:18:09.446Z",
+      "tenantId": "test-audit-tenant-phase5",
+      "niche": "hospital",
+      "action": "ADMIT_PATIENT",
+      "entityType": "Patient",
+      "entityId": "PT-9440826",
+      "details": "Admitted patient Dr. Arthur Conan to ICU-02"
     }
   ]
 }

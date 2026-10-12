@@ -1,5 +1,6 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { DocumentServiceRegistry } from './document-service.registry';
@@ -8,7 +9,11 @@ import {
   sanitizeFilename,
   calculateChecksum,
   resolvePhysicalStoragePath,
+  verifyFileMagicBytes,
+  scanBufferForMalware,
 } from './storage-path.util';
+
+import { S3StorageService } from './s3-storage.service';
 
 export interface CreateDocumentInput {
   name: string;
@@ -49,7 +54,10 @@ export class DocumentsService {
   private static inMemoryDocs: any[] = [];
   private static inMemoryRefs: any[] = [];
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly s3Storage: S3StorageService
+  ) {}
 
   /**
    * Find all documents matching tenant and optional service-aware filters
@@ -242,15 +250,58 @@ export class DocumentsService {
       computedChecksum = calculateChecksum(data.url || `${tenantId}:${storageKey}:${Date.now()}`);
     }
 
-    // 4. Physical Storage Persistence
-    let physicalSavedPath: string | null = null;
+    // 4. File Integrity & Malware Validation
     if (fileBuffer) {
-      try {
-        physicalSavedPath = resolvePhysicalStoragePath(storageKey);
-        fs.writeFileSync(physicalSavedPath, fileBuffer);
-        this.logger.log(`Persisted canonical physical file: ${storageKey}`);
-      } catch (fsErr: any) {
-        this.logger.warn(`Physical file save warning: ${fsErr.message}`);
+      const malwareScan = scanBufferForMalware(fileBuffer);
+      if (!malwareScan.isClean) {
+        throw new BadRequestException(`Malicious payload detected: ${malwareScan.threat}`);
+      }
+
+      const magicCheck = verifyFileMagicBytes(fileBuffer, sanitizedName, data.mimeType);
+      if (!magicCheck.isValid) {
+        throw new BadRequestException(`File integrity validation failed: ${magicCheck.reason}`);
+      }
+    }
+
+    // 5. Cloud Object Storage / Physical Storage Persistence
+    let physicalSavedPath: string | null = null;
+    let s3UploadResult: any = null;
+
+    if (fileBuffer) {
+      if (this.s3Storage.configured) {
+        try {
+          s3UploadResult = await this.s3Storage.uploadObject(
+            storageKey,
+            fileBuffer,
+            data.mimeType || 'application/octet-stream',
+            {
+              tenantId,
+              service: placement.service,
+              module: placement.module,
+              category: placement.category,
+              originalName: encodeURIComponent(originalName),
+            }
+          );
+          this.logger.log(`Persisted canonical object to private S3: ${storageKey}`);
+        } catch (s3Err: any) {
+          if (process.env.NODE_ENV === 'production') {
+            this.logger.error(`S3 upload failed in production: ${s3Err.message}`);
+            throw s3Err;
+          }
+          this.logger.warn(`S3 upload warning, falling back to local: ${s3Err.message}`);
+        }
+      } else if (process.env.NODE_ENV === 'production') {
+        throw new Error('FATAL: Private cloud object storage (S3 / MinIO) is mandatory in production. Local filesystem fallback is forbidden.');
+      }
+
+      if (!s3UploadResult) {
+        try {
+          physicalSavedPath = resolvePhysicalStoragePath(storageKey);
+          fs.writeFileSync(physicalSavedPath, fileBuffer);
+          this.logger.log(`Persisted canonical physical file fallback: ${storageKey}`);
+        } catch (fsErr: any) {
+          this.logger.warn(`Physical file save warning: ${fsErr.message}`);
+        }
       }
     }
 
@@ -337,7 +388,7 @@ export class DocumentsService {
 
     // 6. Persist Authoritative Database Metadata
     const size = fileBuffer ? fileBuffer.length : data.size || 1024;
-    const url = data.url || `https://storage.crm.example.com/${storageKey}`;
+    const url = s3UploadResult?.url || data.url || `https://storage.crm.example.com/${storageKey}`;
     const parentDocumentId = data.parentDocumentId || null;
 
     let createdDoc: any = null;
@@ -637,5 +688,104 @@ export class DocumentsService {
         // safe fallback
       }
     }
+  }
+
+  // --- S3 & Cloud Object Storage Operations ---
+
+  /**
+   * Generate presigned upload URL for direct-to-cloud client upload
+   */
+  async getPresignedUploadUrl(
+    tenantId: string,
+    options: {
+      filename: string;
+      mimeType?: string;
+      service?: string;
+      module?: string;
+      category?: string;
+      entityType?: string;
+      entityId?: string;
+    }
+  ) {
+    const placement = DocumentServiceRegistry.validatePlacement({
+      service: options.service,
+      module: options.module,
+      entityType: options.entityType,
+      entityId: options.entityId,
+      category: options.category,
+    });
+
+    const sanitizedName = sanitizeFilename(options.filename);
+    const storageKey = buildCanonicalStorageKey({
+      tenantId,
+      service: placement.service,
+      module: placement.module,
+      entityType: placement.entityType,
+      entityId: placement.entityId,
+      category: placement.category,
+      filename: sanitizedName,
+    });
+
+    const presigned = await this.s3Storage.getPresignedUploadUrl(
+      storageKey,
+      options.mimeType || 'application/octet-stream',
+      900
+    );
+
+    return {
+      success: true,
+      storageKey,
+      ...presigned,
+    };
+  }
+
+  /**
+   * Generate time-bounded presigned download URL for secure private document access
+   */
+  async getPresignedDownloadUrl(id: string, tenantId: string, expiresInSeconds: number = 3600) {
+    const doc = await this.findOne(id, tenantId);
+    const storageKey = doc.storageKey || `tenant/${tenantId}/documents/general/root/upload/${sanitizeFilename(doc.name)}`;
+
+    const downloadUrl = await this.s3Storage.getPresignedDownloadUrl(storageKey, expiresInSeconds);
+    return {
+      success: true,
+      documentId: id,
+      storageKey,
+      downloadUrl,
+      expiresInSeconds,
+    };
+  }
+
+  /**
+   * Execute migration of local vault filesystem files to private cloud S3 storage
+   */
+  async migrateLocalVault(tenantId: string = 'default-tenant') {
+    const vaultRoots = [
+      path.resolve(process.cwd(), 'storage', 'vault'),
+      path.resolve(process.cwd(), 'vault'),
+    ];
+
+    let totalMigrated = 0;
+    let totalSkipped = 0;
+    let totalFailed = 0;
+    const allFiles: any[] = [];
+
+    for (const vRoot of vaultRoots) {
+      if (fs.existsSync(vRoot)) {
+        const res = await this.s3Storage.migrateLocalVault(vRoot, tenantId);
+        totalMigrated += res.migratedCount;
+        totalSkipped += res.skippedCount;
+        totalFailed += res.failedCount;
+        allFiles.push(...res.files);
+      }
+    }
+
+    return {
+      success: totalFailed === 0,
+      totalMigrated,
+      totalSkipped,
+      totalFailed,
+      files: allFiles,
+    };
   }
 }

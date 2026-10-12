@@ -23,14 +23,14 @@ import { createRequire } from 'module';
 process.loadEnvFile?.('.env');
 const require = createRequire(import.meta.url);
 const path = require('path');
-process.env.DATABASE_URL = 'file:' + path.resolve('packages/database/prisma/dev.db').replace(/\\/g, '/');
+process.env.DATABASE_URL = process.env.DATABASE_URL || ('file:' + path.resolve('packages/database/prisma/dev.db').replace(/\\/g, '/'));
 const { PrismaClient } = require('../packages/database');
 
 const prisma = new PrismaClient();
 const jwt = require('jsonwebtoken');
 const AUTOMATION_URL = process.env.AUTOMATION_URL || 'http://127.0.0.1:3009';
 const TENANT_ID = 'default-tenant';
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-business-os-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'test-secure-256bit-automated-verification-secret-xyz123';
 
 const authToken = jwt.sign(
   {

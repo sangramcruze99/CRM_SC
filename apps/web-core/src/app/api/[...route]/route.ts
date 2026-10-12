@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyInternalToken, signInternalToken } from '@/lib/auth';
+import { revokeSessionWebCore } from '@/lib/sessionRevocation';
 
 // Map of prefixes to internal microservice URLs
 const serviceMap: Record<string, string> = {
@@ -161,6 +162,63 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
     );
   }
 
+  // CSRF Protection for Cookie-Authenticated Mutations
+  const isMutatingMethod = ['POST', 'PUT', 'DELETE', 'PATCH'].includes(req.method);
+  const isCookieAuth = Boolean(cookieToken && !bearerToken && !hasValidApiKey);
+
+  if (isCookieAuth && isMutatingMethod && !isPublic) {
+    // 1. Sec-Fetch-Site check: reject cross-site requests
+    const secFetchSite = req.headers.get('sec-fetch-site');
+    if (secFetchSite === 'cross-site') {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'CSRF violation: Cross-site request rejected for cookie-authenticated session' },
+        { status: 403 }
+      );
+    }
+
+    // 2. Origin & Referer verification against host
+    const originHeader = req.headers.get('origin');
+    const refererHeader = req.headers.get('referer');
+    const hostHeader = req.headers.get('host') || req.nextUrl.host;
+
+    if (originHeader) {
+      try {
+        const originUrl = new URL(originHeader);
+        if (originUrl.host !== hostHeader) {
+          return NextResponse.json(
+            { error: 'Forbidden', message: 'CSRF violation: Request origin does not match target host' },
+            { status: 403 }
+          );
+        }
+      } catch {
+        return NextResponse.json(
+          { error: 'Forbidden', message: 'CSRF violation: Malformed origin header' },
+          { status: 403 }
+        );
+      }
+    } else if (refererHeader) {
+      try {
+        const refererUrl = new URL(refererHeader);
+        if (refererUrl.host !== hostHeader) {
+          return NextResponse.json(
+            { error: 'Forbidden', message: 'CSRF violation: Request referer does not match target host' },
+            { status: 403 }
+          );
+        }
+      } catch {
+        return NextResponse.json(
+          { error: 'Forbidden', message: 'CSRF violation: Malformed referer header' },
+          { status: 403 }
+        );
+      }
+    } else {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'CSRF violation: Missing Origin/Referer headers for cookie mutation' },
+        { status: 403 }
+      );
+    }
+  }
+
   // Tenant Boundary Enforcement & IDOR/BOLA Protection
   const requestedTenantId = req.headers.get('x-tenant-id');
   let effectiveTenantId = verifiedTenantId || 'default-tenant';
@@ -229,6 +287,28 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
           // ignore parsing error
         }
       }
+    } else if (backendPath === 'auth/logout' || remainingPath === 'logout') {
+      try {
+        const tokenToRevoke =
+          req.cookies.get('access_token')?.value ||
+          req.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+        if (tokenToRevoke) {
+          const verified = verifyInternalToken(tokenToRevoke);
+          const sessionIdentifier = verified?.jti || tokenToRevoke;
+          let ttlSeconds = 604800;
+          if (verified?.exp) {
+            ttlSeconds = Math.max(verified.exp - Math.floor(Date.now() / 1000), 60);
+          }
+          await revokeSessionWebCore(sessionIdentifier, ttlSeconds);
+        }
+      } catch (e: any) {
+        console.warn('[LOGOUT WARN] Session revocation notice:', e.message);
+      }
+
+      resHeaders.set(
+        'Set-Cookie',
+        'access_token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT'
+      );
     }
 
     return new NextResponse(resBody, {

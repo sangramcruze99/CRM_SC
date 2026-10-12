@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtAuthGuard } from '@repo/auth';
+import { JwtAuthGuard, getJwtSecret } from '@repo/auth';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { KnowledgeModule } from './knowledge/knowledge.module';
@@ -16,7 +16,7 @@ import { TrainingControlPlaneModule } from './training-control-plane/training-co
 
 @Module({
   imports: [
-    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
+    JwtModule.register({ secret: getJwtSecret() }),
     PromptsModule,
     AgentsModule,
     KnowledgeModule,

@@ -6,13 +6,28 @@ import {
   Param,
   Query,
   Headers,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
+import { Public } from '@repo/auth';
 import { PortalService } from './portal.service';
 
 @Controller('portal')
 export class PortalController {
   constructor(private readonly portalService: PortalService) {}
 
+  private extractTenantId(req?: Request, headersTenantId?: string): string {
+    const user = (req as any)?.user;
+    if (user?.tenantId) {
+      if (user.role === 'SUPERADMIN' && headersTenantId) {
+        return headersTenantId;
+      }
+      return user.tenantId;
+    }
+    return headersTenantId || 'default-tenant';
+  }
+
+  @Public()
   @Get('health')
   getHealth() {
     return {
@@ -25,54 +40,66 @@ export class PortalController {
 
   @Get('invoices')
   async getInvoices(
-    @Headers('x-tenant-id') tenantId = 'default-tenant',
+    @Req() req: Request,
+    @Headers('x-tenant-id') rawTenantId?: string,
     @Query('clientEmail') clientEmail?: string,
   ) {
+    const tenantId = this.extractTenantId(req, rawTenantId);
     const data = await this.portalService.getClientInvoices(tenantId, clientEmail);
     return { data, count: data.length };
   }
 
   @Post('pay')
   async payInvoice(
-    @Headers('x-tenant-id') tenantId = 'default-tenant',
+    @Req() req: Request,
     @Body('invoiceId') invoiceId: string,
+    @Headers('x-tenant-id') rawTenantId?: string,
   ) {
+    const tenantId = this.extractTenantId(req, rawTenantId);
     return this.portalService.initiatePayment(tenantId, invoiceId);
   }
 
   @Get('documents')
   async getDocuments(
-    @Headers('x-tenant-id') tenantId = 'default-tenant',
+    @Req() req: Request,
+    @Headers('x-tenant-id') rawTenantId?: string,
     @Query('clientEmail') clientEmail?: string,
   ) {
+    const tenantId = this.extractTenantId(req, rawTenantId);
     const data = await this.portalService.getClientDocuments(tenantId, clientEmail);
     return { data, count: data.length };
   }
 
   @Post('documents/:id/sign')
   async signDocument(
-    @Headers('x-tenant-id') tenantId = 'default-tenant',
+    @Req() req: Request,
     @Param('id') documentId: string,
     @Body('clientEmail') clientEmail: string,
     @Body('signatureDigest') signatureDigest: string,
+    @Headers('x-tenant-id') rawTenantId?: string,
   ) {
+    const tenantId = this.extractTenantId(req, rawTenantId);
     return this.portalService.signDocument(tenantId, documentId, clientEmail, signatureDigest);
   }
 
   @Get('tickets')
   async getTickets(
-    @Headers('x-tenant-id') tenantId = 'default-tenant',
+    @Req() req: Request,
+    @Headers('x-tenant-id') rawTenantId?: string,
     @Query('clientEmail') clientEmail?: string,
   ) {
+    const tenantId = this.extractTenantId(req, rawTenantId);
     const data = await this.portalService.getClientTickets(tenantId, clientEmail);
     return { data, count: data.length };
   }
 
   @Post('tickets')
   async createTicket(
-    @Headers('x-tenant-id') tenantId = 'default-tenant',
+    @Req() req: Request,
     @Body() dto: { subject: string; description: string; clientEmail: string },
+    @Headers('x-tenant-id') rawTenantId?: string,
   ) {
+    const tenantId = this.extractTenantId(req, rawTenantId);
     const data = await this.portalService.createClientTicket(tenantId, dto);
     return { success: true, data };
   }

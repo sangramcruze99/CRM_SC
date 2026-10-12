@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -65,14 +65,17 @@ model Tenant {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String?
-  name         String?
-  tenantId     String
-  role         String   @default("USER")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               String   @id @default(cuid())
+  email            String   @unique
+  passwordHash     String?
+  name             String?
+  tenantId         String
+  role             String   @default("USER")
+  mfaEnabled       Boolean  @default(false)
+  mfaSecret        String?
+  mfaRecoveryCodes String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   channelMembers ChannelMember[]
@@ -2419,4 +2422,39 @@ model Notification {
   @@index([tenantId, category])
   @@index([tenantId, createdAt])
 }
+
+// ----------------------------------------------------------------------------
+// NICHE VERTICAL BUSINESS PERSISTENCE & AUDIT (POSTGRESQL RELATIONAL BACKEND)
+// ----------------------------------------------------------------------------
+
+model NicheEntity {
+  id          String   @id @default(cuid())
+  tenantId    String   @default("default-tenant")
+  niche       String   // hospital, realestate, restaurant, retail, sme, agency, etc.
+  entityType  String   // patient, appointment, prescription, property, showing, deal, table, order, menu, product, sale, khata, subscription, deliverable, generic
+  entityId    String   // natural ID (e.g. PT-1001, PROP-701, T-01, POS-891)
+  data        String   // JSON string of full entity payload
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, niche, entityType, entityId])
+  @@index([tenantId, niche, entityType])
+  @@index([tenantId, niche])
+  @@index([tenantId, entityId])
+}
+
+model NicheAuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String   @default("default-tenant")
+  niche       String
+  action      String
+  entityType  String
+  entityId    String
+  details     String
+  timestamp   DateTime @default(now())
+
+  @@index([tenantId, niche])
+  @@index([tenantId, timestamp])
+}
+
 

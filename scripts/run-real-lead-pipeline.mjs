@@ -2,7 +2,7 @@ import { createRequire } from 'module';
 process.loadEnvFile?.('.env');
 const require = createRequire(import.meta.url);
 const path = require('path');
-process.env.DATABASE_URL = 'file:' + path.resolve('packages/database/prisma/dev.db').replace(/\\/g, '/');
+process.env.DATABASE_URL = process.env.DATABASE_URL || ('file:' + path.resolve('packages/database/prisma/dev.db').replace(/\\/g, '/'));
 const { PrismaClient } = require('../packages/database');
 const jwt = require('jsonwebtoken');
 

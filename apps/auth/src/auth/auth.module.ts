@@ -1,3 +1,4 @@
+import { getJwtSecret } from '@repo/auth';
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -10,7 +11,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
     UsersModule,
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET || 'super-secret-business-os-key',
+      secret: getJwtSecret(),
       signOptions: { expiresIn: '7d' },
     }),
   ],

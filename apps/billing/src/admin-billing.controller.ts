@@ -5,7 +5,10 @@ import {
   Body,
   Param,
   Headers,
+  Req,
+  ForbiddenException,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { PrismaService } from './prisma/prisma.service';
 import { ReconciliationService } from './reconciliation/reconciliation.service';
 import { EnterpriseService, CreateEnterpriseContractDto } from './enterprise/enterprise.service';
@@ -18,11 +21,19 @@ export class AdminBillingController {
     private readonly enterpriseService: EnterpriseService,
   ) {}
 
+  private assertAdmin(req: Request) {
+    const user = (req as any)?.user;
+    if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPERADMIN')) {
+      throw new ForbiddenException('Admin or Superadmin privileges required for admin billing endpoints');
+    }
+  }
+
   /**
    * List all tenants with plan, subscription status, and revenue
    */
   @Get('tenants')
-  async listTenants() {
+  async listTenants(@Req() req: Request) {
+    this.assertAdmin(req);
     const tenants = await this.prisma.tenant.findMany({
       include: {
         users: { select: { id: true, email: true } },
@@ -50,7 +61,8 @@ export class AdminBillingController {
    * Audit reconciliation between local DB and Stripe
    */
   @Get('reconciliation')
-  async getReconciliationReport() {
+  async getReconciliationReport(@Req() req: Request) {
+    this.assertAdmin(req);
     return this.reconciliationService.runReconciliationAudit(true);
   }
 
@@ -59,6 +71,7 @@ export class AdminBillingController {
    */
   @Post('entitlements/override')
   async setOverride(
+    @Req() req: Request,
     @Body()
     body: {
       tenantId: string;
@@ -69,6 +82,7 @@ export class AdminBillingController {
       createdBy?: string;
     },
   ) {
+    this.assertAdmin(req);
     return this.enterpriseService.setOverride(body);
   }
 
@@ -76,7 +90,8 @@ export class AdminBillingController {
    * Create bespoke Enterprise Contract
    */
   @Post('enterprise/contract')
-  async createEnterpriseContract(@Body() body: CreateEnterpriseContractDto) {
+  async createEnterpriseContract(@Req() req: Request, @Body() body: CreateEnterpriseContractDto) {
+    this.assertAdmin(req);
     return this.enterpriseService.createContract(body);
   }
 
@@ -84,7 +99,8 @@ export class AdminBillingController {
    * Platform-Wide AI Unit Economics (Provider Cost vs Subscription Revenue)
    */
   @Get('unit-economics')
-  async getUnitEconomics() {
+  async getUnitEconomics(@Req() req: Request) {
+    this.assertAdmin(req);
     const [usageStats, activeSubscriptions, plans] = await Promise.all([
       this.prisma.usageEvent.aggregate({
         where: { metric: 'ai.tokens.total' },

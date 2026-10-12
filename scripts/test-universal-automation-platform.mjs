@@ -23,7 +23,7 @@
 
 import crypto from 'crypto';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-business-os-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'test-secure-256bit-automated-verification-secret-xyz123';
 
 function signTestToken(tenantId = 'tenant_master_audit') {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');

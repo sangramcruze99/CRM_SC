@@ -72,7 +72,7 @@ services:
       NODE_ENV: production
       PORT: 4000
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres_password@postgres:5432/crm_db?schema=public}
-      JWT_SECRET: ${JWT_SECRET:-super-secret-business-os-key}
+      JWT_SECRET: ${JWT_SECRET:?FATAL: JWT_SECRET must be explicitly set for production}
     depends_on:
       - db-migrate
     networks:
@@ -92,7 +92,7 @@ services:
     environment:
       PORT: 3001
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres_password@postgres:5432/crm_db?schema=public}
-      JWT_SECRET: ${JWT_SECRET:-super-secret-business-os-key}
+      JWT_SECRET: ${JWT_SECRET:?FATAL: JWT_SECRET must be explicitly set for production}
     depends_on:
       - db-migrate
     networks:
@@ -114,7 +114,7 @@ services:
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres_password@postgres:5432/crm_db?schema=public}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      JWT_SECRET: ${JWT_SECRET:-super-secret-business-os-key}
+      JWT_SECRET: ${JWT_SECRET:?FATAL: JWT_SECRET must be explicitly set for production}
     depends_on:
       redis:
         condition: service_healthy
@@ -137,7 +137,7 @@ services:
     environment:
       PORT: 3013
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres_password@postgres:5432/crm_db?schema=public}
-      JWT_SECRET: ${JWT_SECRET:-super-secret-business-os-key}
+      JWT_SECRET: ${JWT_SECRET:?FATAL: JWT_SECRET must be explicitly set for production}
     depends_on:
       - db-migrate
     networks:
@@ -157,7 +157,7 @@ services:
     environment:
       PORT: 3014
       DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres_password@postgres:5432/crm_db?schema=public}
-      JWT_SECRET: ${JWT_SECRET:-super-secret-business-os-key}
+      JWT_SECRET: ${JWT_SECRET:?FATAL: JWT_SECRET must be explicitly set for production}
     depends_on:
       - db-migrate
     networks:

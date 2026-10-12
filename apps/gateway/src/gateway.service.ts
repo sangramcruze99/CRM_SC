@@ -58,4 +58,41 @@ export class GatewayService {
       timestamp: new Date().toISOString(),
     };
   }
+
+  async checkReadiness() {
+    const checks: Record<string, 'UP' | 'DOWN'> = {
+      database: 'DOWN',
+      redis: 'DOWN',
+      objectStorage: 'DOWN',
+    };
+
+    const checkPort = (port: number): Promise<boolean> => {
+      return new Promise((resolve) => {
+        const net = require('node:net');
+        const sock = new net.Socket();
+        sock.setTimeout(1500);
+        sock.on('connect', () => { sock.destroy(); resolve(true); });
+        sock.on('timeout', () => { sock.destroy(); resolve(false); });
+        sock.on('error', () => { sock.destroy(); resolve(false); });
+        sock.connect(port, '127.0.0.1');
+      });
+    };
+
+    const [dbOk, redisOk, storageOk] = await Promise.all([
+      checkPort(5432),
+      checkPort(6379),
+      checkPort(9000),
+    ]);
+
+    checks.database = dbOk ? 'UP' : 'DOWN';
+    checks.redis = redisOk ? 'UP' : 'DOWN';
+    checks.objectStorage = storageOk ? 'UP' : 'DOWN';
+
+    const isReady = dbOk && redisOk && storageOk;
+    return {
+      status: isReady ? 'READY' : 'NOT_READY',
+      checks,
+      timestamp: new Date().toISOString(),
+    };
+  }
 }

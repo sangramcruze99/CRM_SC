@@ -1,7 +1,17 @@
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-business-os-key';
+function getWebCoreJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret || secret === 'super-secret-business-os-key' || secret.includes('replace-with')) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('FATAL SECURITY ERROR: Insecure or missing JWT_SECRET in production web-core.');
+    }
+    return 'dev-ephemeral-jwt-secret-do-not-use-in-production-min32chars';
+  }
+  return secret;
+}
+const JWT_SECRET = getWebCoreJwtSecret();
 
 export interface VerifiedJwtPayload {
   sub?: string;
@@ -49,10 +59,37 @@ export function verifyInternalToken(token?: string): VerifiedJwtPayload | null {
       return null;
     }
 
+    // Disallow intermediate challenge tokens from being treated as authenticated sessions
+    if (payload.typ === 'mfa_challenge') {
+      return null;
+    }
+
     return payload;
   } catch {
     return null;
   }
+}
+
+import { isSessionRevokedWebCore } from './sessionRevocation';
+
+export async function verifySessionAsync(token?: string): Promise<VerifiedJwtPayload | null> {
+  const verified = verifyInternalToken(token);
+  if (!verified) return null;
+
+  try {
+    const identifier = verified.jti || token!;
+    let revoked = await isSessionRevokedWebCore(identifier);
+    if (!revoked && token && token !== identifier) {
+      revoked = await isSessionRevokedWebCore(token);
+    }
+    if (revoked) return null;
+  } catch (err: any) {
+    if (process.env.NODE_ENV === 'production') {
+      throw err;
+    }
+  }
+
+  return verified;
 }
 
 export async function getTenantHeaders() {
@@ -64,9 +101,11 @@ export async function getTenantHeaders() {
     token = cookieStore.get('access_token')?.value;
 
     if (token) {
-      const verified = verifyInternalToken(token);
+      const verified = await verifySessionAsync(token);
       if (verified && verified.tenantId) {
         tenantId = verified.tenantId;
+      } else {
+        token = undefined; // Drop revoked/invalid session
       }
     }
   } catch {

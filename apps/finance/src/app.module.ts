@@ -1,3 +1,4 @@
+import { getJwtSecret } from '@repo/auth';
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
@@ -28,7 +29,7 @@ import { OutboxModule } from './outbox/outbox.module';
 
 @Module({
   imports: [
-    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
+    JwtModule.register({ secret: getJwtSecret() }),
     PrismaModule,
     OutboxModule,
     AccountingModule,

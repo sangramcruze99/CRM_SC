@@ -3,7 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
-import { JwtAuthGuard } from '@repo/auth';
+import { JwtAuthGuard, getJwtSecret } from '@repo/auth';
 import { ActionsModule } from './actions/actions.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -22,6 +22,10 @@ import { ScreeningProfilesModule } from './screening-profiles/screening-profiles
 import { VaultWatcherModule } from './vault-watcher/vault-watcher.module';
 import { IntentModule } from './intent/intent.module';
 
+if (process.env.NODE_ENV === 'production' && process.env.ENABLE_BULLMQ === 'false') {
+  throw new Error('FATAL CONFIGURATION ERROR: BullMQ distributed execution is mandatory in production environment. In-memory queue fallback is forbidden.');
+}
+
 const isRedisConfigured = Boolean(
   process.env.ENABLE_BULLMQ !== 'false' && (
     process.env.REDIS_HOST || 
@@ -33,7 +37,7 @@ const isRedisConfigured = Boolean(
 
 @Module({
   imports: [
-    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),
+    JwtModule.register({ secret: getJwtSecret() }),
     ScheduleModule.forRoot(),
     EventBusModule,
     ...(isRedisConfigured ? [

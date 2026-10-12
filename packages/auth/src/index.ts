@@ -14,18 +14,41 @@ import * as crypto from 'crypto';
 export const IS_PUBLIC_KEY = 'isPublic';
 export const Public = () => SetMetadata(IS_PUBLIC_KEY, true);
 
-export const DEFAULT_JWT_SECRET = 'super-secret-business-os-key';
+import { getJwtSecret } from './secrets';
+export * from './secrets';
+export * from './revocation';
+export * from './totp';
+export * from './encryption';
 export const ALLOWED_JWT_ALGORITHMS = ['HS256'] as const;
 
-export function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret || secret === DEFAULT_JWT_SECRET || secret.includes('replace-with')) {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('FATAL SECURITY ERROR: Insecure or default JWT_SECRET detected in production environment.');
-    }
-    return DEFAULT_JWT_SECRET;
+import { isSessionRevoked } from './revocation';
+
+/**
+ * Verifies a JWT token using HS256 and checks server-side session revocation in Redis.
+ */
+export async function verifyJwtToken(token: string, options: { checkRevocation?: boolean } = { checkRevocation: true }): Promise<any> {
+  const jwtService = new JwtService();
+  const payload = await jwtService.verifyAsync(token, {
+    secret: getJwtSecret(),
+    algorithms: ['HS256'],
+  });
+
+  if (payload.typ === 'mfa_challenge') {
+    throw new UnauthorizedException('Challenge token cannot be used for resource access. MFA verification required.');
   }
-  return secret;
+
+  if (options.checkRevocation !== false && payload) {
+    const identifier = payload.jti || token;
+    let revoked = await isSessionRevoked(identifier);
+    if (!revoked && token && token !== identifier) {
+      revoked = await isSessionRevoked(token);
+    }
+    if (revoked) {
+      throw new UnauthorizedException('Session has been revoked');
+    }
+  }
+
+  return payload;
 }
 
 /**
@@ -56,6 +79,20 @@ export class JwtAuthGuard implements CanActivate {
         return true;
       }
     }
+
+    // Direct reflection fallback for @Public() metadata
+    try {
+      const handler = context.getHandler();
+      if (handler && typeof (Reflect as any)?.getMetadata === 'function') {
+        const isPublicHandler = (Reflect as any).getMetadata(IS_PUBLIC_KEY, handler);
+        if (isPublicHandler) return true;
+      }
+      const targetClass = context.getClass();
+      if (targetClass && typeof (Reflect as any)?.getMetadata === 'function') {
+        const isPublicClass = (Reflect as any).getMetadata(IS_PUBLIC_KEY, targetClass);
+        if (isPublicClass) return true;
+      }
+    } catch {}
 
     const request = context.switchToHttp().getRequest<Request>();
     const apiKeyHeader = (request.headers['x-api-key'] || request.headers['x-service-key']) as string | undefined;
@@ -109,6 +146,23 @@ export class JwtAuthGuard implements CanActivate {
         throw new UnauthorizedException('Token expired');
       }
 
+      // Explicitly reject intermediate MFA challenge tokens from accessing protected resources
+      if (payload.typ === 'mfa_challenge') {
+        this.logger.warn(`Rejected resource access attempt with intermediate MFA challenge token for user ${payload.sub}`);
+        throw new UnauthorizedException('Challenge token cannot be used for resource access. MFA verification required.');
+      }
+
+      // Enforce Server-Side Session Revocation check in Redis
+      const sessionIdentifier = payload.jti || token;
+      let revoked = await isSessionRevoked(sessionIdentifier);
+      if (!revoked && token && token !== sessionIdentifier) {
+        revoked = await isSessionRevoked(token);
+      }
+      if (revoked) {
+        this.logger.warn(`Rejected request with revoked session for user ${payload.sub} (session: ${payload.jti || 'token-hash'})`);
+        throw new UnauthorizedException('Session has been revoked');
+      }
+
       const verifiedTenantId = payload.tenantId || 'default-tenant';
       const requestedTenantId = request.headers['x-tenant-id'] as string | undefined;
 
@@ -119,7 +173,8 @@ export class JwtAuthGuard implements CanActivate {
         throw new UnauthorizedException('Cross-tenant access forbidden: tenant header does not match token context');
       }
 
-      // Enforce verified tenant context
+      // Enforce verified tenant context and store token on request
+      (request as any)['token'] = token;
       (request as any)['user'] = {
         ...payload,
         tenantId: verifiedTenantId,

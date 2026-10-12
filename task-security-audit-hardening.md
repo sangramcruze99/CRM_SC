@@ -38,14 +38,20 @@
   - [x] AI Agent Tool BOLA/IDOR and human approval gating enforced in `apps/ai-engine/src/agents/agent-tool-registry.service.ts`
   - [x] Security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, HSTS) added to `apps/web-core/next.config.ts`
   - [x] CORS restrictiveness added to `apps/gateway/src/main.ts`
-  - [x] Document Vault tenant context enforcement in `apps/documents/src/documents/guards/service-auth.guard.ts`
+  - [x] Gateway distributed rate limiting via `GatewayThrottlerGuard` with burst (25 req/s) and sustained (300 req/min) limits
+  - [x] CSRF protections for cookie-authenticated mutating requests with `sec-fetch-site` and `Origin`/`Referer` matching
+  - [x] Document Vault magic bytes verification and EICAR anti-malware hook in `apps/documents/src/documents/storage-path.util.ts`
+  - [x] Webhook timestamp tolerance window (5 min) added to Stripe signature verification to prevent replay attacks
+  - [x] Next.js dependency advisory resolved by upgrading `@repo/web-core` to Next.js 16.3.8
 - [x] **PHASE 6 — Add regression tests and verify cross-service behavior**
-  - [x] Automated security regression suite `scripts/verify-security-hardening.mjs` (21 tests covering SSRF, XSS, JWT alg confusion, audit redaction, webhook HMAC, Document Vault path traversal, tenant isolation, and AI prompt boundaries) — 100% PASS
+  - [x] Automated security regression suite `scripts/verify-security-hardening.mjs` (29 tests across 10 security suites covering SSRF, XSS, JWT alg confusion, audit redaction, webhook HMAC & replay, Document Vault path traversal & magic bytes, tenant isolation, AI prompt boundaries, and CSRF) — 100% PASS (29/29)
 - [x] **PHASE 7 — Run existing application tests and build checks**
   - [x] AI engine unit tests (34 tests passed)
   - [x] CRM unit tests passed
   - [x] Auth unit tests passed
   - [x] Documents unit tests passed
   - [x] Full workspace turbo build (31 of 31 projects built successfully)
+  - [x] Full TypeScript typecheck across `@repo/web-core` passed with 0 errors
 - [x] **PHASE 8 — Final security regression & evidence-backed report**
   - [x] Comprehensive evidence-backed security report produced
+

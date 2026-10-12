@@ -8,19 +8,31 @@ import {
   All,
   HttpStatus,
 } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Request, Response } from 'express';
+import { verifyJwtToken } from '@repo/auth';
 import { GatewayService } from './gateway.service';
 
 @Controller()
 export class GatewayController {
   constructor(private readonly gatewayService: GatewayService) {}
 
-  @Get('health')
+  @SkipThrottle()
+  @Get(['health', 'api/health', 'healthz', 'api/healthz'])
   getHealth() {
     return this.gatewayService.getMeshHealth();
   }
 
-  @Get('gateway/routes')
+  @SkipThrottle()
+  @Get(['readyz', 'api/readyz'])
+  async getReadyz(@Res() res: Response) {
+    const result = await this.gatewayService.checkReadiness();
+    const statusCode = result.status === 'READY' ? HttpStatus.OK : HttpStatus.SERVICE_UNAVAILABLE;
+    return res.status(statusCode).json(result);
+  }
+
+  @SkipThrottle()
+  @Get(['gateway/routes', 'api/gateway/routes'])
   getRoutes() {
     return {
       success: true,
@@ -42,6 +54,31 @@ export class GatewayController {
       });
     }
 
+    // Verify Authorization & Tenant Boundaries
+    const authHeader = req.headers.authorization;
+    let verifiedUser: any = null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      try {
+        verifiedUser = await verifyJwtToken(token);
+      } catch (err: any) {
+        return res.status(HttpStatus.UNAUTHORIZED).json({
+          error: 'Unauthorized',
+          message: `Invalid access token: ${err.message}`,
+        });
+      }
+    }
+
+    const requestedTenant = req.headers['x-tenant-id'] as string;
+    if (requestedTenant && verifiedUser && verifiedUser.role !== 'SUPERADMIN') {
+      if (verifiedUser.tenantId && verifiedUser.tenantId !== requestedTenant) {
+        return res.status(HttpStatus.FORBIDDEN).json({
+          error: 'Forbidden',
+          message: 'Cross-tenant access prohibited: requested tenant does not match token',
+        });
+      }
+    }
+
     const subPath = req.url.replace(`/api/v1/${service}`, '');
     const upstreamUrl = `${targetConfig.targetUrl}${subPath}`;
 
@@ -51,6 +88,12 @@ export class GatewayController {
         if (value && typeof value === 'string' && key !== 'host') {
           headers[key] = value;
         }
+      }
+      if (req.headers['x-correlation-id']) {
+        headers['x-correlation-id'] = req.headers['x-correlation-id'] as string;
+      }
+      if (verifiedUser && verifiedUser.tenantId && verifiedUser.role !== 'SUPERADMIN') {
+        headers['x-tenant-id'] = verifiedUser.tenantId;
       }
 
       const fetchOptions: RequestInit = {

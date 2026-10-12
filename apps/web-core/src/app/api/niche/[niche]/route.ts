@@ -4,9 +4,14 @@ import {
   readStore,
   writeStore,
   logNicheAudit,
+  logNicheAuditAsync,
   emitNicheAutomationEvent,
   getScopedNicheData,
+  getScopedNicheDataAsync,
   getScopedAuditLogs,
+  getScopedAuditLogsAsync,
+  saveNicheEntityAsync,
+  deleteNicheEntityAsync,
   NicheStoreData,
 } from '@/lib/nicheStorage';
 
@@ -15,10 +20,10 @@ export async function GET(
   { params }: { params: Promise<{ niche: string }> }
 ) {
   const { niche } = await params;
-  const store = readStore();
   const tenantId = req.headers.get('x-tenant-id') || req.nextUrl.searchParams.get('tenantId') || 'default-tenant';
-  const scopedData = getScopedNicheData(niche, tenantId);
-  const auditLogs = getScopedAuditLogs(tenantId);
+  const scopedData = await getScopedNicheDataAsync(niche, tenantId);
+  const auditLogs = await getScopedAuditLogsAsync(tenantId);
+  const store = readStore();
 
   if (niche === 'hospital') {
     const data = scopedData || store.hospital;
@@ -202,7 +207,9 @@ export async function POST(
           notes: payload.notes || 'Inpatient admission registered',
         };
         store.hospital.patients.unshift(newPatient);
+        await saveNicheEntityAsync(tenantId, 'hospital', 'patient', newPatient.id, newPatient);
         logNicheAudit(tenantId, 'hospital', 'ADMIT_PATIENT', 'Patient', newPatient.id, `Admitted patient ${newPatient.name} to ${newPatient.roomNumber}`, store);
+        await logNicheAuditAsync(tenantId, 'hospital', 'ADMIT_PATIENT', 'Patient', newPatient.id, `Admitted patient ${newPatient.name} to ${newPatient.roomNumber}`);
         writeStore(store);
         emitNicheAutomationEvent('hospital', 'ADMIT_PATIENT', newPatient, tenantId);
         return NextResponse.json({ success: true, record: newPatient });
@@ -219,7 +226,9 @@ export async function POST(
           status: 'CONFIRMED' as const,
         };
         store.hospital.appointments.unshift(newAppt);
+        await saveNicheEntityAsync(tenantId, 'hospital', 'appointment', newAppt.id, newAppt);
         logNicheAudit(tenantId, 'hospital', 'SCHEDULE_APPOINTMENT', 'Appointment', newAppt.id, `Scheduled consultation for ${newAppt.patient}`, store);
+        await logNicheAuditAsync(tenantId, 'hospital', 'SCHEDULE_APPOINTMENT', 'Appointment', newAppt.id, `Scheduled consultation for ${newAppt.patient}`);
         writeStore(store);
         return NextResponse.json({ success: true, record: newAppt });
       }
@@ -236,7 +245,9 @@ export async function POST(
           prescribedBy: payload.prescribedBy || 'Attending Physician',
         };
         store.hospital.prescriptions.unshift(newRx);
+        await saveNicheEntityAsync(tenantId, 'hospital', 'prescription', newRx.id, newRx);
         logNicheAudit(tenantId, 'hospital', 'ISSUE_PRESCRIPTION', 'Prescription', newRx.id, `Signed prescription for ${newRx.patientName}`, store);
+        await logNicheAuditAsync(tenantId, 'hospital', 'ISSUE_PRESCRIPTION', 'Prescription', newRx.id, `Signed prescription for ${newRx.patientName}`);
         writeStore(store);
         return NextResponse.json({ success: true, record: newRx });
       }
@@ -261,7 +272,9 @@ export async function POST(
           agent: payload.agent || 'Broker On Duty',
         };
         store.realestate.properties.unshift(newProp);
+        await saveNicheEntityAsync(tenantId, 'realestate', 'property', newProp.id, newProp);
         logNicheAudit(tenantId, 'realestate', 'CREATE_PROPERTY', 'Property', newProp.id, `Created MLS listing ${newProp.title} at $${newProp.price.toLocaleString()}`);
+        await logNicheAuditAsync(tenantId, 'realestate', 'CREATE_PROPERTY', 'Property', newProp.id, `Created MLS listing ${newProp.title} at $${newProp.price.toLocaleString()}`);
         writeStore(store);
         emitNicheAutomationEvent('realestate', 'CREATE_PROPERTY', newProp, tenantId);
         return NextResponse.json({ success: true, record: newProp });
@@ -279,7 +292,9 @@ export async function POST(
           status: 'SCHEDULED' as const,
         };
         store.realestate.showings.unshift(newShowing);
+        await saveNicheEntityAsync(tenantId, 'realestate', 'showing', newShowing.id, newShowing);
         logNicheAudit(tenantId, 'realestate', 'BOOK_SHOWING', 'Showing', newShowing.id, `Scheduled showing for ${newShowing.buyerName}`, store);
+        await logNicheAuditAsync(tenantId, 'realestate', 'BOOK_SHOWING', 'Showing', newShowing.id, `Scheduled showing for ${newShowing.buyerName}`);
         writeStore(store);
         emitNicheAutomationEvent('realestate', 'BOOK_SHOWING', newShowing, tenantId);
         return NextResponse.json({ success: true, record: newShowing });
@@ -297,7 +312,9 @@ export async function POST(
           commissionAmount: (parseFloat(payload.offerAmount) || 2000000) * 0.03,
         };
         store.realestate.deals.unshift(newDeal);
+        await saveNicheEntityAsync(tenantId, 'realestate', 'deal', newDeal.id, newDeal);
         logNicheAudit(tenantId, 'realestate', 'OPEN_ESCROW', 'Deal', newDeal.id, `Opened escrow on ${newDeal.propertyTitle} for $${newDeal.offerAmount.toLocaleString()}`);
+        await logNicheAuditAsync(tenantId, 'realestate', 'OPEN_ESCROW', 'Deal', newDeal.id, `Opened escrow on ${newDeal.propertyTitle} for $${newDeal.offerAmount.toLocaleString()}`);
         writeStore(store);
         emitNicheAutomationEvent('realestate', 'OPEN_ESCROW', newDeal, tenantId);
         return NextResponse.json({ success: true, record: newDeal });
@@ -318,9 +335,12 @@ export async function POST(
             seatedTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
             billTotal: 0,
           };
-          logNicheAudit(tenantId, 'restaurant', 'SEAT_TABLE', 'Table', payload.tableId, `Seated party ${payload.guestName} at table ${store.restaurant.tables[tableIndex].number}`);
+          const updatedTable = store.restaurant.tables[tableIndex];
+          await saveNicheEntityAsync(tenantId, 'restaurant', 'table', updatedTable.id, updatedTable);
+          logNicheAudit(tenantId, 'restaurant', 'SEAT_TABLE', 'Table', payload.tableId, `Seated party ${payload.guestName} at table ${updatedTable.number}`);
+          await logNicheAuditAsync(tenantId, 'restaurant', 'SEAT_TABLE', 'Table', payload.tableId, `Seated party ${payload.guestName} at table ${updatedTable.number}`);
           writeStore(store);
-          return NextResponse.json({ success: true, record: store.restaurant.tables[tableIndex] });
+          return NextResponse.json({ success: true, record: updatedTable });
         }
       }
 
@@ -336,14 +356,18 @@ export async function POST(
           waiter: payload.waiter || 'Server',
         };
         store.restaurant.kitchenOrders.unshift(newKOT);
+        await saveNicheEntityAsync(tenantId, 'restaurant', 'kitchenOrder', newKOT.id, newKOT);
+
         // Also update table bill total
         const orderTotal = (payload.items || []).reduce((acc: number, item: any) => acc + (item.price || 25) * (item.qty || 1), 0);
         const table = store.restaurant.tables.find((t) => t.id === payload.tableId);
         if (table) {
           table.billTotal += orderTotal;
           table.tenantId = tenantId;
+          await saveNicheEntityAsync(tenantId, 'restaurant', 'table', table.id, table);
         }
         logNicheAudit(tenantId, 'restaurant', 'CREATE_KOT', 'KitchenOrder', newKOT.id, `Sent ${newKOT.items.length} items to kitchen for ${newKOT.tableNumber}`, store);
+        await logNicheAuditAsync(tenantId, 'restaurant', 'CREATE_KOT', 'KitchenOrder', newKOT.id, `Sent ${newKOT.items.length} items to kitchen for ${newKOT.tableNumber}`);
         writeStore(store);
         emitNicheAutomationEvent('restaurant', 'CREATE_KOT', newKOT, tenantId);
         return NextResponse.json({ success: true, record: newKOT });
@@ -359,10 +383,13 @@ export async function POST(
             guestName: payload.guestName !== undefined ? payload.guestName : store.restaurant.tables[tableIndex].guestName,
             billTotal: payload.currentBill !== undefined ? payload.currentBill : store.restaurant.tables[tableIndex].billTotal,
           };
-          logNicheAudit(tenantId, 'restaurant', 'UPDATE_TABLE_STATUS', 'Table', payload.tableId, `Updated table ${store.restaurant.tables[tableIndex].number} status to ${payload.status}`);
+          const updatedTable = store.restaurant.tables[tableIndex];
+          await saveNicheEntityAsync(tenantId, 'restaurant', 'table', updatedTable.id, updatedTable);
+          logNicheAudit(tenantId, 'restaurant', 'UPDATE_TABLE_STATUS', 'Table', payload.tableId, `Updated table ${updatedTable.number} status to ${payload.status}`);
+          await logNicheAuditAsync(tenantId, 'restaurant', 'UPDATE_TABLE_STATUS', 'Table', payload.tableId, `Updated table ${updatedTable.number} status to ${payload.status}`);
           writeStore(store);
-          emitNicheAutomationEvent('restaurant', 'UPDATE_TABLE_STATUS', store.restaurant.tables[tableIndex], tenantId);
-          return NextResponse.json({ success: true, record: store.restaurant.tables[tableIndex] });
+          emitNicheAutomationEvent('restaurant', 'UPDATE_TABLE_STATUS', updatedTable, tenantId);
+          return NextResponse.json({ success: true, record: updatedTable });
         }
       }
 
@@ -370,7 +397,9 @@ export async function POST(
         const order = store.restaurant.kitchenOrders.find((k) => k.id === payload.orderId);
         if (order) {
           order.status = 'READY';
+          await saveNicheEntityAsync(tenantId, 'restaurant', 'kitchenOrder', order.id, order);
           logNicheAudit(tenantId, 'restaurant', 'ORDER_READY', 'KitchenOrder', order.id, `Marked order ${order.id} for ${order.tableNumber} as READY`, store);
+          await logNicheAuditAsync(tenantId, 'restaurant', 'ORDER_READY', 'KitchenOrder', order.id, `Marked order ${order.id} for ${order.tableNumber} as READY`);
           writeStore(store);
           emitNicheAutomationEvent('restaurant', 'ORDER_READY', order, tenantId);
           return NextResponse.json({ success: true, record: order });
@@ -392,14 +421,17 @@ export async function POST(
           customerName: payload.customerName || 'Walk-In Customer',
         };
         store.retail.sales.unshift(newSale);
+        await saveNicheEntityAsync(tenantId, 'retail', 'sale', newSale.id, newSale);
         
         // Decrement product inventory
-        (payload.items || []).forEach((item: any) => {
+        for (const item of (payload.items || [])) {
           const product = store.retail.catalogProducts.find((p) => p.name === item.name);
           if (product) {
             product.stock = Math.max(0, product.stock - (item.qty || 1));
+            product.tenantId = tenantId;
+            await saveNicheEntityAsync(tenantId, 'retail', 'catalogProduct', product.id, product);
           }
-        });
+        }
 
         // If KHATA credit, update customer credit ledger
         if (payload.paymentMethod === 'KHATA_CREDIT' && payload.customerId) {
@@ -408,10 +440,12 @@ export async function POST(
             khataCust.tenantId = tenantId;
             khataCust.totalCreditDue += newSale.totalAmount;
             khataCust.lastPurchaseDate = new Date().toISOString().split('T')[0];
+            await saveNicheEntityAsync(tenantId, 'retail', 'khataCustomer', khataCust.id, khataCust);
           }
         }
 
         logNicheAudit(tenantId, 'retail', 'POS_CHECKOUT', 'Sale', newSale.id, `Completed sale ${newSale.receiptNumber} totaling $${newSale.totalAmount.toFixed(2)} via ${newSale.paymentMethod}`);
+        await logNicheAuditAsync(tenantId, 'retail', 'POS_CHECKOUT', 'Sale', newSale.id, `Completed sale ${newSale.receiptNumber} totaling $${newSale.totalAmount.toFixed(2)} via ${newSale.paymentMethod}`);
         writeStore(store);
         emitNicheAutomationEvent('retail', 'POS_CHECKOUT', newSale, tenantId);
         return NextResponse.json({ success: true, record: newSale, updatedCatalog: store.retail.catalogProducts });
@@ -424,7 +458,9 @@ export async function POST(
           customer.tenantId = tenantId;
           customer.totalCreditDue += amount;
           customer.lastPurchaseDate = new Date().toISOString().split('T')[0];
+          await saveNicheEntityAsync(tenantId, 'retail', 'khataCustomer', customer.id, customer);
           logNicheAudit(tenantId, 'retail', 'KHATA_CREDIT', 'KhataCustomer', customer.id, `Added $${amount.toFixed(2)} credit to khata ledger for ${customer.name}`);
+          await logNicheAuditAsync(tenantId, 'retail', 'KHATA_CREDIT', 'KhataCustomer', customer.id, `Added $${amount.toFixed(2)} credit to khata ledger for ${customer.name}`);
           writeStore(store);
           emitNicheAutomationEvent('retail', 'KHATA_CREDIT', customer, tenantId);
           return NextResponse.json({ success: true, record: customer });
@@ -442,7 +478,9 @@ export async function POST(
           barcode: payload.barcode || `890${Math.floor(100000000 + Math.random() * 900000000)}`,
         };
         store.retail.catalogProducts.unshift(newProduct);
+        await saveNicheEntityAsync(tenantId, 'retail', 'catalogProduct', newProduct.id, newProduct);
         logNicheAudit(tenantId, 'retail', 'ADD_PRODUCT', 'Product', newProduct.id, `Added ${newProduct.name} to catalog ($${newProduct.price})`, store);
+        await logNicheAuditAsync(tenantId, 'retail', 'ADD_PRODUCT', 'Product', newProduct.id, `Added ${newProduct.name} to catalog ($${newProduct.price})`);
         writeStore(store);
         emitNicheAutomationEvent('retail', 'ADD_PRODUCT', newProduct, tenantId);
         return NextResponse.json({ success: true, record: newProduct });
@@ -459,7 +497,9 @@ export async function POST(
           creditLimit: parseFloat(payload.creditLimit) || 500,
         };
         store.retail.khataCustomers.unshift(newCustomer);
+        await saveNicheEntityAsync(tenantId, 'retail', 'khataCustomer', newCustomer.id, newCustomer);
         logNicheAudit(tenantId, 'retail', 'CREATE_KHATA_CUSTOMER', 'KhataCustomer', newCustomer.id, `Created khata customer ${newCustomer.name}`, store);
+        await logNicheAuditAsync(tenantId, 'retail', 'CREATE_KHATA_CUSTOMER', 'KhataCustomer', newCustomer.id, `Created khata customer ${newCustomer.name}`);
         writeStore(store);
         emitNicheAutomationEvent('retail', 'CREATE_KHATA_CUSTOMER', newCustomer, tenantId);
         return NextResponse.json({ success: true, record: newCustomer });
@@ -480,7 +520,9 @@ export async function POST(
           seats: parseInt(payload.seats) || 10,
         };
         store.sme.subscriptions.unshift(newSub);
+        await saveNicheEntityAsync(tenantId, 'sme', 'subscription', newSub.id, newSub);
         logNicheAudit(tenantId, 'sme', 'CREATE_SUBSCRIPTION', 'Subscription', newSub.id, `Created MRR subscription for ${newSub.customerName} ($${newSub.mrr}/mo)`);
+        await logNicheAuditAsync(tenantId, 'sme', 'CREATE_SUBSCRIPTION', 'Subscription', newSub.id, `Created MRR subscription for ${newSub.customerName} ($${newSub.mrr}/mo)`);
         writeStore(store);
         emitNicheAutomationEvent('sme', 'CREATE_SUBSCRIPTION', newSub, tenantId);
         return NextResponse.json({ success: true, record: newSub });
@@ -491,7 +533,9 @@ export async function POST(
         if (sub) {
           sub.mrr += parseFloat(payload.mrrAdd) || 2500;
           sub.seats += parseInt(payload.seatsAdd) || 20;
+          await saveNicheEntityAsync(tenantId, 'sme', 'subscription', sub.id, sub);
           logNicheAudit(tenantId, 'sme', 'UPGRADE_SUBSCRIPTION', 'Subscription', sub.id, `Upgraded subscription for ${sub.customerName}: +$${payload.mrrAdd || 2500} MRR, +${payload.seatsAdd || 20} seats`, store);
+          await logNicheAuditAsync(tenantId, 'sme', 'UPGRADE_SUBSCRIPTION', 'Subscription', sub.id, `Upgraded subscription for ${sub.customerName}: +$${payload.mrrAdd || 2500} MRR, +${payload.seatsAdd || 20} seats`);
           writeStore(store);
           emitNicheAutomationEvent('sme', 'UPGRADE_SUBSCRIPTION', sub, tenantId);
           return NextResponse.json({ success: true, record: sub });
@@ -513,7 +557,9 @@ export async function POST(
           retainerAmount: parseFloat(payload.retainerAmount) || 15000,
         };
         store.agency.deliverables.unshift(newDel);
+        await saveNicheEntityAsync(tenantId, 'agency', 'deliverable', newDel.id, newDel);
         logNicheAudit(tenantId, 'agency', 'CREATE_DELIVERABLE', 'Deliverable', newDel.id, `Created deliverable ${newDel.milestone} for ${newDel.clientName}`, store);
+        await logNicheAuditAsync(tenantId, 'agency', 'CREATE_DELIVERABLE', 'Deliverable', newDel.id, `Created deliverable ${newDel.milestone} for ${newDel.clientName}`);
         writeStore(store);
         emitNicheAutomationEvent('agency', 'CREATE_DELIVERABLE', newDel, tenantId);
         return NextResponse.json({ success: true, record: newDel });
@@ -523,7 +569,9 @@ export async function POST(
         const del = store.agency.deliverables.find((d) => d.id === payload.id);
         if (del) {
           del.status = 'APPROVED';
+          await saveNicheEntityAsync(tenantId, 'agency', 'deliverable', del.id, del);
           logNicheAudit(tenantId, 'agency', 'APPROVE_DELIVERABLE', 'Deliverable', del.id, `Client approved milestone: ${del.milestone} for ${del.clientName}`, store);
+          await logNicheAuditAsync(tenantId, 'agency', 'APPROVE_DELIVERABLE', 'Deliverable', del.id, `Client approved milestone: ${del.milestone} for ${del.clientName}`);
           writeStore(store);
           emitNicheAutomationEvent('agency', 'APPROVE_DELIVERABLE', del, tenantId);
           return NextResponse.json({ success: true, record: del });
@@ -549,7 +597,9 @@ export async function POST(
       };
 
       store.nicheRecords[niche].unshift(newRecord);
+      await saveNicheEntityAsync(tenantId, niche, 'record', newRecord.id, newRecord);
       logNicheAudit(tenantId, niche, 'CREATE_RECORD', 'Record', newRecord.id, `Created ${newRecord.name} in ${niche}`, store);
+      await logNicheAuditAsync(tenantId, niche, 'CREATE_RECORD', 'Record', newRecord.id, `Created ${newRecord.name} in ${niche}`);
       writeStore(store);
       emitNicheAutomationEvent(niche, 'CREATE_RECORD', newRecord, tenantId);
       return NextResponse.json({ success: true, record: newRecord });
@@ -561,7 +611,9 @@ export async function POST(
         if (rec) {
           rec.status = payload.status;
           if (payload.statusColor) rec.statusColor = payload.statusColor;
+          await saveNicheEntityAsync(tenantId, niche, 'record', rec.id, rec);
           logNicheAudit(tenantId, niche, 'UPDATE_STATUS', 'Record', rec.id, `Advanced status of ${rec.name} to ${rec.status}`, store);
+          await logNicheAuditAsync(tenantId, niche, 'UPDATE_STATUS', 'Record', rec.id, `Advanced status of ${rec.name} to ${rec.status}`);
           writeStore(store);
           emitNicheAutomationEvent(niche, 'UPDATE_STATUS', rec, tenantId);
           return NextResponse.json({ success: true, record: rec });

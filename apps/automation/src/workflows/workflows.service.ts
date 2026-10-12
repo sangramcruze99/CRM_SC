@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, InternalServerErrorException, Logger, Optional } from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, Logger, Optional, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
@@ -8,6 +8,7 @@ import { ExecutionPersistenceService } from '../executor/execution-persistence.s
 import { BusinessEventBusService } from '../event-bus/business-event-bus.service';
 import { WorkflowGraphExecutorService } from '../executor/workflow-graph-executor.service';
 import { NODE_CATALOG } from '../executor/node-catalog';
+import { redactSensitiveData } from '@repo/database';
 
 @Injectable()
 export class WorkflowsService {
@@ -59,13 +60,31 @@ export class WorkflowsService {
 
     try {
       if (this.workflowQueue) {
+        // Enforce duplicate-event protection and idempotency via jobId
+        const eventId = triggerData?.eventId || triggerData?.id || '';
+        const dedupKey = eventId ? `${tenantId}:${workflow.id}:${eventId}` : undefined;
+
         const job = await this.workflowQueue.add('execute-workflow', {
           workflowId: workflow.id,
           tenantId: tenantId,
-          triggerData: triggerData
+          triggerData: redactSensitiveData(triggerData),
+        }, {
+          jobId: dedupKey,
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000,
+          },
+          removeOnComplete: 100,
+          removeOnFail: false,
         });
         return { success: true, jobId: job.id, queued: true };
       }
+
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('FATAL: BullMQ queue is unready or unavailable in production. In-memory fallback is prohibited.');
+      }
+
       const result = await this.executionService.executeWorkflow({
         workflowId: workflow.id,
         tenantId,
@@ -73,6 +92,10 @@ export class WorkflowsService {
       });
       return { success: true, ...result };
     } catch (err: any) {
+      if (process.env.NODE_ENV === 'production') {
+        this.logger.error(`BullMQ job submission failed: ${err.message}`);
+        throw err;
+      }
       this.logger.warn(`Queue deferred, executing workflow directly: ${err.message}`);
       const result = await this.executionService.executeWorkflow({
         workflowId: workflow.id,
@@ -703,6 +726,64 @@ export class WorkflowsService {
 
   replayEvent(tenantId: string, eventId: string) {
     return this.eventBus.replay(eventId, tenantId);
+  }
+
+  // --- BullMQ Dead-Letter Queue (DLQ) Management ---
+  async getDeadLetterJobs(tenantId: string) {
+    if (!this.workflowQueue) {
+      return { dlq: [], count: 0, message: 'BullMQ queue is not configured' };
+    }
+    const failedJobs = await this.workflowQueue.getFailed(0, 100);
+    const tenantJobs = failedJobs
+      .filter((job) => !tenantId || job.data?.tenantId === tenantId)
+      .map((job) => ({
+        id: job.id,
+        name: job.name,
+        workflowId: job.data?.workflowId,
+        tenantId: job.data?.tenantId,
+        triggerData: job.data?.triggerData,
+        failedReason: job.failedReason,
+        stacktrace: job.stacktrace,
+        attemptsMade: job.attemptsMade,
+        timestamp: job.timestamp,
+        processedOn: job.processedOn,
+        finishedOn: job.finishedOn,
+      }));
+    return {
+      dlq: tenantJobs,
+      count: tenantJobs.length,
+      tenantId,
+    };
+  }
+
+  async retryDeadLetterJob(tenantId: string, jobId: string) {
+    if (!this.workflowQueue) {
+      throw new BadRequestException('BullMQ queue is not configured');
+    }
+    const job = await this.workflowQueue.getJob(jobId);
+    if (!job) {
+      throw new NotFoundException(`Dead-letter job ${jobId} not found`);
+    }
+    if (job.data?.tenantId && job.data.tenantId !== tenantId) {
+      throw new ForbiddenException('Cannot retry job belonging to another tenant');
+    }
+    await job.retry();
+    return { success: true, jobId: job.id, message: `Job ${jobId} re-queued for processing` };
+  }
+
+  async purgeDeadLetterJob(tenantId: string, jobId: string) {
+    if (!this.workflowQueue) {
+      throw new BadRequestException('BullMQ queue is not configured');
+    }
+    const job = await this.workflowQueue.getJob(jobId);
+    if (!job) {
+      throw new NotFoundException(`Dead-letter job ${jobId} not found`);
+    }
+    if (job.data?.tenantId && job.data.tenantId !== tenantId) {
+      throw new ForbiddenException('Cannot purge job belonging to another tenant');
+    }
+    await job.remove();
+    return { success: true, jobId, message: `Job ${jobId} successfully removed from dead-letter queue` };
   }
 
   checkCollisions(tenantId: string, contacts: string[], targetWorkflowId: string) {

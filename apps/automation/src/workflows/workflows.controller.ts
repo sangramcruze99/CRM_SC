@@ -97,6 +97,30 @@ export class WorkflowsController {
     return this.workflowsService.replayEvent(this.getTenant(tenantIdHeader), eventId);
   }
 
+  /**
+   * BullMQ Dead-Letter Queue (DLQ) Management
+   */
+  @Get('dlq')
+  getDeadLetterJobs(@Headers('x-tenant-id') tenantIdHeader: string) {
+    return this.workflowsService.getDeadLetterJobs(this.getTenant(tenantIdHeader));
+  }
+
+  @Post('dlq/:jobId/retry')
+  retryDeadLetterJob(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('jobId') jobId: string
+  ) {
+    return this.workflowsService.retryDeadLetterJob(this.getTenant(tenantIdHeader), jobId);
+  }
+
+  @Delete('dlq/:jobId')
+  purgeDeadLetterJob(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Param('jobId') jobId: string
+  ) {
+    return this.workflowsService.purgeDeadLetterJob(this.getTenant(tenantIdHeader), jobId);
+  }
+
   @Post(':id/publish')
   publishVersion(
     @Headers('x-tenant-id') tenantIdHeader: string,

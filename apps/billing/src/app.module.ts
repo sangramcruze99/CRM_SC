@@ -1,4 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard, getJwtSecret } from '@repo/auth';
 import { PrismaModule } from './prisma/prisma.module';
 import { StripeService } from './stripe/stripe.service';
 import { PlansService } from './plans/plans.service';
@@ -19,9 +22,16 @@ import { BillingController } from './billing.controller';
 import { AdminBillingController } from './admin-billing.controller';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [
+    JwtModule.register({ secret: getJwtSecret() }),
+    PrismaModule,
+  ],
   controllers: [BillingController, AdminBillingController],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
     StripeService,
     PlansService,
     EntitlementService,

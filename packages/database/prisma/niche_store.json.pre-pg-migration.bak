@@ -1,0 +1,95 @@
+{
+  "hospital": {
+    "totalBeds": 165,
+    "patients": [],
+    "appointments": [],
+    "prescriptions": []
+  },
+  "realestate": {
+    "properties": [],
+    "showings": [],
+    "deals": []
+  },
+  "restaurant": {
+    "tables": [
+      {
+        "id": "T-01",
+        "number": "Table 1",
+        "capacity": 2,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-02",
+        "number": "Table 2",
+        "capacity": 4,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-03",
+        "number": "Table 3",
+        "capacity": 4,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-04",
+        "number": "Table 4",
+        "capacity": 6,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-05",
+        "number": "Table 5",
+        "capacity": 8,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-06",
+        "number": "Table 6 (Patio)",
+        "capacity": 4,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-07",
+        "number": "Table 7 (Patio)",
+        "capacity": 4,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      },
+      {
+        "id": "T-08",
+        "number": "Table 8 (Chef Booth)",
+        "capacity": 6,
+        "status": "AVAILABLE",
+        "billTotal": 0
+      }
+    ],
+    "kitchenOrders": [],
+    "menuItems": []
+  },
+  "retail": {
+    "catalogProducts": [],
+    "sales": [],
+    "khataCustomers": []
+  },
+  "sme": {
+    "subscriptions": []
+  },
+  "agency": {
+    "deliverables": []
+  },
+  "nicheRecords": {
+    "construction": [],
+    "legal": [],
+    "logistics": [],
+    "fitness": [],
+    "automotive": []
+  },
+  "crm_contacts": [],
+  "auditLogs": []
+}

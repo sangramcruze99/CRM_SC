@@ -185,6 +185,13 @@ export class StripeService {
         }, {});
 
         if (sigParts.v1 && sigParts.t) {
+          const timestampSec = parseInt(sigParts.t, 10);
+          const nowSec = Math.floor(Date.now() / 1000);
+          // 5-minute tolerance window to prevent replay attacks
+          if (isNaN(timestampSec) || Math.abs(nowSec - timestampSec) > 300) {
+            throw new Error('Webhook timestamp is outside tolerance window (replay protection)');
+          }
+
           const signedPayload = `${sigParts.t}.${payloadStr}`;
           const expectedSig = crypto
             .createHmac('sha256', this.webhookSecret)

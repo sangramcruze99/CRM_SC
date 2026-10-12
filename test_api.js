@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 const token = jwt.sign(
   { tenantId: 'clm0abc123', userId: 'user123' },
-  'super-secret-business-os-key',
+  process.env.JWT_SECRET || 'test-secure-256bit-automated-verification-secret-xyz123',
   { expiresIn: '1h' }
 );
 

@@ -257,17 +257,23 @@ async function main() {
   if (!isOllamaOnline) {
     const hasOllamaModels = fs.existsSync('E:/ollama-models') || fs.existsSync('E:\\ollama-models');
     if (hasOllamaModels) {
-      console.log(`${c.magenta}[ollama:11435] Starting Local Gemma 4 Brain daemon...${c.reset}`);
-      const ollamaProc = spawn('ollama', ['serve'], {
-        env: {
-          ...process.env,
-          OLLAMA_HOST: '127.0.0.1:11435',
-          OLLAMA_MODELS: 'E:/ollama-models',
-        },
-        stdio: ['ignore', 'ignore', 'ignore'],
-        detached: true,
-      });
-      activeProcesses.push(ollamaProc);
+      try {
+        console.log(`${c.magenta}[ollama:11435] Starting Local Gemma 4 Brain daemon...${c.reset}`);
+        const ollamaProc = spawn('ollama', ['serve'], {
+          env: {
+            ...process.env,
+            OLLAMA_HOST: '127.0.0.1:11435',
+            OLLAMA_MODELS: 'E:/ollama-models',
+          },
+          stdio: 'ignore',
+          shell: process.platform === 'win32',
+        });
+        if (ollamaProc && ollamaProc.pid) {
+          activeProcesses.push(ollamaProc);
+        }
+      } catch (ollamaErr) {
+        console.warn(`${c.yellow}[ollama:11435] Warning starting ollama: ${ollamaErr.message}${c.reset}`);
+      }
     }
   }
 
@@ -321,19 +327,26 @@ async function main() {
       }
     }
 
-    const child = spawn(cmd, cmdArgs, {
-      cwd: serviceDir,
-      env: {
-        ...process.env,
-        DATABASE_URL: `file:${path.resolve(ROOT_DIR, 'packages/database/prisma/dev.db').replace(/\\/g, '/')}`,
-        PORT: String(service.port),
-        [`${service.name.toUpperCase().replace(/-/g, '_')}_PORT`]: String(service.port),
-        AI_PORT: '3010',
-        BI_PORT: '3013',
-        ENABLE_BULLMQ: 'false',
-      },
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
+    let child;
+    try {
+      child = spawn(cmd, cmdArgs, {
+        cwd: serviceDir,
+        env: {
+          ...process.env,
+          DATABASE_URL: process.env.DATABASE_URL || 'postgresql://postgres:postgres_password@127.0.0.1:5432/business_os?schema=public&connection_limit=20&pool_timeout=20',
+          PORT: String(service.port),
+          [`${service.name.toUpperCase().replace(/-/g, '_')}_PORT`]: String(service.port),
+          AI_PORT: '3010',
+          ENABLE_BULLMQ: process.env.ENABLE_BULLMQ || 'true',
+          REDIS_PASSWORD: process.env.REDIS_PASSWORD || 'business_os_redis_secure_pass_2026',
+        },
+        stdio: ['ignore', 'pipe', 'pipe'],
+        shell: process.platform === 'win32',
+      });
+    } catch (spawnErr) {
+      console.error(`${prefix} ${c.red}Failed to spawn: ${spawnErr.message}${c.reset}`);
+      continue;
+    }
 
     activeProcesses.push(child);
 

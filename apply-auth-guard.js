@@ -10,11 +10,11 @@ apps.forEach(app => {
     
     // Add imports
     if (!content.includes('JwtModule')) {
-      content = `import { JwtModule } from '@nestjs/jwt';\nimport { APP_GUARD } from '@nestjs/core';\nimport { JwtAuthGuard } from '@repo/auth';\n` + content;
+      content = `import { JwtModule } from '@nestjs/jwt';\nimport { APP_GUARD } from '@nestjs/core';\nimport { JwtAuthGuard, getJwtSecret } from '@repo/auth';\n` + content;
     }
     
     // Add JwtModule to imports array
-    content = content.replace(/imports:\s*\[/, "imports: [\n    JwtModule.register({ secret: process.env.JWT_SECRET || 'super-secret-business-os-key' }),");
+    content = content.replace(/imports:\s*\[/, "imports: [\n    JwtModule.register({ secret: getJwtSecret() }),");
     
     // Add APP_GUARD to providers array
     content = content.replace(/providers:\s*\[/, "providers: [\n    {\n      provide: APP_GUARD,\n      useClass: JwtAuthGuard,\n    },");

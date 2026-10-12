@@ -29,6 +29,44 @@ export class DocumentsController {
   }
 
   /**
+   * Request Presigned S3 Upload URL for Direct Client Upload
+   */
+  @Post('presign-upload')
+  getPresignedUpload(
+    @Body() body: any,
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Req() req: any,
+  ) {
+    const tenant = req.user?.tenantId || tenantIdHeader || 'default-tenant';
+    return this.documentsService.getPresignedUploadUrl(tenant, body);
+  }
+
+  /**
+   * Migrate Existing Local Vault Files to Private S3 Object Storage
+   */
+  @Post('migrate-vault')
+  migrateVault(
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Req() req: any,
+  ) {
+    const tenant = req.user?.tenantId || tenantIdHeader || 'default-tenant';
+    return this.documentsService.migrateLocalVault(tenant);
+  }
+
+  /**
+   * Request Presigned S3 Download URL for Direct Private Download
+   */
+  @Get(':id/presign-download')
+  getPresignedDownload(
+    @Param('id') id: string,
+    @Headers('x-tenant-id') tenantIdHeader: string,
+    @Req() req: any,
+  ) {
+    const tenant = req.user?.tenantId || tenantIdHeader || 'default-tenant';
+    return this.documentsService.getPresignedDownloadUrl(id, tenant);
+  }
+
+  /**
    * List documents with tenant isolation and service-aware namespace filtering
    */
   @Get()

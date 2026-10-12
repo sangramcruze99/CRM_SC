@@ -10,6 +10,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { Public } from '@repo/auth';
 import { PlansService } from './plans/plans.service';
 import { EntitlementService } from './entitlements/entitlement.service';
 import { UsageService, RecordUsageDto } from './usage/usage.service';
@@ -44,12 +45,20 @@ export class BillingController {
     private readonly stateMachineService: SubscriptionStateMachineService,
   ) {}
 
-  private extractTenantId(headers: Record<string, any>): string {
+  private extractTenantId(headers?: Record<string, any>, req?: Request): string {
+    const user = (req as any)?.user;
+    if (user?.tenantId) {
+      if (user.role === 'SUPERADMIN' && headers && (headers['x-tenant-id'] || headers['X-Tenant-Id'])) {
+        return headers['x-tenant-id'] || headers['X-Tenant-Id'];
+      }
+      return user.tenantId;
+    }
+    const h = headers || (req ? req.headers : {});
     return (
-      headers['x-tenant-id'] ||
-      headers['X-Tenant-Id'] ||
-      headers['x-tenant'] ||
-      (headers as any)?.tenantid ||
+      (h as any)?.['x-tenant-id'] ||
+      (h as any)?.['X-Tenant-Id'] ||
+      (h as any)?.['x-tenant'] ||
+      (h as any)?.tenantid ||
       'default-tenant'
     );
   }
@@ -57,6 +66,7 @@ export class BillingController {
   /**
    * List all database-backed plans
    */
+  @Public()
   @Get('plan')
   async getPlans() {
     return this.plansService.getAllPlans();
@@ -65,6 +75,7 @@ export class BillingController {
   /**
    * Get specific plan by key
    */
+  @Public()
   @Get('plan/:key')
   async getPlan(@Param('key') key: string) {
     return this.plansService.getPlanByKey(key);
@@ -253,15 +264,18 @@ export class BillingController {
   /**
    * Stripe Webhook Endpoint (Raw Body with HMAC Signature)
    */
+  @Public()
   @Post('stripe/webhook')
   @Post('webhook')
   async handleStripeWebhook(
     @Req() req: Request,
     @Headers('stripe-signature') signature?: string,
   ) {
+    if (!signature) {
+      throw new BadRequestException('Missing stripe-signature header');
+    }
     const rawBody = (req as any).rawBody || (typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
-    const sig = signature || 'test_signature';
-    const result = await this.webhookService.handleWebhook(rawBody, sig);
+    const result = await this.webhookService.handleWebhook(rawBody, signature);
     return {
       received: true,
       idempotent: result.status === 'IGNORED_DUPLICATE',
@@ -472,6 +486,7 @@ export class BillingController {
   /**
    * Process Liveness Health Probe
    */
+  @Public()
   @Get('health')
   async getHealth() {
     return {
@@ -485,6 +500,7 @@ export class BillingController {
   /**
    * Dependency Readiness Health Probe
    */
+  @Public()
   @Get('ready')
   async getReady() {
     return {

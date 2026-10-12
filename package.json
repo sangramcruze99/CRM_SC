@@ -10,6 +10,8 @@
     "dev:ai": "node scripts/dev-services.mjs --filter=python-ai",
     "test:ai": "pytest services/python-ai",
     "services:status": "node scripts/dev-services.mjs --status",
+    "certs:generate": "node scripts/generate-tls-certs.mjs",
+    "ingress": "node scripts/ingress-proxy.mjs",
     "lint": "turbo lint",
     "test": "turbo test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
@@ -25,5 +27,18 @@
   "dependencies": {
     "jsonwebtoken": "^9.0.3",
     "stripe": "^22.6.1"
+  },
+  "overrides": {
+    "handlebars": ">=4.7.10",
+    "multer": ">=2.4.0",
+    "protobufjs": ">=7.5.5",
+    "proxy-addr": ">=2.0.8",
+    "fast-uri": ">=3.1.8",
+    "qs": ">=6.16.0",
+    "braces": ">=3.0.3",
+    "engine.io": ">=6.6.10",
+    "source-map-js": ">=1.2.2",
+    "sharp": ">=0.35.5",
+    "nanoid": ">=3.3.18"
   }
 }
