@@ -4,6 +4,7 @@ import { Logger, Optional, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ResendService } from '../actions/resend.service';
 import { WorkflowGraphExecutorService } from './workflow-graph-executor.service';
+import { safeFetchSsrf } from '@repo/core-types';
 
 @Processor('workflows')
 export class WorkflowProcessor extends WorkerHost {
@@ -127,14 +128,14 @@ export class WorkflowProcessor extends WorkerHost {
             this.logger.debug(`[HTTP_REQUEST] Fetching ${url}`);
             if (url) {
               try {
-                const res = await fetch(url, {
+                const res = await safeFetchSsrf(url, {
                   method: actionData.method || 'GET',
                   headers: { 'Content-Type': 'application/json', ...(actionData.headers || {}) },
                   body: actionData.body ? JSON.stringify(actionData.body) : undefined,
-                });
+                }, { timeoutMs: 5000 });
                 this.logger.debug(`[HTTP_REQUEST] Result: ${res.status}`);
-              } catch (err) {
-                this.logger.error(`[HTTP_REQUEST] Failed: ${err.message}`);
+              } catch (err: any) {
+                this.logger.error(`[HTTP_REQUEST] Blocked or failed: ${err.message}`);
               }
             }
             break;

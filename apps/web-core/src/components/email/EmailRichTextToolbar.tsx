@@ -378,7 +378,7 @@ export function EmailRichTextToolbar({
 
       if (replyText) {
         if (editor) {
-          editor.innerHTML = replyText.replace(/\n/g, '<br/>');
+          editor.innerHTML = renderRichEmailContent(replyText);
           onChange(editor.innerHTML);
         } else {
           onChange(replyText);
@@ -962,8 +962,9 @@ export function EmailRichTextEditor({
   // Sync value to contentEditable div when value changes externally (e.g. template load or block switch)
   useEffect(() => {
     if (editorRef.current && !isTypingRef.current) {
-      if (editorRef.current.innerHTML !== (value || '')) {
-        editorRef.current.innerHTML = value || '';
+      const safeVal = renderRichEmailContent(value || '');
+      if (editorRef.current.innerHTML !== safeVal) {
+        editorRef.current.innerHTML = safeVal;
       }
     }
   }, [value]);

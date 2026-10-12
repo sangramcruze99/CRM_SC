@@ -96,8 +96,14 @@ export class AgentToolRegistryService implements OnModuleInit {
       inputSchema: { contactId: 'string', fields: 'object' },
       outputSchema: { updated: 'boolean' },
       execute: async (tenantId, { contactId, fields = {} }) => {
+        const existing = await this.prisma.contact.findFirst({
+          where: { id: contactId, tenantId },
+        });
+        if (!existing) {
+          throw new Error(`Contact ${contactId} not found or access denied in this workspace.`);
+        }
         const updated = await this.prisma.contact.update({
-          where: { id: contactId },
+          where: { id: existing.id },
           data: {
             firstName: fields.firstName,
             lastName: fields.lastName,
@@ -168,8 +174,14 @@ export class AgentToolRegistryService implements OnModuleInit {
       inputSchema: { dealId: 'string', newStage: 'string' },
       outputSchema: { dealId: 'string', stage: 'string' },
       execute: async (tenantId, { dealId, newStage }) => {
+        const existing = await this.prisma.deal.findFirst({
+          where: { id: dealId, tenantId },
+        });
+        if (!existing) {
+          throw new Error(`Deal ${dealId} not found or access denied in this workspace.`);
+        }
         const deal = await this.prisma.deal.update({
-          where: { id: dealId },
+          where: { id: existing.id },
           data: { stage: newStage || 'Won' },
         });
         return { dealId: deal.id, stage: deal.stage };
@@ -450,9 +462,15 @@ export class AgentToolRegistryService implements OnModuleInit {
       inputSchema: { ticketId: 'string', message: 'string' },
       outputSchema: { messageId: 'string' },
       execute: async (tenantId, params) => {
+        const ticket = await this.prisma.ticket.findFirst({
+          where: { id: params.ticketId, tenantId },
+        });
+        if (!ticket) {
+          throw new Error(`Ticket ${params.ticketId} not found or access denied in this workspace.`);
+        }
         const msg = await this.prisma.ticketMessage.create({
           data: {
-            ticketId: params.ticketId,
+            ticketId: ticket.id,
             content: params.message || 'We are investigating your request.',
             isStaff: true,
           },
@@ -758,38 +776,50 @@ export class AgentToolRegistryService implements OnModuleInit {
         throw new Error(available.statusReason || `Tool "${toolName}" requires an active integration connection.`);
       }
 
-      // Check if tool requires approval and no approval was supplied
-      if (available.requiresApproval && !params._approvalGranted) {
-        this.logger.warn(`[Agent Tool Policy] Tool ${toolName} requires human approval. Staging approval request.`);
-        try {
-          const approvalReq = await this.prisma.approvalRequest.create({
-            data: {
-              tenantId,
-              actionType: toolName,
-              riskLevel: available.riskLevel || 'HIGH',
-              payload: JSON.stringify(params || {}),
-              reason: available.statusReason || `Action ${toolName} exceeds autonomous execution threshold.`,
-              status: 'PENDING',
-            },
+      // Server-side approval check: never trust client-supplied `_approvalGranted` parameter
+      if (available.requiresApproval) {
+        let isApproved = false;
+        if (params.approvalRequestId) {
+          const approvedRecord = await this.prisma.approvalRequest.findFirst({
+            where: { id: params.approvalRequestId, tenantId, actionType: toolName, status: 'APPROVED' },
           });
-          return {
-            success: true,
-            toolName,
-            status: 'WAITING_APPROVAL',
-            requiresApproval: true,
-            approvalRequestId: approvalReq.id,
-            output: `Action "${toolName}" was staged and queued for human approval (Approval ID: ${approvalReq.id}).`,
-            durationMs: 0,
-          };
-        } catch {
-          return {
-            success: true,
-            toolName,
-            status: 'WAITING_APPROVAL',
-            requiresApproval: true,
-            output: `Action "${toolName}" staged for human approval.`,
-            durationMs: 0,
-          };
+          if (approvedRecord) {
+            isApproved = true;
+          }
+        }
+
+        if (!isApproved) {
+          this.logger.warn(`[Agent Tool Policy] Tool ${toolName} requires human approval. Staging approval request.`);
+          try {
+            const approvalReq = await this.prisma.approvalRequest.create({
+              data: {
+                tenantId,
+                actionType: toolName,
+                riskLevel: available.riskLevel || 'HIGH',
+                payload: JSON.stringify(params || {}),
+                reason: available.statusReason || `Action ${toolName} exceeds autonomous execution threshold.`,
+                status: 'PENDING',
+              },
+            });
+            return {
+              success: true,
+              toolName,
+              status: 'WAITING_APPROVAL',
+              requiresApproval: true,
+              approvalRequestId: approvalReq.id,
+              output: `Action "${toolName}" was staged and queued for human approval (Approval ID: ${approvalReq.id}).`,
+              durationMs: 0,
+            };
+          } catch {
+            return {
+              success: true,
+              toolName,
+              status: 'WAITING_APPROVAL',
+              requiresApproval: true,
+              output: `Action "${toolName}" staged for human approval.`,
+              durationMs: 0,
+            };
+          }
         }
       }
     }

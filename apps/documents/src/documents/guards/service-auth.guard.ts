@@ -20,10 +20,14 @@ export class ServiceAuthGuard implements CanActivate {
     const tenantIdHeader = request.headers['x-tenant-id'];
 
     // 1. Multi-Tenant Boundary Enforcement
+    if (!user.tenantId && user.role !== 'SUPERADMIN' && user.sub !== 'system-api-key') {
+      throw new ForbiddenException('Missing verified tenant context for document operations');
+    }
+
     const effectiveTenantId = user.tenantId || tenantIdHeader || 'default-tenant';
 
-    // If user has a verified tenant in JWT, it must strictly match the tenant being accessed
-    if (user.tenantId && tenantIdHeader && user.tenantId !== tenantIdHeader) {
+    // If user has a verified tenant in JWT, it must strictly match the tenant being accessed unless SUPERADMIN
+    if (user.tenantId && tenantIdHeader && user.tenantId !== tenantIdHeader && user.role !== 'SUPERADMIN') {
       this.logger.warn(
         `Cross-tenant access attempt blocked: JWT tenant ${user.tenantId} tried accessing ${tenantIdHeader}`,
       );

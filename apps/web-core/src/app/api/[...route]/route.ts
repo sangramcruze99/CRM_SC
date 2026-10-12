@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { signInternalToken } from '@/lib/auth';
+import { verifyInternalToken, signInternalToken } from '@/lib/auth';
 
 // Map of prefixes to internal microservice URLs
 const serviceMap: Record<string, string> = {
@@ -27,7 +27,29 @@ const serviceMap: Record<string, string> = {
   'settings': 'http://localhost:3025',
   'inventory': 'http://localhost:3026',
   'billing': 'http://localhost:3027',
+  'gateway': 'http://localhost:3000',
+  'notifications': 'http://localhost:3028',
+  'portal': 'http://localhost:3029',
+  'python-ai': 'http://localhost:3030',
+  'storage': 'http://localhost:3031',
+  'events': 'http://localhost:3032',
 };
+
+function isPublicRoute(servicePrefix: string, remainingPath: string): boolean {
+  if (servicePrefix === 'auth') {
+    return ['login', 'register'].includes(remainingPath);
+  }
+  if (servicePrefix === 'cms') {
+    return remainingPath.startsWith('pages/public');
+  }
+  if (servicePrefix === 'billing') {
+    return remainingPath === 'stripe/webhook' || remainingPath === 'webhook';
+  }
+  if (servicePrefix === 'gateway') {
+    return ['health', 'routes', 'gateway/routes'].includes(remainingPath);
+  }
+  return false;
+}
 
 export async function processRequest(req: NextRequest, { params }: { params: Promise<{ route: string[] }> }) {
   const resolvedParams = await params;
@@ -42,13 +64,12 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
   }
 
   const targetBase = serviceMap[servicePrefix];
-  
   if (!targetBase) {
     return NextResponse.json({ error: 'Service not found' }, { status: 404 });
   }
 
   const remainingPath = resolvedParams.route.slice(1).join('/');
-  
+
   let backendPath = remainingPath;
   if (servicePrefix === 'custom-objects') {
     backendPath = `custom-objects${remainingPath ? '/' + remainingPath : ''}`;
@@ -93,88 +114,84 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
   } else if (servicePrefix === 'ai' && remainingPath === 'ask') {
     backendPath = 'prompts/ask';
   }
-  
+
   const targetUrl = `${targetBase}/${backendPath}${req.nextUrl.search}`;
 
-  // Extract tenantId from headers or extract directly from JWT cookie/bearer
-  let tenantId = req.headers.get('x-tenant-id');
+  // Authentication extraction
+  const cookieToken = req.cookies.get('access_token')?.value;
   const authHeader = req.headers.get('authorization');
-  const token = req.cookies.get('access_token')?.value || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : undefined);
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : undefined;
+  const token = cookieToken || bearerToken;
 
-  if (!tenantId && token) {
-    try {
-      const payloadBase64 = token.split('.')[1];
-      if (payloadBase64) {
-        const payloadJson = Buffer.from(payloadBase64, 'base64').toString('utf-8');
-        const payload = JSON.parse(payloadJson);
-        if (payload.tenantId) {
-          tenantId = payload.tenantId;
-        }
-      }
-    } catch {
-      // ignore token parse error
+  const apiKeyHeader = req.headers.get('x-api-key') || req.headers.get('x-service-key');
+  const configuredApiKey = process.env.API_KEY || process.env.SYSTEM_API_KEY;
+  const hasValidApiKey = Boolean(configuredApiKey && apiKeyHeader && apiKeyHeader === configuredApiKey);
+
+  const isPublic = isPublicRoute(servicePrefix, remainingPath);
+
+  let verifiedTenantId: string | null = null;
+  let verifiedUser: any = null;
+
+  if (token) {
+    const verified = verifyInternalToken(token);
+    if (verified) {
+      verifiedTenantId = verified.tenantId || 'default-tenant';
+      verifiedUser = verified;
+    } else if (!isPublic) {
+      return NextResponse.json(
+        { error: 'Unauthorized', message: 'Invalid or expired access token' },
+        { status: 401 }
+      );
     }
+  } else if (hasValidApiKey) {
+    verifiedTenantId = req.headers.get('x-tenant-id') || 'default-tenant';
+    verifiedUser = {
+      sub: 'system-api-key',
+      email: 'system@crm.internal',
+      role: 'ADMIN',
+      tenantId: verifiedTenantId,
+    };
   }
 
-  // Fallback to default tenant
-  if (!tenantId) {
-    tenantId = 'default-tenant';
+  // Reject unauthenticated requests to protected endpoints
+  if (!isPublic && !verifiedUser) {
+    return NextResponse.json(
+      { error: 'Unauthorized', message: 'Authentication required to access Business OS APIs' },
+      { status: 401 }
+    );
   }
 
-  const isPublicCms = servicePrefix === 'cms' && remainingPath.startsWith('pages/public');
-  
-  if (!tenantId && servicePrefix !== 'auth' && !isPublicCms) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  // Tenant Boundary Enforcement & IDOR/BOLA Protection
+  const requestedTenantId = req.headers.get('x-tenant-id');
+  let effectiveTenantId = verifiedTenantId || 'default-tenant';
+
+  if (requestedTenantId && verifiedUser && verifiedUser.role !== 'SUPERADMIN' && requestedTenantId !== verifiedTenantId) {
+    return NextResponse.json(
+      { error: 'Forbidden', message: 'Cross-tenant access forbidden: requested tenant does not match verified session' },
+      { status: 403 }
+    );
+  }
+
+  if (requestedTenantId && verifiedUser?.role === 'SUPERADMIN') {
+    effectiveTenantId = requestedTenantId;
   }
 
   const newHeaders = new Headers();
-  // Copy content type
   if (req.headers.get('content-type')) {
     newHeaders.set('content-type', req.headers.get('content-type')!);
   }
-  // Inject secured headers
-  if (tenantId) {
-    newHeaders.set('x-tenant-id', tenantId);
-  }
+  newHeaders.set('x-tenant-id', effectiveTenantId);
 
-  // Do not inject fallback credentials if client specifically calls auth/me without auth
-  const isAuthMe = servicePrefix === 'auth' && remainingPath === 'me';
-
-  if (authHeader) {
-    newHeaders.set('authorization', authHeader);
-  } else if (token) {
+  if (token) {
     newHeaders.set('authorization', `Bearer ${token}`);
-  } else if (!isAuthMe) {
-    const fallbackToken = signInternalToken({
-      email: 'admin@crm.internal',
-      sub: 'usr_default_admin',
-      tenantId,
-      role: 'SUPERADMIN',
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 86400 * 7,
-    });
-    newHeaders.set('authorization', `Bearer ${fallbackToken}`);
+  } else if (hasValidApiKey && apiKeyHeader) {
+    newHeaders.set('x-api-key', apiKeyHeader);
   }
 
-  // Forward incoming API key / Service key if provided by client or fallback to system key
-  const incomingApiKey = req.headers.get('x-api-key');
-  if (incomingApiKey) {
-    newHeaders.set('x-api-key', incomingApiKey);
-  } else if (!token && !authHeader && !isAuthMe) {
-    newHeaders.set('x-api-key', process.env.API_KEY || process.env.SYSTEM_API_KEY || 'ee03f6bc2fba450fdf6d080ae6c8c919');
-  }
-
-  if (req.headers.get('x-service-key')) {
-    newHeaders.set('x-service-key', req.headers.get('x-service-key')!);
-  }
-  if (req.headers.get('x-user-id')) {
-    newHeaders.set('x-user-id', req.headers.get('x-user-id')!);
-  }
-  if (req.headers.get('x-user-email')) {
-    newHeaders.set('x-user-email', req.headers.get('x-user-email')!);
-  }
-  if (req.headers.get('x-user-role')) {
-    newHeaders.set('x-user-role', req.headers.get('x-user-role')!);
+  if (verifiedUser) {
+    newHeaders.set('x-user-id', verifiedUser.sub || verifiedUser.id || 'system');
+    if (verifiedUser.email) newHeaders.set('x-user-email', verifiedUser.email);
+    if (verifiedUser.role) newHeaders.set('x-user-role', verifiedUser.role);
   }
 
   try {
@@ -182,8 +199,7 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
       method: req.method,
       headers: newHeaders,
     };
-    
-    // Only pass body for non-GET/HEAD
+
     if (req.method !== 'GET' && req.method !== 'HEAD') {
       const body = await req.text();
       if (body) {
@@ -192,40 +208,39 @@ export async function processRequest(req: NextRequest, { params }: { params: Pro
     }
 
     const res = await fetch(targetUrl, fetchOptions);
-    
-    // Pass back the response
     const resBody = await res.text();
     const resHeaders = new Headers(res.headers);
-    // Don't forward transfer-encoding
     resHeaders.delete('transfer-encoding');
-    
-    // Intercept login/register to set HttpOnly cookie
+
+    // Dual-Mode Cookie & Token Handling for Auth responses
     if (backendPath === 'auth/login' || backendPath === 'auth/register') {
       if (res.status === 200 || res.status === 201) {
         try {
           const data = JSON.parse(resBody);
           if (data.access_token) {
-            resHeaders.set('Set-Cookie', `access_token=${data.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`);
+            const isProd = process.env.NODE_ENV === 'production';
+            const secureFlag = isProd ? '; Secure' : '';
+            resHeaders.set(
+              'Set-Cookie',
+              `access_token=${data.access_token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${secureFlag}`
+            );
           }
-        } catch (e) {
-          console.error('Failed to parse auth response', e);
+        } catch {
+          // ignore parsing error
         }
       }
     }
-    
+
     return new NextResponse(resBody, {
       status: res.status,
       headers: resHeaders,
     });
   } catch (error: any) {
-    console.error(`[API Gateway] Error proxying to ${servicePrefix} (${targetUrl}):`, error?.message || error);
-
     return NextResponse.json(
       {
         error: 'Bad Gateway',
         message: `Upstream microservice '${servicePrefix}' (${targetBase}) is unavailable or failed to respond.`,
         service: servicePrefix,
-        targetUrl,
         timestamp: new Date().toISOString(),
       },
       { status: 502 }

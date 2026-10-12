@@ -91,8 +91,13 @@ export const MICROSERVICES = [
   { name: 'cms', dir: 'apps/cms', port: 3024, category: 'Content Management' },
   { name: 'settings', dir: 'apps/settings', port: 3025, category: 'Configuration' },
   { name: 'inventory', dir: 'apps/inventory', port: 3026, category: 'Supply Chain' },
+  { name: 'gateway', dir: 'apps/gateway', port: 3000, category: 'API Gateway', isCore: true },
   { name: 'billing', dir: 'apps/billing', port: 3027, category: 'SaaS Monetization', isCore: true },
+  { name: 'notifications', dir: 'apps/notifications', port: 3028, category: 'Alerts & Push', isCore: true },
+  { name: 'portal', dir: 'apps/portal', port: 3029, category: 'Client Extranet' },
   { name: 'python-ai', dir: 'services/python-ai', port: 3030, category: 'AI & Machine Learning', isCore: true, isPython: true },
+  { name: 'storage', dir: 'apps/storage', port: 3031, category: 'Media & Storage' },
+  { name: 'events', dir: 'apps/events', port: 3032, category: 'Event Mesh Broker', isCore: true },
   { name: 'web-core', dir: 'apps/web-core', port: 4000, category: 'Next.js App Router', isCore: true, isFrontend: true },
 ];
 

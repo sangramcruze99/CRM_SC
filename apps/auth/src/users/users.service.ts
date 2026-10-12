@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcryptjs';
 
@@ -24,38 +24,45 @@ export class UsersService implements OnModuleInit {
   }
 
   async findByEmail(email: string) {
+    if (!email) return null;
+    const normalizedEmail = email.toLowerCase().trim();
     try {
-      const user = await this.prisma.user.findUnique({ where: { email } });
+      const user = await this.prisma.user.findUnique({ where: { email: normalizedEmail } });
       if (user) return user;
     } catch (err: any) {
       this.logger.warn(
-        `Database unreachable, using memory fallback for findByEmail: ${email}`,
+        `Database unreachable, using memory fallback for findByEmail: ${normalizedEmail}`,
       );
     }
-    return UsersService.inMemoryUsers.get(email.toLowerCase()) || null;
+    return UsersService.inMemoryUsers.get(normalizedEmail) || null;
   }
 
   async create(data: any) {
+    if (!data.email || typeof data.email !== 'string') {
+      throw new BadRequestException('Valid email address is required');
+    }
+    if (!data.password || typeof data.password !== 'string' || data.password.length < 8) {
+      throw new BadRequestException('Password must be at least 8 characters long');
+    }
+
     const salt = await bcrypt.genSalt(10);
-    const passwordHash = data.password
-      ? await bcrypt.hash(data.password, salt)
-      : undefined;
+    const passwordHash = await bcrypt.hash(data.password, salt);
+    const normalizedEmail = data.email.toLowerCase().trim();
 
-    // Prevent tenant hijacking: Create dedicated isolated tenant if none or default requested
-    const isNewTenant = !data.tenantId || data.tenantId === 'default-tenant';
-    const tenantId = isNewTenant
-      ? `tnt_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`
-      : data.tenantId;
+    // Prevent Tenant Hijacking:
+    // Self-registration ALWAYS creates a dedicated isolated tenant.
+    // Joining an existing tenant is strictly disallowed without verified invitation token.
+    const tenantId = `tnt_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 7)}`;
 
-    // Prevent privilege escalation: Never allow self-registration as SUPERADMIN
-    const assignedRole =
-      data.role === 'SUPERADMIN' ? 'USER' : data.role || 'USER';
+    // Prevent Privilege Escalation:
+    // Self-registration ALWAYS defaults to USER. Roles cannot be self-selected.
+    const assignedRole = 'USER';
 
     const newUser = {
       id: `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
-      email: data.email.toLowerCase(),
+      email: normalizedEmail,
       passwordHash,
-      name: data.name || 'User',
+      name: data.name ? String(data.name).trim().slice(0, 100) : 'User',
       tenantId,
       role: assignedRole,
       createdAt: new Date(),
@@ -69,24 +76,24 @@ export class UsersService implements OnModuleInit {
         update: {},
         create: {
           id: tenantId,
-          name: data.organizationName || `${data.name || 'User'}'s Workspace`,
+          name: data.organizationName ? String(data.organizationName).trim().slice(0, 100) : `${newUser.name}'s Workspace`,
         },
       });
 
       return await this.prisma.user.create({
         data: {
-          email: data.email.toLowerCase(),
+          email: normalizedEmail,
           passwordHash,
-          name: data.name,
+          name: newUser.name,
           tenantId,
           role: assignedRole,
         },
       });
     } catch (err: any) {
       this.logger.warn(
-        `Database unreachable, storing user in memory: ${data.email}`,
+        `Database unreachable, storing user in memory: ${normalizedEmail}`,
       );
-      UsersService.inMemoryUsers.set(data.email.toLowerCase(), newUser);
+      UsersService.inMemoryUsers.set(normalizedEmail, newUser);
       return newUser;
     }
   }

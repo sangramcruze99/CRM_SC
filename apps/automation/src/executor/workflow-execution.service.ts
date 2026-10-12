@@ -2,6 +2,7 @@ import { Injectable, Logger, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ExecutionPersistenceService } from './execution-persistence.service';
 import { ResendService } from '../actions/resend.service';
+import { safeFetchSsrf } from '@repo/core-types';
 
 export interface WorkflowSimulationInput {
   workflowId: string;
@@ -918,25 +919,28 @@ Tone: Executive, compelling, concise. Include a strong CTA to book an architectu
             let webhookLatency = 0;
 
             try {
-              const controller = new AbortController();
-              const timeout = setTimeout(() => controller.abort(), 5000);
               const startHttp = Date.now();
 
-              const response = await fetch(webhookUrl, {
+              const response = await safeFetchSsrf(webhookUrl, {
                 method,
                 headers,
                 body: method !== 'GET' ? JSON.stringify(payload) : undefined,
-                signal: controller.signal,
-              });
-              clearTimeout(timeout);
+              }, { timeoutMs: 5000 });
 
               webhookLatency = Date.now() - startHttp;
               webhookResponseStatus = response.status;
               webhookResponseBody = (await response.text()).slice(0, 200);
             } catch (err: any) {
-              this.logger.warn(`Webhook call to ${webhookUrl} simulated/failed: ${err.message}`);
-              webhookResponseStatus = 200;
-              webhookResponseBody = `{"simulated": true, "note": "${err.message}"}`;
+              const isSsrfBlock = err.message?.includes('SSRF Blocked');
+              if (isSsrfBlock) {
+                this.logger.error(`[SSRF Prevention] Webhook request to ${webhookUrl} blocked: ${err.message}`);
+                webhookResponseStatus = 403;
+                webhookResponseBody = JSON.stringify({ error: 'SSRF_BLOCKED', message: err.message });
+              } else {
+                this.logger.warn(`Webhook call to ${webhookUrl} simulated/failed: ${err.message}`);
+                webhookResponseStatus = 200;
+                webhookResponseBody = `{"simulated": true, "note": "${err.message}"}`;
+              }
             }
 
             const webhookResult = {

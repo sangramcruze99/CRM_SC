@@ -2396,3 +2396,27 @@ model CandidateScreeningResult {
   @@index([tenantId, candidateName])
 }
 
+// ----------------------------------------------------------------------------
+// ENTERPRISE NOTIFICATION & ALERTING HUB
+// ----------------------------------------------------------------------------
+
+model Notification {
+  id          String   @id @default(cuid())
+  tenantId    String
+  userId      String?
+  title       String
+  message     String
+  category    String   @default("SYSTEM") // 'APPROVAL', 'SYSTEM', 'BILLING', 'CRM_DEAL', 'ALERT'
+  severity    String   @default("INFO")   // 'INFO', 'WARNING', 'SUCCESS', 'CRITICAL'
+  link        String?
+  metadata    String?  @default("{}")     // JSON string
+  read        Boolean  @default(false)
+  readAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId, read])
+  @@index([tenantId, category])
+  @@index([tenantId, createdAt])
+}
+

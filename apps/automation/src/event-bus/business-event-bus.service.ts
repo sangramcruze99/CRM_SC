@@ -2,6 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { BusinessEvent, BusinessEventType, EventDeliveryReport, EventBusSubscription } from './events.interface';
+import { safeFetchSsrf } from '@repo/core-types';
 
 export interface PublishEventOptions {
   tenantId: string;
@@ -278,7 +279,7 @@ export class BusinessEventBusService implements OnModuleInit {
       for (const wh of webhooks) {
         const eventsList = (wh.events || '').split(',').map((e) => e.trim());
         if (eventsList.includes('*') || eventsList.includes(event.type)) {
-          fetch(wh.url, {
+          safeFetchSsrf(wh.url, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -288,8 +289,8 @@ export class BusinessEventBusService implements OnModuleInit {
               'x-tenant-id': event.tenantId,
             },
             body: JSON.stringify(event),
-          }).catch((e) => {
-            this.logger.warn(`External webhook ${wh.url} failed: ${e.message}`);
+          }, { timeoutMs: 5000 }).catch((e) => {
+            this.logger.warn(`External webhook ${wh.url} failed or was blocked by SSRF defense: ${e.message}`);
           });
         }
       }

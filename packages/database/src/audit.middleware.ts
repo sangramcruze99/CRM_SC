@@ -9,6 +9,40 @@ const EXCLUDED_MODELS = new Set([
   'AIPromptTemplate',
 ]);
 
+const SENSITIVE_KEYS = new Set([
+  'password',
+  'passwordhash',
+  'token',
+  'refreshtoken',
+  'accesstoken',
+  'secret',
+  'jwtsecret',
+  'apikey',
+  'servicekey',
+  'creditcard',
+  'cvv',
+  'authorization',
+  'privatekey',
+  'ssn',
+]);
+
+export function redactSensitiveData(obj: any): any {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(redactSensitiveData);
+
+  const clean: Record<string, any> = {};
+  for (const [k, v] of Object.entries(obj)) {
+    if (SENSITIVE_KEYS.has(k.toLowerCase())) {
+      clean[k] = '[REDACTED]';
+    } else if (typeof v === 'object' && v !== null) {
+      clean[k] = redactSensitiveData(v);
+    } else {
+      clean[k] = v;
+    }
+  }
+  return clean;
+}
+
 function deriveEventType(model: string, action: string, data: any): string {
   const m = model.toUpperCase();
   const a = action.toLowerCase();
@@ -94,7 +128,7 @@ export function applyAuditMiddleware(prisma: PrismaClient) {
 
         const actionName = `${params.model.toUpperCase()}_${params.action.toUpperCase()}`;
 
-        // 1. Asynchronously log to AuditLog without blocking
+        // 1. Asynchronously log to AuditLog with sensitive fields redacted
         try {
           (prisma as any).auditLog?.create({
             data: {
@@ -103,7 +137,7 @@ export function applyAuditMiddleware(prisma: PrismaClient) {
               entityType: params.model,
               entityId: entityId || 'unknown',
               metadata: {
-                args: params.args,
+                args: redactSensitiveData(params.args),
               },
             }
           })?.catch?.(() => {});
@@ -111,7 +145,7 @@ export function applyAuditMiddleware(prisma: PrismaClient) {
           // ignore offline audit logging errors
         }
 
-        // 2. Asynchronously dispatch business event to Unified Event Bus
+        // 2. Asynchronously dispatch business event to Unified Event Bus with redacted changes
         try {
           const eventType = deriveEventType(params.model, params.action, data);
           const automationUrl = process.env.AUTOMATION_URL || 'http://localhost:3009';
@@ -129,8 +163,8 @@ export function applyAuditMiddleware(prisma: PrismaClient) {
                 entityId,
                 model: params.model,
                 action: params.action,
-                data: result || data,
-                changes: data,
+                data: redactSensitiveData(result || data),
+                changes: redactSensitiveData(data),
               },
               actor: {
                 type: 'SYSTEM',

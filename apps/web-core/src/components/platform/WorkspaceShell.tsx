@@ -7,6 +7,7 @@ import { SidebarNav } from '../SidebarNav';
 import { GlobalSearch } from '../GlobalSearch';
 import { AskAICopilot } from '../AskAICopilot';
 import { UserNav } from '../UserNav';
+import { NotificationCenter } from '../NotificationCenter';
 import { IndustrySwitcher } from '../industry/IndustrySwitcher';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from './ThemeToggle';
@@ -127,6 +128,11 @@ export function WorkspaceShell({ children }: { children: React.ReactNode }) {
                 <PersonalizationToggle />
                 <LanguageSwitcher />
               </div>
+
+              <div className="h-5 w-px bg-slate-200 dark:bg-white/10 mx-1" />
+
+              {/* Notification Center */}
+              <NotificationCenter />
 
               <div className="h-5 w-px bg-slate-200 dark:bg-white/10 mx-1" />
 

@@ -1,12 +1,40 @@
 /**
- * Transforms email copy containing HTML tags (<u>, <b>, <i>, <s>, <span>, <font>)
- * and markdown (**bold**, *italic*, ~~strike~~, lists, blockquotes)
+ * Sanitizes and transforms email copy containing HTML tags and markdown
  * into safe, beautiful, styled HTML for live canvas previews and email dispatches.
+ * Explicitly defends against Stored & DOM-based XSS by neutralizing script tags,
+ * event handlers, dangerous schemes (javascript:, data:), and unexpected tags.
  */
+
+function sanitizeHtmlInput(input: string): string {
+  if (!input) return '';
+
+  let sanitized = input;
+
+  // 1. Completely strip dangerous tags and their contents
+  sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  sanitized = sanitized.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
+  sanitized = sanitized.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+  sanitized = sanitized.replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '');
+  sanitized = sanitized.replace(/<embed\b[^>]*>/gi, '');
+  sanitized = sanitized.replace(/<base\b[^>]*>/gi, '');
+  sanitized = sanitized.replace(/<meta\b[^>]*>/gi, '');
+  sanitized = sanitized.replace(/<link\b[^>]*>/gi, '');
+
+  // 2. Remove all inline event handlers (onload, onerror, onclick, onmouseover, etc.)
+  sanitized = sanitized.replace(/\s+on[a-z]+\s*=\s*(?:'[^']*'|"[^"]*"|[^\s>]+)/gi, '');
+
+  // 3. Neutralize javascript: and vbscript: URIs
+  sanitized = sanitized.replace(/href\s*=\s*["']?\s*(?:javascript|vbscript|data):[^"'>\s]*/gi, 'href="#"');
+  sanitized = sanitized.replace(/src\s*=\s*["']?\s*(?:javascript|vbscript):[^"'>\s]*/gi, 'src=""');
+
+  return sanitized;
+}
+
 export function renderRichEmailContent(rawText?: string): string {
   if (!rawText) return '';
 
-  let html = rawText;
+  // Apply pre-sanitization
+  let html = sanitizeHtmlInput(rawText);
 
   // 1. Bold: **text** or <b> or <strong>
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong style="font-weight: 700;">$1</strong>');
@@ -25,11 +53,16 @@ export function renderRichEmailContent(rawText?: string): string {
   html = html.replace(/~~([^~]+)~~/g, '<span style="text-decoration: line-through; opacity: 0.7;">$1</span>');
   html = html.replace(/<(?:s|del)>(.*?)<\/del>|<(?:s|del)>(.*?)<\/s>/gi, '<span style="text-decoration: line-through; opacity: 0.7;">$1$2</span>');
 
-  // 4b. Hyperlinks: Markdown [text](url) and ensure <a> tags have inline styles for email client compatibility
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" style="color: #10b981; text-decoration: underline; font-weight: 500;">$1</a>');
+  // 4b. Hyperlinks: Markdown [text](url) and sanitize hrefs
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+    const cleanUrl = url.trim().toLowerCase().startsWith('javascript:') ? '#' : url;
+    return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" style="color: #10b981; text-decoration: underline; font-weight: 500;">${text}</a>`;
+  });
+
   html = html.replace(/<a\s+(?:(?!(?:style|target)=)[^>])*href=["']([^"']+)["'](?:\s+([^>]*))?>([\s\S]*?)<\/a>/gi, (match, href, rest, content) => {
+    const cleanHref = href.trim().toLowerCase().startsWith('javascript:') ? '#' : href;
     if (match.includes('style=')) return match;
-    return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color: #10b981; text-decoration: underline; font-weight: 500;" ${rest || ''}>${content}</a>`;
+    return `<a href="${cleanHref}" target="_blank" rel="noopener noreferrer" style="color: #10b981; text-decoration: underline; font-weight: 500;" ${rest || ''}>${content}</a>`;
   });
 
   // 5. Headings & Font Sizes
@@ -94,5 +127,6 @@ export function renderRichEmailContent(rawText?: string): string {
     .replace(/\n(<ul|<ol|<blockquote|<div)/gi, '$1')
     .replace(/\n/g, '<br />');
 
-  return result;
+  // Final check to guarantee no unhandled script or on* remains
+  return sanitizeHtmlInput(result);
 }

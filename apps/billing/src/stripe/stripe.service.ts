@@ -159,6 +159,10 @@ export class StripeService {
    * Verify raw webhook payload with Stripe HMAC signature
    */
   verifyWebhookSignature(rawBody: string | Buffer, signature: string): Stripe.Event {
+    if (!signature && process.env.NODE_ENV === 'production') {
+      throw new BadRequestException('Missing stripe-signature header');
+    }
+
     if (this.stripeClient && !this.webhookSecret.includes('placeholder')) {
       try {
         return this.stripeClient.webhooks.constructEvent(rawBody, signature, this.webhookSecret);
@@ -167,9 +171,39 @@ export class StripeService {
       }
     }
 
-    // Fallback parsing for sandbox / test events with signature check
+    // In sandbox/test environment: if a signature is provided, verify HMAC against configured secret
+    const payloadStr = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
+
+    if (signature && this.webhookSecret) {
+      try {
+        const crypto = require('crypto');
+        // Extract timestamp and signature components if in Stripe format (t=...,v1=...)
+        const sigParts = signature.split(',').reduce((acc: any, part: string) => {
+          const [k, v] = part.split('=');
+          if (k && v) acc[k.trim()] = v.trim();
+          return acc;
+        }, {});
+
+        if (sigParts.v1 && sigParts.t) {
+          const signedPayload = `${sigParts.t}.${payloadStr}`;
+          const expectedSig = crypto
+            .createHmac('sha256', this.webhookSecret)
+            .update(signedPayload)
+            .digest('hex');
+
+          const expectedBuf = Buffer.from(expectedSig);
+          const actualBuf = Buffer.from(sigParts.v1);
+
+          if (expectedBuf.length !== actualBuf.length || !crypto.timingSafeEqual(expectedBuf, actualBuf)) {
+            throw new Error('HMAC signature mismatch');
+          }
+        }
+      } catch (err: any) {
+        throw new BadRequestException(`Stripe Webhook Signature Verification Failed: ${err.message}`);
+      }
+    }
+
     try {
-      const payloadStr = typeof rawBody === 'string' ? rawBody : rawBody.toString('utf8');
       const parsed = JSON.parse(payloadStr);
       if (!parsed.id || !parsed.type) {
         throw new Error('Invalid Stripe event payload structure');
